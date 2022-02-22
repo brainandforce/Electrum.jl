@@ -58,7 +58,9 @@ include("show.jl")
 export  AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData, 
         AbstractReciprocalSpaceData, AbstractKPoints
 # Concrete types to export
-export  Crystal, CrystalWithDatasets, RealSpaceDataGrid, KPointGrid, KPointList
+export  RealLattice, ReciprocalLattice, Crystal, CrystalWithDatasets, RealSpaceDataGrid, 
+        KPointGrid, KPointList, ReciprocalWavefunction
 # Functions to export
+export readWAVECAR
 
 end # end of module
