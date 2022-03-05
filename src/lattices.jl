@@ -43,14 +43,14 @@ struct RealLattice{D} <: AbstractLattice{D}
     prim::SMatrix{D,D,Float64}
     conv::SMatrix{D,D,Float64}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
-    #=
     function RealLattice{D}(
         prim::AbstractMatrix{<:Real},
         conv::AbstractMatrix{<:Real}
     ) where D
+        # Perform checks on the lattice pairs
+        lattice_pair_check(prim,conv)
         new(prim,conv)
     end
-    =#
 end
 
 """
@@ -62,30 +62,33 @@ struct ReciprocalLattice{D} <: AbstractLattice{D}
     prim::SMatrix{D,D,Float64}
     conv::SMatrix{D,D,Float64}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
-    #=
     function ReciprocalLattice{D}(
         prim::AbstractMatrix{<:Real},
         conv::AbstractMatrix{<:Real}
     ) where D
+        # Perform checks on the lattice pairs
+        lattice_pair_check(conv,prim)
         new(prim,conv)
     end
-    =#
 end
 
-# Simple constructors for lattices
-# These require primitive and conventional cell vectors to be provided
+# Get primitive and conventional lattices
+# This is the preferred way of doing so
+"""
+    prim(l::AbstractLattice{D}) -> SMatrix{D,D,Float64}
 
-function RealLattice{D}(prim::AbstractMatrix{<:Real}, conv::AbstractMatrix{<:Real}) where D
-    # Perform checks on the lattice pairs
-    lattice_pair_check(prim,conv)
-    return RealLattice{D}(prim,conv)
-end
+Returns the primitive lattice in a `RealLattice` or a `ReciprocalLattice`.
+"""
+prim(l::AbstractLattice{D}) where D = l.prim
 
-function ReciprocalLattice{D}(prim::AbstractMatrix{<:Real}, conv::AbstractMatrix{<:Real}) where D
-    # Perform checks on the lattice pairs
-    lattice_pair_check(conv,prim)
-    return ReciprocalLattice{D}(prim,conv)
-end
+"""
+    conv(l::AbstractLattice{D}) -> SMatrix{D,D,Float64}
+
+Returns the conventional lattice in a `RealLattice` or a `ReciprocalLattice`.
+"""
+conv(l::AbstractLattice{D}) where D = l.conv
+
+pick(l::AbstractLattice{D}, primitive::Bool) where D = primitive ? prim(l) : conv(l)
 
 function RealLattice{D}(
     prim::AbstractVector{<:AbstractVector{<:Real}},
@@ -97,7 +100,6 @@ end
 # Conversions between real and reciprocal lattices
 # It's critical that the `RealLattice` and `ReciprocalLattice` constructors are idempotent
 # so that conversion can be completely seamless
-
 RealLattice{D}(latt::RealLattice{D}) where D = latt
 ReciprocalLattice{D}(latt::ReciprocalLattice{D}) where D = latt
 
@@ -108,7 +110,7 @@ Converts a real lattice to its corresponding reciprocal lattice.
 """
 function ReciprocalLattice{D}(latt::RealLattice{D}) where D
     # TODO: can we define this as an involution, even with a 2pi factor?
-    invlatt(M::AbstractMatrix{Real}) = collect(transpose(2*pi*inv(M)))
+    invlatt(M::AbstractMatrix{<:Real}) = collect(transpose(2*pi*inv(M)))
     return ReciprocalLattice{D}(invlatt(latt.prim), invlatt(latt.conv))
 end
 
@@ -119,9 +121,13 @@ Converts a reciprocal lattice to its corresponding real lattice.
 """
 function RealLattice{D}(latt::ReciprocalLattice{D}) where D
     # TODO: can we define this as an involution, even with a 2pi factor?
-    invlatt(M::AbstractMatrix{Real}) = collect(transpose(inv(M)/(2*pi)))
+    invlatt(M::AbstractMatrix{<:Real}) = collect(transpose(inv(M)/(2*pi)))
     return RealLattice{D}(invlatt(latt.prim), invlatt(latt.conv))
 end
+
+# TODO: check for type stability
+RealLattice(latt::AbstractLattice{D}) where D = RealLattice{D}(latt)
+ReciprocalLattice(latt::AbstractLattice{D}) where D = ReciprocalLattice{D}(latt)
 
 """
     lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
@@ -161,17 +167,151 @@ function RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
     return RealLattice{3}(lattice_pair_generator_3D(M, prim=prim, ctr=ctr)...)
 end
 
-#=
 """
-    RealLattice{3}(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real; ctr=:P)
+    cell_lengths(M::AbstractMatrix)
 
-Construct a real-space crystal lattice using the lengths of the lattice basis vectors and the 
-angles between them (given in degrees).
-
-By default, the c-axis of the conventional cell will be oriented along the z-axis of Cartesian 
-space, unless the cell is judged to be monoclinic.
+Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
-function RealLattice{3}(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real; ctr=:P)
-    # TODO: make this work at some point, probably...
+cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
+
+"""
+    cell_volume(M::AbstractMatrix)
+
+Returns the volume of a unit cell defined by a matrix.
+"""
+cell_volume(M::AbstractMatrix) = abs(det(M))
+
+"""
+    generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
+
+Generate pairs of integers up to `D` in ascending order.
+"""
+function generate_pairs(D::Integer)
+    out = Vector{NTuple{2,Int}}(undef, Int(D*(D-1)/2))
+    c = 0
+    for a = 1:D
+        for b = (a+1):D
+            c += 1 
+            out[c] = (a,b)
+        end
+    end
+    return out
 end
-=#
+
+"""
+    generate_pairs(::Type{Val{D}}) -> SVector{D*(D-1)/2, NTuple{2,Int}}
+
+Generate pairs of integers up to `D` in ascending order in an `SVector`.
+"""
+function generate_pairs(::Type{Val{D}}) where D
+    N = Int(D*(D-1)/2)
+    return SVector{N,NTuple{2,Int}}(generate_pairs(D))
+end
+
+"""
+    cell_angle_cos(M::AbstractMatrix)
+
+Generates the cosines of the unit cell angles.
+
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
+by reversing the output of `generate_pairs()`. For crystals with more spatial dimensions, this
+may lead to unexpected results.
+"""
+function cell_angle_cos(M::AbstractMatrix)
+    dimpairs = reverse(generate_pairs(size(M,1)))
+    return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
+end
+
+"""
+    cell_angle_rad(M::AbstractMatrix)
+
+Returns the angles (in radians) between each pair of basis vectors.
+"""
+cell_angle_rad(M::AbstractMatrix) = acos.(cell_angle_cos(M))
+cell_angle_deg(M::AbstractMatrix) = acosd.(cell_angle_cos(M))
+
+"""
+    lengths(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
+
+Returns the cell vector lengths.
+"""
+function lengths(L::AbstractLattice{D}; prim=false) where D
+    prim ? M = prim(L) : M = conv(L)
+    return SVector{D,Float64}(cell_lengths(M))
+end
+
+"""
+    angles_deg(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
+
+Returns the cell vector angles in degrees.
+"""
+function angles_deg(L::AbstractLattice{D}; prim=false) where D
+    prim ? M = prim(L) : M = conv(L)
+    return SVector{D,Float64}(cell_angles_deg(M))
+end
+
+"""
+   angles_deg(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
+
+Returns the cell vector angles in radians.
+"""
+function angles_rad(L::AbstractLattice{D}; prim=false) where D
+    prim ? M = prim(L) : M = conv(L)
+    return SVector{D,Float64}(cell_angles_rad(M))
+end
+
+"""
+    lattice2D(a::Real, b::Real, γ::Real) -> SMatrix{2,2,Float64}
+
+Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 2D with the
+same length and angle parameters (in degrees).
+
+By default, the b-vector is oriented along y. This selection corresponds to the default orientation
+chosen by `lattice3D()`.
+"""
+function lattice2D(a::Real, b::Real, γ::Real)
+    return SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b)
+end
+
+"""
+    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> SMatrix{3,3,Float64}
+
+Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the
+same length and angle parameters (in degrees).
+
+By default, the b-vector is oriented along y, and the a-vector is chosen to be perpendicular to
+z, leaving the c-vector to freely vary. This selection allows for the most convenient orientation
+of symmetry operations.
+"""
+function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
+    return SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
+                                        0,        b,  0,
+    c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ), c*cosd(α), sqrt(c^2 - (M[3,1]^2 + M[3,2]^2)))
+end
+
+function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
+    cosines = cell_angle_cos(M)
+    crosses = [cross(M[:,a], M[:,b]) for (a,b) in zip([2,3,1], [3,1,2])]
+    triples = [dot(M[:,n], crosses[n])/(norm(crosses[n])*norm(M[:,n])) for n in 1:3]
+    sines = hcat([[sqrt(1-c^2), sqrt(1-c^2) ,t] for (c,t) in zip(cosines, triples)]...)
+    nbmax = sqrt(c*ecut) ./ [norm(M[:,a])*sines[a,b] for a in 1:3, b in 1:3] .+ 1
+    return floor.(Int, vec(maximum(nbmax, dims=1)))
+end
+
+"""
+    maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)
+
+Determines the maximum integer values of the reciprocal lattice vectors needed to store data out
+to a specific energy cutoff for a 3D lattice.
+
+By default, the energy cutoff is assumed to be in units of eV, and the value of c (2m/ħ^2) is
+taken from VASP's default value. This value is off by a small amount. If different units are 
+needed, the value of c should be adjusted.
+
+The functionality implemented here would not have been possible without the work of the authors
+of WaveTrans, R. M. Feenstra and M. Widom.
+"""
+function maxHKLindex(L::AbstractLattice{3}, ecut::Real, prim=true, c = CVASP)
+    M = ReciprocalLattice{3}(prim ? prim(L) : conv(L))
+    return maxHKLindex(M, ecut, c=c)
+end

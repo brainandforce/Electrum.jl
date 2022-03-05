@@ -1,3 +1,8 @@
+"""
+    Xtal
+
+A module to assist with performing calculations on crystal structures.
+"""
 module Xtal
 
 using   StaticArrays
@@ -46,12 +51,38 @@ const REDUCTION_MATRIX_3D =
                               1/2,  1/2, -1/2),
 )
 
+"""
+    TOL_DEF
+
+Default tolerance for discrepancies in floating point values.
+"""
+const TOL_DEF = 1e-8
+
+# the value of 2m/ħ^2 as used in VASP
+const CVASP = 0.262465831
+
+
+"""
+    _allsame(itr)
+
+Returns `true` if all the elements of an iterator are identical.
+"""
+_allsame(itr) = all(x -> x == first(itr), itr)
+
+"""
+    _selfdot(v)
+
+Computes the dot product of a vector with itself.
+"""
+_selfdot(v) = dot(v,v)
+
 include("vectors.jl")
 include("types.jl")
 include("lattices.jl")
 include("atoms.jl")
 include("data.jl")
 include("crystals.jl")
+include("filetypes.jl")
 include("show.jl")
 
 # Abstract types to export
@@ -59,8 +90,8 @@ export  AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpace
         AbstractReciprocalSpaceData, AbstractKPoints
 # Concrete types to export
 export  RealLattice, ReciprocalLattice, Crystal, CrystalWithDatasets, RealSpaceDataGrid, 
-        KPointGrid, KPointList, ReciprocalWavefunction
+        KPointGrid, KPointList, HKLData, ReciprocalWavefunction
 # Functions to export
-export readWAVECAR
+export readWAVECAR, nkpt, nband, lattice2D, lattice3D
 
 end # end of module
