@@ -20,9 +20,10 @@ function readXSF3D(
     ctr::Symbol = :P
 )
     # Manually iterate through the file
+    # This allows lines to be skipped
     iter = eachline(io)
     # Counter for debugging
-    ctr = 0
+    count = 0
     # Preallocated variables
     prim = zeros(MMatrix{3,3,Float64})
     conv = zeros(MMatrix{3,3,Float64})
@@ -36,7 +37,7 @@ function readXSF3D(
             # Iteration returns nothing once it's out of lines, so break from loop
             isnothing(i) ? break : i[1]
         end
-        ctr += 1
+        count += 1
         # Check for empty lines or comment lines; advance if present
         # Comments are only allowed between blocks in a valid XSF file
         # No need to check within the loops below
@@ -44,12 +45,27 @@ function readXSF3D(
         # The block is supposed to be given as "BEGIN_BLOCK_DATAGRID_3D"
         # But bin2xsf seems to write "BEGIN_BLOCK_DATAGRID3D" (missing underscore)
         if contains(ln, "BEGIN_BLOCK_DATAGRID") && contains(ln, "3D")
-            
+            # Skip this line
+            ln = iterate(iter)[1]
+            # Loop until the end of the block
+            while !contanis(ln, "END_BLOCK")
+                ln = iterate(iter)[1]
+                if contains(ln, "DATAGRID_3D")
+                    ln = iterate(iter)[1]
+                end
+            end
+        # Get the primitive cell vectors
         elseif contains(ln, "PRIMVEC")
             
+        # Get the conventional cell vectors (if present)
         elseif contains(ln, "CONVVEC")
-
+            
+        # Get primitive cell atomic coordinates
         elseif contains(ln, "PRIMCOORD")
+
+        # Get conventional cell atomic coordinates
+        # But do we need them?
+        elseif contains(ln, "CONVCOORD")
 
         end
     end
@@ -72,9 +88,10 @@ end
 """
     readWAVECAR(io::IO; ctr=:P) -> ReciprocalWavefunction{3,Float64,Float32}
 
-Reads a WAVECAR file output from a VASP calcuation. Information about VASP WAVECAR files and much
-of the code was pulled from the WaveTrans website (originally written in FORTRAN):
-https://www.andrew.cmu.edu/user/feenstra/wavetrans/
+Reads a WAVECAR file output from a VASP 4.6 calcuation.
+
+Information about VASP WAVECAR files and much of the code was pulled from the WaveTrans website 
+(originally written in FORTRAN): https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 
 This function is limited to WAVECAR files which have an RTAG value of 45200 (meaning the data is
 given as a `Complex{Float64}`) and have only a collinear magnetic field applied, like WaveTrans.
@@ -94,6 +111,7 @@ function readWAVECAR(io::IO; ctr=:P)
     count = 0
     # Number of bytes per record
     nrecl = Int(read(io, Float64))
+    @info "Record length: " * string(nrecl)
     # Number of spin components
     nspin = Int(read(io, Float64))
     # Check for the proper format
@@ -123,16 +141,21 @@ function readWAVECAR(io::IO; ctr=:P)
     waves = [[zeros(HKLData{3,Complex{Float32}}, hklbounds...) for b in 1:nband] for kp in 1:nkpt]
     # Loop through the spins
     for s in 1:nspin
-        # Seek to the next data
-        count += 1; seek(io, count*nrecl)
         # Loop through the k-points
         for kp in 1:nkpt
+            # Seek to the next data
+            count += 1; seek(io, count*nrecl)
             # Number of plane waves for this k-point
-            npw = read(io, Float64)
+            pos = position(io)
+            @info string("File pointer at ", pos, " (", count, " * ", nrecl, ")")
+            npw = Int(read(io, Float64))
             # Add the position of the k-point to the list
             klist[kp] = [read(io, Float64) for n = 1:3]
             # Get the bands associated with the k-point
             bands[kp] = [(read(io, Float64), (skip(io, 8); read(io, Float64))) for b in 1:nband]
+            str = @sprintf("[%f %f %f]", klist[kp]...)
+            @info "Read in data for k-point " * string(kp) * 
+                  " with " * string(npw) * " planewaves:\n" * str
             for b in 1:nband
                 # Seek to the next entry
                 count +=1; seek(io, count*nrecl)

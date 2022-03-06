@@ -285,7 +285,9 @@ function ReciprocalWavefunction{D,T}(
     return ReciprocalWavefunction{D,T}(M, bands, waves)
 end
 
-# function getindex()
+# Getting indices should pull from the waves struct
+# This pulls first from k-points, then from bands, then from HKL data
+getindex(wf::ReciprocalWavefunction{D,T}, inds...) where {D,T} = wf.waves[inds...]
 
 nkpt(wf::ReciprocalWavefunction{D,T}) where {D,T} = nkpt(wf.bands)
 nband(wf::ReciprocalWavefunction{D,T}) where {D,T} = nband(wf.bands)
