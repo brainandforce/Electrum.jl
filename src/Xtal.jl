@@ -49,6 +49,7 @@ const REDUCTION_MATRIX_3D =
     I = SMatrix{3,3,Float64}(-1/2,  1/2,  1/2,
                               1/2, -1/2,  1/2, 
                               1/2,  1/2, -1/2),
+    P = SMatrix{3,3,Float64}(LinearAlgebra.I)
 )
 
 """
@@ -92,6 +93,6 @@ export  AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpace
 export  RealLattice, ReciprocalLattice, Crystal, CrystalWithDatasets, RealSpaceDataGrid, 
         KPointGrid, KPointList, HKLData, ReciprocalWavefunction
 # Functions to export
-export readWAVECAR, nkpt, nband, lattice2D, lattice3D
+export  readWAVECAR, nkpt, nband, lattice2D, lattice3D, readXSF3D
 
 end # end of module

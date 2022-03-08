@@ -47,7 +47,7 @@ end
 # Data in RealSpaceDataGrids can now be indexed
 Base.getindex(g::RealSpaceDataGrid{D,T} where {D,T}, inds...) = getindex(g.grid, inds...)
 
-# Size of the data grid
+# Size of the data grid in entries per dimension
 # TODO: should we overload Base.size() as well?
 gridsize(g::RealSpaceDataGrid{D,T} where {D,T}) = size(g.grid)
 Base.size(g::RealSpaceDataGrid{D,T} where {D,T}) = gridsize(g)

@@ -14,7 +14,7 @@ cell basis.
 struct Crystal{D} <: AbstractCrystal{D}
     # Lattice information (real space)
     latt::RealLattice{D}
-    # Space group number
+    # Space group number - set to 0 if non-periodic/unknown
     sgno::Int
     # Space group origin (location of inversion center, if present - defaults to zeros)
     orig::SVector{D,Float64}
@@ -27,8 +27,8 @@ struct Crystal{D} <: AbstractCrystal{D}
         latt::AbstractLattice{D},
         sgno::Integer,
         orig::AbstractVector{<:Real},
-        gen::AbstractVector{AtomList{D}},
-        pos::AbstractVector{AtomList{D}}
+        gen::AtomList{D},
+        pos::AtomList{D}
     ) where D
         return new(RealLattice{D}(latt), sgno, orig, gen, pos)
     end

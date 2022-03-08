@@ -6,11 +6,9 @@ coordinate system. Returns nothing, but throws an `AssertionError` if the basis 
 linearly independent.
 """
 function lattice_sanity_check(vecs::AbstractMatrix; name::AbstractString="")
-    # TODO: am I ever going to use `name`?
-    isempty(name) || (name = name * " ")
     d = det(vecs)
-    @assert (d != 0) name * "cell vectors are not linearly independent"
-    # Warn 
+    @assert (d != 0) name * " "^isempty(name) * "cell vectors are not linearly independent"
+    # Warn for left-handed coordinate system
     (d < 0) && @warn "cell vectors form a left-handed coordinate system."
     return nothing
 end
@@ -284,9 +282,11 @@ z, leaving the c-vector to freely vary. This selection allows for the most conve
 of symmetry operations.
 """
 function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
+    c1 = c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ)
+    c2 = c*cosd(α)
     return SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
                                         0,        b,  0,
-    c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ), c*cosd(α), sqrt(c^2 - (M[3,1]^2 + M[3,2]^2)))
+                                c1, c2, sqrt(c^2 - (c1^2 + c2^2)))
 end
 
 function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)

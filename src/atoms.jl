@@ -40,16 +40,15 @@ angstroms.
 struct AtomList{D} <: AbstractRealSpaceData{D}
     basis::SMatrix{D,D,Float64}
     coord::Vector{AtomPosition{D}}
-end
-
-function AtomList{D}(
-    basis::AbstractMatrix{<:Number},
-    coord::AbstractVector{AtomPosition{D}}
-) where D
-    # Need to check if the basis is valid (only if it's nonzero, skip otherwise)
-    iszero(basis) || lattice_sanity_check(basis)
-    # Remove any duplicate atoms if they come up
-    return AtomList{D}(basis, unique(coord))
+    function AtomList{D}(
+        basis::AbstractMatrix{<:Number},
+        coord::AbstractVector{AtomPosition{D}}
+    ) where D
+        # Need to check if the basis is valid (only if it's nonzero, skip otherwise)
+        iszero(basis) || lattice_sanity_check(basis)
+        # Remove any duplicate atoms if they come up
+        return new{D}(basis, unique(coord))
+    end
 end
 
 function AtomList{D}(
