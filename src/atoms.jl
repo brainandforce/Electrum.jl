@@ -69,3 +69,6 @@ end
 function AtomList{D}(coord::AbstractVector{AtomPosition{D}}) where D
     return AtomList{D}(zeros(SMatrix{D,D,Float64}), coord)
 end
+
+# Check if an AtomList{D} is empty
+Base.isempty(l::AtomList{D}) where D = isempty(l.coord)
