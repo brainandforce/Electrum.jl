@@ -6,16 +6,19 @@ A data grid defined in real space, containing data of type T.
 struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     # Basis vectors defining the lattice
     latt::SMatrix{D,D,Float64}
+    # Shift of the origin from the lattice
+    orig::SVector{D,Float64}
     # The actual data grid
     grid::Array{T,D}
     # Inner constructor
     function RealSpaceDataGrid{D,T}(
         latt::AbstractMatrix{<:Real},
+        orig::AbstractVector{<:Real},
         grid::AbstractArray{T,D}
     ) where {D,T}
         # Still gotta pass the lattice sanity checks
         lattice_sanity_check(latt)
-        return new(latt, grid)
+        return new(latt, orig, grid)
     end
 end
 
@@ -28,15 +31,16 @@ computational data).
 """
 function RealSpaceDataGrid{D,T}(
     latt::AbstractLattice{D},
+    orig::AbstractVector{<:Real},
     grid::AbstractArray{T,D};
     prim=true
 ) where {D,T}
     # Conversion for safety
     l = RealLattice{D}(latt)
     if prim
-        return RealSpaceDataGrid{D,T}(l.prim, grid)
+        return RealSpaceDataGrid{D,T}(prim(l), orig, grid)
     else
-        return RealSpaceDataGrid{D,T}(l.conv, grid)
+        return RealSpaceDataGrid{D,T}(conv(l), orig, grid)
     end
 end
 
