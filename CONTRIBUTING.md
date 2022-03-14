@@ -47,3 +47,18 @@ since atomic positions are not expected to vary in dimensionality.
 The `StaticArrays` package provides the `SArray` type, which is immutable (cannot be altered after
 creation), as well as the mutable `MArray` type. In general, it's better to stick to immutable 
 types (though dynamic vectors are always mutable).
+
+### Logging and printing
+
+Feel free to leave `@debug` statements in any code you include. Unless the logging level is set to 
+show them, they will not be seen by users. You can enable debug messages in the REPL for this
+package by entering the following:
+
+```julia-repl
+julia> ENV["JULIA_DEBUG"] = Xtal
+```
+
+Try to minimize the use of repeated `@info`, `@warn`, or `@error` statements in loops. Printing to
+the terminal can bottleneck functions.
+
+Avoid using `println()` if one of the logging macros better suits the purpose.
