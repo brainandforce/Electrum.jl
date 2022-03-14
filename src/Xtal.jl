@@ -85,7 +85,6 @@ include("atoms.jl")
 include("crystals.jl")
 include("data.jl")
 include("filetypes.jl")
-include("abinit.jl")
 include("show.jl")
 
 # Abstract types to export
