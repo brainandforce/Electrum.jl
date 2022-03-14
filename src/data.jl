@@ -295,3 +295,48 @@ getindex(wf::ReciprocalWavefunction{D,T}, inds...) where {D,T} = wf.waves[inds..
 
 nkpt(wf::ReciprocalWavefunction{D,T}) where {D,T} = nkpt(wf.bands)
 nband(wf::ReciprocalWavefunction{D,T}) where {D,T} = nband(wf.bands)
+
+"""
+    DensityOfStates
+
+Contains the total density of states information.
+"""
+struct DensityOfStates <: AbstractDensityOfStates
+    # Fermi energy
+    fermi::Float64
+    # Energy at each point
+    energy::Vector{Float64}
+    # Density of states
+    dos::Vector{Float64}
+    # Integrated density of states
+    int::Vector{Float64}
+    function DensityOfStates(
+        fermi::Real,
+        energy::AbstractVector{<:Real},
+        dos::AbstractVector{<:Real},
+        int::AbstractVector{<:Real}
+    )
+        @assert size(energy) == size(dos) == size(int) string(
+            "Sizes of input vectors do not match!"
+        )
+        return new(fermi, energy, dos, int)
+    end
+end
+
+"""
+    fermi(d::AbstractDensityOfStates) -> Float64
+
+Gets the Fermi energy from DOS data. There are no guarantees on the unit of energy used!
+"""
+fermi(d::AbstractDensityOfStates) = d.fermi
+
+"""
+    ProjectedDensityOfStates
+
+Contains projected density of states information.
+"""
+struct ProjectedDensityOfStates
+    fermi::Float64
+    energy::Vector{Float64}
+    dos::Matrix{Float64}
+end

@@ -59,9 +59,10 @@ Default tolerance for discrepancies in floating point values.
 """
 const TOL_DEF = 1e-8
 
+const BOHR2ANG = 0.529177
+
 # the value of 2m/ħ^2 as used in VASP
 const CVASP = 0.262465831
-
 
 """
     _allsame(itr)
@@ -81,18 +82,24 @@ include("vectors.jl")
 include("types.jl")
 include("lattices.jl")
 include("atoms.jl")
-include("data.jl")
 include("crystals.jl")
+include("data.jl")
 include("filetypes.jl")
+include("abinit.jl")
 include("show.jl")
 
 # Abstract types to export
 export  AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData, 
-        AbstractReciprocalSpaceData, AbstractKPoints
+        AbstractReciprocalSpaceData, AbstractKPoints, AbstractDensityOfStates
 # Concrete types to export
 export  RealLattice, ReciprocalLattice, Crystal, CrystalWithDatasets, RealSpaceDataGrid, 
-        KPointGrid, KPointList, HKLData, ReciprocalWavefunction
+        KPointGrid, KPointList, HKLData, ReciprocalWavefunction, DensityOfStates,
+        ProjectedDensityOfStates
 # Functions to export
-export  readWAVECAR, nkpt, nband, lattice2D, lattice3D, readXSF3D
+export  nkpt, nband, lattice2D, lattice3D, readXSF3D, readWAVECAR, read_abinit_density,
+        readDOSCAR
+
+# For debugging purposes only
+export  read_abinit_header, read_abinit_header_57, read_abinit_header_80, get_abinit_version
 
 end # end of module

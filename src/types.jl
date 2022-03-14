@@ -61,6 +61,14 @@ abstract type AbstractReciprocalSpaceData{D} <: AbstractCrystalData{D}
 end
 
 """
+    AbstractDensityOfStates
+
+Supertype for all density of states data.
+"""
+abstract type AbstractDensityOfStates
+end
+
+"""
     AbstractKPoints{D}
 
 Supertype for sets of k-points.

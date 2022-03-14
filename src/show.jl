@@ -1,4 +1,15 @@
 """
+    vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
+
+Prints a representation of a vector as a string.
+"""
+function vector_string(v::AbstractVector{<:Real}; brackets=true)
+    # Format the numbers within a vector
+    tostr(x, n) = lpad(@sprintf("%f", x), n)
+    return "["^brackets * join(tostr.(v, 10)) *" ]"^brackets
+end
+
+"""
     basis_string(M::AbstractMatrix{<:Real}; letters=true) -> Vector{String}
 
 Prints each basis vector with an associated letter.
@@ -18,57 +29,82 @@ function basis_string(
     # Bosonic string theorists, maybe?
     return [
                 pad * string(Char(0x60 + n), ':', ' ')^letters *
-                "["^brackets *
-                join(tostr.(M[:,n], 11)) *
-                "  ]"^brackets * 
+                vector_string(M[:,n], brackets=brackets) *
                 ("   (" * tostr(norm(M[:,n]), 0))^length * ")"
                 for n in 1:size(M)[2]
             ]
 end
 
-function printbasis(io::IO, M::AbstractMatrix{<:Real}, letters=true)
-    println(io, "Basis vectors:")
-    println.(io, basis_string(M), letters=letters)
-    return nothing
+
+function printbasis(io::IO, M::AbstractMatrix{<:Real}, letters=true; pad=0)
+    s = basis_string(M, letters=letters)
+    print(io, join(" "^pad .* s, "\n"))
 end
 
-printbasis(io::IO, a::AtomList; letters=true) = printbasis(io, a.basis, letters=letters)
+printbasis(io::IO, a::AtomList; letters=true, pad=0) = 
+    printbasis(io, a.basis, letters=letters, pad=pad)
 printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; letters=true) =
     printbasis(io, g.basis, letters=letters)
 
-function atom_string(a::AtomPosition; name=true, num=true)
+"""
+    atom_string(a::AtomPosition; name=true, num=true)
+
+Generates a string describing an atom position.
+"""
+function atom_string(a::AtomPosition; name=true, num=true, entrysz=4)
     # Format the numbers within a vector
-    tostr(x) = lpad(@sprintf("%f", x), 12)
-    return rpad(string(a.num), 4)^num * rpad(a.name, 4)^name * join(tostr.(a.pos))
+    tostr(x) = lpad(@sprintf("%f", x), 10)
+    return rpad(string(a.num), entrysz)^num * rpad(a.name, entrysz)^name * vector_string(a.pos)
 end
 
+# TODO: make this work with occupancy information, since we'll probably need that
+function formula_string(v::Vector{AtomPosition{D}}, reduce=true) where D
+    # Number of each type of atoms is stored in this vector
+    atomcount = zeros(Int, size(ELEMENTS)...)
+    # Get all atomic numbers in the 
+    atomnos = [a.num for a in v]
+    # Get all of the types of atoms
+    for atom in atomnos
+        # Skip dummy atoms
+        atom = 0 && continue
+        # Increment the atom counts
+        atomcount[atom] += 1
+    end
+    # Create output string
+    str = ""
+    # Loop through all the atom counts
+    for (atom, ct) in enumerate(atomcounts)
+        # Skip any zeros
+        ct = 0 && continue
+        str *= ELEMENT_LOOKUP[atom] * string(ct) * space
+    end
+    return str
+end
+
+"""
+    formula_string(a::AtomList; reduce=true) -> String
+
+Generates a string giving the atomic formula for an `AtomicPosition`. By default, common factors
+will be reduced.
+"""
+formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, reduce=reduce)
+
 function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; name=true, num=true)
-    print(typeof(a), ":")
-    print(io, atom_string(a, name=name, num=num))
+    println(typeof(a), ":")
+    println(io, "  ", atom_string(a, name=name, num=num))
 end
 
 function Base.show(io::IO, ::MIME"text/plain", a::AtomList; name=true, num=true, letters=true)
     # Print type name
     println(io, typeof(a), ":")
-    # Print basis vectors
-    printbasis(io, a.basis)
     # Print atomic positions
-    println(io, "Atomic positions:")
-    println.(io, atom_string.(a.coord, name=name, num=num))
-end
-
-#=
-function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T} where {D,T})
-    println(io, typeof(g), ':')
+    println(io, "  Atomic positions:")
+    for atom in a.coord
+        println(io, "    ", atom_string(atom, name=name, num=num))
+    end
     # Print basis vectors
-    println(io, "Basis vectors:")
-    println.(io, basis_string(g.basis))
-end
-=#
-
-function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) where {D,T}
-    println(io,
-        typeof(wf), " with ", string(nkpt(wf)), " k-points and ", string(nband(wf)), " bands")
+    println("  defined in terms of basis vectors:")
+    printbasis(io, a.basis, pad=2)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
@@ -78,4 +114,67 @@ function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where 
     vol = abs(det(g.latt))
     println("\nCell volume: ", vol)
     print("Voxel size: ", vol / prod(size(g)))
+end
+
+#= Crystal{D}
+function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D})
+    println(io, )
+end
+=#
+
+# ReciprocalWavefunction{D,T}
+function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) where {D,T}
+    println(io,
+        typeof(wf), " with ", string(nkpt(wf)), " k-points and ", string(nband(wf)), " bands")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", l::AbstractLattice{D}) where D
+    println(io, typeof(l), ":\n\n  Primitive basis vectors:")
+    printbasis(io, l.prim)
+    println(io, "\n\n  Conventional basis vectors:")
+    printbasis(io, l.conv)
+end
+
+# TODO: Get rid of direct struct access
+# Use methods to get the data instead.
+function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
+    println(io, typeof(xtal), " (space group ", xtal.sgno, "): ")
+    # Print basis vectors
+    println(io, "\n  Primitive basis vectors:")
+    printbasis(io, xtal.latt.prim, pad=2)
+    println(io, "\n\n  Conventional basis vectors:")
+    printbasis(io, xtal.latt.conv, pad=2)
+    # Add in more info about atomic positions, space group
+    println(io, "\n\n  Generating set of atomic positions:")
+    println(io, "    Num   ", "Name  ", "Position")
+    for atom in xtal.gen.coord
+        println(io, "    ", atom_string(atom, name=true, num=true, entrysz=6))
+    end
+    # Determine what basis the atomic coordinates are given in.
+    # If the basis is zero, assume Cartesian coordinates in Å
+    if xtal.gen.basis == zeros(SMatrix{3,3,Float64})
+        println("  in Cartesian coordinates (assumed to be in units of Å)")
+        return nothing
+    end
+    gen_primbasis = xtal.gen.basis == xtal.latt.prim
+    gen_convbasis = xtal.gen.basis == xtal.latt.conv 
+    # If both bases are identical, don't specify primitive or conventional
+    if gen_primbasis && gen_convbasis
+        print("  with respect to crystal basis")
+    elseif gen_primbasis
+        print(io, "  with respect to primitive basis")
+    elseif gen_convbasis
+        print(io, "  with respect to conventional basis")
+    else
+        println(io, "basis:")
+        printbasis(io, xtal.gen.basis, pad=2)
+    end
+end
+
+# CrystalWithDatasets{D,K,V}
+function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets{D,K,V}) where {D,K,V}
+    println(io, typeof(x), " containing:\n")
+    show(io, MIME("text/plain"), x.xtal)
+    print("\n\nand a ")
+    show(io, MIME("text/plain"), x.data)
 end

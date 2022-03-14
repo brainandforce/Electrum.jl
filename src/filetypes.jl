@@ -247,6 +247,7 @@ function readWAVECAR(io::IO; ctr=:P)
                         etot < ecut ? break : incrementHKL!(hkl, hklbounds)
                     end
                     # Store the data at the HKL index
+                    # Note: data is stored first by k-points, then by bands
                     waves[kp][b][hkl...] = pw
                     # Increment it for the next iteration
                     incrementHKL!(hkl, hklbounds)
@@ -268,15 +269,50 @@ function readWAVECAR(filename::AbstractString; ctr=:P)
     end
 end
 
+# Read a WAVECAR in the current directory
 readWAVECAR() = readWAVECAR("WAVECAR")
 
-#=
-"""
-    readABINITWFK(io::IO; ctr=:P) -> (type unknown!)
-
-Reads an ABINIT WFK file (containing a wavefunction stored by k-points).
-"""
-function readABINITWFK(io::IO)
-
+function readDOSCAR(io::IO)
+    ln = readline(io)
+    # Get number of ions and whether there is pdos data
+    (nion, haspdos::Bool) = parse.(Int, split(ln))[[2,3]]
+    for n in 2:6
+        ln = readline(io)
+    end
+    # line6 = parse.(Float64, split(ln))
+    # Get NEDOS and fermi energy
+    nedos = parse(Int, split(ln)[3])
+    fermi = parse(Float64, split(ln)[4])
+    # Get the number of entries in the TDOS dataset
+    ln = readline(io)
+    entries = parse.(Float64, split(ln))
+    tdos_raw = Matrix{Float64}(undef, length(entries), nedos)
+    tdos_raw[:,1] = entries
+    # Loop normally until end
+    for n in 2:nedos
+        ln = readline(io)
+        tdos_raw[:,n] = parse.(Float64, split(ln))
+    end
+    # create DensityOfStates struct
+    tdos = DensityOfStates(fermi, tdos_raw[1,:], tdos_raw[2,:], tdos_raw[3,:])
+    pdos = Vector{ProjectedDensityOfStates}(undef, nion)
+    if haspdos
+        for i in 1:nion
+            readline(io)
+            ln = readline(io)
+            entries = parse.(Float64, split(ln))
+            pdos_raw = Matrix{Float64}(undef, length(entries), nedos)
+            pdos_raw[:,1] = entries
+            for n in 2:nedos
+                ln = readline(io)
+                pdos_raw[:,n] = parse.(Float64, split(ln))
+            end
+            pdos[i] = ProjectedDensityOfStates(fermi, pdos_raw[1,:], pdos_raw[2:end,:])
+        end
+    end
+    return (tdos, pdos)
 end
-=#
+
+readDOSCAR(filename::AbstractString) = open(readDOSCAR, filename)
+
+readDOSCAR() = open(readDOSCAR, "DOSCAR")
