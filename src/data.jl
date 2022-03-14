@@ -145,7 +145,9 @@ nband(b::BandAtKPoint) = length(b.e)
 """
     BandStructure{D}
 
-Stores information about an electronic band structure.
+Stores information about an electronic band structure, including the list of k-points used to
+generate the data (as a `KPointList{D}`)and the band information at every k-point (as a 
+`Vector{BandAtKPoint}`).
 """
 struct BandStructure{D} <: AbstractReciprocalSpaceData{D}
     # k-points for which band data is defined
@@ -157,6 +159,16 @@ struct BandStructure{D} <: AbstractReciprocalSpaceData{D}
         @assert _allsame(length(bands)) "Number of bands is inconsistent."
         return new(kpts, bands)
     end
+end
+
+"""
+    BandStructure{D}(kpts::AbstractKPoints{D}, bands::AbstractVector{<:BandAtKPoint}) where D
+
+Generates a new band structure from k-point information and a vector containing band information
+at each k-point.
+"""
+function BandStructure{D}(kpts::AbstractKPoints{D}, bands::AbstractVector{<:BandAtKPoint}) where D
+    return BandStructure{D}(kpts, bands)
 end
 
 # Get the pair of a k-point and associated band data
