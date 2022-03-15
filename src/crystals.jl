@@ -52,4 +52,12 @@ function Base.getindex(xtaldata::CrystalWithDatasets{D,K,V}, key::K) where {D,K,
 end
 
 # Easy way of pulling just the crystal from a `CrystalWithDatasets{D}`
-Crystal{D}(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.xtal
+Crystal(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.xtal
+# and just the data
+data(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.data
+
+RealLattice(xtal::Crystal{D}) where D = xtal.latt
+RealLattice(xtal::CrystalWithDatasets{D,K,V}) where {D,K,V} = RealLattice(Crystal(xtal))
+
+prim(xtal::AbstractCrystal) = prim(RealLattice(xtal))
+conv(xtal::AbstractCrystal) = conv(RealLattice(xtal))

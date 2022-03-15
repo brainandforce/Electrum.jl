@@ -37,7 +37,7 @@ function readXSF3D(
             # Get atomic position (next 3)
             pos = SVector{3,Float64}(parse.(Float64, entries[s]) for s in 2:4)
             # assign atom position struct
-            apos[n] = AtomPosition{3}(num, pos)
+            apos[n] = AtomPosition{3}(num, inv(basis)*pos)
         end
         return AtomList{3}(basis, apos)
     end
@@ -92,12 +92,13 @@ function readXSF3D(
         if contains(ln, "BEGIN_BLOCK_DATAGRID") && contains(ln, "3D")
             # Skip this line
             ln = iterate(iter)[1]
+            @debug "Line contents: \"" * ln * "\""
             # Loop until the end of the block
             while !contains(ln, "END_BLOCK")
-                ln = iterate(iter)[1]
                 # Check for a datagrid entry
                 if contains(ln, "DATAGRID_3D")
                     # Get the name of the datagrid
+                    @debug "Line contents: \"" * ln * "\""
                     name = split(ln, "DATAGRID_3D_")[2]
                     # Get the dimensions of the datagrid
                     ln = iterate(iter)[1]
@@ -115,6 +116,7 @@ function readXSF3D(
                     # Export the data in a RealSpaceDataGrid
                     data[name] = RealSpaceDataGrid{3,Float64}(latt, orig, grid)
                 end
+                ln = iterate(iter)[1]
             end
         # Get the primitive cell vectors
         elseif contains(ln, "PRIMVEC")
@@ -127,6 +129,7 @@ function readXSF3D(
             # Get the number of atoms
             ln = iterate(iter)[1]
             natom = parse(Int, split(ln)[1])
+            @debug string("natom = ", natom)
             # The next lines have all of the atoms
             atom_list = getatoms!(iter, prim, natom)
         # Get conventional cell atomic coordinates
@@ -155,6 +158,115 @@ Reads an XSF file at path `filename`.
 function readXSF3D(filename::AbstractString)
     return open(filename) do io
         readXSF3D(io)
+    end
+end
+
+"""
+    writeXSF(io, xtal::Crystal{D})
+
+Writes the crystal component of an XCrysDen XSF file.
+"""
+function writeXSF(io::IO, xtal::Crystal{D}) where D
+    println(io, "# Written by Xtal.jl")
+    # Dimension information
+    println(io, "DIM_GROUP")
+    println(io, D, "  1")
+    # Primitive cell vectors
+    println(io, "PRIMVEC")
+    for (n, x) in enumerate(prim(xtal))
+        @printf(io, "%20.14f  ", x)
+        n % D == 0 && println(io)
+    end
+    # Coordinates of the atoms in the primitive cell
+    println(io, "PRIMCOORD")
+    # Throw warning if the space group number is greater than 1
+    # This probably means the generating set of atoms is incomplete
+    xtal.sgno > 1 && @warn "Symmetrization of the unit cell has not been implemented yet."
+    # Print the number of atoms in the structure
+    println(io, lpad(string(natom(xtal.gen)), 6), "    1")
+    # Print all of the atoms
+    for a in cartesian(xtal.gen)
+        @printf(io, "%6i", atomicno(a))
+        for x in coord(a)
+            @printf(io, "%20.14f  ", x)
+        end
+        println(io)
+    end
+end
+
+"""
+    writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true)
+
+Writes the crystal component of an XCrysDen XSF file. By default, automatic wrapping of the 
+datagrid occurs (values are repeated at the end of each dimension).
+"""
+function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) where {D,T}
+    println(io, "    DATAGRID_", D, "D_", key)
+    # Print the grid size (+1)
+    println(io, " "^8, join([rpad(string(n + 1), 8) for n in gridsize(data)]))
+    # Print the grid offset
+    print(io, " "^4)
+    for x in data.orig
+        @printf(io, "%20.14f", x)
+    end
+    print(io, "\n" * " "^4)
+    # Print the basis vectors for the grid
+    for (n, x) in enumerate(basis(data))
+        @printf(io, "%20.14f", x)
+        n % D == 0 && print(io, "\n" * " "^4)
+    end
+    # This should generate a view that wraps around for a "general grid"
+    if periodic
+        g = view(grid(data), (1 .+ (0:n) .% n for n in gridsize(data))...)
+    else
+        g = view(M, (1:n for n in size(M))...)
+    end
+    # Print the actual data in the grid
+    for (n,x) in enumerate(g)
+        @printf(io, "%20.14f", x)
+        n % 4 == 0 && print(io, "\n" *  " "^4)
+    end
+    # End the datagrid
+    length(g) % 4 == 0 || println(io)
+    println(io, "    END_DATAGRID_", D, "D")
+end
+
+function writeXSF(
+    io::IO,
+    data::Dict{K, RealSpaceDataGrid{D,T}};
+    periodic=true
+) where {K,D,T}
+    println(io, "BEGIN_BLOCK_DATAGRID_", D, "D")
+    println(io, "Written by Xtal.jl")
+    for (k,d) in data
+        writeXSF(io::IO, k, d, periodic=periodic)
+    end
+    println(io, "END_BLOCK_DATAGRID_", D, "D")
+end
+
+"""
+    writeXSF(io::IO, xtaldata::CrystalWithDatasets{D,K,V})
+
+Writes a `CrystalWithDatasets` to an XCrysDen XSF file.
+"""
+function writeXSF(
+    io::IO,
+    xtaldata::CrystalWithDatasets;
+    periodic=true
+)
+    writeXSF(io, Crystal(xtaldata))
+    writeXSF(io, data(xtaldata), periodic=periodic)
+end
+
+function writeXSF(filename::AbstractString, xtal::Crystal)
+    open(filename, write=true) do io
+        writeXSF(io, xtal)
+    end
+end
+
+function writeXSF(filename::AbstractString, xtaldata::CrystalWithDatasets; periodic=true)
+    open(filename, write=true) do io
+        writeXSF(io, xtaldata, periodic=periodic)
     end
 end
 

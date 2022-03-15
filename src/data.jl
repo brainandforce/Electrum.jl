@@ -47,10 +47,17 @@ end
 # Data in RealSpaceDataGrids can now be indexed
 Base.getindex(g::RealSpaceDataGrid{D,T} where {D,T}, inds...) = getindex(g.grid, inds...)
 
+"""
+    basis(g::RealSpaceDataGrid{D,T}) -> SMatrix{D,D,Float64}
+
+Gets the basis vectors of a `RealSpaceDataGrid`.
+"""
+basis(g::RealSpaceDataGrid) = g.latt
+grid(g::RealSpaceDataGrid) = g.grid
 # Size of the data grid in entries per dimension
 # TODO: should we overload Base.size() as well?
 gridsize(g::RealSpaceDataGrid{D,T} where {D,T}) = size(g.grid)
-Base.size(g::RealSpaceDataGrid{D,T} where {D,T}) = gridsize(g)
+#Base.size(g::RealSpaceDataGrid{D,T} where {D,T}) = gridsize(g)
 
 # TODO: Make mathematical operations on RealSpaceDataGrids easy
 

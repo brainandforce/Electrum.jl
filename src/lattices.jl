@@ -86,6 +86,11 @@ Returns the conventional lattice in a `RealLattice` or a `ReciprocalLattice`.
 """
 conv(l::AbstractLattice{D}) where D = l.conv
 
+"""
+    pick(l::AbstractLattice{D}, primitive::Bool) -> SMatrix{D,D,Float64}
+
+Returns the primitive lattice if `primitive` is true, otherwise returns the conventional lattice.
+"""
 pick(l::AbstractLattice{D}, primitive::Bool) where D = primitive ? prim(l) : conv(l)
 
 function RealLattice{D}(

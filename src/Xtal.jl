@@ -93,10 +93,10 @@ export  AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpace
 # Concrete types to export
 export  RealLattice, ReciprocalLattice, Crystal, CrystalWithDatasets, RealSpaceDataGrid, 
         KPointGrid, KPointList, HKLData, ReciprocalWavefunction, DensityOfStates,
-        ProjectedDensityOfStates, BandAtKPoint, BandStructure
+        ProjectedDensityOfStates, BandAtKPoint, BandStructure, AtomList, AtomPosition
 # Functions to export
 export  nkpt, nband, lattice2D, lattice3D, readXSF3D, readWAVECAR, read_abinit_density,
-        readDOSCAR
+        readDOSCAR, data, basis, gridsize, writeXSF
 
 #= For debugging purposes only
 export  read_abinit_header, read_abinit_header_57, read_abinit_header_80, get_abinit_version

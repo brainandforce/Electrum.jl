@@ -31,6 +31,19 @@ function AtomPosition{D}(name::AbstractString, pos::AbstractVector{<:Real}) wher
 end
 
 """
+    atomicno(a::AtomPosition) -> Int
+
+Gets the atomic number of an atom in an atomic position.
+"""
+atomicno(a::AtomPosition) = a.num
+
+"""
+    coord(a::AtomPosition{D}) -> SVector{D,Float64}
+"""
+coord(a::AtomPosition) = a.pos
+
+
+"""
     AtomList{D} <: AbstractRealSpaceData{D}
 
 A list of atomic positions with an associated basis. Atomic coordinates are given in terms of the 
@@ -71,3 +84,34 @@ end
 
 # Check if an AtomList{D} is empty
 Base.isempty(l::AtomList{D}) where D = isempty(l.coord)
+
+# Iterate through an AtomList
+Base.iterate(l::AtomList{D}) where D = iterate(l.coord)
+Base.iterate(l::AtomList{D}, n) where D = iterate(l.coord, n)
+
+natom(l::AtomList{D}) where D = length(l.coord)
+
+"""
+    cartesian(l::AtomList{D}) -> AtomList{D}
+
+Converts an `AtomList` from reduced coordinates (relative to some crystal basis) to Cartesian
+coordinates in space.
+"""
+function cartesian(l::AtomList{D}) where D
+    # If there are no basis vectors specified, just return the original list
+    # If the basis vectors are zero we're assuming Cartesian coordinates
+    l.basis == zeros(SMatrix{D,D,Float64}) && return l
+    newlist = map(a -> cartesian(l.basis, a), l.coord)
+    return AtomList{D}(zeros(SMatrix{D,D,Float64}), newlist)
+end
+
+"""
+    cartesian(b::AbstractMatrix{<:Real}, a::AtomPosition{D}) -> AtomPosition{D}
+
+Converts an `AtomPosition` defined in terms of basis `b` to a new `AtomPosition` defined in 
+Cartesian coordinates.
+"""
+function cartesian(b::AbstractMatrix{<:Real}, a::AtomPosition{D}) where D
+    newpos = b * a.pos
+    return AtomPosition{D}(a.name, a.num, newpos)
+end

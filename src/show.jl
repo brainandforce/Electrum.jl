@@ -108,12 +108,12 @@ function Base.show(io::IO, ::MIME"text/plain", a::AtomList; name=true, num=true,
 end
 
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
-    dimstring = join(string.(size(g)), "×") * " "
+    dimstring = join(string.(gridsize(g)), "×") * " "
     println(io, dimstring, typeof(g), " with basis vectors:")
     print(join(basis_string(g.latt), "\n"))
     vol = abs(det(g.latt))
     println("\nCell volume: ", vol)
-    print("Voxel size: ", vol / prod(size(g)))
+    print("Voxel size: ", vol / prod(gridsize(g)))
 end
 
 #= Crystal{D}

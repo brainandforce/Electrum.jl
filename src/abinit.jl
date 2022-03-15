@@ -659,13 +659,16 @@ function read_abinit_density(io::IO)
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft, conversion=BOHR2ANG^3)
     # Add each dataset to the dictionary
     data = Dict{String, RealSpaceDataGrid{3,T}}()
-    data["density_total"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+    # Convert the basis
+    basis = BOHR2ANG * header.rprimd
+    # Fill the dictionary
+    data["density_total"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
     if header.nspden == 2
-        data["density_spinup"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["density_spinup"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
     elseif header.nspden == 4
-        data["density_spinup_x"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
-        data["density_spinup_y"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
-        data["density_spinup_z"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["density_spinup_x"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
+        data["density_spinup_y"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
+        data["density_spinup_z"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
         Crystal{3}(header),
