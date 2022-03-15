@@ -584,9 +584,6 @@ function read_abinit_header_80(io::IO)
     return h
 end
 
-read_abinit_header_57(filename::AbstractString) = open(read_abinit_header_57, filename)
-read_abinit_header_80(filename::AbstractString) = open(read_abinit_header_80, filename)
-
 """
     read_abinit_header(io::IO)
 
@@ -633,6 +630,7 @@ function read_abinit_datagrids(
     rho = [Array{T,3}(undef, ngfft[1], ngfft[2], ngfft[3]) for s in 1:nspden]
     # Assuming that every grid is stored in its own 
     for s in 1:nspden
+        @debug "Before assertion: file pointer is at " * string(position(io))
         sz1 = sizeof(T) * prod(ngfft)
         sz2 = read(io, Int32)
         @assert sz1 == sz2 string(
@@ -642,10 +640,12 @@ function read_abinit_datagrids(
             " ( total size ", sz1 ,")\n", 
             "Reported size from file: ", sz2
         )
+        @debug "After assertion: file pointer is at " * string(position(io))
         for a in 1:ngfft[1], b in 1:ngfft[2], c in 1:ngfft[3]
         # Convert to electrons/Ang^3
             rho[s][a,b,c] = read(io, T) * conversion
         end
+        @debug "Read a datagrid: file pointer is at " * string(position(io))
         skip(io, 4)
     end
     return rho
@@ -653,19 +653,19 @@ end
 
 function read_abinit_density(io::IO)
     # Get the header from the file
-    header = read_abinit_header_57(io)
+    header = read_abinit_header(io)
     # Get the type of the datagrid (set by cplex in the header)
     T = (Float64, Complex{Float64})[header.cplex]
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft, conversion=BOHR2ANG^3)
     # Add each dataset to the dictionary
     data = Dict{String, RealSpaceDataGrid{3,T}}()
-    data["density_total"] = rho[1]
+    data["density_total"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
     if header.nspden == 2
-        data["density_spinup"] = rho[2]
+        data["density_spinup"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
     elseif header.nspden == 4
-        data["density_spinup_x"] = rho[2]
-        data["density_spinup_y"] = rho[3]
-        data["density_spinup_z"] = rho[4]
+        data["density_spinup_x"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["density_spinup_y"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["density_spinup_z"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
         Crystal{3}(header),
@@ -673,32 +673,26 @@ function read_abinit_density(io::IO)
     )
 end
 
-"""
-    read_abinit_density(filename::AbstractString) ->
-        CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}
-
-Reads in a density file from an ABINIT calculation.
-"""
 read_abinit_density(filename::AbstractString) = open(read_abinit_density, filename)
 
 function read_abinit_potential(io::IO)
     # Get the header from the file
-    header = read_abinit_header_57(io)
+    header = read_abinit_header(io)
     # Get the type of the datagrid (set by cplex in the header)
     T = (Float64, Complex{Float64})[header.cplex]
     # No conversion will occur here: assume units of Hartree
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
     data = Dict{String, RealSpaceDataGrid{3,T}}()
     if header.nspden == 1
-        data["potential_total"] = rho[1]
+        data["potential_total"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
     elseif header.nspden == 2
-        data["potential_spinup"] = rho[1]
-        data["potential_spindown"] = rho[2]
+        data["potential_spinup"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["potential_spindown"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
     elseif header.nspden == 4
-        data["potential_up_up"] = rho[1]
-        data["potential_down_down"] = rho[2]
-        data["potential_up_down_real"] = rho[3]
-        data["potential_up_down_imag"] = rho[4]
+        data["potential_up_up"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["potential_down_down"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["potential_up_down_real"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["potential_up_down_imag"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
         Crystal{3}(header),
