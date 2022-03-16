@@ -52,12 +52,46 @@ function Base.getindex(xtaldata::CrystalWithDatasets{D,K,V}, key::K) where {D,K,
 end
 
 # Easy way of pulling just the crystal from a `CrystalWithDatasets{D}`
-Crystal(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.xtal
-# and just the data
-data(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.data
+function Base.convert(::Type{Crystal{D}}, xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V}
+    return xtaldata.xtal
+end
 
-RealLattice(xtal::Crystal{D}) where D = xtal.latt
-RealLattice(xtal::CrystalWithDatasets{D,K,V}) where {D,K,V} = RealLattice(Crystal(xtal))
+RealLattice(xtal::Crystal) = xtal.latt
+ReciprocalLattice(xtal::Crystal) = ReciprocalLattice(xtal.latt)
 
-prim(xtal::AbstractCrystal) = prim(RealLattice(xtal))
-conv(xtal::AbstractCrystal) = conv(RealLattice(xtal))
+prim(xtal::Crystal) = prim(RealLattice(xtal))
+conv(xtal::Crystal) = conv(RealLattice(xtal))
+
+# TODO: fix this so that it gets the right number of atoms regardless of space group
+"""
+    natom_cell(xtal::Crystal)
+
+Returns the number of atoms in a crystal's unit cell.
+
+This function is currently not aware of space groups or settings, so if the generating set does not
+contain all the atoms in the cell, it will return the wrong value.
+"""
+natom_cell(xtal::Crystal) = natom(xtal.gen)
+
+"""
+    natom_template(xtal::Crystal)
+
+Returns the number of atoms in the crystal template.
+"""
+natom_template(xtal::Crystal) = natom(xtal.pos)
+
+#=
+"""
+    all_atoms_in_cell(spgrp::Integer, l::AtomList{D}; onbounds::Bool = false) -> AtomList{D}
+
+Generates all atoms within a unit cell given the space group information and a minimal set of
+atomic positions.
+"""
+function all_atoms_in_cell(spgrp::Integer, l::AtomList{D}; onbounds::Bool = false) where D
+    # Space group 0 effectively means no translation symmetry
+    # Space group 1 should be the trivial group (just translations): do nothing
+    spgrp in (0,1) && return l
+    # TODO: implement this function.
+    return l
+end
+=#

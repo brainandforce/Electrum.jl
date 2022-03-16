@@ -103,15 +103,15 @@ end
 # Conversions between real and reciprocal lattices
 # It's critical that the `RealLattice` and `ReciprocalLattice` constructors are idempotent
 # so that conversion can be completely seamless
-RealLattice{D}(latt::RealLattice{D}) where D = latt
-ReciprocalLattice{D}(latt::ReciprocalLattice{D}) where D = latt
+RealLattice(latt::RealLattice) = latt
+ReciprocalLattice(latt::ReciprocalLattice) = latt
 
 """
     ReciprocalLattice{D}(latt::RealLattice{D})
 
 Converts a real lattice to its corresponding reciprocal lattice.
 """
-function ReciprocalLattice{D}(latt::RealLattice{D}) where D
+function ReciprocalLattice(latt::RealLattice{D}) where D
     # TODO: can we define this as an involution, even with a 2pi factor?
     invlatt(M::AbstractMatrix{<:Real}) = collect(transpose(2*pi*inv(M)))
     return ReciprocalLattice{D}(invlatt(latt.prim), invlatt(latt.conv))
@@ -122,15 +122,19 @@ end
 
 Converts a reciprocal lattice to its corresponding real lattice.
 """
-function RealLattice{D}(latt::ReciprocalLattice{D}) where D
+function RealLattice(latt::ReciprocalLattice{D}) where D
     # TODO: can we define this as an involution, even with a 2pi factor?
     invlatt(M::AbstractMatrix{<:Real}) = collect(transpose(inv(M)/(2*pi)))
     return RealLattice{D}(invlatt(latt.prim), invlatt(latt.conv))
 end
 
-# TODO: check for type stability
-RealLattice(latt::AbstractLattice{D}) where D = RealLattice{D}(latt)
-ReciprocalLattice(latt::AbstractLattice{D}) where D = ReciprocalLattice{D}(latt)
+function convert(::Type{RealLattice{D}}, latt::AbstractLattice{D}) where D
+    return RealLattice(latt)
+end
+
+function convert(::Type{ReciprocalLattice{D}}, latt::AbstractLattice{D}) where D
+    return ReciprocalLattice(latt)
+end
 
 """
     lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
@@ -180,7 +184,8 @@ cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
 """
     cell_volume(M::AbstractMatrix)
 
-Returns the volume of a unit cell defined by a matrix.
+Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
+(negative for cells that do not follow the right hand rule).
 """
 cell_volume(M::AbstractMatrix) = abs(det(M))
 
