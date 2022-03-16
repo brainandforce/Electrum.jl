@@ -41,7 +41,7 @@ function readWAVECAR(io::IO; ctr=:P)
     ecut = read(io, Float64)
     # Real and reciprocal lattice vectors
     latt = RealLattice{3}([read(io, Float64) for a = 1:3, b = 1:3], prim=true, ctr=ctr)
-    rlatt = prim(ReciprocalLattice{3}(latt))
+    rlatt = prim(ReciprocalLattice(latt))
     # Get HKL coefficient bounds (as done in WaveTrans)
     hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut))
     # List of k-points
@@ -61,7 +61,7 @@ function readWAVECAR(io::IO; ctr=:P)
             count += 1; seek(io, count*nrecl)
             # Number of plane waves for this k-point
             pos = position(io)
-            @info string("File pointer at ", pos, " (", count, " * ", nrecl, ")")
+            @debug string("File pointer at ", pos, " (", count, " * ", nrecl, ")")
             npw = Int(read(io, Float64))
             # Add the position of the k-point to the list
             klist[kp] = [read(io, Float64) for n = 1:3]
