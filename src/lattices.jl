@@ -93,6 +93,7 @@ Returns the primitive lattice if `primitive` is true, otherwise returns the conv
 """
 pick(l::AbstractLattice{D}, primitive::Bool) where D = primitive ? prim(l) : conv(l)
 
+# Define the constructor for vectors of vectors
 function RealLattice{D}(
     prim::AbstractVector{<:AbstractVector{<:Real}},
     conv::AbstractVector{<:AbstractVector{<:Real}},
@@ -107,7 +108,7 @@ RealLattice(latt::RealLattice) = latt
 ReciprocalLattice(latt::ReciprocalLattice) = latt
 
 """
-    ReciprocalLattice{D}(latt::RealLattice{D})
+    ReciprocalLattice(latt::RealLattice{D})
 
 Converts a real lattice to its corresponding reciprocal lattice.
 """
@@ -118,7 +119,7 @@ function ReciprocalLattice(latt::RealLattice{D}) where D
 end
 
 """
-    RealLattice{D}(latt::ReciprocalLattice{D})
+    RealLattice(latt::ReciprocalLattice{D})
 
 Converts a reciprocal lattice to its corresponding real lattice.
 """
