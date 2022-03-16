@@ -55,7 +55,6 @@ Returns the coordinate associated with an atomic position.
 """
 coord(a::AtomPosition) = a.pos
 
-
 """
     AtomList{D} <: AbstractRealSpaceData{D}
 
@@ -96,13 +95,14 @@ function AtomList{D}(coord::AbstractVector{AtomPosition{D}}) where D
 end
 
 # Check if an AtomList{D} is empty
-Base.isempty(l::AtomList{D}) where D = isempty(l.coord)
+Base.isempty(l::AtomList) = isempty(l.coord)
 
 # Iterate through an AtomList
-Base.iterate(l::AtomList{D}) where D = iterate(l.coord)
-Base.iterate(l::AtomList{D}, n) where D = iterate(l.coord, n)
+Base.iterate(l::AtomList) = iterate(l.coord)
+Base.iterate(l::AtomList, n) = iterate(l.coord, n)
 
-natom(l::AtomList{D}) where D = length(l.coord)
+natom(l::AtomList) = length(l.coord)
+basis(l::AtomList) = l.basis
 
 """
     cartesian(l::AtomList{D}) -> AtomList{D}
@@ -141,7 +141,7 @@ function reduce_coords(
     incell::Bool=false
 ) where D
     v = basis\coord(a)
-    # If it needs to be in a cell, 
+    # If it needs to be in a cell, truncate the integer portion of the elements 
     v = v - incell * floor.(v)
     return AtomPosition{D}(name(a), atomicno(a), v)
 end
