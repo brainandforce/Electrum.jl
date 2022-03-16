@@ -140,7 +140,7 @@ end
 """
     lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
 
-Generates a pair of 3D lattices that are related by common transformations used in .
+Generates a pair of 3D lattices that are related by common crystallographic transformations.
 
 Returns an `NTuple{2, SMatrix{3,3,Float64}}` with the first matrix containing the primitive basis 
 and the second containing the conventional basis.
