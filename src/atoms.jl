@@ -18,6 +18,8 @@ struct AtomPosition{D} <: AbstractRealSpaceData{D}
         num::Integer,
         pos::AbstractVector{<:Real}
     ) where D
+        # Don't allow empty names by default
+        name = isempty(name) && num > 0 ? ELEMENTS[num] : name
         return new{D}(name, num, pos)
     end
 end
@@ -31,6 +33,15 @@ function AtomPosition{D}(name::AbstractString, pos::AbstractVector{<:Real}) wher
 end
 
 """
+    atomname(a::AtomPosition) -> String
+
+Returns the name of the atom. Note that this returns the name that was provided during
+construction, which is not guaranteed to be the same as the name of the element that has the given
+atomic number.
+"""
+atomname(a::AtomPosition) = a.name
+
+"""
     atomicno(a::AtomPosition) -> Int
 
 Gets the atomic number of an atom in an atomic position.
@@ -39,6 +50,8 @@ atomicno(a::AtomPosition) = a.num
 
 """
     coord(a::AtomPosition{D}) -> SVector{D,Float64}
+
+Returns the coordinate associated with an atomic position.
 """
 coord(a::AtomPosition) = a.pos
 
@@ -114,4 +127,39 @@ Cartesian coordinates.
 function cartesian(b::AbstractMatrix{<:Real}, a::AtomPosition{D}) where D
     newpos = b * a.pos
     return AtomPosition{D}(a.name, a.num, newpos)
+end
+
+"""
+    reduce_coords(basis::AbstractMatrix{<:Real}, a::AtomPosition; incell=false)
+
+Convert a coordinate from a Cartesian basis to the crystal basis. If `incell` is true, the position
+vector components will be truncated so they lie within the cell bounds (between 0 and 1).
+"""
+function reduce_coords(
+    basis::AbstractMatrix{<:Real},
+    a::AtomPosition{D};
+    incell::Bool=false
+) where D
+    v = basis\coord(a)
+    # If it needs to be in a cell, 
+    v = v - incell * floor.(v)
+    return AtomPosition{D}(name(a), atomicno(a), v)
+end
+
+"""
+    reduce_coords(basis::AbstractMatrix{<:Real}, a::AbstractVector{AtomPosition}; incell=false)
+
+Convert a vector of atomic coordinates from a Cartesian basis to the crystal basis. If `incell` is
+true, the position vector components will be truncated so they lie within the cell bounds (between
+0 and 1).
+"""
+function reduce_coords(
+    basis::AbstractMatrix{<:Real},
+    va::AbstractVector{AtomPosition{D}};
+    incell::Bool = false
+) where D
+    va_new = map(va) do a
+        reduce_coords(basis, a, incell = incell)
+    end
+    return AtomPosition{D}(basis, va_new)
 end
