@@ -96,6 +96,7 @@ end
 
 # Check if an AtomList{D} is empty
 Base.isempty(l::AtomList) = isempty(l.coord)
+Base.getindex(l::AtomList, ind) = l.coord[ind]
 
 # Iterate through an AtomList
 Base.iterate(l::AtomList) = iterate(l.coord)

@@ -19,6 +19,25 @@ function distance_periodic(
     return norm(basis*dred)
 end
 
+function distance_periodic(b::AbstractMatrix, a1::AtomPosition, a2::AtomPosition)
+    return distance_periodic(b, coord(a1), coord(a2))
+end
+
+function distance_periodic(l::AtomList)
+    # Matrix with all the distances
+    M = zeros(Float64, natom(l), natom(l))
+    for a in 1:natom
+        # Distances on diagonal should be zero/don't need to be calculated
+        for b in 1:(a-1)
+            dist = distance_periodic(basis(l), coord(l[a]), coord(l[b]))
+            # Assign off-diagonal elements symmetrically
+            M[a,b] = dist
+            M[b,a] = dist
+        end
+    end
+    return M
+end
+
 """
     delaunay_periodic(l::AtomList) -> BitMatrix
 
@@ -28,7 +47,7 @@ function delaunay_periodic(l::AtomList{D}) where D
     # Initialize the adjacency matrix
     M = BitMatrix(zeros(Bool, length(points), length(points)))
     # Throw an exception if there is no basis given
-    basis(l) == zeros(SMatrix{D,D,Float64}) && error("No basis vectors were provided.")
+    basis(l) == zeros(BasisVectors{D}) && error("No basis vectors were provided.")
 
     return M
 end
