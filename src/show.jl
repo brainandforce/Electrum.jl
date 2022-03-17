@@ -45,7 +45,7 @@ printbasis(io::IO, b::BasisVectors; letters=true, pad=0) =
     printbasis(io::IO, matrix(b), letters=letters, pad=pad)
 printbasis(io::IO, a::AtomList; letters=true, pad=0) = 
     printbasis(io, basis(a), letters=letters, pad=pad)
-printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; letters=true; pad=0) =
+printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; letters=true, pad=0) =
     printbasis(io, basis(g), letters=letters, pad=pad)
 
 """
