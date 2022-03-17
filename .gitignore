@@ -28,4 +28,4 @@ Manifest.toml
 
 # Files used as test cases for local development
 testfiles/
-notebooks/
+pluto/
