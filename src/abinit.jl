@@ -82,7 +82,7 @@ Base.@kwdef mutable struct ABINITHeader
     qptn::SVector{3,Float64} = zeros(SVector{3,Int32})
     # Translation vectors for the primitive cell
     # TODO: what exactly are the units for this thing?
-    rprimd::SMatrix{3,3,Float64} = zeros(SMatrix{3,3,Float64})  
+    rprimd::SMatrix{3,3,Float64,9} = zeros(SMatrix{3,3,Float64})  
     # Bias voltage used in electron microscopy
     stmbias::Float64 = 0
     # Physical temperature of electrons (not sure of the units)
@@ -108,7 +108,7 @@ Base.@kwdef mutable struct ABINITHeader
     # Antiferromagnetic symmetry components (-1 for those that reverse magnetization)
     symafm::Vector{Int32} = Int32[]    # size nsym
     # Symmetry operation matrices
-    symrel::Vector{SMatrix{3,3,Int32}} = SMatrix{3,3,Int32}[]        # size nsym
+    symrel::Vector{SMatrix{3,3,Int32,9}} = SMatrix{3,3,Int32}[]        # size nsym
     # Atom types (each integer corresponds to znucltypat)
     typat::Vector{Int32} = Int32[]    # size natom
     # List of k-points
@@ -133,9 +133,9 @@ Base.@kwdef mutable struct ABINITHeader
     # 1 if wavelet solver is used/non-standard boundary conditions
     icoulomb::Int32 = 0
     # Lattice describing the k-point grid (ngkpt is along diagonal)
-    kptrlatt::SMatrix{3,3,Int32} = zeros(SMatrix{3,3,Int32})
+    kptrlatt::SMatrix{3,3,Int32,9} = zeros(SMatrix{3,3,Int32})
     # Unknown
-    kptrlatt_orig::SMatrix{3,3,Int32} = zeros(SMatrix{3,3,Int32})
+    kptrlatt_orig::SMatrix{3,3,Int32,9} = zeros(SMatrix{3,3,Int32})
     # Unknown
     shiftk_orig::SVector{3,Float64} = zeros(SVector{3,Float64})
     # Shift of k-point grid off origin
@@ -191,7 +191,7 @@ symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 
 function Crystal{3}(h::ABINITHeader; convert=:P)
     # Lattice vectors converted to angstroms
-    latt = BOHR2ANG*h.rprimd
+    latt = Basis{3}(BOHR2ANG*h.rprimd)
     atomlist = AtomList{3}(
         latt,
         AtomPosition{3}.(
@@ -598,9 +598,9 @@ function read_abinit_header(io::IO)
     )
     # Get the info stored in the header
     (codvsn, headform, fform) = get_abinit_version(io)
-    @info string("abinit version ", codvsn, " (header version ", headform, ")")
+    @debug string("abinit version ", codvsn, " (header version ", headform, ")")
     # Read the rest of the header
-    header = fdict[headform](io)
+    header::ABINITHeader = fdict[headform](io)
     # Add in the rest of the data and return
     header.codvsn = codvsn
     header.headform = headform
@@ -609,7 +609,7 @@ function read_abinit_header(io::IO)
 end
 
 """
-    function read_abinit_datagrids(io, nspden, ngfft, T) -> Vector{Matrix{T}}
+    function read_abinit_datagrids(T, io, nspden, ngfft) -> Vector{Matrix{T}}
 
 Reads the datagrid portion of an abinit density output, following the header. 
 
@@ -660,7 +660,7 @@ function read_abinit_density(io::IO)
     # Add each dataset to the dictionary
     data = Dict{String, RealSpaceDataGrid{3,T}}()
     # Convert the basis
-    basis = BOHR2ANG * header.rprimd
+    basis = BasisVectors(BOHR2ANG * header.rprimd)
     # Fill the dictionary
     data["density_total"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
     if header.nspden == 2
@@ -686,6 +686,7 @@ function read_abinit_potential(io::IO)
     # No conversion will occur here: assume units of Hartree
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
     data = Dict{String, RealSpaceDataGrid{3,T}}()
+    basis = BasisVectors{3}(BOHR2ANG * header.rprimd)
     if header.nspden == 1
         data["potential_total"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
     elseif header.nspden == 2

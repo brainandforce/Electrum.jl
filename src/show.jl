@@ -36,15 +36,17 @@ function basis_string(
 end
 
 
-function printbasis(io::IO, M::AbstractMatrix{<:Real}, letters=true; pad=0)
+function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, pad=0)
     s = basis_string(M, letters=letters)
     print(io, join(" "^pad .* s, "\n"))
 end
 
+printbasis(io::IO, b::BasisVectors; letters=true, pad=0) = 
+    printbasis(io::IO, matrix(b), letters=letters, pad=pad)
 printbasis(io::IO, a::AtomList; letters=true, pad=0) = 
-    printbasis(io, a.basis, letters=letters, pad=pad)
-printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; letters=true) =
-    printbasis(io, g.basis, letters=letters)
+    printbasis(io, basis(a), letters=letters, pad=pad)
+printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; letters=true; pad=0) =
+    printbasis(io, basis(g), letters=letters, pad=pad)
 
 """
     atom_string(a::AtomPosition; name=true, num=true)
@@ -89,8 +91,13 @@ will be reduced.
 """
 formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, reduce=reduce)
 
+function Base.show(io::IO, ::MIME"text/plain", b::BasisVectors)
+    println(io, b, ":")
+    printbasis(io, b, pad=2)
+end
+
 function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; name=true, num=true)
-    println(typeof(a), ":")
+    println(io, typeof(a), ":")
     println(io, "  ", atom_string(a, name=name, num=num))
 end
 
@@ -104,7 +111,7 @@ function Base.show(io::IO, ::MIME"text/plain", a::AtomList; name=true, num=true,
     end
     # Print basis vectors
     println("  defined in terms of basis vectors:")
-    printbasis(io, a.basis, pad=2)
+    printbasis(io, basis(a), pad=2)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
@@ -152,7 +159,7 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     end
     # Determine what basis the atomic coordinates are given in.
     # If the basis is zero, assume Cartesian coordinates in Å
-    if xtal.gen.basis == zeros(SMatrix{3,3,Float64})
+    if basis(xtal.gen) == zeros(BasisVectors{D})
         println("  in Cartesian coordinates (assumed to be in units of Å)")
         return nothing
     end

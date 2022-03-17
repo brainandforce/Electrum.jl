@@ -63,7 +63,7 @@ specified basis. If the basis is a zero matrix, the coordinates are assumed to b
 angstroms.
 """
 struct AtomList{D} <: AbstractRealSpaceData{D}
-    basis::SMatrix{D,D,Float64}
+    basis::BasisVectors{D}
     coord::Vector{AtomPosition{D}}
     function AtomList{D}(
         basis::AbstractMatrix{<:Number},
@@ -91,7 +91,7 @@ end
 
 # Do it without adding a lattice
 function AtomList{D}(coord::AbstractVector{AtomPosition{D}}) where D
-    return AtomList{D}(zeros(SMatrix{D,D,Float64}), coord)
+    return AtomList{D}(zeros(BasisVectors{D}), coord)
 end
 
 # Check if an AtomList{D} is empty
@@ -113,9 +113,9 @@ coordinates in space.
 function cartesian(l::AtomList{D}) where D
     # If there are no basis vectors specified, just return the original list
     # If the basis vectors are zero we're assuming Cartesian coordinates
-    l.basis == zeros(SMatrix{D,D,Float64}) && return l
+    basis(l) == zeros(BasisVectors{D}) && return l
     newlist = map(a -> cartesian(l.basis, a), l.coord)
-    return AtomList{D}(zeros(SMatrix{D,D,Float64}), newlist)
+    return AtomList{D}(zeros(Basis{D}), newlist)
 end
 
 """

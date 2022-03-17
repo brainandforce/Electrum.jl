@@ -5,21 +5,12 @@ A data grid defined in real space, containing data of type T.
 """
 struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     # Basis vectors defining the lattice
-    latt::SMatrix{D,D,Float64}
+    latt::BasisVectors{D}
     # Shift of the origin from the lattice
     orig::SVector{D,Float64}
     # The actual data grid
     grid::Array{T,D}
     # Inner constructor
-    function RealSpaceDataGrid{D,T}(
-        latt::AbstractMatrix{<:Real},
-        orig::AbstractVector{<:Real},
-        grid::AbstractArray{T,D}
-    ) where {D,T}
-        # Still gotta pass the lattice sanity checks
-        lattice_sanity_check(latt)
-        return new(latt, orig, grid)
-    end
 end
 
 """
@@ -48,7 +39,7 @@ end
 Base.getindex(g::RealSpaceDataGrid{D,T} where {D,T}, inds...) = getindex(g.grid, inds...)
 
 """
-    basis(g::RealSpaceDataGrid{D,T}) -> SMatrix{D,D,Float64}
+    basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
 
 Gets the basis vectors of a `RealSpaceDataGrid`.
 """
@@ -274,7 +265,7 @@ complex number used does not default to `Float64`: wavefunction data is often su
 """
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
-    rlatt::SMatrix{D,D,Float64}
+    rlatt::BasisVectors{D}
     # Band information (energy and occupation) at each k-point
     bands::BandStructure{D}
     # Planewave coefficients

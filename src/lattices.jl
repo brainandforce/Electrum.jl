@@ -1,35 +1,85 @@
 """
-    lattice_sanity_check(vecs::AbstractMatrix) -> Nothing
+    lattice_sanity_check(M::AbstractMatrix)
 
-Tests lattice vectors to ensure they are linearly independent and that they form a right-handed
-coordinate system. Returns nothing, but throws an `AssertionError` if the basis vectors are not 
-linearly independent.
+Runs checks on a matrix intended to represent basis vectors of a crystal unit cell. Returns
+nothing, but warns if the cell vectors form a left-handed coordinate system, and throws an 
+`AssertionError` if the cell vectors are not linearly independent.
 """
-function lattice_sanity_check(vecs::AbstractMatrix; name::AbstractString="")
-    d = det(vecs)
-    @assert (d != 0) name * " "^isempty(name) * "cell vectors are not linearly independent"
-    # Warn for left-handed coordinate system
-    (d < 0) && @warn "cell vectors form a left-handed coordinate system."
+@inline function lattice_sanity_check(M::AbstractMatrix)
+    @assert (det(M) != 0) "cell vectors are not linearly independent."
+    det(M) < 0 && @warn "cell vectors form a left-handed coordinate system."
     return nothing
 end
 
-"""
-    lattice_pair_check(small::AbstractMatrix, large::AbstractMatrix; tol = 1e-8) -> Bool
+# TODO: can we use views on vectors of vectors to get a matrix?
+lattice_sanity_check(vs::AbstractVector{AbstractVector}) = lattice_sanity_check(hcat(vs...))
 
-Checks that the larger set of lattice vectors consists of integer linear combinations of the 
-smaller set of lattice vectors. Returns nothing, but throws an `AssertionError` if the check fails.
-
-The `tol` parameter can be used to set the threshold for how close the values from solving the 
-system of equations need to be to an integer to succeed (default 1e-8).
+#=
 """
-function lattice_pair_check(small::AbstractMatrix, large::AbstractMatrix; tol = 1e-8)
-    # Perform the sanity checks
-    lattice_sanity_check.((small, large))
-    # Check that all the values are close to integers
-    # TODO: does this criterion work properly for reciprocal lattices?
-    @assert all(x -> x - round(Int, x) < tol, small\large) "The larger set of basis vectors is \
-    not expressed in terms of integer multiples of the smaller set of basis vectors."
-    return nothing
+    BasisVectors{D}
+
+Collection of `D` basis vectors spanning `D`-dimensional space.
+
+Internally, a `BasisVectors{D}` is represented as an `SVector{D,SVector{D,Float64}}`. This avoids a
+length declaration that would be required by an `SMatrix`.
+
+`BasisVectors` can be indexed similarly to a matrix. However, there is one major difference: 
+indexing with a single value returns an `SVector{D,Float64}`, not a value as would happen with most
+subtypes of `AbstractMatrix`.
+"""
+=#
+struct BasisVectors{D}
+    vs::SVector{D,SVector{D,Float64}}
+    # General inner constructor for vectors of vectors
+    function BasisVectors{D}(vs::AbstractVector{<:AbstractVector}) where D
+        lattice_sanity_check(vs)
+        return new{D}(vs)
+    end
+    # Same for matrices
+    function BasisVectors{D}(M::AbstractMatrix) where D
+        lattice_sanity_check(M)
+        return new{D}([M[:,n] for n in 1:size(M,2)])
+    end
+    # If SVectors are used directly, this one can be called
+    function BasisVectors(vs::SVector{D,SVector{D,<:Real}}) where D
+        lattice_sanity_check(vs)
+        return new{D}(vs)
+    end
+    # Same for SMatrices
+    function BasisVectors(M::SMatrix{D,D,<:Real}) where D
+        lattice_sanity_check(M)
+        return new{D}(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
+    end
+end
+
+# This should get a vector
+Base.getindex(b::BasisVectors, ind) = b.vs[ind]
+# This should treat BasisVectors like matrices
+Base.getindex(b::BasisVectors, i1, i2) = b[i2][i1]
+
+vectors(b::BasisVectors) = b.vs
+matrix(b::BasisVectors{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
+# TODO: does this make sense?
+Base.convert(::Type{SMatrix{D,D,Float64}}, b::BasisVectors{D}) where D = matrix(b)
+
+Base.zeros(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
+
+Base.:*(b::BasisVectors, s) = b * s
+Base.:/(b::BasisVectors, s) = b / s
+
+"""
+    dual(b::BasisVectors)
+
+Generates the dual lattice defined by a set of basis vectors.
+
+"Dual" refers to the basis generated with the inverse transpose. This does not include factors of τ
+that are used crystallographically (τ = 2π).
+"""
+dual(b::BasisVectors) = inv(transpose(matrix(b)))
+
+# TODO: might this be better off as an inner constructor?
+function BasisVectors(M::AbstractMatrix{<:Real})
+    return BasisVectors(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
 end
 
 """
@@ -38,15 +88,17 @@ end
 Describes a real space crystal lattice with primitive and conventional basis vectors.
 """
 struct RealLattice{D} <: AbstractLattice{D}
-    prim::SMatrix{D,D,Float64}
-    conv::SMatrix{D,D,Float64}
+    prim::BasisVectors{D}
+    conv::BasisVectors{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
     function RealLattice{D}(
         prim::AbstractMatrix{<:Real},
         conv::AbstractMatrix{<:Real}
     ) where D
         # Perform checks on the lattice pairs
-        lattice_pair_check(prim,conv)
+        @assert all(x -> x - round(Int, x) < tol, matrix(prim)\matrix(conv)) "The larger set of \
+        basis vectors is not expressed in terms of integer multiples of the smaller set of basis \
+        vectors."
         new(prim,conv)
     end
 end
@@ -57,15 +109,17 @@ end
 Describes a reciprocal space crystal lattice with primitive and conventional basis vectors.
 """
 struct ReciprocalLattice{D} <: AbstractLattice{D}
-    prim::SMatrix{D,D,Float64}
-    conv::SMatrix{D,D,Float64}
+    prim::BasisVectors{D}
+    conv::BasisVectors{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
     function ReciprocalLattice{D}(
         prim::AbstractMatrix{<:Real},
         conv::AbstractMatrix{<:Real}
     ) where D
         # Perform checks on the lattice pairs
-        lattice_pair_check(conv,prim)
+        @assert all(x -> x - round(Int, x) < tol, matrix(sm)\matrix(lg)) "The larger set of \
+        basis vectors is not expressed in terms of integer multiples of the smaller set of basis \
+        vectors."
         new(prim,conv)
     end
 end
@@ -73,32 +127,25 @@ end
 # Get primitive and conventional lattices
 # This is the preferred way of doing so
 """
-    prim(l::AbstractLattice{D}) -> SMatrix{D,D,Float64}
+    prim(l::AbstractLattice{D}) -> BasisVectors{D}
 
 Returns the primitive lattice in a `RealLattice` or a `ReciprocalLattice`.
 """
-prim(l::AbstractLattice{D}) where D = l.prim
+prim(l::AbstractLattice) = l.prim
 
 """
-    conv(l::AbstractLattice{D}) -> SMatrix{D,D,Float64}
+    conv(l::AbstractLattice{D}) -> BasisVectors{D}
 
 Returns the conventional lattice in a `RealLattice` or a `ReciprocalLattice`.
 """
-conv(l::AbstractLattice{D}) where D = l.conv
-
-"""
-    pick(l::AbstractLattice{D}, primitive::Bool) -> SMatrix{D,D,Float64}
-
-Returns the primitive lattice if `primitive` is true, otherwise returns the conventional lattice.
-"""
-pick(l::AbstractLattice{D}, primitive::Bool) where D = primitive ? prim(l) : conv(l)
+conv(l::AbstractLattice) = l.conv
 
 # Define the constructor for vectors of vectors
-function RealLattice{D}(
+function (Type{AbstractLattice{D}})(
     prim::AbstractVector{<:AbstractVector{<:Real}},
     conv::AbstractVector{<:AbstractVector{<:Real}},
 ) where D
-    return RealLattice{D}(hcat(prim...), hcat(conv...))
+    return RealLattice{D}(BasisVectors{D}(prim), BasisVectors{D}(conv))
 end
 
 # Conversions between real and reciprocal lattices
@@ -113,9 +160,7 @@ ReciprocalLattice(latt::ReciprocalLattice) = latt
 Converts a real lattice to its corresponding reciprocal lattice.
 """
 function ReciprocalLattice(latt::RealLattice{D}) where D
-    # TODO: can we define this as an involution, even with a 2pi factor?
-    invlatt(M::AbstractMatrix{<:Real}) = collect(transpose(2*pi*inv(M)))
-    return ReciprocalLattice{D}(invlatt(latt.prim), invlatt(latt.conv))
+    return ReciprocalLattice{D}(dual(prim(latt))*2π, dual(conv(latt)*2π))
 end
 
 """
@@ -124,11 +169,11 @@ end
 Converts a reciprocal lattice to its corresponding real lattice.
 """
 function RealLattice(latt::ReciprocalLattice{D}) where D
-    # TODO: can we define this as an involution, even with a 2pi factor?
-    invlatt(M::AbstractMatrix{<:Real}) = collect(transpose(inv(M)/(2*pi)))
-    return RealLattice{D}(invlatt(latt.prim), invlatt(latt.conv))
+    return RealLattice{D}(dual(prim(latt))/2π, dual(conv(latt)/2π))
 end
 
+Base.convert(::Type{T}, latt::AbstractLattice{D}) where {T<:AbstractLattice,D} = T{D}(latt)
+#=
 function convert(::Type{RealLattice{D}}, latt::AbstractLattice{D}) where D
     return RealLattice(latt)
 end
@@ -136,14 +181,15 @@ end
 function convert(::Type{ReciprocalLattice{D}}, latt::AbstractLattice{D}) where D
     return ReciprocalLattice(latt)
 end
+=#
 
 """
     lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
 
 Generates a pair of 3D lattices that are related by common crystallographic transformations.
 
-Returns an `NTuple{2, SMatrix{3,3,Float64}}` with the first matrix containing the primitive basis 
-and the second containing the conventional basis.
+Returns an `NTuple{2, BasisVectors{3}` with the first matrix containing the primitive basis and the
+second containing the conventional basis.
 """
 function lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
         # Without special centering just return the pair of matrices
@@ -157,7 +203,7 @@ function lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
         Mc = M
         Mp = REDUCTION_MATRIX_3D[ctr] * M
     end
-    return (Mp, Mc)
+    return BasisVectors{3}.((Mp, Mc))
 end
 
 # It appears these next two docstrings are broken!
@@ -270,7 +316,7 @@ function angles_rad(L::AbstractLattice{D}; prim=false) where D
 end
 
 """
-    lattice2D(a::Real, b::Real, γ::Real) -> SMatrix{2,2,Float64}
+    lattice2D(a::Real, b::Real, γ::Real) -> BasisVectors{2}
 
 Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 2D with the
 same length and angle parameters (in degrees).
@@ -279,11 +325,11 @@ By default, the b-vector is oriented along y. This selection corresponds to the 
 chosen by `lattice3D()`.
 """
 function lattice2D(a::Real, b::Real, γ::Real)
-    return SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b)
+    return BasisVectors(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
 end
 
 """
-    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> SMatrix{3,3,Float64}
+    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> BasisVectors{3}
 
 Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the
 same length and angle parameters (in degrees).
@@ -295,9 +341,10 @@ of symmetry operations.
 function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     c1 = c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ)
     c2 = c*cosd(α)
-    return SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
-                                        0,        b,  0,
+    M = SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
+                                     0,        b,  0,
                                 c1, c2, sqrt(c^2 - (c1^2 + c2^2)))
+    return BasisVectors(M)
 end
 
 function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)

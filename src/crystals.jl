@@ -33,13 +33,13 @@ struct Crystal{D} <: AbstractCrystal{D}
         # TODO: include some validation
         # If the atom list doesn't have a basis defined (assuming Cartesian coordinates)
         # generate a new AtomList 
-        if basis(gen) != zeros(SMatrix{D,D,Float64})
-            # TODO: do we want to use the conventional basis vectors all the time?
+        if basis(gen) == zeros(BasisVectors{D})
+            # Do we want to use the conventional basis vectors all the time?
             # I think it's a good temporary choice, just because if a dataset is being loaded in
             # from a computation, conv(latt) should generally match the primitive cell
-            gen = reduce_coords(conv(latt), gen, incell=true)
+            gen = AtomList{D}(conv(latt), reduce_coords(conv(latt), gen, incell=true))
         end
-        return new{D}(RealLattice{D}(latt), sgno, orig, gen, pos)
+        return new{D}(RealLattice(latt), sgno, orig, gen, pos)
     end
 end
 

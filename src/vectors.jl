@@ -15,3 +15,14 @@ end
 function is_linearly_independent(vecs::AbstractVector{<:Number}...)
     return is_linearly_independent(hcat(vecs...))
 end
+
+#=
+"""
+    _to_vectors(a::AbstractArray{T,N}) where {T,N} -> Vector{...Vector{T}}
+
+Converts an array to a nest of vectors within vectors.
+"""
+function _to_vectors(a::AbstractArray{T,N}) where {T,N}
+    
+end
+=#
