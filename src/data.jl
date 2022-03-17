@@ -316,7 +316,7 @@ struct DensityOfStates <: AbstractDensityOfStates
     fermi::Float64
     # Energy at each point
     energy::Vector{Float64}
-    # Density of states
+    # Range of energies
     dos::Vector{Float64}
     # Integrated density of states
     int::Vector{Float64}
@@ -327,10 +327,77 @@ struct DensityOfStates <: AbstractDensityOfStates
         int::AbstractVector{<:Real}
     )
         @assert size(energy) == size(dos) == size(int) string(
-            "Sizes of input vectors do not match!"
+            "Number of energy and DOS entries do not match."
         )
         return new(fermi, energy, dos, int)
     end
+end
+
+# Create a DOS curve without integrated DOS data
+"""
+    DensityOfStates(fermi::Real, energy::AbstractVector{<:Real}, dos::AbstractVector{<:Real})
+
+Creates a `DensityOfStates` object without integrated DOS information by integrating the state 
+density.
+"""
+function DensityOfStates(
+    fermi::Real,
+    energy::AbstractVector{<:Real},
+    dos::AbstractVector{<:Real}
+)
+    # Generate an integrated DOS vector
+    # TODO: perhaps we can improve this with a trapezoidal approximation?
+    int = [sum(dos[1:n]) for n in 1:length(dos)]
+    return DensityOfStates(fermi, energy, dos, int)
+end
+
+# Getting an index produces a tuple of the energy, 
+Base.getindex(d::DensityOfStates, ind) = (d.energy[ind], d.dos[ind], d.int[ind])
+
+"""
+    ProjectedDensityOfStates
+
+Contains projected density of states information.
+"""
+struct ProjectedDensityOfStates
+    # Fermi energy
+    fermi::Float64
+    # Range of energies
+    energy::Vector{Float64}
+    # Matrix containing projected DOS data
+    # Columns are the components, rows are the energies
+    dos::Matrix{Float64}
+    # Integrated DOS in the same format
+    int::Matrix{Float64}
+    function ProjectedDensityOfStates(
+        fermi::Real,
+        energy::AbstractVector{<:Real},
+        dos::AbstractMatrix{<:Real},
+    )
+        @assert length(energy) == size(dos,2) "Number of energy and DOS entries do not match."
+        return new(fermi, energy, dos)
+    end
+end
+
+"""
+    ProjectedDensityOfStates(
+        fermi::Real,
+        energy::AbstractVector{<:Real},
+        dos::AbstractVector{<:Real}
+    )
+
+Creates a `ProjectedDensityOfStates` object without integrated DOS information by integrating
+the state density.
+"""
+function ProjectedDensityOfStates(
+    fermi::Real,
+    energy::AbstractVector{<:Real},
+    dos::AbstractMatrix{<:Real}
+)
+    # Generate an integrated DOS matrix
+    # TODO: perhaps we can improve this with a trapezoidal approximation?
+    int = hcat(vec(sum(M[:,1:n], dims=2)) for n in 1:size(M,2))
+    return ProjectedDensityOfStates(fermi, energy, dos, int)
 end
 
 """
@@ -341,12 +408,30 @@ Gets the Fermi energy from DOS data. There are no guarantees on the unit of ener
 fermi(d::AbstractDensityOfStates) = d.fermi
 
 """
-    ProjectedDensityOfStates
+    energies(d::AbstractDensityOfStates; usefermi=false) -> Vector{Float64}
 
-Contains projected density of states information.
+Gets the range of energies in the dataset. If `usefermi` is set to true, the energies returned will
+be adjusted such that the Fermi energy is set to zero.
+
+There are no guarantees on the unit of energy used!
 """
-struct ProjectedDensityOfStates
-    fermi::Float64
-    energy::Vector{Float64}
-    dos::Matrix{Float64}
+energies(d::AbstractDensityOfStates; usefermi=false) = d.energy .- (usefermi * d.fermi)
+
+"""
+    nelectrons(d::DensityOfStates)
+
+Gets the approximate number of electrons that are needed to reach the Fermi level.
+"""
+function nelectrons(d::DensityOfStates)
+    # Get the nearest entries to the Fermi energy
+    E = energies(d, usefermi=true)
+    # Find the closest pair of energies to the Fermi energy
+    inds = partialsortperm(abs.(E), 1:2)
+    # Interpolate linearly between the nearest points
+    # TODO: there's probably a nicer way to do this.
+    (e1, e2) = [d[i][1] for i in inds]
+    (i1, i2) = [d[i][3] for i in inds]
+    m = (i2 - i1)/(e2 - e1)
+    b = i1 - m*e1
+    return m*fermi(d) + b
 end
