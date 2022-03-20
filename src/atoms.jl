@@ -55,6 +55,8 @@ Returns the coordinate associated with an atomic position.
 """
 coord(a::AtomPosition) = a.pos
 
+Base.getindex(a::AtomPosition, ind) = a.pos[ind]
+
 """
     AtomList{D} <: AbstractRealSpaceData{D}
 
