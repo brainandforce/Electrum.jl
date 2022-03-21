@@ -1,4 +1,35 @@
 """
+    readXYZ(io::IO) -> Vector{AtomPosition{3}}
+
+Reads an XYZ file into a `Vector{AtomPosition{3}}`.
+"""
+function readXYZ(io::IO)
+    # Loop through each line in the file
+    itr = eachline(io)
+    # Get the number of atoms from the first line
+    n_at = parse(Int, iterate(itr)[1])
+    v = Vector{AtomPosition{3}}(undef, n_at)
+    # Skip the second line
+    iterate(itr)
+    # Loop through the rest
+    for (n, ln) in enumerate(itr)
+        # If the line is empty, skip it
+        isempty(ln) && continue
+        # Split up the current line
+        entries = split(ln)
+        # Get the name (first entry)
+        name = entries[1]
+        # Get the position (next three entries)
+        pos = parse.(Float64, entries[2:4])
+        # Add to vector
+        v[n] = AtomPosition{3}(name, pos)
+    end
+    return v
+end
+
+readXYZ(filename::AbstractString) = open(readXYZ, filename)
+
+"""
     readXSF3D(
         io::IO;
         spgrp::Integer = 0,
