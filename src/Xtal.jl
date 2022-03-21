@@ -96,7 +96,7 @@ export  RealLattice, ReciprocalLattice, Crystal, CrystalWithDatasets, RealSpaceD
         ProjectedDensityOfStates, BandAtKPoint, BandStructure, AtomList, AtomPosition
 # Functions to export
 export  nkpt, nband, lattice2D, lattice3D, readXSF3D, readWAVECAR, read_abinit_density,
-        readDOSCAR, data, basis, gridsize, writeXSF, coord, atomname, atomicno
+        readDOSCAR, data, basis, gridsize, writeXSF, coord, atomname, atomicno, readXYZ
 
 #= For debugging purposes only
 export  read_abinit_header, read_abinit_header_57, read_abinit_header_80, get_abinit_version
