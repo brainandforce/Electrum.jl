@@ -62,6 +62,7 @@ matrix(b::BasisVectors{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n
 # TODO: does this make sense?
 Base.convert(::Type{SMatrix{D,D,Float64}}, b::BasisVectors{D}) where D = matrix(b)
 
+Base.zero(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
 Base.zeros(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
 
 Base.:*(b::BasisVectors, s) = b * s
