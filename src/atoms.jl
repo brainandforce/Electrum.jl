@@ -68,11 +68,9 @@ struct AtomList{D} <: AbstractRealSpaceData{D}
     basis::BasisVectors{D}
     coord::Vector{AtomPosition{D}}
     function AtomList{D}(
-        basis::AbstractMatrix{<:Number},
+        basis::BasisVectors{D},
         coord::AbstractVector{AtomPosition{D}}
     ) where D
-        # Need to check if the basis is valid (only if it's nonzero, skip otherwise)
-        iszero(basis) || lattice_sanity_check(basis)
         # Remove any duplicate atoms if they come up
         return new{D}(basis, unique(coord))
     end
