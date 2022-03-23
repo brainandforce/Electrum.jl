@@ -191,7 +191,7 @@ symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 
 function Crystal{3}(h::ABINITHeader; convert=:P)
     # Lattice vectors converted to angstroms
-    latt = Basis{3}(BOHR2ANG*h.rprimd)
+    latt = BasisVectors{3}(BOHR2ANG*h.rprimd)
     atomlist = AtomList{3}(
         latt,
         AtomPosition{3}.(
@@ -598,9 +598,17 @@ function read_abinit_header(io::IO)
     )
     # Get the info stored in the header
     (codvsn, headform, fform) = get_abinit_version(io)
-    @debug string("abinit version ", codvsn, " (header version ", headform, ")")
+    # @debug string("abinit version ", codvsn, " (header version ", headform, ")")
     # Read the rest of the header
-    header::ABINITHeader = fdict[headform](io)
+    # Select the appropriate function by version number
+    # header::ABINITHeader = fdict[headform](io)::ABINITHeader
+    header = if headform == 57
+        read_abinit_header_57(io)
+    elseif headform == 80
+        read_abinit_header_80(io)
+    else
+        error("Unsupported header format.")
+    end
     # Add in the rest of the data and return
     header.codvsn = codvsn
     header.headform = headform
