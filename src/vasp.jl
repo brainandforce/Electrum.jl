@@ -1,6 +1,6 @@
 # Kendall got everything done before 6 PM (2022-02-01)
 """
-    readWAVECAR(io::IO; ctr=:P) -> ReciprocalWavefunction{3,Float64,Float32}
+    readWAVECAR(io::IO) -> ReciprocalWavefunction{3,Float64,Float32}
 
 Reads a WAVECAR file output from a VASP 4.6 calcuation.
 
@@ -10,7 +10,7 @@ Information about VASP WAVECAR files and much of the code was pulled from the Wa
 This function is limited to WAVECAR files which have an RTAG value of 45200 (meaning the data is
 given as a `Complex{Float64}`) and have only a collinear magnetic field applied, like WaveTrans.
 """
-function readWAVECAR(io::IO; ctr=:P)
+function readWAVECAR(io::IO)
     # Function to increment HKL values in place 
     function incrementHKL!(hkl::AbstractVector{<:Integer}, bounds::AbstractVector{<:AbstractRange})
         # Loop through the vector indices, but in most cases we don't need them all
@@ -40,8 +40,8 @@ function readWAVECAR(io::IO; ctr=:P)
     # Energy cutoff
     ecut = read(io, Float64)
     # Real and reciprocal lattice vectors
-    latt = RealLattice{3}([read(io, Float64) for a = 1:3, b = 1:3], prim=true, ctr=ctr)
-    rlatt = prim(ReciprocalLattice(latt))
+    latt = BasisVectors{3}([read(io, Float64) for a = 1:3, b = 1:3])
+    rlatt = dual(latt) * 2pi
     # Get HKL coefficient bounds (as done in WaveTrans)
     hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut))
     # List of k-points
@@ -103,14 +103,9 @@ function readWAVECAR(io::IO; ctr=:P)
     )
 end
 
-function readWAVECAR(filename::AbstractString; ctr=:P)
-    open(filename) do io
-        readWAVECAR(io, ctr=ctr)
-    end
-end
-
+readWAVECAR(filename::AbstractString) = open(readWAVECAR, filename)
 # Read a WAVECAR in the current directory
-readWAVECAR(; ctr=P) = readWAVECAR("WAVECAR"; ctr=ctr)
+readWAVECAR() = readWAVECAR("WAVECAR")
 
 """
     readDOSCAR(io::IO) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}

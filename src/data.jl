@@ -272,7 +272,7 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Vector (size nkpt) of Vectors (size nband) of HKLData
     waves::Vector{Vector{HKLData{D,Complex{T}}}}
     function ReciprocalWavefunction{D,T}(
-        rlatt::AbstractMatrix{<:Real},
+        rlatt::BasisVectors{D},
         bands::BandStructure{D},
         waves::AbstractVector{<:AbstractVector{HKLData{D,Complex{T}}}}
     ) where {D,T<:Real}
@@ -295,7 +295,7 @@ function ReciprocalWavefunction{D,T}(
     waves::AbstractVector{<:AbstractVector{HKLData{D,Complex{T}}}};
     prim = true
 ) where {D,T<:Real}
-    M = pick(latt, prim)
+    M = prim ? prim(latt) : conv(latt)
     return ReciprocalWavefunction{D,T}(M, bands, waves)
 end
 
