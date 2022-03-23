@@ -66,8 +66,10 @@ Base.zero(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}}
 Base.zero(::BasisVectors{D}) where D = zeros(SVector{D,SVector{D,Float64}})
 Base.zeros(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
 
-Base.:*(b::BasisVectors, s) = b * s
-Base.:/(b::BasisVectors, s) = b / s
+# Definitions for multiplication/division by a scalar
+# TODO: there's probably a more efficient way to do this
+Base.:*(b::BasisVectors, s::Number) = BasisVectors(matrix(b) * s)
+Base.:/(b::BasisVectors, s::Number) = BasisVectors(matrix(b) / s)
 
 """
     dual(b::BasisVectors)
@@ -77,7 +79,7 @@ Generates the dual lattice defined by a set of basis vectors.
 "Dual" refers to the basis generated with the inverse transpose. This does not include factors of τ
 that are used crystallographically (τ = 2π).
 """
-dual(b::BasisVectors) = inv(transpose(matrix(b)))
+dual(b::BasisVectors) = BasisVectors(inv(transpose(matrix(b))))
 
 # TODO: might this be better off as an inner constructor?
 function BasisVectors(M::AbstractMatrix{<:Real})
@@ -359,6 +361,8 @@ function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
     nbmax = sqrt(c*ecut) ./ [norm(M[:,a])*sines[a,b] for a in 1:3, b in 1:3] .+ 1
     return floor.(Int, vec(maximum(nbmax, dims=1)))
 end
+
+maxHKLindex(b::BasisVectors, ecut::Real, c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
 
 """
     maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)
