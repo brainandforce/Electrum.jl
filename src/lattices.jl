@@ -63,6 +63,7 @@ matrix(b::BasisVectors{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n
 Base.convert(::Type{SMatrix{D,D,Float64}}, b::BasisVectors{D}) where D = matrix(b)
 
 Base.zero(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
+Base.zero(::BasisVectors{D}) where D = zeros(SVector{D,SVector{D,Float64}})
 Base.zeros(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
 
 Base.:*(b::BasisVectors, s) = b * s
@@ -93,14 +94,14 @@ struct RealLattice{D} <: AbstractLattice{D}
     conv::BasisVectors{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
     function RealLattice{D}(
-        prim::AbstractMatrix{<:Real},
-        conv::AbstractMatrix{<:Real}
+        prim::BasisVectors{D},
+        conv::BasisVectors{D}
     ) where D
         # Perform checks on the lattice pairs
-        @assert all(x -> x - round(Int, x) < tol, matrix(prim)\matrix(conv)) "The larger set of \
-        basis vectors is not expressed in terms of integer multiples of the smaller set of basis \
-        vectors."
-        new(prim,conv)
+        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(prim)\matrix(conv)) "The larger set \
+        of basis vectors is not expressed in terms of integer multiples of the smaller set of \
+        basis vectors."
+        new(prim, conv)
     end
 end
 
@@ -114,13 +115,14 @@ struct ReciprocalLattice{D} <: AbstractLattice{D}
     conv::BasisVectors{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
     function ReciprocalLattice{D}(
-        prim::AbstractMatrix{<:Real},
-        conv::AbstractMatrix{<:Real}
+        prim::BasisVectors{D},
+        conv::BasisVectors{D}
     ) where D
         # Perform checks on the lattice pairs
-        @assert all(x -> x - round(Int, x) < tol, matrix(sm)\matrix(lg)) "The larger set of \
-        basis vectors is not expressed in terms of integer multiples of the smaller set of basis \
-        vectors."
+        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(conv)\matrix(prim)) "The larger set \
+        of basis vectors is not expressed in terms of integer multiples of the smaller set of \
+        basis vectors."
+        new(prim, conv)
         new(prim,conv)
     end
 end
@@ -173,7 +175,8 @@ function RealLattice(latt::ReciprocalLattice{D}) where D
     return RealLattice{D}(dual(prim(latt))/2π, dual(conv(latt)/2π))
 end
 
-Base.convert(::Type{T}, latt::AbstractLattice{D}) where {T<:AbstractLattice,D} = T{D}(latt)
+Base.convert(::Type{RealLattice}, latt::AbstractLattice) = RealLattice(latt)
+Base.convert(::Type{ReciprocalLattice}, latt::AbstractLattice) = ReciprocalLattice(latt)
 #=
 function convert(::Type{RealLattice{D}}, latt::AbstractLattice{D}) where D
     return RealLattice(latt)
@@ -193,8 +196,8 @@ Returns an `NTuple{2, BasisVectors{3}` with the first matrix containing the prim
 second containing the conventional basis.
 """
 function lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
-        # Without special centering just return the pair of matrices
-    ctr == :P && return (M,M)
+    # Without special centering just return the pair of basis vectors
+    ctr == :P && return BasisVectors{3}.((M,M))
     # Figure out which type of cell the input matrix defines
     # TODO: Try to ensure this operations favors a c axis pointing along the z direction
     if prim
@@ -204,7 +207,7 @@ function lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
         Mc = M
         Mp = REDUCTION_MATRIX_3D[ctr] * M
     end
-    return BasisVectors{3}.((Mp, Mc))
+    return BasisVectors{3}.((Mp,Mc))
 end
 
 # It appears these next two docstrings are broken!
