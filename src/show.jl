@@ -92,7 +92,7 @@ will be reduced.
 formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, reduce=reduce)
 
 function Base.show(io::IO, ::MIME"text/plain", b::BasisVectors)
-    println(io, b, ":")
+    println(io, typeof(b), ":")
     printbasis(io, b, pad=2)
 end
 
