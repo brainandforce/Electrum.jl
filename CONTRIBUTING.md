@@ -1,22 +1,74 @@
 # How to contribute to Xtal.jl
 
-Thanks for taking interest in our package! 
+Thanks for taking interest in our package!
 
-## Dependency versions
+## Branch strategy
+
+The `main` branch contains a version of the code that builds and can be used immediately. For now,
+we have a `dev` branch that acts as a buffer while we test code manually. This will likely change
+in the near future. If you'd like to implement a feature, create a new local branch, implement the
+feature, then push the branch and open a pull request on Github.
+
+All merging should be done through a rebase operation. This is simpler than using a standard merge,
+as it maintains a linear commit history. However, you will have to ensure that you have fetched or
+pulled from the origin repo to avoid serious merge conflicts.
+
+## Testing and continuous integrations
+
+As of now, there is not any testing implemented yet, nor are there continuous integrations. We hope
+to use `Documenter` to generate documentation from docstrings in the near future.
+
+## Dependencies
 
 ### Julia version
 
 CrystalStructures.jl is being written for Julia 1.6, which is an LTS release. This may change in
 the future, but for now, avoid using any features that are present in later releases of Julia.
 
-## Coding standards
+### Dependencies and interoperability
+
+Avoid adding dependencies to Julia libraries that are not actively developed or maintained, or 
+contain functionality which would be simple to integrate into the package.
+
+Try to minimize dependencies to code from different languages. Many other libraries pull functions
+from scipy or other external libraries, but we intend to implement all core functionality here in 
+pure Julia.
+
+## Coding style and standards
 
 The following conventions are maintained throughout CrystalStructures.jl.
+
+When in doubt, follow the Julia style guide, located here: https://docs.julialang.org/en/v1/manual/style-guide/
+
+### Exceptions to the Julia style guide
+
+For `ABINITHeader` structs, direct field access may be used to assign and retrieve values.
+
+Avoid using short-circuit `if` statements - write them out explicitly. There are many instances of 
+short-circuited `if` statements throughout the code at this point, and you are welcome to restore 
+them to full `if` statements.
 
 ### Line length
 
 Keep lines under 100 characters in all files. You can use string concatenation, among other tools,
-to split long strings if they come up.
+to split long strings if they come up. If a line is really long, consider whether you can simplify
+the line by reducing the amount of nesting, shortening variable names, or splitting operations into
+multiple lines.
+
+### Naming
+
+Stick to PascalCase for the names of types and modules, and snake_case for the names of variables
+and functions.
+
+### Comments and documentation
+
+All functions and structs must have an associated docstring explaining the purpose of the code, 
+*even if the struct or method is not exported.*
+
+It's better to be verbose about what's going on with your code. Even if a remark seems obvious, 
+feel free to leave it in.
+
+Comments are generally placed above the lines that they refer to.
 
 ### Type parameters of newly defined types
 
@@ -48,6 +100,19 @@ The `StaticArrays` package provides the `SArray` type, which is immutable (canno
 creation), as well as the mutable `MArray` type. In general, it's better to stick to immutable 
 types (though dynamic vectors are always mutable).
 
+### Use of `BasisVectors{D}` and other reimplemented multidimensional array types
+
+Julia currently does not allow field types to be computed. The problem with this is that `SMatrix`
+must have a fourth type parameter that corresponds to the total length of the `NTuple` that is used
+to construct it, even though that length can be inferred from the array dimensionality.
+
+If you need to use an `SMatrix{D1,D2,T,L}` in a struct, be sure that you can define `L` as well as 
+`D1` and `D2`. Otherwise, it might be a better idea to store the data internally as an
+`SVector{D,SVector{D,T}}`, and define `convert()` for it to turn it into a matrix.
+
+In the future, we may consider using the `ComputedFieldTypes` package, or integrating any new Julia
+functionality in future versions.
+
 ### Logging and printing
 
 Feel free to leave `@debug` statements in any code you include. Unless the logging level is set to 
@@ -61,4 +126,6 @@ julia> ENV["JULIA_DEBUG"] = Xtal
 Try to minimize the use of repeated `@info`, `@warn`, or `@error` statements in loops. Printing to
 the terminal can bottleneck functions.
 
-Avoid using `println()` if one of the logging macros better suits the purpose.
+Avoid using `println()` if one of the logging macros better suits the purpose. If `println()` is
+used, consider whether it might be a better idea to print to `stderr` instead of `stdout`. Note 
+that `@warn` and `@error` will print to `stderr` by default.
