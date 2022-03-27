@@ -169,8 +169,8 @@ end
 =#
 
 # Index notation for this thing, just in case that's easier
-getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
-setindex!(x, h::ABINITHeader, name::Symbol) = setfield!(x, h, name)
+Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
+Base.setindex!(x, h::ABINITHeader, name::Symbol) = setfield!(x, h, name)
 
 """
     symrel_to_sg(symrel::AbstractVector{<:AbstractMatrix{<:Integer}}) -> Int
