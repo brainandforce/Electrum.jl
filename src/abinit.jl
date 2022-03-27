@@ -158,16 +158,6 @@ Base.@kwdef mutable struct ABINITHeader
     pawdata::Matrix{Matrix{Float64}} = Matrix{Matrix{Float64}}(undef, 0, 0)    # size nspden*natom
 end
 
-#= This will initialize the matrices with fixed sizes
-function ABINITHeader(
-    natom::Integer,
-    ngfft::AbstractVector{<:Integer},
-
-)
-
-end
-=#
-
 # Index notation for this thing, just in case that's easier
 Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
 Base.setindex!(x, h::ABINITHeader, name::Symbol) = setfield!(x, h, name)
@@ -696,15 +686,15 @@ function read_abinit_potential(io::IO)
     data = Dict{String, RealSpaceDataGrid{3,T}}()
     basis = BasisVectors{3}(BOHR2ANG * header.rprimd)
     if header.nspden == 1
-        data["potential_total"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["potential_total"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
     elseif header.nspden == 2
-        data["potential_spinup"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
-        data["potential_spindown"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["potential_spinup"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
+        data["potential_spindown"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
     elseif header.nspden == 4
-        data["potential_up_up"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
-        data["potential_down_down"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
-        data["potential_up_down_real"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
-        data["potential_up_down_imag"] = RealSpaceDataGrid{3,T}(header.rprimd, [0, 0, 0], rho[1])
+        data["potential_up_up"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
+        data["potential_down_down"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
+        data["potential_up_down_real"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
+        data["potential_up_down_imag"] = RealSpaceDataGrid{3,T}(basis, [0, 0, 0], rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
         Crystal{3}(header),
