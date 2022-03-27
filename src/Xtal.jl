@@ -5,9 +5,9 @@ A module to assist with performing calculations on crystal structures.
 """
 module Xtal
 
-using   StaticArrays
-using   LinearAlgebra
-using   Printf
+using StaticArrays
+using LinearAlgebra
+using Printf
 
 const ELEMENTS = 
 ( 
@@ -78,25 +78,35 @@ Computes the dot product of a vector with itself.
 """
 _selfdot(v) = dot(v,v)
 
+# Methods used in vector operations that go beyond what's available in LinearAlgebra
 include("vectors.jl")
+# Abstract types used in type tree
 include("types.jl")
+export AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData, 
+       AbstractReciprocalSpaceData, AbstractKPoints, AbstractDensityOfStates
+# Methods and structs for working with crystal lattices
 include("lattices.jl")
+export BasisVectors, RealLattice, ReciprocalLattice
+export dual, prim, conv, cell_lengths, cell_volume, lattice2D, lattice3D, maxHKLindex
+# Methods and structs for working with atomic positions
 include("atoms.jl")
+export AtomPosition, AtomList
+export atomname, atomicno, coord, natom, basis, cartesian, reduce_coords
+# Methods and structs for working with crystal data
 include("crystals.jl")
+export Crystal, CrystalWithDatasets
+export natom_template
+# Methods and structs for working with different types of data associated with crystals
 include("data.jl")
+export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
+       ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates
+export grid, gridsize, nkpt, nband, fermi, energies, nelectrons
+# Methods and structs for working with different file formats
 include("filetypes.jl")
+export readXYZ, readXSF3D, writeXSF, read_abinit_density, read_abinit_potential, readWAVECAR,
+       readDOSCAR
+# Show methods for pretty printing this module's structs
 include("show.jl")
-
-# Abstract types to export
-export  AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData, 
-        AbstractReciprocalSpaceData, AbstractKPoints, AbstractDensityOfStates
-# Concrete types to export
-export  RealLattice, ReciprocalLattice, Crystal, CrystalWithDatasets, RealSpaceDataGrid, 
-        KPointGrid, KPointList, HKLData, ReciprocalWavefunction, DensityOfStates,
-        ProjectedDensityOfStates, BandAtKPoint, BandStructure, AtomList, AtomPosition
-# Functions to export
-export  nkpt, nband, lattice2D, lattice3D, readXSF3D, readWAVECAR, read_abinit_density,
-        readDOSCAR, data, basis, gridsize, writeXSF, coord, atomname, atomicno, readXYZ
 
 #= For debugging purposes only
 export  read_abinit_header, read_abinit_header_57, read_abinit_header_80, get_abinit_version
