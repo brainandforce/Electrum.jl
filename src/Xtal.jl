@@ -107,9 +107,7 @@ export readXYZ, readXSF3D, writeXSF, read_abinit_density, read_abinit_potential,
        readDOSCAR
 # Show methods for pretty printing this module's structs
 include("show.jl")
-
-#= For debugging purposes only
-export  read_abinit_header, read_abinit_header_57, read_abinit_header_80, get_abinit_version
-=#
+# Precompilation directives
+include("precompile.jl")
 
 end # end of module
