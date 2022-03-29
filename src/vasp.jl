@@ -166,3 +166,51 @@ end
 readDOSCAR(filename::AbstractString) = open(readDOSCAR, filename)
 
 readDOSCAR() = open(readDOSCAR, "DOSCAR")
+
+function readPROCAR(io::IO)
+    ln = readline(io)
+    
+    if cmp(split(ln)[2], "lm") == -1
+        println("Not a lm-decomposed PROCAR. Use a different PROCAR.")
+        return
+    end
+    
+    # Get number of kpoints, number of bands, number of ions
+    ln = readline(io)
+    nkpt = parse(Int,split(ln)[4])
+    nband = parse(Int,split(ln)[8])
+    nion = parse(Int,split(ln)[12])
+    
+    # Initializes containers... to be fixed
+    kptlist = Vector{Vector{Float64}}(undef,nkpt)
+    kptwt = Vector{Float64}(undef,nkpt)
+    energies = Matrix{Float64}(undef, nkpt, nband)
+    occupancies = Matrix{Float64}(undef, nkpt, nband)
+    projband = Array{Float64,4}(undef,9,nion,nband,nkpt)
+    # Begins loop
+    for i in 1:nkpt
+        readuntil(io, "k-point")
+        ln = readline(io)
+        kptlist[i] = parse.(Float64, split(ln)[3:5])
+        kptwt[i] = parse.(Float64, split(ln)[8])
+        for j in 1:nband
+            readuntil(io,"band")
+            ln = readline(io)
+            energies[i,j] = parse(Float64, split(ln)[4])
+            occupancies[i,j] = parse(Float64, split(ln)[7])
+            readuntil(io,"tot\n")
+            for k in 1:nion
+                ln = readline(io)
+                projband[:,k,j,i] = parse.(Float64, split(ln)[2:10])
+            end
+            readline(io)
+        end
+    end
+    # For now, returns band energies and the proj_band
+    return(energies,projband)
+    close(io)
+end
+
+readPROCAR(filename::AbstractString) = open(readPROCAR, filename)
+
+readPROCAR() = open(readPROCAR, "PROCAR")
