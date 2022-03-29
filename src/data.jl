@@ -178,6 +178,16 @@ nkpt(b::BandStructure{D}) where D = nkpt(b.kpts)
 nband(b::BandStructure{D}) where D = nband(b.bands[1])
 
 """
+    FatBands{D} <: AbstractReciprocalSpaceData{D}
+
+Stores information useful in plotting FatBands.
+"""
+struct FatBands{D} <: AbstractReciprocalSpaceData{D}
+    band::BandStructure{D}
+    projband::Array{Float64,4}
+end
+
+"""
     HKLData{D,T} <: AbstractReciprocalSpaceData{D}
 
 Stores information associated with specific sets of reciprocal lattice vectors. Data can be
