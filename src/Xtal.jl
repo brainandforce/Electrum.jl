@@ -99,12 +99,12 @@ export natom_template
 # Methods and structs for working with different types of data associated with crystals
 include("data.jl")
 export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
-       ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates
+       ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands
 export grid, gridsize, nkpt, nband, fermi, energies, nelectrons
 # Methods and structs for working with different file formats
 include("filetypes.jl")
 export readXYZ, readXSF3D, writeXSF, read_abinit_density, read_abinit_potential, readWAVECAR,
-       readDOSCAR
+       readDOSCAR, readPROCAR
 # Show methods for pretty printing this module's structs
 include("show.jl")
 # Precompilation directives
