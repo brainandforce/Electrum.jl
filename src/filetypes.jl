@@ -54,7 +54,6 @@ function readXSF3D(
     function getlattice!(itr)
         vecs = [parse.(Float64, split(iterate(itr)[1])) for n in 1:3]
         @debug string("Found vectors:\n", vecs)
-        # Returns a Matrix{Float64}
         return BasisVectors{3}(hcat(vecs...))
     end
     # Function for getting 3D lists of atoms
