@@ -82,7 +82,7 @@ function Base.:+(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where
     # Add the two datagrids elementwise
     newgrid = grid(g1) + grid(g2)
     T3 = eltype(newgrid)
-    return RealSpaceDataGrid{D,T3}(basis(g1), shift(g1), newgrid)
+    return RealSpaceDataGrid(basis(g1), shift(g1), newgrid)
 end
 
 function Base.:*(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
@@ -93,13 +93,13 @@ function Base.:*(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where
     # Add the two datagrids elementwise
     newgrid = grid(g1) .* grid(g2)
     T3 = eltype(newgrid)
-    return RealSpaceDataGrid{D,T3}(basis(g1), shift(g1), newgrid)
+    return RealSpaceDataGrid(basis(g1), shift(g1), newgrid)
 end
 
 function Base.:*(s::Number, g::RealSpaceDataGrid{D,T}) where {D,T}
     newgrid = s * grid(g)
     S = eltype(newgrid)
-    return RealSpaceDataGrid{D,S}(basis(g), shift(g), newgrid)
+    return RealSpaceDataGrid(basis(g), shift(g), newgrid)
 end
 
 Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
