@@ -24,7 +24,12 @@ struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
 end
 
 """
-    RealSpaceDataGrid{D,T}(latt::AbstractLattice{D}, grid::AbstractArray{T,D}; prim=true)
+    RealSpaceDataGrid(
+        latt::AbstractLattice{D},
+        orig::AbstractVector{<:Real},
+        grid::AbstractArray{T,D};
+        prim=true
+    )
 
 Creates a real space data grid using lattice information from an `AbstractLattice`. By default,
 data is assumed to be given in terms of the primitive lattice (as is usually the case for
@@ -58,8 +63,8 @@ shift(g::RealSpaceDataGrid) = g.orig
 grid(g::RealSpaceDataGrid) = g.grid
 # Size of the data grid in entries per dimension
 # TODO: should we overload Base.size() as well?
-gridsize(g::RealSpaceDataGrid{D,T} where {D,T}) = size(g.grid)
-#Base.size(g::RealSpaceDataGrid{D,T} where {D,T}) = gridsize(g)
+gridsize(g::RealSpaceDataGrid) = size(g.grid)
+#Base.size(g::RealSpaceDataGrid) = gridsize(g)
 
 """
     grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
