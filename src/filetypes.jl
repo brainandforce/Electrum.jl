@@ -145,7 +145,7 @@ function readXSF3D(
                     # Periodic structures should get trimmed
                     grid = getgrid!(iter, dims, trim=true)
                     # Export the data in a RealSpaceDataGrid
-                    data[name] = RealSpaceDataGrid{3,Float64}(latt, orig, grid)
+                    data[name] = RealSpaceDataGrid(latt, orig, grid)
                 end
                 ln = iterate(iter)[1]
             end
