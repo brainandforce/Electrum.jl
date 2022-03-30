@@ -35,6 +35,7 @@ function basis_string(
             ]
 end
 
+basis_string(b::BasisVectors; kwargs...) = basis_string(matrix(b), kwargs...)
 
 function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, pad=0)
     s = basis_string(M, letters=letters)
@@ -117,8 +118,8 @@ end
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
     dimstring = join(string.(gridsize(g)), "×") * " "
     println(io, dimstring, typeof(g), " with basis vectors:")
-    print(join(basis_string(g.latt), "\n"))
-    vol = abs(det(g.latt))
+    print(join(basis_string(basis(g)), "\n"))
+    vol = cell_volume(basis(g))
     println("\nCell volume: ", vol)
     print("Voxel size: ", vol / prod(gridsize(g)))
 end
