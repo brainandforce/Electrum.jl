@@ -68,7 +68,7 @@ function readWAVECAR(io::IO)
             # Get the bands associated with the k-point
             bands[kp] = [(read(io, Float64), (skip(io, 8); read(io, Float64))) for b in 1:nband]
             @info string(
-                "Read in data for k-point ", kp, "/", nkpt, " (", npw, " planewaves)\n",
+                "Read in data for k-point ", kp, "/", nkpt, " (", npw, " planewaves/band)\n",
                 "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", klist[kp]...)
             )
             for b in 1:nband
