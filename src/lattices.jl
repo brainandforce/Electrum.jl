@@ -245,6 +245,7 @@ Returns the volume of a unit cell defined by a matrix. This volume does not carr
 (negative for cells that do not follow the right hand rule).
 """
 cell_volume(M::AbstractMatrix) = abs(det(M))
+cell_volume(b::BasisVectors) = cell_volume(matrix(b))
 
 """
     generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
