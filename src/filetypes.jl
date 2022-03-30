@@ -54,7 +54,8 @@ function readXSF3D(
     function getlattice!(itr)
         vecs = [parse.(Float64, split(iterate(itr)[1])) for n in 1:3]
         @debug string("Found vectors:\n", vecs)
-        return hcat(vecs...)
+        # Returns a Matrix{Float64}
+        return BasisVectors{3}(hcat(vecs...))
     end
     # Function for getting 3D lists of atoms
     function getatoms!(itr, basis, natom)
@@ -68,12 +69,12 @@ function readXSF3D(
             # Get atomic position (next 3)
             pos = SVector{3,Float64}(parse.(Float64, entries[s]) for s in 2:4)
             # assign atom position struct
-            apos[n] = AtomPosition{3}(num, inv(basis)*pos)
+            apos[n] = AtomPosition{3}(num, basis\pos)
         end
         return AtomList{3}(basis, apos)
     end
     # Function to get grid data
-    # By default, 
+    # By default, trim the edges of the grid (repeated points)
     function getgrid!(itr, sz; trim=true)
         # Store everything in this vector (to be reshaped)
         v = Vector{Float64}(undef, prod(sz))
@@ -101,8 +102,8 @@ function readXSF3D(
     count = 0
     # Preallocated variables
     # Basis vectors
-    prim = zeros(MMatrix{3,3,Float64})
-    conv = zeros(MMatrix{3,3,Float64})
+    prim = zeros(BasisVectors{3})
+    conv = zeros(BasisVectors{3})
     # Atomic positions
     local atom_list::AtomList{3}
     data = Dict{String,RealSpaceDataGrid{3,Float64}}()
@@ -174,7 +175,9 @@ function readXSF3D(
         end
     end
     # If the conventional cell hasn't been defined, generate it
-    iszero(conv) && (conv = prim * inv(REDUCTION_MATRIX_3D[ctr]))
+    if iszero(conv)
+        conv = BasisVectors{3}(REDUCTION_MATRIX_3D[ctr] \ matrix(prim))
+    end
     # Generate the real space lattice
     latt = RealLattice{3}(prim, conv)
     xtal = Crystal{3}(latt, spgrp, origin, atom_list, atom_list)
