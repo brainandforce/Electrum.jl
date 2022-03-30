@@ -11,6 +11,16 @@ struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     # The actual data grid
     grid::Array{T,D}
     # Inner constructor
+    function RealSpaceDataGrid(
+        latt::BasisVectors{D},
+        orig::AbstractVector{<:Real},
+        grid::Array{T,D}
+    ) where {D,T}
+        @assert length(orig) == D "Origin vector does not have the lattice dimensionality"
+        # Make sure the shift values lie in (-0.5, 0.5]
+        orig = orig - floor.(orig)
+        return new{D,T}(latt, orig, grid)
+    end
 end
 
 """
@@ -20,23 +30,23 @@ Creates a real space data grid using lattice information from an `AbstractLattic
 data is assumed to be given in terms of the primitive lattice (as is usually the case for
 computational data).
 """
-function RealSpaceDataGrid{D,T}(
+function RealSpaceDataGrid(
     latt::AbstractLattice{D},
     orig::AbstractVector{<:Real},
     grid::AbstractArray{T,D};
     prim=true
 ) where {D,T}
     # Conversion for safety
-    l = RealLattice{D}(latt)
+    l = RealLattice(latt)
     if prim
-        return RealSpaceDataGrid{D,T}(prim(l), orig, grid)
+        return RealSpaceDataGrid(prim(l), orig, grid)
     else
-        return RealSpaceDataGrid{D,T}(conv(l), orig, grid)
+        return RealSpaceDataGrid(conv(l), orig, grid)
     end
 end
 
 # Data in RealSpaceDataGrids can now be indexed
-Base.getindex(g::RealSpaceDataGrid{D,T} where {D,T}, inds...) = getindex(g.grid, inds...)
+Base.getindex(g::RealSpaceDataGrid, inds...) = getindex(g.grid, inds...)
 
 """
     basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
@@ -44,13 +54,84 @@ Base.getindex(g::RealSpaceDataGrid{D,T} where {D,T}, inds...) = getindex(g.grid,
 Gets the basis vectors of a `RealSpaceDataGrid`.
 """
 basis(g::RealSpaceDataGrid) = g.latt
+shift(g::RealSpaceDataGrid) = g.orig
 grid(g::RealSpaceDataGrid) = g.grid
 # Size of the data grid in entries per dimension
 # TODO: should we overload Base.size() as well?
 gridsize(g::RealSpaceDataGrid{D,T} where {D,T}) = size(g.grid)
 #Base.size(g::RealSpaceDataGrid{D,T} where {D,T}) = gridsize(g)
 
-# TODO: Make mathematical operations on RealSpaceDataGrids easy
+"""
+    grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
+
+Performs a check on two `RealSpaceDataGrid`s to ensure that the basis, origin shift, and grid
+dimensions are the same before performing mathematical operations.
+"""
+function grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
+    @assert basis(g1) === basis(g2) "Grid basis vectors for each grid are not identical."
+    @assert shift(g1) === shift(g2) "Grid shifts from origin are not identical."
+    @assert size(grid(g1)) === size(grid(g2)) "Grid sizes are different."
+    return nothing
+end
+
+# TODO: ensure that type inference works
+# We might be able to remove some type parameter tests as well
+function Base.:+(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
+    # Check that the grids are identical
+    grid_check(g1, g2)
+    # Add the two datagrids elementwise
+    newgrid = grid(g1) + grid(g2)
+    T3 = eltype(newgrid)
+    return RealSpaceDataGrid{D,T3}(basis(g1), shift(g1), newgrid)
+end
+
+function Base.:*(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
+    # Check that the grids are identical
+    @assert basis(g1) === basis(g2) "Grid basis vectors for each grid are not identical."
+    @assert shift(g1) === shift(g2) "Grid shifts from origin are not identical."
+    @assert size(grid(g1)) === size(grid(g2)) "Grid sizes are different."
+    # Add the two datagrids elementwise
+    newgrid = grid(g1) .* grid(g2)
+    T3 = eltype(newgrid)
+    return RealSpaceDataGrid{D,T3}(basis(g1), shift(g1), newgrid)
+end
+
+function Base.:*(s::Number, g::RealSpaceDataGrid{D,T}) where {D,T}
+    newgrid = s * grid(g)
+    S = eltype(newgrid)
+    return RealSpaceDataGrid{D,S}(basis(g), shift(g), newgrid)
+end
+
+Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
+
+#=
+"""
+    interpolate(g::RealSpaceDataGrid{D,T}, inds...)
+
+Evaluates a datagrid at a fractional index by linearly interpolating the values between nearest
+set of points.
+"""
+function interpolate(g::RealSpaceDataGrid{D,T}, inds::Vararg{<:Real,D}) where {D,T}
+    # Get the floor
+    f = floor.(inds)
+    c = ceil.(inds)
+    # If they're the same, it's probably because the indices were integers
+    # Just index the array
+    if f == c
+        return g[inds...]
+    end
+    # Get the set of points needed to perform the interpolation
+end
+
+"""
+    interpolate(g::RealSpaceDataGrid{D,T}, r::AbstractVector{<:Real})
+
+Evaluates a datagrid at the reduced coordinate `r` using linear interpolation.
+"""
+function interpolate(g::RealSpaceDataGrid, r::AbstractVector{<:Real})
+    inds = reduced .* size
+end
+=#
 
 """
     KPointGrid{D} <: AbstractKPoints{D}
