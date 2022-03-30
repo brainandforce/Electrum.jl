@@ -71,6 +71,10 @@ Base.zeros(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}
 Base.:*(b::BasisVectors, s::Number) = BasisVectors(matrix(b) * s)
 Base.:/(b::BasisVectors, s::Number) = BasisVectors(matrix(b) / s)
 
+# And multiplication/division by vectors
+Base.:*(b::BasisVectors, v::AbstractVector) = matrix(b) * v
+Base.:\(b::BasisVectors, v::AbstractVector) = matrix(b) \ v
+
 """
     dual(b::BasisVectors)
 
