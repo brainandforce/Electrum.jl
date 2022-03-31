@@ -2,10 +2,39 @@
     XCFunctional
 
 An enumerated type corresponding to different kinds of exchange-correlation functionals. The 
-enumeration corresponds to the values used by ABINIT.
+enumeration corresponds to the values used by abinit.
+
+The enumeration of functionals is identical to the one given in the abinit documentation:
+https://docs.abinit.org/variables/basic/#ixc
 """
 @enum XCFunctional begin
-    LDA = 1
+    NOXC = 0
+    LSDA_TETER = 1
+    LDA_PZCA = 2
+    LDA_TETER_OLD = 3
+    LDA_WIGNER = 4
+    LDA_HEDIN_LUNDQVIST = 5
+    LDA_X_ALPHA = 6
+    LSDA_PERDEW_WANG = 7
+    LSDA_PERDEW_WANG_X = 8
+    LSDA_PERDEW_WANG_X_RPA = 9
+    GGA_PBE = 11
+    GGA_PBE_X = 12
+    GGA_VAN_LEEUWEN_BAERENDS = 13
+    GGA_REVPBE = 14
+    GGA_RPBE = 15
+    GGA_HTCH93 = 16
+    GGA_HTCH120 = 17
+    FERMI_AMALDI = 20
+    FERMI_AMALDI_LDA = 21
+    FERMI_AMALDI_BPG = 22
+    GGA_WU2006 = 23
+    GGA_C09X = 24
+    GGA_HTCH147 = 26
+    GGA_HTCH407 = 27
+    HF = 40
+    PBE0 = 41
+    PBE013 = 42
 end
 
 """
