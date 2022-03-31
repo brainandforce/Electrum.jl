@@ -303,7 +303,12 @@ function writeXSF(filename::AbstractString, xtaldata::CrystalWithDatasets; perio
     end
 end
 
-# Reading pseudopotentials
+"""
+    readHGH(io::IO)
+
+Reads information for an abinit-formatted HGH pseudopotential. Pseudopotential information may be
+downloaded from here: https://www.abinit.org/sites/default/files/PrevAtomicData/psp-links/hgh.html
+"""
 function readHGH(io::IO)
     # Function to generate the off-diagonal h and k coefficients
     function gen_h_k(m::AbstractMatrix, lmax::Integer)
@@ -358,6 +363,8 @@ function readHGH(io::IO)
     k = gen_h_k(k_diag, lmax)
     return HGHPseudopotential(zatom, zion, rloc, c, r, h, k)
 end
+
+readHGH(filename::AbstractString) = open(readHGH, filename)
 
 # Include code for processing specific types of files
 include("abinit.jl")
