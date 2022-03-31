@@ -46,6 +46,10 @@ abinit norm-conserving pseudopotential calculations.
 
 HGH pseudopotentials are relativistic and separable, and consist of a local (real space) portion
 and a nonlocal (reciprocal space) portion.
+
+Although HGH pseudopotential data is freely available, and in principle we could load in all 
+existing HGH pseudopotentials into this package, this data structure allows alteration of the 
+pseudopotential parameters.
 """
 struct HGHPseudopotential <: AbstractPotential
     # Atomic number
