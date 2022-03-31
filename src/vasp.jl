@@ -171,8 +171,7 @@ function readPROCAR(io::IO)
     ln = readline(io)
     
     if cmp(split(ln)[2], "lm") == -1
-        println("Not a lm-decomposed PROCAR. Use a different PROCAR.")
-        return
+        error("Not a lm-decomposed PROCAR. Use a different PROCAR.")
     end
     
     # Get number of kpoints, number of bands, number of ions
@@ -182,8 +181,10 @@ function readPROCAR(io::IO)
     nion = parse(Int,split(ln)[12])
     
     # Initializes containers... to be fixed
-    kptlist = Vector{Vector{Float64}}(undef,nkpt)
-    kptwt = Vector{Float64}(undef,nkpt)
+    kptlist = KPointList{3}(Vector{SVector{3,Float64}}(undef, nkpt))
+    # Contains kpoint weight. Unused for now.
+    # kptwt = Vector{Float64}(undef,nkpt)
+    bandatkpt = Vector{BandAtKPoint}(undef,nkpt)
     energies = Matrix{Float64}(undef, nkpt, nband)
     occupancies = Matrix{Float64}(undef, nkpt, nband)
     projband = Array{Float64,4}(undef,9,nion,nband,nkpt)
@@ -192,7 +193,7 @@ function readPROCAR(io::IO)
         readuntil(io, "k-point")
         ln = readline(io)
         kptlist[i] = parse.(Float64, split(ln)[3:5])
-        kptwt[i] = parse.(Float64, split(ln)[8])
+        # kptwt[i] = parse.(Float64, split(ln)[8])
         for j in 1:nband
             readuntil(io,"band")
             ln = readline(io)
@@ -205,10 +206,16 @@ function readPROCAR(io::IO)
             end
             readline(io)
         end
+        bandatkpt[i] = BandAtKPoint(energies[i,:], occupancies[i,:])
     end
-    # For now, returns band energies and the proj_band
-    return(energies,projband)
-    close(io)
+    
+    return FatBands{3}(
+        BandStructure{3}(
+            kptlist,
+            bandatkpt
+        ),
+        projband,
+    )
 end
 
 readPROCAR(filename::AbstractString) = open(readPROCAR, filename)
