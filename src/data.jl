@@ -87,7 +87,11 @@ struct KPointList{D} <: AbstractKPoints{D}
 end
 
 # Index like the vector it is internally
-Base.getindex(k::KPointList{D}, i) where D = k.list[i]
+Base.getindex(k::KPointList, i) = k.list[i]
+
+function Base.setindex!(k::KPointList, v::AbstractVector, i)
+    k.list[i] = v
+end
 
 """
     nkpt(k::KPointList{D}) -> Int
