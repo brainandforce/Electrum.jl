@@ -83,7 +83,8 @@ include("vectors.jl")
 # Abstract types used in type tree
 include("types.jl")
 export AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData, 
-       AbstractReciprocalSpaceData, AbstractKPoints, AbstractDensityOfStates
+       AbstractReciprocalSpaceData, AbstractKPoints, AbstractDensityOfStates, AbsractPotential,
+       AbstractPseudopotential
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export BasisVectors, RealLattice, ReciprocalLattice
@@ -101,10 +102,12 @@ include("data.jl")
 export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
        ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands
 export grid, gridsize, nkpt, nband, fermi, energies, nelectrons
+include("potentials.jl")
+export XCFunctional, HGHPseudopotential, zatom, zion
 # Methods and structs for working with different file formats
 include("filetypes.jl")
 export readXYZ, readXSF3D, writeXSF, read_abinit_density, read_abinit_potential, readWAVECAR,
-       readDOSCAR, readPROCAR
+       readDOSCAR, readPROCAR, readHGH
 # Show methods for pretty printing this module's structs
 include("show.jl")
 # Precompilation directives
