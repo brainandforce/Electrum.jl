@@ -60,6 +60,8 @@ struct HGHPseudopotential <: AbstractPotential
     pspxc::XCFunctional
     # Maximum value of l (for spherical harmonics)
     lmax::Int8
+    # Not sure what this particular value is...
+    rloc::Float64
     # Some coefficients
     c::SVector{4,Float64}
     # r coefficients
