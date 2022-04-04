@@ -176,7 +176,7 @@ function readPROCAR(io::IO)
     ln = readline(io)
     
     # Checks for lm-decomposed PROCAR
-    if cmp(split(ln)[2], "lm") == -1
+    if !(split(ln)[2] == "lm")
         error("Not a lm-decomposed PROCAR. Use a different PROCAR.")
     end
     
