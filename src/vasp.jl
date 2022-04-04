@@ -167,38 +167,39 @@ readDOSCAR(filename::AbstractString) = open(readDOSCAR, filename)
 
 readDOSCAR() = open(readDOSCAR, "DOSCAR")
 
+"""
+    readPROCAR(io::IO) -> FatBands{3}
+
+Reads an lm-decomposed PROCAR file from VASP and returns its data as a FatBands struct.
+"""
 function readPROCAR(io::IO)
     ln = readline(io)
     
+    # Checks for lm-decomposed PROCAR
     if cmp(split(ln)[2], "lm") == -1
         error("Not a lm-decomposed PROCAR. Use a different PROCAR.")
     end
     
-    # Get number of kpoints, number of bands, number of ions
-    ln = readline(io)
-    nkpt = parse(Int,split(ln)[4])
-    nband = parse(Int,split(ln)[8])
-    nion = parse(Int,split(ln)[12])
+    # Read header for number of kpoints, number of bands, number of ions
+    (nkpt, nband, nion) = parse.(Int, split(readline(io))[[4, 8, 12]])
     
-    # Initializes containers... to be fixed
-    kptlist = KPointList{3}(Vector{SVector{3,Float64}}(undef, nkpt))
-    # Contains kpoint weight. Unused for now.
+    # Initializes containers. Some are unused for now, with potentially useful information is commented out.
+    # kptlist = KPointList{3}(Vector{SVector{3,Float64}}(undef, nkpt))
     # kptwt = Vector{Float64}(undef,nkpt)
-    bandatkpt = Vector{BandAtKPoint}(undef,nkpt)
-    energies = Matrix{Float64}(undef, nkpt, nband)
-    occupancies = Matrix{Float64}(undef, nkpt, nband)
-    projband = Array{Float64,4}(undef,9,nion,nband,nkpt)
+    # occupancies = Matrix{Float64}(undef, nkpt, nband)
+    energies = zeros(Float64, nkpt, nband)
+    projband = zeros(Float64, 9, nion, nband, nkpt)
     # Begins loop
     for i in 1:nkpt
         readuntil(io, "k-point")
         ln = readline(io)
-        kptlist[i] = parse.(Float64, split(ln)[3:5])
+        # kptlist[i] = parse.(Float64, split(ln)[3:5])
         # kptwt[i] = parse.(Float64, split(ln)[8])
         for j in 1:nband
             readuntil(io,"band")
             ln = readline(io)
             energies[i,j] = parse(Float64, split(ln)[4])
-            occupancies[i,j] = parse(Float64, split(ln)[7])
+            #occupancies[i,j] = parse(Float64, split(ln)[7])
             readuntil(io,"tot\n")
             for k in 1:nion
                 ln = readline(io)
@@ -206,14 +207,11 @@ function readPROCAR(io::IO)
             end
             readline(io)
         end
-        bandatkpt[i] = BandAtKPoint(energies[i,:], occupancies[i,:])
     end
     
+    # Returns a FatBands struct
     return FatBands{3}(
-        BandStructure{3}(
-            kptlist,
-            bandatkpt
-        ),
+        energies,
         projband,
     )
 end
