@@ -1,8 +1,3 @@
-"""
-    Xtal
-
-A module to assist with performing calculations on crystal structures.
-"""
 module Xtal
 
 using StaticArrays
