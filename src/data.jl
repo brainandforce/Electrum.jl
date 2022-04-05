@@ -541,3 +541,42 @@ function nelectrons(d::DensityOfStates)
     b = i1 - m*e1
     return m*fermi(d) + b
 end
+
+"""
+    AtomicData{D,T}
+
+Data associated with individual atoms in a structure.
+
+This is a type alias for `Dict{AtomPosition{D},T}`.
+"""
+const AtomicData{D,T} = Dict{AtomPosition{D},T} where {D,T}
+
+# Note: @computed structs cannot be documented normally
+# Use an @doc after the struct, like such
+@computed struct SphericalComponents{Lmax}
+    v::NTuple{(Lmax+1)^2,Float64}
+end
+
+@doc """
+    SphericalComponents{Lmax}
+
+Real spherical harmonic components up to `Lmax`.
+""" SphericalComponents
+
+SphericalComponents{Lmax}(v::AbstractVector) where Lmax = SphericalComponents{Lmax}(Tuple(v))
+
+"""
+    sc_ind(l::Integer, m::Integer) -> Int
+
+Gets the associated linear index for a pair of (l,m) values used in `SphericalComponents`.
+"""
+sc_ind(l::Integer, m::Integer) = l^2 + l + 1 + m
+
+# TODO: finish the inverse of the above function
+# sc_ind(x) = 
+
+function Base.getindex(s::SphericalComponents{Lmax}, l::Integer, m::Integer) where Lmax
+    abs(m) <= l || error("|m| must be less than l")
+    l <= Lmax || error("l exceeds lmax ($Lmax)")
+    return s.v[sc_ind(l, m)]
+end

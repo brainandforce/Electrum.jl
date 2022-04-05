@@ -8,6 +8,7 @@ module Xtal
 using StaticArrays
 using LinearAlgebra
 using Printf
+using ComputedFieldTypes
 
 const ELEMENTS = 
 ( 
@@ -100,7 +101,8 @@ export natom_template
 # Methods and structs for working with different types of data associated with crystals
 include("data.jl")
 export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
-       ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands
+       ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands, AtomicData,
+       SphericalComponents
 export grid, gridsize, nkpt, nband, fermi, energies, nelectrons
 include("potentials.jl")
 export XCFunctional, HGHPseudopotential, zatom, zion
