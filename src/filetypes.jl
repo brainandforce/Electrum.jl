@@ -303,6 +303,35 @@ function writeXSF(filename::AbstractString, xtaldata::CrystalWithDatasets; perio
     end
 end
 
+"""
+    readCPcoeff(io::IO, Lmax::Val{L}) -> SphericalComponents{L}
+
+Reads in the spherical harmonic projection coefficients from a CPpackage2 calculation.
+
+By default, CPpackage2 gives the coefficients for spherical harmonics up to a maximum l value of 6.
+"""
+function readCPcoeff(io::IO, Lmax::Val{L}=Val(6)) where L
+    # All the data should be in a Vector{Float64} with this one line
+    data = parse.(Float64, [v[2] for v in split.(readlines(io))])
+    @debug "$(length(data)) lines in file"
+    # Number of spherical harmonic coefficients
+    ncoeff = (L + 1)^2
+    natom = div(length(data), ncoeff)
+    @debug "ncoeff = $ncoeff, natom = $natom"
+    return [SphericalComponents{L}(data[(n - 1)*ncoeff .+ (1:ncoeff)]) for n in 1:natom]
+end
+
+readCPcoeff(filename::AbstractString) = open(readCPcoeff, filename)
+
+"""
+    readCPgeo(io::IO)
+
+Reads the basis vectors used for a CPpackage2 calculation.
+"""
+function readCPgeo(io::IO)
+
+end
+
 # Include code for processing specific types of files
 include("abinit.jl")
 include("vasp.jl")
