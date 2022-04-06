@@ -560,7 +560,8 @@ end
 @doc """
     SphericalComponents{Lmax}
 
-Real spherical harmonic components up to `Lmax`.
+Real spherical harmonic components up to `Lmax`. This can be used to describe atomic orbitals or
+projections of data onto atomic sites.
 """ SphericalComponents
 
 SphericalComponents{Lmax}(v::AbstractVector) where Lmax = SphericalComponents{Lmax}(Tuple(v))

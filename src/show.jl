@@ -191,7 +191,7 @@ function Base.show(
     io::IO,
     ::MIME"text/plain",
     s::SphericalComponents{Lmax};
-    showto = 4
+    showto = 3
 ) where Lmax
     print(io, "SphericalComponents{$Lmax}", ":\n", " "^13)
     # Only print up to l=4 components by default
