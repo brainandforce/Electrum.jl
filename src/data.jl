@@ -564,7 +564,25 @@ Real spherical harmonic components up to `Lmax`. This can be used to describe at
 projections of data onto atomic sites.
 """ SphericalComponents
 
-SphericalComponents{Lmax}(v::AbstractVector) where Lmax = SphericalComponents{Lmax}(Tuple(v))
+function SphericalComponents(v::AbstractVector)
+    L = sqrt(length(v)) - 1
+    if isinteger(L)
+        Lmax = Int(L)
+        return SphericalComponents{Lmax}(Tuple(v))
+    else
+        throw(ArgumentError("Cannot determine Lmax from number of vector components"))
+    end
+end
+
+function SphericalComponents(x::Vararg{Real,N}) where N
+    L = sqrt(N) - 1
+    if isinteger(L)
+        Lmax = Int(L)
+        return SphericalComponents{Lmax}(x)
+    else
+        throw(ArgumentError("Cannot determine Lmax from number of arguments"))
+    end
+end
 
 """
     sc_ind(l::Integer, m::Integer) -> Int
