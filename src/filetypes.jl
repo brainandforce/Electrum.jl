@@ -324,13 +324,30 @@ end
 readCPcoeff(filename::AbstractString) = open(readCPcoeff, filename)
 
 """
-    readCPgeo(io::IO)
+    readCPgeo(io::IO) -> Vector{AtomPosition{3}}
 
-Reads the basis vectors used for a CPpackage2 calculation.
+Reads the atomic positions used for a CPpackage2 calculation.
 """
 function readCPgeo(io::IO)
-
+    lns = readlines(io)
+    atomnames = [v[1] for v in split.(lns)]
+    positions = [parse.(Float64, v[2:4]) for v in split.(lns)]
+    return AtomPosition{3}.(atomnames, positions)
 end
+
+readCPgeo(filename::AbstractString) = open(readCPgeo, filename)
+
+"""
+    readCPcell(io::IO) -> BasisVectors{3}
+
+Reads the basis vectors of the unit cell used for a CPpackage2 calculation.
+"""
+function readCPcell(io::IO)
+    matrix = hcat([parse.(Float64, v) for v in split.(readlines(io))]...)
+    return BasisVectors{3}(matrix)
+end
+
+readCPcell(filename::AbstractString) = open(readCPcell, filename)
 
 # Include code for processing specific types of files
 include("abinit.jl")
