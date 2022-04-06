@@ -21,6 +21,7 @@ You can access package mode by typing `]` at the REPL.
      + VASP WAVECAR, DOSCAR, and PROCAR
      + XCrysDen XSF
      + XYZ files
+     + CPpackage2 outputs
 * Writing of common file formats:
      + XCrysDen XSF
 
