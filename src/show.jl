@@ -193,8 +193,9 @@ function Base.show(
     s::SphericalComponents{Lmax};
     showto = 3
 ) where Lmax
+    # Don't include generated second type parameter
     print(io, "SphericalComponents{$Lmax}", ":\n", " "^13)
-    # Only print up to l=4 components by default
+    # Only print up to l=3 components by default (kw showto)
     Lmax_eff = min(showto, Lmax)
     for m = -Lmax_eff:Lmax_eff
         print(io, rpad("m = $m", 12))
@@ -210,6 +211,6 @@ function Base.show(
         end
     end
     if showto < Lmax
-        print("\n(higher order components omitted for brevity)")
+        print(io, "\n(higher order components omitted for brevity)")
     end
 end
