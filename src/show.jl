@@ -187,19 +187,29 @@ function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets{D,K,V}) wh
     show(io, MIME("text/plain"), x.data)
 end
 
-function Base.show(io::IO, ::MIME"text/plain", s::SphericalComponents{Lmax}) where Lmax
+function Base.show(
+    io::IO,
+    ::MIME"text/plain",
+    s::SphericalComponents{Lmax};
+    showto = 4
+) where Lmax
     print(io, "SphericalComponents{$Lmax}", ":\n", " "^13)
-    for m = -Lmax:Lmax
+    # Only print up to l=4 components by default
+    Lmax_eff = min(showto, Lmax)
+    for m = -Lmax_eff:Lmax_eff
         print(io, rpad("m = $m", 12))
     end
-    for l in 0:Lmax
+    for l in 0:Lmax_eff
         print(io, "\n", rpad("l = $l:", 8))
-        for m = -Lmax:Lmax
+        for m = -Lmax_eff:Lmax_eff
             if abs(m) <= l
                 print(io, lpad(@sprintf("%6f", s[l,m]), 12))
             else
                 print(io, " "^12)
             end
         end
+    end
+    if showto < Lmax
+        print("\n(higher order components omitted for brevity)")
     end
 end
