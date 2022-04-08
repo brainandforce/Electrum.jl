@@ -97,7 +97,7 @@ Base.:/(b::BasisVectors, s::Number) = BasisVectors(matrix(b) / s)
 
 # And multiplication/division by vectors
 Base.:*(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) * v
-Base.:*(v::AbstractVecOrMat, b::BasisVectors) = BasisVectors(v * matrix(b))
+Base.:*(v::AbstractVecOrMat, b::BasisVectors) = v * matrix(b)
 Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
 
 """
