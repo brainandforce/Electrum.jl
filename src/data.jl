@@ -547,7 +547,8 @@ end
 
 Data associated with individual atoms in a structure.
 
-This is a type alias for `Dict{AtomPosition{D},T}`.
+This is a type alias for `Dict{AtomPosition{D},T}`. Keys are `AtomPosition` entries, and the values
+may be of any type.
 """
 const AtomicData{D,T} = Dict{AtomPosition{D},T} where {D,T}
 
@@ -555,6 +556,21 @@ const AtomicData{D,T} = Dict{AtomPosition{D},T} where {D,T}
 # Use an @doc after the struct, like such
 @computed struct SphericalComponents{Lmax}
     v::NTuple{(Lmax+1)^2,Float64}
+    # Default constructor without parameters takes numbers directly
+    function SphericalComponents(x::Vararg{<:Real,N}) where N
+        L = sqrt(length(x)) - 1
+        if isinteger(L)
+            Lmax = Int(L)
+        else
+            throw(ArgumentError(string("Cannot determine Lmax from number of arguments.")))
+        end
+        return new{Lmax}(x)
+    end
+    # Default constructor with parameters takes any iterator
+    function SphericalComponents{Lmax}(v) where Lmax
+        @assert length(v) == (Lmax+1)^2 "For Lmax == $Lmax, iterator have length $((Lmax+1)^2)"
+        return new{Lmax}(Tuple(v))
+    end
 end
 
 @doc """
@@ -564,25 +580,8 @@ Real spherical harmonic components up to `Lmax`. This can be used to describe at
 projections of data onto atomic sites.
 """ SphericalComponents
 
-function SphericalComponents(v::AbstractVector)
-    L = sqrt(length(v)) - 1
-    if isinteger(L)
-        Lmax = Int(L)
-        return SphericalComponents{Lmax}(Tuple(v))
-    else
-        throw(ArgumentError("Cannot determine Lmax from number of vector components"))
-    end
-end
-
-function SphericalComponents(x::Vararg{Real,N}) where N
-    L = sqrt(N) - 1
-    if isinteger(L)
-        Lmax = Int(L)
-        return SphericalComponents{Lmax}(x)
-    else
-        throw(ArgumentError("Cannot determine Lmax from number of arguments"))
-    end
-end
+SphericalComponents(v::SVector{N,<:Real}) where N = SphericalComponents(v...)
+SphericalComponents(t::NTuple{N,<:Real}) where N = SphericalComponents(t...)
 
 """
     sc_ind(l::Integer, m::Integer) -> Int
