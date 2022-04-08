@@ -5,16 +5,24 @@ Runs checks on a matrix intended to represent basis vectors of a crystal unit ce
 nothing, but warns if the cell vectors form a left-handed coordinate system, and throws an 
 `AssertionError` if the cell vectors are not linearly independent.
 """
-@inline function lattice_sanity_check(M::AbstractMatrix)
-    @assert (det(M) != 0) "cell vectors are not linearly independent."
-    det(M) < 0 && @warn "cell vectors form a left-handed coordinate system."
+@inline function lattice_sanity_check(M::AbstractMatrix{<:Real})
+    # Skip this check for lattices that are zero (meaning unspecified basis)
+    if iszero(M)
+        return nothing
+    end
+    @assert det(M) != 0 string(
+        "cell vectors are not linearly independent.\n",
+        "Matrix contents: ", M
+    )
+    det(M) < 0  && @warn "cell vectors form a left-handed coordinate system."
     return nothing
 end
 
 # TODO: can we use views on vectors of vectors to get a matrix?
-lattice_sanity_check(vs::AbstractVector{AbstractVector}) = lattice_sanity_check(hcat(vs...))
+function lattice_sanity_check(vs::AbstractVector{<:AbstractVector{<:Real}}) 
+    return lattice_sanity_check(hcat(vs...))
+end
 
-#=
 """
     BasisVectors{D}
 
@@ -27,21 +35,21 @@ length declaration that would be required by an `SMatrix`.
 indexing with a single value returns an `SVector{D,Float64}`, not a value as would happen with most
 subtypes of `AbstractMatrix`.
 """
-=#
 struct BasisVectors{D}
     vs::SVector{D,SVector{D,Float64}}
-    # General inner constructor for vectors of vectors
-    function BasisVectors{D}(vs::AbstractVector{<:AbstractVector}) where D
-        lattice_sanity_check(vs)
-        return new{D}(vs)
+    # TODO: there's probably a nicer way to handle this, but whatever
+    # Inner constructor for all matrices
+    function BasisVectors{D}(M::AbstractMatrix{<:Real}) where D
+        lattice_sanity_check(M)
+        return new{D}([M[:,n] for n in 1:size(M,2)])
     end
-    # Same for matrices
-    function BasisVectors{D}(M::AbstractMatrix) where D
+    # And for all vectors of vectors
+    function BasisVectors{D}(M::AbstractVector{AbstractVector{<:Real}}) where D
         lattice_sanity_check(M)
         return new{D}([M[:,n] for n in 1:size(M,2)])
     end
     # If SVectors are used directly, this one can be called
-    function BasisVectors(vs::SVector{D,SVector{D,<:Real}}) where D
+    function BasisVectors(vs::SVector{D,<:SVector{D,<:Real}}) where D
         lattice_sanity_check(vs)
         return new{D}(vs)
     end
@@ -52,6 +60,14 @@ struct BasisVectors{D}
     end
 end
 
+BasisVectors(vs::Vararg{AbstractVector{<:Real}, D}) where D = BasisVectors{D}(hcat(vs...))
+BasisVectors{D}(vs::AbstractVector{<:AbstractVector}) where D = BasisVectors{D}(hcat(vs...))
+
+# TODO: might this be better off as an inner constructor?
+function BasisVectors(M::AbstractMatrix{<:Real})
+    return BasisVectors(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
+end
+
 # This should get a vector
 Base.getindex(b::BasisVectors, ind) = b.vs[ind]
 # This should treat BasisVectors like matrices
@@ -59,21 +75,30 @@ Base.getindex(b::BasisVectors, i1, i2) = b[i2][i1]
 
 vectors(b::BasisVectors) = b.vs
 matrix(b::BasisVectors{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
+
+# This is needed for broadcasting
+Base.length(b::BasisVectors) = length(b.vs)
+Base.iterate(b::BasisVectors{D}, state) where D = iterate(b.vs, state) 
+Base.iterate(b::BasisVectors{D}) = iterate(b, 1)
+
 # TODO: does this make sense?
 Base.convert(::Type{SMatrix{D,D,Float64}}, b::BasisVectors{D}) where D = matrix(b)
+# TODO: do we need other kinds of conversions?
 
-Base.zero(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
-Base.zero(::BasisVectors{D}) where D = zeros(SVector{D,SVector{D,Float64}})
-Base.zeros(::Type{BasisVectors{D}}) where D = zeros(SVector{D,SVector{D,Float64}})
+Base.zero(::Type{BasisVectors{D}}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
+Base.zero(::BasisVectors{D}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
+Base.zeros(::Type{BasisVectors{D}}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
 
 # Definitions for multiplication/division by a scalar
 # TODO: there's probably a more efficient way to do this
-Base.:*(b::BasisVectors, s::Number) = BasisVectors(matrix(b) * s)
+Base.:*(s::Number, b::BasisVectors) = BasisVectors(matrix(b) * s)
+Base.:*(b::BasisVectors, s::Number) = s * b
 Base.:/(b::BasisVectors, s::Number) = BasisVectors(matrix(b) / s)
 
 # And multiplication/division by vectors
-Base.:*(b::BasisVectors, v::AbstractVector) = matrix(b) * v
-Base.:\(b::BasisVectors, v::AbstractVector) = matrix(b) \ v
+Base.:*(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) * v
+Base.:*(v::AbstractVecOrMat, b::BasisVectors) = BasisVectors(v * matrix(b))
+Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
 
 """
     dual(b::BasisVectors)
@@ -84,11 +109,6 @@ Generates the dual lattice defined by a set of basis vectors.
 that are used crystallographically (τ = 2π).
 """
 dual(b::BasisVectors) = BasisVectors(inv(transpose(matrix(b))))
-
-# TODO: might this be better off as an inner constructor?
-function BasisVectors(M::AbstractMatrix{<:Real})
-    return BasisVectors(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
-end
 
 """
     RealLattice{D}
@@ -237,6 +257,7 @@ end
 Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
 cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
+cell_lengths(b::BasisVectors) = cell_lengths(matrix(b))
 
 """
     cell_volume(M::AbstractMatrix)
