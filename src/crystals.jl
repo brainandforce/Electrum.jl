@@ -56,6 +56,7 @@ struct CrystalWithDatasets{D,K,V} <: AbstractCrystalData{D}
 end
 
 # Allow for getting datasets by key; no need to reach into the Dict
+# TODO: figure out how autocompletion works and how to enable it here
 function Base.getindex(xtaldata::CrystalWithDatasets{D,K,V}, key::K) where {D,K,V}
     return xtaldata.data[key]
 end
