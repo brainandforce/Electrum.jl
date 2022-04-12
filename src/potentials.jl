@@ -6,6 +6,10 @@ enumeration corresponds to the values used by abinit.
 
 The enumeration of functionals is identical to the one given in the abinit documentation:
 https://docs.abinit.org/variables/basic/#ixc
+
+Functionals are described as `LDA` for local density approximations (without support for spin), 
+`LSDA` for local spin-density approximations (which support systems with and without spin), and 
+`GGA` for generalized gradient approximations.
 """
 @enum XCFunctional begin
     NOXC = 0
@@ -91,6 +95,9 @@ zion(p::AbstractPotential) = zatom(p)
     AlchemicalPotential{T<:AbstractPotential}
 
 An alchemical potential, which can be used to describe a crystal site with mixed occupancy.
+
+The `pot` field consists of the potentials used to construct the alchemical potential, and the 
+`coeff` field is a `Vector{Float64}` describing the relative contribution of each listed potential.
 """
 struct AlchemicalPotential{T<:AbstractPotential} <: AbstractPotential
     pot::Vector{T}
