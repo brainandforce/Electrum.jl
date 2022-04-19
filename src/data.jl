@@ -272,14 +272,15 @@ nband(b::BandStructure{D}) where D = nband(b.bands[1])
 
 Stores information relevant to plotting fatbands.
 
-FatBands.bands is a matrix that stores the energies at each (kpt, band).
-
-FatBands.projband is a 4D array that stores the contributions of each lm-decomposed
-band of the band structure. (orbital, ion, band, kpt).
+- FatBands.bands: matrix of energies at each [kpt, band].
+- FatBands.projband: array of lm-decomposed band structure. [orbital, ion, band, kpt].
+- FatBands.realband (and imagband): array of real/imaginary components to band structure.
 """
 struct FatBands{D} <: AbstractReciprocalSpaceData{D}
     bands::Matrix{Float64}
     projband::Array{Float64,4}
+    realband::Array{Float64,4}
+    imagband::Array{Float64,4}
 end
 
 """
