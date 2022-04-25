@@ -474,15 +474,15 @@ struct ProjectedDensityOfStates
     # Columns are the components, rows are the energies
     dos::Matrix{Float64}
     # Integrated DOS in the same format
-    int::Matrix{Float64}
+#    int::Matrix{Float64}
     function ProjectedDensityOfStates(
         fermi::Real,
         energy::AbstractVector{<:Real},
-        dos::AbstractMatrix{<:Real},
-        int::AbstractMatrix{<:Real}
+        dos::AbstractMatrix{<:Real}
+#        int::AbstractMatrix{<:Real}
     )
         @assert length(energy) == size(dos,2) "Number of energy and DOS entries do not match."
-        return new(fermi, energy, dos, int)
+        return new(fermi, energy, dos)#, int)
     end
 end
 
