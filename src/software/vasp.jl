@@ -181,6 +181,8 @@ function readPROCAR(io::IO)
     end
     if split(ln)[length(split(ln))] == "phase"
         has_phase = true
+    else
+    	has_phase = false
     end
 
     # Read header for number of kpoints, number of bands, number of ions
