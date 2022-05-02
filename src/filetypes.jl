@@ -350,5 +350,5 @@ end
 readCPcell(filename::AbstractString) = open(readCPcell, filename)
 
 # Include code for processing specific types of files
-include("abinit.jl")
-include("vasp.jl")
+include("software/abinit.jl")
+include("software/vasp.jl")

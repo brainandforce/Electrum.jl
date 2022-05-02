@@ -16,7 +16,7 @@ strictly binding, but make sure that you know why you're breaking the rules if y
 
 Supertype for all lattices of dimension D.
 
-Members consist of a set of primitive lattic vectors and a set of conventional lattice vectors, 
+Members consist of a set of primitive lattice vectors and a set of conventional lattice vectors, 
 each stored in `BasisVectors{D}`.
 
 An `AbstractLattice` must implement the following checks:

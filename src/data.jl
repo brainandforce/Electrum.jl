@@ -485,7 +485,7 @@ struct ProjectedDensityOfStates
     end
 end
 
-"""
+#="""
     ProjectedDensityOfStates(
         fermi::Real,
         energy::AbstractVector{<:Real},
@@ -504,7 +504,7 @@ function ProjectedDensityOfStates(
     # TODO: perhaps we can improve this with a trapezoidal approximation?
     int = hcat(vec(sum(M[:,1:n], dims=2)) for n in 1:size(M,2))
     return ProjectedDensityOfStates(fermi, energy, dos, int)
-end
+end=#
 
 """
     fermi(d::AbstractDensityOfStates) -> Float64
