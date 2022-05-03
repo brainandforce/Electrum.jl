@@ -179,10 +179,9 @@ function readPROCAR(io::IO)
     if !(split(ln)[2] == "lm")
         error("Not a lm-decomposed PROCAR. Use a different PROCAR.")
     end
+    has_phase = false
     if split(ln)[length(split(ln))] == "phase"
         has_phase = true
-    else
-    	has_phase = false
     end
 
     # Read header for number of kpoints, number of bands, number of ions
