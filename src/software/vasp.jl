@@ -179,7 +179,12 @@ function readPROCAR(io::IO)
     if !(split(ln)[2] == "lm")
         error("Not a lm-decomposed PROCAR. Use a different PROCAR.")
     end
-    
+    if split(ln)[length(split(ln))] == "phase"
+        has_phase = true
+    else
+    	has_phase = false
+    end
+
     # Read header for number of kpoints, number of bands, number of ions
     (nkpt, nband, nion) = parse.(Int, split(readline(io))[[4, 8, 12]])
     
@@ -189,6 +194,8 @@ function readPROCAR(io::IO)
     # occupancies = Matrix{Float64}(undef, nkpt, nband)
     energies = zeros(Float64, nkpt, nband)
     projband = zeros(Float64, 9, nion, nband, nkpt)
+    phase_real = zeros(Float64, 9, nion, nband, nkpt)
+    phase_imag = zeros(Float64, 9, nion, nband, nkpt)
     # Begins loop
     for i in 1:nkpt
         readuntil(io, "k-point")
@@ -206,6 +213,15 @@ function readPROCAR(io::IO)
                 projband[:,k,j,i] = parse.(Float64, split(ln)[2:10])
             end
             readline(io)
+            if has_phase
+                readline(io)
+                for k in 1:nion
+                    ln = readline(io)
+                    phase_real[:,k,j,i] = parse.(Float64, split(ln)[2:10])
+                    ln = readline(io)
+                    phase_imag[:,k,j,i] = parse.(Float64, split(ln)[2:10])
+                end
+            end
         end
     end
     
@@ -213,6 +229,8 @@ function readPROCAR(io::IO)
     return FatBands{3}(
         energies,
         projband,
+        phase_real,
+        phase_imag,
     )
 end
 
