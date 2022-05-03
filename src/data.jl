@@ -479,10 +479,10 @@ struct ProjectedDensityOfStates
         fermi::Real,
         energy::AbstractVector{<:Real},
         dos::AbstractMatrix{<:Real}
-#        int::AbstractMatrix{<:Real}
+        #int::AbstractMatrix{<:Real}
     )
         @assert length(energy) == size(dos,2) "Number of energy and DOS entries do not match."
-        return new(fermi, energy, dos)#, int)
+        return new(fermi, energy, dos) #, int)
     end
 end
 
