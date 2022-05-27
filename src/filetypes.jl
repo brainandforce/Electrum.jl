@@ -221,7 +221,7 @@ function writeXSF(io::IO, xtal::Crystal{D}) where D
     println(io, D, "  1")
     # Primitive cell vectors
     println(io, "PRIMVEC")
-    for (n, x) in enumerate(prim(xtal))
+    for (n, x) in enumerate(matrix(prim(xtal)))
         @printf(io, "%20.14f  ", x)
         n % D == 0 && println(io)
     end
@@ -259,7 +259,7 @@ function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) wher
     end
     print(io, "\n" * " "^4)
     # Print the basis vectors for the grid
-    for (n, x) in enumerate(basis(data))
+    for (n, x) in enumerate(matrix(basis(data)))
         @printf(io, "%20.14f", x)
         n % D == 0 && print(io, "\n" * " "^4)
     end
