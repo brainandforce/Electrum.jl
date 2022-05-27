@@ -116,9 +116,10 @@ function cartesian(l::AtomList{D}) where D
     # If the basis vectors are zero we're assuming Cartesian coordinates
     basis(l) == zeros(BasisVectors{D}) && return l
     newlist = map(a -> cartesian(l.basis, a), l.coord)
-    return AtomList{D}(zeros(Basis{D}), newlist)
+    return AtomList{D}(zeros(BasisVectors{D}), newlist)
 end
 
+# TODO: clean up these method definitions into something that makes more sense
 """
     cartesian(b::AbstractMatrix{<:Real}, a::AtomPosition{D}) -> AtomPosition{D}
 
@@ -129,6 +130,8 @@ function cartesian(b::AbstractMatrix{<:Real}, a::AtomPosition{D}) where D
     newpos = b * a.pos
     return AtomPosition{D}(a.name, a.num, newpos)
 end
+
+cartesian(b::BasisVectors{D}, a::AtomPosition{D}) where D = cartesian(matrix(b), a)
 
 """
     reduce_coords(basis::AbstractMatrix{<:Real}, a::AtomPosition; incell=false)

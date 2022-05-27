@@ -654,7 +654,7 @@ function read_abinit_density(io::IO)
     header = read_abinit_header(io)
     # Get the type of the datagrid (set by cplex in the header)
     T = (Float64, Complex{Float64})[header.cplex]
-    rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft, conversion=BOHR2ANG^3)
+    rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
     # Add each dataset to the dictionary
     data = Dict{String, RealSpaceDataGrid{3,T}}()
     # Convert the basis
