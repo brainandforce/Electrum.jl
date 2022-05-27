@@ -302,8 +302,9 @@ struct HKLData{D,T} <: AbstractReciprocalSpaceData{D}
         # The size of the array should match the bounds given
         # For instance, a HKLData with bounds  [-10:10, -10:10, -10:10] should Be
         # [21, 21, 21]
-        @assert [s for s in size(data)] == [length(r) for r in bounds] "Array size \
-        incompatible with bounds."
+        @assert [s for s in size(data)] == [length(r) for r in bounds] string(
+            "Array size incompatible with bounds."
+        )
         return new(data, bounds)
     end
 end
@@ -383,14 +384,16 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
         waves::AbstractVector{<:AbstractVector{HKLData{D,Complex{T}}}}
     ) where {D,T<:Real}
         # Number of k-points should equal the length of the waves vector
-        @assert length(waves) == nkpt(bands) "Number of k-points and number of planewave data \
-        entries do not match."
+        @assert length(waves) == nkpt(bands) string(
+            "Number of k-points and number of planewave data entries do not match."
+        )
         # Number of band entries per k-point should be the same
         lw = length.(waves)
         @assert _allsame(lw) "The number of bands per k-point is inconsistent."
         # There should be the same number of planewave sets as there are bands per k-point``
-        @assert first(lw) == nband(bands) "Number of bands and number of planewave data \
-        entries do not match."
+        @assert first(lw) == nband(bands) string(
+            "Number of bands and number of planewave data entries do not match."
+        )
         return new(rlatt, bands, waves)
     end
 end

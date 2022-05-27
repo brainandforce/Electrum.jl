@@ -124,9 +124,10 @@ struct RealLattice{D} <: AbstractLattice{D}
         conv::BasisVectors{D}
     ) where D
         # Perform checks on the lattice pairs
-        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(prim)\matrix(conv)) "The larger set \
-        of basis vectors is not expressed in terms of integer multiples of the smaller set of \
-        basis vectors."
+        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(prim)\matrix(conv)) string(
+            "The larger set of basis vectors is not expressed in terms of integer multiples of",
+            "the smaller set of basis vectors."
+        )
         new(prim, conv)
     end
 end
@@ -145,9 +146,10 @@ struct ReciprocalLattice{D} <: AbstractLattice{D}
         conv::BasisVectors{D}
     ) where D
         # Perform checks on the lattice pairs
-        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(conv)\matrix(prim)) "The larger set \
-        of basis vectors is not expressed in terms of integer multiples of the smaller set of \
-        basis vectors."
+        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(conv)\matrix(prim)) string(
+            "The smaller set of basis vectors is not expressed in terms of integer reciprocals of",
+            "the larger set of basis vectors."
+        )
         new(prim, conv)
         new(prim,conv)
     end
