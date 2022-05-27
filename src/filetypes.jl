@@ -163,14 +163,24 @@ function readXSF3D(
             @debug string("natom = ", natom)
             # The next lines have all of the atoms
             atom_list = getatoms!(iter, prim, natom)
-        # Get conventional cell atomic coordinates
-        # But do we need them?
         elseif contains(ln, "CONVCOORD") && isempty(atom_list)
             # TODO: complete this, but it's low priority
             # The PRIMCOORD block gets everything we need right now
         elseif contains(ln, "ATOMS") && isempty(atom_list)
             # TODO: complete this, but it's low priority
             # The PRIMCOORD block gets everything we need right now
+        elseif contains(ln, "DIM-GROUP")
+            # Check the line below and see if the structure is periodic
+            ln = iterate(iter)[1]
+            if first(strip(ln)) == '3' && spgrp == 0
+                # If the structure is a crystal, set spgrp to 1
+                # spgrp 0 implies a non-periodic structure
+                spgrp = 1
+            end
+        elseif contains(ln, "CRYSTAL") && spgrp == 0
+            # If the structure is a crystal, set spgrp to 1
+            # spgrp 0 implies a non-periodic structure
+            spgrp = 1
         end
     end
     # If the conventional cell hasn't been defined, generate it
