@@ -66,6 +66,9 @@ function Base.convert(::Type{Crystal{D}}, xtaldata::CrystalWithDatasets{D,K,V}) 
     return xtaldata.xtal
 end
 
+Crystal(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.xtal
+data(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.data
+
 RealLattice(xtal::Crystal) = xtal.latt
 ReciprocalLattice(xtal::Crystal) = ReciprocalLattice(xtal.latt)
 
