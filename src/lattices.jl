@@ -150,8 +150,7 @@ struct ReciprocalLattice{D} <: AbstractLattice{D}
             "The smaller set of basis vectors is not expressed in terms of integer reciprocals of",
             "the larger set of basis vectors."
         )
-        new(prim, conv)
-        new(prim,conv)
+        return new(prim, conv)
     end
 end
 
