@@ -184,13 +184,18 @@ function readXSF3D(
 end
 
 """
-    readXSF3D(filename::AbstractString)
+    readXSF3D(
+        filename::AbstractString;
+        spgrp::Integer = 0,
+        origin::AbstractVector{<:Real} = [0, 0, 0]
+        ctr::Symbol = :P
+    ) -> CrystalWithDatasets{3}
 
 Reads an XSF file at path `filename`.
 """
-function readXSF3D(filename::AbstractString)
+function readXSF3D(filename::AbstractString; kwargs...)
     return open(filename) do io
-        readXSF3D(io)
+        readXSF3D(io; kwargs...)
     end
 end
 
