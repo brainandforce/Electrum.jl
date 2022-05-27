@@ -55,7 +55,7 @@ Default tolerance for discrepancies in floating point values.
 """
 const TOL_DEF = 1e-8
 
-const BOHR2ANG = 0.529177
+const BOHR2ANG = 0.52917720859
 
 # the value of 2m/ħ^2 as used in VASP
 const CVASP = 0.262465831
