@@ -1,7 +1,7 @@
 name = "Xtal"
 uuid = "b7bf5f09-dce4-461b-b741-5180c76f4cfe"
 authors = ["Brandon Flores <bsflores@wisc.edu>", "Amber Lim <xalim@wisc.edu>"]
-version = "0.1.8"
+version = "0.1.9-dev"
 
 [deps]
 ComputedFieldTypes = "459fdd68-db75-56b8-8c15-d717a790f88e"
