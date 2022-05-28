@@ -253,21 +253,40 @@ function RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
 end
 
 """
-    cell_lengths(M::AbstractMatrix)
+    cell_lengths(M::AbstractMatrix) -> Vector{Float64}
 
 Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
 cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
+# TODO: perhaps this is not necessary anymore
+# But removing it might break the API
 cell_lengths(b::BasisVectors) = cell_lengths(matrix(b))
 
 """
-    cell_volume(M::AbstractMatrix)
+    lengths(b::BasisVectors) -> Vector{Float64}
+
+Returns the lengths of the constituent vectors in a matrix representing cell vectors.
+"""
+lengths(b::BasisVectors) = cell_lengths(matrix(b))
+
+"""
+    cell_volume(M::AbstractMatrix) -> Float64
 
 Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
 (negative for cells that do not follow the right hand rule).
 """
 cell_volume(M::AbstractMatrix) = abs(det(M))
+# TODO: perhaps this is not necessary anymore
+# But removing it might break the API
 cell_volume(b::BasisVectors) = cell_volume(matrix(b))
+
+"""
+    volume(b::BasisVectors) -> Float64
+
+Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
+(negative for cells that do not follow the right hand rule).
+"""
+volume(b::BasisVectors) = cell_volume(matrix(b))
 
 """
     generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
@@ -321,7 +340,7 @@ cell_angle_deg(M::AbstractMatrix) = acosd.(cell_angle_cos(M))
 """
     lengths(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
 
-Returns the cell vector lengths.
+Returns the cell vector lengths. By default, returns the lengths of the conventional cell vectors.
 """
 function lengths(L::AbstractLattice{D}; prim=false) where D
     prim ? M = prim(L) : M = conv(L)
