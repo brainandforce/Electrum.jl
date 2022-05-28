@@ -674,6 +674,21 @@ function read_abinit_density(io::IO)
     )
 end
 
+"""
+    read_abinit_density(filename::AbstractString)
+        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}
+
+Reads a FORTRAN binary formatted abinit density file. By default, abinit density files will have
+the suffix `DEN`, but no assumptions are made about suffixes.
+
+The header is used to automatically determine the file format, so this should read in any abinit
+density output (provided a function exists to parse that header).
+
+The number of datasets returned depends on the value of `nssppol` in the header, as calculations
+with explicit treatment of spin will return spin densities.
+
+Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
+"""
 read_abinit_density(filename::AbstractString) = open(read_abinit_density, filename)
 
 function read_abinit_potential(io::IO)
@@ -702,6 +717,24 @@ function read_abinit_potential(io::IO)
     )
 end
 
+"""
+    read_abinit_potential(filename::AbstractString)
+        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}} where T<:Union{Float64,ComplexF64}
+
+Reads a FORTRAN binary formatted abinit potential file. 
+
+By default, abinit potential files will end in `POT` for the external potential, `VHA` for the 
+Hartree potential, `VXC` for the exchange-correlation potential, and `VHXC` for the sum of both the
+Hartree and exchange-correlation potentials.
+
+The header is used to automatically determine the file format, so this should read in any abinit
+density output (provided a function exists to parse that header).
+
+The number of datasets returned depends on the value of `nssppol` in the header, as calculations
+with explicit treatment of spin will return spin-dependent potentials.
+
+Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
+"""
 read_abinit_potential(filename::AbstractString) = open(read_abinit_potential, filename)
 
 """
