@@ -213,3 +213,20 @@ function Base.show(
         print(io, "\n(higher order components omitted for brevity)")
     end
 end
+
+function Base.show(io::IO, ::MIME"text/plain", psp::HGHPseudopotential)
+    println(io, typeof(psp), " for ", ELEMENTS[zatom(psp)], " (+", zion(psp), "):")
+    println(io, "  rloc:    ", psp.rloc)
+    println(io, "  c:       ", psp.c)
+    println(io, "  r:       ", psp.r)
+    #=
+    println(io, "  h(s):    ")
+    println(io, "  h(p):    ")
+    println(io, "  h(d):    ")
+    println(io, "  h(f):    ")
+    println(io, "  k(s):    ", psp.k[])
+    println(io, "  k(p):    ", psp.k[])
+    println(io, "  k(d):    ", psp.k[])
+    println(io, "  k(f):    ", psp.k[])
+    =#
+end
