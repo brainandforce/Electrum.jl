@@ -55,7 +55,7 @@ Although HGH pseudopotential data is freely available, and in principle we could
 existing HGH pseudopotentials into this package, this data structure allows alteration of the 
 pseudopotential parameters.
 """
-struct HGHPseudopotential <: AbstractPotential
+struct HGHPseudopotential <: AbstractPseudopotential
     # Atomic number
     zatom::Int8
     # Total charge
@@ -88,8 +88,15 @@ zatom(p::AbstractPotential) = p.zatom
 
 Gets the effective charge associated with a pseudopotential.
 """
-zion(psp::AbstractPseudopotential) = psp.zion
 zion(p::AbstractPotential) = zatom(p)
+zion(psp::AbstractPseudopotential) = psp.zion
+
+"""
+    xc(hgh::HGHPseudopotential) -> XCFunctional
+
+Gets the exchange-correlation functional associated with an HGH pseudopotential.
+"""
+xc(hgh::HGHPseudopotential) = hgh.pspxc
 
 """
     AlchemicalPotential{T<:AbstractPotential}

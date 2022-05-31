@@ -843,6 +843,7 @@ function readHGH(io::IO)
         h = cat([diagm(m[l,:]) for l in 1:(lmax+1)]..., dims=3)
         for l = 0:lmax
             # TODO: there must be a better way to do this
+            # These matrices have l values as their last dimension
             h[1,2,l+1] = -1/2*sqrt((2*l+3)/(2*l+5)) * h[2,2,l+1]
             h[1,3,l+1] = 1/2*sqrt((2*l+3)*(2*l+5)/((2*l+7)*(2*l+9))) * h[3,3,l+1]
             h[2,3,l+1] = -sqrt((2*l+5)^2/((2*l+7)*(2*l+9))) * h[3,3,l+1]
@@ -866,6 +867,7 @@ function readHGH(io::IO)
     c = SVector{4,Float64}(c1, c2, c3, c4)
     r = zeros(Float64, lmax + 1)
     # Generate matrices to store the diagonal h and k components for each l
+    # Diagonal matrices have l value as their first dimension
     hdiag = zeros(Float64, lmax + 1, 3)
     kdiag = zeros(Float64, lmax + 1, 3)
     # Get the s components (which have no corresponding spin-orbit parameters)
