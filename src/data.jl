@@ -60,14 +60,40 @@ Gets the basis vectors of a `RealSpaceDataGrid`.
 """
 basis(g::RealSpaceDataGrid) = g.latt
 shift(g::RealSpaceDataGrid) = g.orig
+
+"""
+    grid(g::RealSpaceDataGrid{D,T}) -> Array{T,D}
+
+Gets the array that backs a `RealSpaceDataGrid{D,T}`, which is an `Array{T,D}`.
+"""
 grid(g::RealSpaceDataGrid) = g.grid
 # Size of the data grid in entries per dimension
 # TODO: should we overload Base.size() as well?
+
+"""
+    gridsize(g::RealSpaceDataGrid{D,T}) -> NTuple{D,Int}
+
+Gets the dimensions of the backing array corresponding to a `RealSpaceDataGrid`.
+"""
 gridsize(g::RealSpaceDataGrid) = size(g.grid)
 #Base.size(g::RealSpaceDataGrid) = gridsize(g)
 
+"""
+    volume(g::RealSpaceDataGrid) -> Float64
+
+Gets the crystal volume associated with a `RealSpaceDataGrid`.
+
+By default, units are assumed to be cubic angstroms.
+"""
 volume(g::RealSpaceDataGrid) = volume(basis(g))
 
+"""
+    voxelsize(g::RealSpaceDataGrid) -> Float64
+
+Gets the size of a single voxel of a `RealSpaceDataGrid`.
+
+By default, units are assumed to be cubic angstroms.
+"""
 voxelsize(g::RealSpaceDataGrid) = volume(g) / prod(size(g))
 
 """
