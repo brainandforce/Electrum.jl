@@ -145,7 +145,7 @@ Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
 Performs an integration across all voxels, returning a scalar value.
 """
 function integrate(g::RealSpaceDataGrid{D,T}) where {D,T<:Number}
-    return sum(grid(g)) / voxelsize(g)
+    return sum(grid(g)) * voxelsize(g)
 end
 
 #=
