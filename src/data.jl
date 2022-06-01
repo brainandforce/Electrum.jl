@@ -122,9 +122,7 @@ end
 
 function Base.:*(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
     # Check that the grids are identical
-    @assert basis(g1) === basis(g2) "Grid basis vectors for each grid are not identical."
-    @assert shift(g1) === shift(g2) "Grid shifts from origin are not identical."
-    @assert size(grid(g1)) === size(grid(g2)) "Grid sizes are different."
+    grid_check(g1, g2)
     # Add the two datagrids elementwise
     newgrid = grid(g1) .* grid(g2)
     return RealSpaceDataGrid(basis(g1), shift(g1), newgrid)
