@@ -119,9 +119,8 @@ function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where 
     dimstring = join(string.(gridsize(g)), "×") * " "
     println(io, dimstring, typeof(g), " with basis vectors:")
     print(join(basis_string(basis(g)), "\n"))
-    vol = cell_volume(basis(g))
-    println("\nCell volume: ", vol)
-    print("Voxel size: ", vol / prod(gridsize(g)))
+    println("\nCell volume: ", volume(g))
+    print("Voxel size: ", voxelsize(g))
 end
 
 #= Crystal{D}
