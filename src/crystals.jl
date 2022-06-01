@@ -57,6 +57,8 @@ end
 
 # Allow for getting datasets by key; no need to reach into the Dict
 # TODO: figure out how autocompletion works and how to enable it here
+# UPDATE: seems like it's hard-coded into the REPL for `AbstractDict`
+# So adding in that functionality doesn't seem to be feasible
 function Base.getindex(xtaldata::CrystalWithDatasets{D,K,V}, key::K) where {D,K,V}
     return xtaldata.data[key]
 end
@@ -74,6 +76,12 @@ ReciprocalLattice(xtal::Crystal) = ReciprocalLattice(xtal.latt)
 
 prim(xtal::Crystal) = prim(RealLattice(xtal))
 conv(xtal::Crystal) = conv(RealLattice(xtal))
+
+basis(xtal::Crystal; primitive::Bool=false) = primitive ? prim(xtal.latt) : conv(xtal.latt)
+basis(xtaldata::CrystalWithDatasets; primitive::Bool=false) = basis(xtaldata.xtal; primitive)
+
+volume(xtal::Crystal; primitive::Bool=false) = volume(xtal.latt; primitive)
+volume(xtaldata::CrystalWithDatasets; primitive::Bool=false) = volume(xtaldata.xtal; primitive)
 
 # TODO: fix this so that it gets the right number of atoms regardless of space group
 """
