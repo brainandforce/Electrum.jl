@@ -4,6 +4,7 @@ using StaticArrays
 using LinearAlgebra
 using Printf
 using ComputedFieldTypes
+using FFTW
 
 const ELEMENTS = 
 ( 
