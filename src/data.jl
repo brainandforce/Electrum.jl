@@ -120,7 +120,6 @@ function Base.:+(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where
     grid_check(g1, g2)
     # Add the two datagrids elementwise
     newgrid = grid(g1) + grid(g2)
-    T3 = eltype(newgrid)
     return RealSpaceDataGrid(basis(g1), shift(g1), newgrid)
 end
 
