@@ -289,6 +289,14 @@ Returns the volume of a unit cell defined by a matrix. This volume does not carr
 volume(b::BasisVectors) = cell_volume(matrix(b))
 
 """
+    volume(l::AbstractLattice; primitive=true) -> Float64
+
+Returns the volume of a lattice. By default, the primitive cell volume is used, but the
+conventional cell volume may be calculated with `primitive=false`.
+"""
+volume(l::AbstractLattice; primitive::Bool=true) = volume(primitive ? prim(l) : conv(l))
+
+"""
     generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
 
 Generate pairs of integers up to `D` in ascending order.

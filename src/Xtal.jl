@@ -93,7 +93,7 @@ export atomname, atomicno, coord, natom, basis, cartesian, reduce_coords
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export Crystal, CrystalWithDatasets
-export natom_template
+export natom_template, data, prim, conv, volume
 # Methods and structs for working with different types of data associated with crystals
 include("data.jl")
 export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
