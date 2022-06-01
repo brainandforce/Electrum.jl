@@ -99,7 +99,7 @@ include("data.jl")
 export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
        ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands, AtomicData,
        SphericalComponents
-export grid, gridsize, nkpt, nband, fermi, energies, nelectrons
+export grid, gridsize, volume, voxelsize, integrate, nkpt, nband, fermi, energies, nelectrons
 include("potentials.jl")
 export XCFunctional, HGHPseudopotential, zatom, zion
 # Methods and structs for working with different file formats

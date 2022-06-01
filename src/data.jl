@@ -137,6 +137,15 @@ end
 
 Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
 
+"""
+    integrate(g::RealSpaceDataGrid{D,T<:Number}) -> <:Number
+
+Performs an integration across all voxels, returning a scalar value.
+"""
+function integrate(g::RealSpaceDataGrid{D,T}) where {D,T<:Number}
+    return sum(grid(g)) / voxelsize(g)
+end
+
 #=
 """
     interpolate(g::RealSpaceDataGrid{D,T}, inds...)
