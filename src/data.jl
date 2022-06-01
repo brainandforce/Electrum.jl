@@ -138,6 +138,11 @@ end
 
 Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
 
+# Multiply everything in the datagrid by -1
+Base.:-(g::RealSpaceDataGrid) = RealSpaceDataGrid(basis(g), shift(g), -grid(g))
+# Subtract two datagrids
+Base.:-(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid) = +(g1, -g2)
+
 """
     integrate(g::RealSpaceDataGrid{D,T<:Number}) -> <:Number
 
