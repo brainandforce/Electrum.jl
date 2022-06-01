@@ -66,6 +66,10 @@ grid(g::RealSpaceDataGrid) = g.grid
 gridsize(g::RealSpaceDataGrid) = size(g.grid)
 #Base.size(g::RealSpaceDataGrid) = gridsize(g)
 
+volume(g::RealSpaceDataGrid) = volume(basis(g))
+
+voxelsize(g::RealSpaceDataGrid) = volume(g) / prod(size(g))
+
 """
     grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
 
