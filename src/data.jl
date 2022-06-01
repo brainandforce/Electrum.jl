@@ -53,6 +53,10 @@ end
 # Data in RealSpaceDataGrids can now be indexed
 Base.getindex(g::RealSpaceDataGrid, inds...) = getindex(g.grid, inds...)
 
+# Iterator definitions: pass through matrix iteration
+Base.iterate(g::RealSpaceDataGrid) = iterate(grid(g))
+Base.iterate(g::RealSpaceDataGrid, state) = iterate(grid(g), state)
+
 """
     basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
 
