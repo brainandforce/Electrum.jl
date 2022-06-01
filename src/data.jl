@@ -94,7 +94,7 @@ Gets the size of a single voxel of a `RealSpaceDataGrid`.
 
 By default, units are assumed to be cubic angstroms.
 """
-voxelsize(g::RealSpaceDataGrid) = volume(g) / prod(size(g))
+voxelsize(g::RealSpaceDataGrid) = volume(g) / prod(gridsize(g))
 
 """
     grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
