@@ -99,7 +99,7 @@ export natom_template, data, prim, conv, volume
 include("data.jl")
 export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
        ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands, AtomicData,
-       SphericalComponents
+       SphericalComponents, gaussian, smear
 export grid, gridsize, volume, voxelsize, integrate, nkpt, nband, fermi, energies, nelectrons
 include("potentials.jl")
 export XCFunctional, HGHPseudopotential, zatom, zion
