@@ -50,8 +50,13 @@ function RealSpaceDataGrid(
     end
 end
 
-# Data in RealSpaceDataGrids can now be indexed
-Base.getindex(g::RealSpaceDataGrid, inds...) = getindex(g.grid, inds...)
+# getindex supports arbitrary integer indices for RealSpaceDataGrid
+function Base.getindex(g::RealSpaceDataGrid, inds...)
+    # Perform modulo math to get the indices
+    # WARNING: Julia % is the remainder function, not modulo!
+    imod = mod.(inds .- 1,  gridsize(g)) .+ 1
+    return getindex(grid(g), imod...)
+end
 
 # Iterator definitions: pass through matrix iteration
 Base.iterate(g::RealSpaceDataGrid) = iterate(grid(g))
