@@ -463,9 +463,9 @@ struct DensityOfStates <: AbstractDensityOfStates
     fermi::Float64
     # Energy at each point
     energy::Vector{Float64}
-    # Range of energies
+    # Number of states at each energy
     dos::Vector{Float64}
-    # Integrated density of states
+    # Integrated density of states (electron count up to that energy)
     int::Vector{Float64}
     function DensityOfStates(
         fermi::Real,
@@ -520,7 +520,7 @@ function smear(
     dos::DensityOfStates,
     sigma::Real
 )
-    smear = ifft(fft(dos)*gaussian.(sigma, energies(dos))) 
+    smear = ifft(fft(dos.dos)*gaussian.(sigma, energies(dos))) 
     return DensityOfStates(fermi(dos), energies(dos), smear)
 end
 
