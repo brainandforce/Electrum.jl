@@ -501,6 +501,24 @@ end
 # Getting an index produces a tuple of the energy, 
 Base.getindex(d::DensityOfStates, ind) = (d.energy[ind], d.dos[ind], d.int[ind])
 
+# Setting up for gaussian smearing of DOS curve
+# Fourier transformed gaussian for convolution in smearing
+function Gaussian(
+    sigma::Real,
+    k::Real
+)
+    return 1/(2^(1/2))*exp(-(pi*k*sigma)^2)
+end
+
+# Function for smearing, convolute DOS and gaussian curves
+function GaussianSmearing(
+    dos::DensityOfStates,
+    sigma::Real
+)
+    smear = ifft(fft(dos)*Gaussian.(sigma, energies(dos))) 
+    return DensityOfStates(fermi(dos), energies(dos), smear)
+end
+
 """
     ProjectedDensityOfStates
 
