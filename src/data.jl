@@ -50,8 +50,13 @@ function RealSpaceDataGrid(
     end
 end
 
-# Data in RealSpaceDataGrids can now be indexed
-Base.getindex(g::RealSpaceDataGrid, inds...) = getindex(g.grid, inds...)
+# getindex supports arbitrary integer indices for RealSpaceDataGrid
+function Base.getindex(g::RealSpaceDataGrid, inds...)
+    # Perform modulo math to get the indices
+    # WARNING: Julia % is the remainder function, not modulo!
+    imod = mod.(inds .- 1,  gridsize(g)) .+ 1
+    return getindex(grid(g), imod...)
+end
 
 # Iterator definitions: pass through matrix iteration
 Base.iterate(g::RealSpaceDataGrid) = iterate(grid(g))
@@ -512,7 +517,7 @@ function gaussian(
     sigma::Real,
     k::Real
 )
-    return 1/(2^(1/2))*exp(-(pi*k*sigma)^2)
+    return exp(-2*(pi*k*sigma)^2)
 end
 
 """
@@ -525,8 +530,8 @@ function smear(
     dos::DensityOfStates,
     sigma::Real
 )
-    smear = ifft(fft(dos.dos)*gaussian.(sigma, energies(dos))) 
-    return DensityOfStates(fermi(dos), energies(dos), smear)
+    smear = ifft(fft(dos.dos) .* gaussian.(sigma, energies(dos)))
+    return DensityOfStates(fermi(dos), energies(dos), real(smear))
 end
 
 """
