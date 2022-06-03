@@ -342,7 +342,7 @@ struct HKLData{D,T} <: AbstractReciprocalSpaceData{D}
     # the bounds in each dimension
     # mutable since the dimensions of Array{D,T} can be changed, in principle
     bounds::MVector{D,UnitRange{Int}}
-    function HKLData{D,T}(
+    function HKLData(
         data::AbstractArray{T,D},
         bounds::AbstractVector{<:AbstractRange{<:Integer}}
     ) where {D,T}
@@ -352,7 +352,7 @@ struct HKLData{D,T} <: AbstractReciprocalSpaceData{D}
         @assert [s for s in size(data)] == [length(r) for r in bounds] string(
             "Array size incompatible with bounds."
         )
-        return new(data, bounds)
+        return new{D,T}(data, bounds)
     end
 end
 
@@ -389,10 +389,10 @@ function Base.setindex!(g::HKLData{D,T}, x::T, inds...) where {D,T}
 end
 
 function HKLData(
-    a::AbstractArray{T},
+    a::AbstractArray{T,D},
     bounds::Vararg{AbstractUnitRange{<:Integer},D}
 ) where {D,T}
-    return HKLData{D,T}(a, bounds)
+    return HKLData(a, bounds)
 end
 
 function Base.zeros(
@@ -400,7 +400,7 @@ function Base.zeros(
     bounds::Vararg{AbstractUnitRange{<:Integer}, D}
 ) where {D,T}
     data = zeros(T, length.(bounds))
-    return HKLData{D,T}(data, MVector{D,UnitRange{Int}}(bounds))
+    return HKLData(data, MVector{D,UnitRange{Int}}(bounds))
 end
 
 """
