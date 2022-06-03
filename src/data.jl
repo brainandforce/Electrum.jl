@@ -157,6 +157,27 @@ function integrate(g::RealSpaceDataGrid{D,T}) where {D,T<:Number}
     return sum(grid(g)) * voxelsize(g)
 end
 
+"""
+    fft(g::RealSpaceDataGrid{D,<:Number}; limits=zeros(Int,D)) -> HKLData{D,<:Complex}
+
+Performs a fast Fourier transform on the data in a `RealSpaceDataGrid{D,<:Number}` and
+generates an `HKLData{D,<:Complex}`.
+"""
+function FFTW.fft(
+    g::RealSpaceDataGrid{D,<:Number}
+) where D
+    @info string("Limits:\t", limits)    
+    # Generate the bounds needed for the HKLdata
+    bounds = [range(div(sz, 2, RoundUp) - sz, length = sz) for sz in gridsize(g)]
+    @info string("Bounds:\t", bounds)
+    # Calculate the shift factors to put the values in the right places
+    shifts = [last(b) for b in bounds]
+    # Take the grid fft
+    f = fft(grid(g))
+    # Permute the elements to get the indexing working
+    return HKLData(circshift(f, shifts .+ 1), bounds)
+end
+
 #=
 """
     interpolate(g::RealSpaceDataGrid{D,T}, inds...)
@@ -376,6 +397,8 @@ function shiftbounds(g::HKLData{D,T}, inds) where {D,T}
     i = inds .- minimum.(g.bounds) .+ 1
     return i
 end
+
+bounds(hkl::HKLData) = hkl.bounds
 
 # HKLData now supports indexing by Miller index
 function Base.getindex(g::HKLData{D,T}, inds...) where {D,T}
