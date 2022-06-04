@@ -381,20 +381,21 @@ end
 Base.has_offset_axes(g::HKLData) = true
 
 """
-    HKLData_boundscheck(g::HKLData{D,T}, inds::Vararg{<:Integer,D})
+    shiftbounds(g::HKLData{D,T}, inds) -> NTuple{D,<:Integer}
 
-Checks that array indices used to access data in an `HKLData` are valid.
+Checks that integer array indices used to access data in an `HKLData` are valid and shifts them to 
+access the correct portions of the backing array.
 """
-function shiftbounds(g::HKLData{D,T}, inds) where {D,T}
+function shiftbounds(hkl::HKLData{D,T}, inds) where {D,T}
     # Check that all the indices are in bounds
-    if !mapreduce((i,r) -> i in r, &, inds, g.bounds)
+    if !mapreduce((i,r) -> i in r, &, inds, bounds(hkl))
         # TODO: does this produce a reasonable error message with correct bounds?
-        throw(BoundsError(g, inds))
+        throw(BoundsError(hkl, inds))
     end
     # Adjust the indices to match the array
     # Subtract the minimum index then add 1
     # So if the range is -10:10, an index of 0 should be 0 - -10 + 1 = 11
-    i = inds .- minimum.(g.bounds) .+ 1
+    i = inds .- minimum.(bounds(hkl)) .+ 1
     return i
 end
 
