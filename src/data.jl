@@ -530,7 +530,7 @@ function smear(
     sigma::Real
 )
     smear = ifft(fft(energies(dos)) .* gaussian.(sigma, energies(dos)))
-    return DensityOfStates(fermi(dos), energies(dos), real(smear))
+    return DensityOfStates(fermi(dos), real(smear), dos.dos)
 end
 
 """
