@@ -516,7 +516,7 @@ function gaussian(
     sigma::Real,
     k::Real
 )
-    return sigma*(pi)^(1/2)*exp(-(sigma*pi*k)^2)
+    return (pi/sigma)^(1/2)*exp(-(1/sigma)*(pi*k)^2)
 end
 
 """
