@@ -529,8 +529,8 @@ function smear(
     dos::DensityOfStates,
     sigma::Real
 )
-    smear = ifft(fft(energies(dos)) .* gaussian.(sigma, energies(dos)))
-    return DensityOfStates(fermi(dos), real(smear), dos.dos)
+    smear = ifft(fft(dos.dos) .* gaussian.(sigma, energies(dos)))
+    return DensityOfStates(fermi(dos), dos.dos, abs.(smear))
 end
 
 """
