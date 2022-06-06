@@ -516,7 +516,7 @@ function gaussian(
     sigma::Real,
     k::Real
 )
-    return exp(-2*(pi*k*sigma)^2)
+    return sigma*(pi)^(1/2)*exp(-(sigma*pi*k)^2)
 end
 
 """
@@ -529,7 +529,7 @@ function smear(
     dos::DensityOfStates,
     sigma::Real
 )
-    smear = ifft(fft(dos.dos) .* gaussian.(sigma, energies(dos)))
+    smear = ifft(fft(energies(dos)) .* gaussian.(sigma, energies(dos)))
     return DensityOfStates(fermi(dos), energies(dos), real(smear))
 end
 
