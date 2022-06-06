@@ -407,10 +407,7 @@ end
     ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
 
 Contains a wavefunction stored by k-points and bands in a planewave basis. Used to store data in
-VASP WAVECAR files.
-
-For every k-point, there is an associated number of bands (the same number for every k-point). Band
-information is stored as the energy of the band and its occupancy.
+VASP WAVECAR files. Each k-point is expected to have the same number of bands.
 
 Every band has associated data containing coefficients of the constituent planewaves stored in a 
 `HKLData{D,Complex{T}}`. Unlike most data structures provided by this package, the type of
@@ -420,39 +417,27 @@ complex number used does not default to `Float64`: wavefunction data is often su
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
     rlatt::BasisVectors{D}
-    # Band information (energy and occupation) at each k-point
-    bands::BandStructure{D}
     # Planewave coefficients
     # Vector (size nkpt) of Vectors (size nband) of HKLData
     waves::Vector{Vector{HKLData{D,Complex{T}}}}
     function ReciprocalWavefunction{D,T}(
         rlatt::BasisVectors{D},
-        bands::BandStructure{D},
         waves::AbstractVector{<:AbstractVector{HKLData{D,Complex{T}}}}
     ) where {D,T<:Real}
-        # Number of k-points should equal the length of the waves vector
-        @assert length(waves) == nkpt(bands) string(
-            "Number of k-points and number of planewave data entries do not match."
-        )
         # Number of band entries per k-point should be the same
         lw = length.(waves)
         @assert _allsame(lw) "The number of bands per k-point is inconsistent."
-        # There should be the same number of planewave sets as there are bands per k-point``
-        @assert first(lw) == nband(bands) string(
-            "Number of bands and number of planewave data entries do not match."
-        )
         return new(rlatt, bands, waves)
     end
 end
 
 function ReciprocalWavefunction{D,T}(
     latt::AbstractLattice{D},
-    bands::BandStructure{D},
     waves::AbstractVector{<:AbstractVector{HKLData{D,Complex{T}}}};
     prim = true
 ) where {D,T<:Real}
     M = prim ? prim(latt) : conv(latt)
-    return ReciprocalWavefunction{D,T}(M, bands, waves)
+    return ReciprocalWavefunction{D,T}(M, waves)
 end
 
 # Getting indices should pull from the waves struct
