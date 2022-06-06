@@ -407,16 +407,24 @@ function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     return BasisVectors(M)
 end
 
+# TODO: Update and document this function a bit more.
+# It works, but that really isn't enough for me.
+# I think this was pulled directly from the WaveTrans source code
 function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
+    # I think the parts below convert a set of basis vectors into their reciprocals
+    # But we already have ways to do that with `dual(::BasisVectors)`
+    #--------------------------------------------------------------------------#
     cosines = cell_angle_cos(M)
     crosses = [cross(M[:,a], M[:,b]) for (a,b) in zip([2,3,1], [3,1,2])]
     triples = [dot(M[:,n], crosses[n])/(norm(crosses[n])*norm(M[:,n])) for n in 1:3]
     sines = hcat([[sqrt(1-c^2), sqrt(1-c^2) ,t] for (c,t) in zip(cosines, triples)]...)
+    #--------------------------------------------------------------------------#
     nbmax = sqrt(c*ecut) ./ [norm(M[:,a])*sines[a,b] for a in 1:3, b in 1:3] .+ 1
     return floor.(Int, vec(maximum(nbmax, dims=1)))
 end
 
-maxHKLindex(b::BasisVectors, ecut::Real, c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
+# Assume that the basis vectors are defined in reciprocal space (??)
+maxHKLindex(b::BasisVectors{3}, ecut::Real, c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
 
 """
     maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)
@@ -424,12 +432,12 @@ maxHKLindex(b::BasisVectors, ecut::Real, c = CVASP) = maxHKLindex(matrix(b), ecu
 Determines the maximum integer values of the reciprocal lattice vectors needed to store data out
 to a specific energy cutoff for a 3D lattice.
 
-By default, the energy cutoff is assumed to be in units of eV, and the value of c (2m/ħ^2) is
-taken from VASP's default value. This value is off by a small amount. If different units are 
-needed, the value of c should be adjusted.
+By default, the energy cutoff is assumed to be in units of eV, the reciprocal lattice vector
+lengths are assumed to be in angstroms, and the value of c (2m/ħ^2) is taken from VASP's default
+value (which is incorrect!). Different values of c may be used for different units.
 
-The functionality implemented here would not have been possible without the work of the authors
-of WaveTrans, R. M. Feenstra and M. Widom.
+The functionality implemented here was taken from WaveTrans:
+https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 """
 function maxHKLindex(L::AbstractLattice{3}, ecut::Real, prim=true, c = CVASP)
     M = ReciprocalLattice{3}(prim ? prim(L) : conv(L))
