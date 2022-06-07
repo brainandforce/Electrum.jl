@@ -524,10 +524,11 @@ Base.getindex(d::DensityOfStates, ind) = (d.energy[ind], d.dos[ind], d.int[ind])
 # Setting up for gaussian smearing of DOS curve
 # Fourier transformed gaussian for convolution in smearing
 function gaussian(
+    dos::DensityOfStates,
     sigma::Real,
-    k::Real
+    mean::Real
 )
-    return (pi/sigma)^(1/2)*exp(-(1/sigma)*(pi*k)^2)
+    return exp.(-((dos.energy .- mean)/sigma).^2)
 end
 
 """
@@ -540,8 +541,16 @@ function smear(
     dos::DensityOfStates,
     sigma::Real
 )
-    smear = ifft(fft(dos.dos) .* gaussian.(sigma, dos.dos))
-    return DensityOfStates(fermi(dos), energies(dos), abs.(smear))
+    smear = zeros(301)
+
+    for i in 1:301
+        mean = dos.energy[i]
+        s = (dos.dos) .* (gaussian(dos, sigma, mean))
+        s = real(s)
+        smear = s + smear
+        end
+
+    return DensityOfStates(fermi(dos), energies(dos), smear)
 end
 
 """
