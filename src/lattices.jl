@@ -424,7 +424,7 @@ function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
 end
 
 # Assume that the basis vectors are defined in reciprocal space (??)
-maxHKLindex(b::BasisVectors{3}, ecut::Real, c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
+maxHKLindex(b::BasisVectors{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
 
 """
     maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)

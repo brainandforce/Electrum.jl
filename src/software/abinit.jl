@@ -684,7 +684,7 @@ the suffix `DEN`, but no assumptions are made about suffixes.
 The header is used to automatically determine the file format, so this should read in any abinit
 density output (provided a function exists to parse that header).
 
-The number of datasets returned depends on the value of `nssppol` in the header, as calculations
+The number of datasets returned depends on the value of `nsppol` in the header, as calculations
 with explicit treatment of spin will return spin densities.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
@@ -730,12 +730,103 @@ Hartree and exchange-correlation potentials.
 The header is used to automatically determine the file format, so this should read in any abinit
 density output (provided a function exists to parse that header).
 
-The number of datasets returned depends on the value of `nssppol` in the header, as calculations
+The number of datasets returned depends on the value of `nsppol` in the header, as calculations
 with explicit treatment of spin will return spin-dependent potentials.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
 read_abinit_potential(filename::AbstractString) = open(read_abinit_potential, filename)
+
+function read_abinit_wavefunction(io::IO)
+    # Get the header from the file
+    header = read_abinit_header(io)
+    # Get the reciprocal lattice
+    rlatt = 2*pi*dual(BasisVectors(header.rprimd))
+    # Get the minimum and maximum HKL values needed
+    # Units for c (2*m_e/ħ^2) are hartree^-1 bohr^-2
+    # this should affect only the size of the preallocated arrays
+    hklbounds = SVector{3,UnitRange{Int}}(
+        -g:g for g in maxHKLindex(rlatt, header.ecut, c=2)
+    )
+    @info string(
+        "hklbounds: ", hklbounds, "\n",
+        "Calculated from ecut = ", header.ecut, " Hartree"
+    )
+    nb = maximum(header.nband)
+    # Eigenvalue and occupancy matrices
+    # Not returned (yet) but will be stored anyway
+    eigenvals = fill(NaN, header.nkpt, nb)
+    occ = fill(NaN, header.nkpt, nb)
+    # Generate the dictionary
+    data = Dict{String,ReciprocalWavefunction{3,Float64}}()
+    # Loop over all the spin polarizations
+    for sppol in 1:header.nsppol
+        # Start with a new wave matrix
+        waves = [
+            zeros(HKLData{3,Complex{Float64}}, hklbounds...) for kp in 1:header.nkpt, b in 1:nb
+        ]
+        # Loop over all the k-points
+        for kpt in 1:header.nkpt
+            # Skip over record length
+            read(io, Int32)
+            # Write the number of plane waves, spinors, and bands
+            (npw, nspinor, nband) = [read(io, Int32) for n in 1:3]
+            # Skip over another pair of record lengths
+            read(io, Int32); read(io, Int32)
+            # HKL indices of the band components
+            hklinds = [read(io, SVector{3,Int32}) for n in 1:npw]
+            # Skip over another pair of record lengths
+            read(io, Int32); read(io, Int32)
+            # Eigenvalues and band occupancy at the current k-point
+            eigenvals[kpt,:] = [read(io, Float64) for n in (1:nband)]
+            # TODO: Occupancy data isn't stored in a ReciprocalWavefunction object
+            # It might be necessary to include a field to store this
+            occ[kpt,:] = [read(io, Float64) for n in (1:nband)]
+            read(io, Int32)
+            # Loop over all the bands (given in previous entry, not from header)
+            for band in 1:nband
+                read(io, Int32)
+                # Assuming that the values are actually Complex{Float64} and not Float64
+                cg = [read(io, Complex{Float64}) for m in 1:npw, n in 1:nspinor]
+                # Use the information to fill the HKLData
+                for (ind, coeff) in zip(hklinds, cg)
+                    waves[kpt, band][ind...] = coeff
+                end
+                # Skip marker
+                read(io, Int32)
+            end
+            @info string(
+                "Read in data for k-point $kpt/", header.nkpt, " ($npw planewaves/band)\n",
+                "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", header.kpt[kpt]...)
+            )
+        end
+        # Add the reciprocal wavefunction to the dictionary
+        data["spin" * string(sppol)] = ReciprocalWavefunction{3,Float64}(
+            rlatt/BOHR2ANG, waves
+        )
+    end
+    return CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}(Crystal{3}(header), data)
+end
+
+"""
+    read_abinit_wavefunction(filename::AbstractString)
+        -> CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}
+
+Reads a FORTRAN binary formatted abinit potential file. 
+
+By default, abinit potential files will end in `POT` for the external potential, `VHA` for the 
+Hartree potential, `VXC` for the exchange-correlation potential, and `VHXC` for the sum of both the
+Hartree and exchange-correlation potentials.
+
+The header is used to automatically determine the file format, so this should read in any abinit
+density output (provided a function exists to parse that header).
+
+The number of datasets returned depends on the value of `nsppol` in the header, as calculations
+with explicit treatment of spin will return spin-dependent potentials.
+
+Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
+"""
+read_abinit_wavefunction(filename::AbstractString) = open(read_abinit_wavefunction, filename)
 
 """
     readHGH(io::IO)
