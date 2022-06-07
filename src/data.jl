@@ -541,16 +541,15 @@ function smear(
     dos::DensityOfStates,
     sigma::Real
 )
-    smear = zeros(301)
+    gsmear = zeros(size(dos.energy)[1])
 
-    for i in 1:301
+    for i in 1:size(dos.energy)[1]
         mean = dos.energy[i]
         s = (dos.dos) .* (gaussian(dos, sigma, mean))
-        s = real(s)
-        smear = s + smear
+        gsmear = s + gsmear
         end
 
-    return DensityOfStates(fermi(dos), energies(dos), smear)
+    return DensityOfStates(fermi(dos), energies(dos), (gsmear)*(sum(dos.dos)/sum(gsmear)))
 end
 
 """
