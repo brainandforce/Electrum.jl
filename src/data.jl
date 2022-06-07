@@ -417,15 +417,14 @@ complex number used does not default to `Float64`: wavefunction data is often su
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
     rlatt::BasisVectors{D}
-    # Planewave coefficients
-    # Matrix (size nkpt*maxnband) of HKLData
+    # Planewave coefficients: a Matrix (size nkpt*maxnband) of HKLData
     waves::Matrix{HKLData{D,Complex{T}}}
     function ReciprocalWavefunction{D,T}(
         rlatt::BasisVectors{D},
         waves::AbstractMatrix{HKLData{D,Complex{T}}}
     ) where {D,T<:Real}
         # Checks were removed here
-        return new(rlatt, bands, waves)
+        return new(rlatt, waves)
     end
 end
 
