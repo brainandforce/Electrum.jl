@@ -63,13 +63,14 @@ Converts lengths in bohr to angstrom
 """
 const BOHR2ANG = 0.52917720859
 
-# Units of these two constants should be energy^-1 * length^-2
+#= Units of these two constants should be energy^-1 * length^-2
 """
     Xtal.CABINIT
 
 The value of 2m_e/ħ^2 as used in abinit (hartree^-1 * angstrom^-2).
 """
 const CABINIT = 7.142129652186264
+=#
 
 """
     Xtal.CVASP
