@@ -179,7 +179,7 @@ end
 
 symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 
-function Crystal{3}(h::ABINITHeader; convert=:P)
+function Crystal(h::ABINITHeader; convert=:P)
     # Lattice vectors converted to angstroms
     latt = BasisVectors{3}(BOHR2ANG*h.rprimd)
     atomlist = AtomList{3}(
@@ -669,7 +669,7 @@ function read_abinit_density(io::IO)
         data["density_spinup_z"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
-        Crystal{3}(header),
+        Crystal(header),
         data
     )
 end
@@ -712,7 +712,7 @@ function read_abinit_potential(io::IO)
         data["potential_up_down_imag"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
-        Crystal{3}(header),
+        Crystal(header),
         data
     )
 end
@@ -805,7 +805,7 @@ function read_abinit_wavefunction(io::IO)
             rlatt/BOHR2ANG, waves
         )
     end
-    return CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}(Crystal{3}(header), data)
+    return CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}(Crystal(header), data)
 end
 
 """
