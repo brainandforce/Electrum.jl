@@ -748,7 +748,7 @@ function read_abinit_wavefunction(io::IO)
     hklbounds = SVector{3,UnitRange{Int}}(
         -g:g for g in maxHKLindex(rlatt, header.ecut, c=2)
     )
-    @info string(
+    @debug string(
         "hklbounds: ", hklbounds, "\n",
         "Calculated from ecut = ", header.ecut, " Hartree"
     )
