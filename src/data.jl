@@ -418,34 +418,31 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
     rlatt::BasisVectors{D}
     # Planewave coefficients
-    # Vector (size nkpt) of Vectors (size nband) of HKLData
-    waves::Vector{Vector{HKLData{D,Complex{T}}}}
+    # Matrix (size nkpt*maxnband) of HKLData
+    waves::Matrix{HKLData{D,Complex{T}}}
     function ReciprocalWavefunction{D,T}(
         rlatt::BasisVectors{D},
-        waves::AbstractVector{<:AbstractVector{HKLData{D,Complex{T}}}}
+        waves::AbstractMatrix{HKLData{D,Complex{T}}}
     ) where {D,T<:Real}
-        # Number of band entries per k-point should be the same
-        lw = length.(waves)
-        @assert _allsame(lw) "The number of bands per k-point is inconsistent."
+        # Checks were removed here
         return new(rlatt, bands, waves)
     end
 end
 
 function ReciprocalWavefunction{D,T}(
     latt::AbstractLattice{D},
-    waves::AbstractVector{<:AbstractVector{HKLData{D,Complex{T}}}};
+    waves::AbstractMatrix{HKLData{D,Complex{T}}};
     prim = true
 ) where {D,T<:Real}
     M = prim ? prim(latt) : conv(latt)
     return ReciprocalWavefunction{D,T}(M, waves)
 end
 
-# Getting indices should pull from the waves struct
-# This pulls first from k-points, then from bands, then from HKL data
+# Getting indices should pull from the waves struct: wf[kpt, band]
 Base.getindex(wf::ReciprocalWavefunction{D,T}, inds...) where {D,T} = wf.waves[inds...]
 
-nkpt(wf::ReciprocalWavefunction{D,T}) where {D,T} = nkpt(wf.bands)
-nband(wf::ReciprocalWavefunction{D,T}) where {D,T} = nband(wf.bands)
+nkpt(wf::ReciprocalWavefunction{D,T}) where {D,T} = size(wf.waves, 1)
+nband(wf::ReciprocalWavefunction{D,T}) where {D,T} = size(wf.waves, 2)
 
 """
     DensityOfStates
