@@ -1,3 +1,6 @@
+# REAL SPACE
+#-------------------------------------------------------------------------------------------------#
+
 """
     RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
 
@@ -212,6 +215,9 @@ function interpolate(g::RealSpaceDataGrid, r::AbstractVector{<:Real})
     inds = reduced .* size
 end
 =#
+
+# RECIPROCAL SPACE
+#-------------------------------------------------------------------------------------------------#
 
 """
     KPointGrid{D} <: AbstractKPoints{D}
@@ -473,6 +479,9 @@ Base.getindex(wf::ReciprocalWavefunction{D,T}, inds...) where {D,T} = wf.waves[i
 nkpt(wf::ReciprocalWavefunction{D,T}) where {D,T} = size(wf.waves, 1)
 nband(wf::ReciprocalWavefunction{D,T}) where {D,T} = size(wf.waves, 2)
 
+# DENSITY OF STATES
+#-------------------------------------------------------------------------------------------------#
+
 """
     DensityOfStates
 
@@ -632,6 +641,9 @@ function nelectrons(d::DensityOfStates)
     b = i1 - m*e1
     return m*fermi(d) + b
 end
+
+# ATOMIC DATA
+#-------------------------------------------------------------------------------------------------#
 
 """
     AtomicData{D,T}
