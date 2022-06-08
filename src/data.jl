@@ -522,13 +522,16 @@ end
 Base.getindex(d::DensityOfStates, ind) = (d.energy[ind], d.dos[ind], d.int[ind])
 
 # Setting up for gaussian smearing of DOS curve
-# Fourier transformed gaussian for convolution in smearing
 function gaussian(
     dos::DensityOfStates,
     sigma::Real,
-    mean::Real
 )
-    return exp.(-((dos.energy .- mean)/sigma).^2)
+    # Center gaussian within energy range
+    # Define gaussian
+    # Permute gaussian to prevent shifting of smear output
+    ctr = dos.energy[div(length(dos.energy), 2)]
+    g = exp.(-((dos.energy .- ctr)/sigma).^2)
+    return circshift(g, 1 - findmax(g)[2])
 end
 
 """
@@ -541,14 +544,9 @@ function smear(
     dos::DensityOfStates,
     sigma::Real
 )
-    gsmear = zeros(size(dos.energy)[1])
-
-    for i in 1:size(dos.energy)[1]
-        mean = dos.energy[i]
-        s = (dos.dos) .* (gaussian(dos, sigma, mean))
-        gsmear = s + gsmear
-        end
-
+    # Convolute DOS with gaussian using Fourier transforms
+    gsmear = real(ifft(fft(dos.dos) .* fft(gaussian(dos, sigma))))
+    # Normalize gaussian smearing so that sum(gaussian smear) = sum(DOS)
     return DensityOfStates(fermi(dos), energies(dos), (gsmear)*(sum(dos.dos)/sum(gsmear)))
 end
 
