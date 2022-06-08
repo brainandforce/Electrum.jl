@@ -11,7 +11,7 @@ feature, then push the branch and open a pull request on Github.
 
 All merging should be done through a rebase operation. This is simpler than using a standard merge,
 as it maintains a linear commit history. However, you will have to ensure that you have fetched or
-pulled from the origin repo to avoid serious merge conflicts.
+pulled from the origin repo and rebased on the parent branch to avoid serious merge conflicts.
 
 ## Testing and continuous integrations
 
@@ -22,8 +22,8 @@ to use `Documenter` to generate documentation from docstrings in the near future
 
 ### Julia version
 
-CrystalStructures.jl is being written for Julia 1.6, which is an LTS release. This may change in
-the future, but for now, avoid using any features that are present in later releases of Julia.
+Xtal.jl is being written for Julia 1.6, which is an LTS release. This may change in the future, but
+for now, avoid using any features that are present in later releases of Julia.
 
 ### Dependencies and interoperability
 
@@ -42,7 +42,7 @@ When in doubt, follow the Julia style guide, located here: https://docs.julialan
 
 ### Exceptions to the Julia style guide
 
-For `ABINITHeader` structs, direct field access may be used to assign and retrieve values.
+For `Xtal.ABINITHeader` structs, direct field access may be used to assign and retrieve values.
 
 Avoid using short-circuit `if` statements - write them out explicitly. There are many instances of 
 short-circuited `if` statements throughout the code at this point, and you are welcome to restore 
@@ -53,7 +53,11 @@ them to full `if` statements.
 Keep lines under 100 characters in all files. You can use string concatenation, among other tools,
 to split long strings if they come up. If a line is really long, consider whether you can simplify
 the line by reducing the amount of nesting, shortening variable names, or splitting operations into
-multiple lines.
+multiple lines. The general strategy that has been used is calling `string()`, which can stringify
+a variety of arguments and pass through literals.
+
+We have found that some methods of splitting strings may not be compatible with Julia 1.6 - please
+make sure to test this before pushing.
 
 ### Naming
 
@@ -63,12 +67,14 @@ and functions.
 ### Comments and documentation
 
 All functions and structs must have an associated docstring explaining the purpose of the code, 
-*even if the struct or method is not exported.*
+*even if the struct or method is not exported.* For internal methods and structs, please prefix
+them with the module name in the docstring.
 
 It's better to be verbose about what's going on with your code. Even if a remark seems obvious, 
 feel free to leave it in.
 
-Comments are generally placed above the lines that they refer to.
+Comments are generally placed above the lines that they refer to. Inline comments are fine, this is
+just the pattern that's been used consistently in the code.
 
 ### Type parameters of newly defined types
 
@@ -88,7 +94,7 @@ static arrays allow for higher performance.
 
 The use of static arrays is encouraged whenever the array dimensionality is unlikely to change
 (and in principle could be used as a type parameter). This universally applies to real space and
-reciprocal space vectors, since their dimensionality is fixed.
+reciprocal space vectors, since their dimensionality is fixed (and usually 3).
 
 The type `AtomList{D}` provides a great example of static vs. dynamic vector usage. The type 
 contains a `Vector{AtomPosition{D}}`, which is dynamic because the number of atoms in a crystal
@@ -110,9 +116,6 @@ If you need to use an `SMatrix{D1,D2,T,L}` in a struct, be sure that you can def
 `D1` and `D2`. Otherwise, it might be a better idea to store the data internally as an
 `SVector{D,SVector{D,T}}`, and define `convert()` for it to turn it into a matrix.
 
-In the future, we may consider using the `ComputedFieldTypes` package, or integrating any new Julia
-functionality in future versions.
-
 ### Logging and printing
 
 Feel free to leave `@debug` statements in any code you include. Unless the logging level is set to 
@@ -124,7 +127,8 @@ julia> ENV["JULIA_DEBUG"] = Xtal
 ```
 
 Try to minimize the use of repeated `@info`, `@warn`, or `@error` statements in loops. Printing to
-the terminal can bottleneck functions.
+the terminal can bottleneck functions. `@debug` statements will normally be skipped unless a logger
+explicitly compiles them or `$JULIA_DEBUG` is set for the module.
 
 Avoid using `println()` if one of the logging macros better suits the purpose. If `println()` is
 used, consider whether it might be a better idea to print to `stderr` instead of `stdout`. Note 
