@@ -16,7 +16,7 @@ You can access package mode by typing `]` at the REPL.
 ## Current features
 
 * Reading of common file formats:
-     + ABINIT potential and density outputs from versions 7.10.5 and 8.10.4
+     + ABINIT potential, density, and wavefunction outputs from versions 7.10.5 and 8.10.4
      + ABINIT HGH pseudopotentials
      + VASP WAVECAR, DOSCAR, and PROCAR
      + XCrysDen XSF
@@ -24,19 +24,20 @@ You can access package mode by typing `]` at the REPL.
      + CPpackage2 outputs
 * Writing of common file formats:
      + XCrysDen XSF
+* Operations on datagrids:
+     + Addition, subtraction, multiplication
+     + FFTs on real space data grids
 
 ## Planned features
 
 This project is just starting to get off the ground, but here's what we have planned:
 
  * Reading and writing of common file formats:
-     + ABINIT wavefunction outputs
      + XYZ files
      + XTL files
      + CIF files
  * Manipulation of data grids associated with crystal structures
-     + Common elementwise mathematical operations on data grids
-     + Grid reinterpolation
+     + Real space grid reinterpolation
      
 ...and more that we will decide in time! If you'd like to contibute, be sure to read the included
 contributing guidelines.
