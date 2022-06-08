@@ -415,7 +415,12 @@ the array. Unspecified elements in an `HKLDict` are assumed to be zero.
 """
 struct HKLDict{D,T} <: AbstractHKL{D,T}
     dict::Dict{SVector{D,Int},T}
+    function HKLDict(dict::AbstractDict{<:SVector{D,Int},<:T}) where {D,T}
+        return new{D,T}(dict)
+    end
 end
+
+HKLDict{D,T}() where {D,T} = HKLDict(Dict{SVector{D,Int},T}())
 
 Base.has_offset_axes(hkl::HKLDict) = true
 
