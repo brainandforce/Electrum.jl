@@ -460,6 +460,75 @@ Base.abs(hkl::HKLData) = HKLData(abs.(grid(hkl)), bounds(hkl))
 Base.abs2(hkl::HKLData) = HKLData(abs2.(grid(hkl)), bounds(hkl))
 
 """
+    HKLDict{D,T}
+
+An alternative to `HKLData` uses a dictionary instead of an array as a backing field.
+
+This is a more space-efficient alternative to `HKLData` in the case of reciprocal space data with
+a large number of zero components. For wavefunction data, which is often specified to some energy
+cutoff that corresponds to a distance in reciprocal space, there are many zero valued elements to
+the array. Unspecified elements in an `HKLDict` are assumed to be zero.
+"""
+struct HKLDict{D,T} <: AbstractReciprocalSpaceData{D}
+    dict::Dict{SVector{D,Int},T}
+end
+
+Base.has_offset_axes(hkl::HKLDict) = true
+
+function Base.getindex(hkl::HKLDict{D,T}, inds...) where {D,T}
+    v = SVector{D,Int}(inds...)
+    if haskey(hkl.dict, v)
+        return hkl.dict[v]
+    else
+        # Return a zero element of some kind by default
+        return zero(T)
+    end
+end
+
+function Base.setindex!(hkl::HKLDict{D,T}, value::T, inds...) where {D,T}
+    hkl.dict[SVector{D,Int}(inds...)] = value
+end
+
+Base.keys(hkl::HKLDict) = keys(hkl.dict)
+
+Base.iterate(hkl::HKLDict) = iterate(hkl.dict)
+Base.iterate(hkl::HKLDict, i) = iterate(hkl.dict, i)
+
+"""
+    vectors(hkl::HKLDict)
+
+Returns the set of vectors in an `HKLDict` for which values have been defined.
+"""
+function vectors(hkl::HKLDict)
+    return keys(hkl.dict)
+end
+
+function HKLDict(hkl::HKLData{D,T}) where {D,T<:Union{<:Number,<:AbstractArray{Number}}}
+    dict = Dict{SVector{D,Int},T}()
+    # Get the offset for the indices
+    offset = minimum.(hkl.bounds) .- 1
+    # Iterate through the matrix and get its coordinates
+    for ind in CartesianIndices(hkl.data)
+        # Only add nonzero elements
+        if hkl.data[ind] != zero(T)
+            dict[Tuple(ind) .+ offset] = hkl.data[ind]
+        end
+    end
+    return HKLDict(dict)
+end
+
+function HKLData(hkl::HKLDict{D,T}) where {D,T<:Union{<:Number,<:AbstractArray{Number}}}
+    # Find the bounds
+    bounds = MVector(UnitRange(extrema(v[n] for v in keys(hkl.dict)...)) for n in 1:D)
+    data = zeros(T, length.(bounds)...)
+    # Loop through the dictionary
+    for (k,v) in hkl.dict
+        data[k...] = v
+    end
+    return HKLData(data, bounds)
+end
+
+"""
     ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
 
 Contains a wavefunction stored by k-points and bands in a planewave basis. Used to store data in
