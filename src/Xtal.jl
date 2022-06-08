@@ -99,8 +99,8 @@ include("vectors.jl")
 # Abstract types used in type tree
 include("types.jl")
 export AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData, 
-       AbstractReciprocalSpaceData, AbstractKPoints, AbstractDensityOfStates, AbstractPotential,
-       AbstractPseudopotential
+       AbstractReciprocalSpaceData, AbstractHKL, AbstractKPoints, AbstractDensityOfStates,
+       AbstractPotential, AbstractPseudopotential
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export BasisVectors, RealLattice, ReciprocalLattice
@@ -116,7 +116,7 @@ export Crystal, CrystalWithDatasets
 export natom_template, data, prim, conv, volume
 # Methods and structs for working with different types of data associated with crystals
 include("data.jl")
-export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData,
+export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData, HKLDict,
        ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands, AtomicData,
        SphericalComponents, gaussian, smear
 export grid, gridsize, volume, voxelsize, integrate, nkpt, nband, fermi, energies, nelectrons
