@@ -52,7 +52,7 @@ function readWAVECAR(io::IO)
     # Plane wave coefficients
     # Vector (size nkpt) of vectors (size nband) of vectors (size npw) of ComplexF32
     # so planewave coeffs per band per k-point - that is a *lot* of data
-    waves = [zeros(HKLData{3,Complex{Float32}}, hklbounds...) for kp in 1:nkpt, b in 1:nband]
+    waves = [HKLDict{3,Complex{Float32}}() for kp in 1:nkpt, b in 1:nband]
     # Loop through the spins
     for s in 1:nspin
         # Loop through the k-points
