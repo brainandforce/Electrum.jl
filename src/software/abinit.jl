@@ -752,6 +752,7 @@ function read_abinit_wavefunction(io::IO)
         "hklbounds: ", hklbounds, "\n",
         "Calculated from ecut = ", header.ecut, " Hartree"
     )
+    # Maximum number of bands in a k-point
     nb = maximum(header.nband)
     # Eigenvalue and occupancy matrices
     # Not returned (yet) but will be stored anyway
@@ -762,9 +763,7 @@ function read_abinit_wavefunction(io::IO)
     # Loop over all the spin polarizations
     for sppol in 1:header.nsppol
         # Start with a new wave matrix
-        waves = [
-            zeros(HKLData{3,Complex{Float64}}, hklbounds...) for kp in 1:header.nkpt, b in 1:nb
-        ]
+        waves = [HKLDict{3,Complex{Float64}}() for k in 1:header.nkpt, b in 1:nb]
         # Loop over all the k-points
         for kpt in 1:header.nkpt
             # Skip over record length
