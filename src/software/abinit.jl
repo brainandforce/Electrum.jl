@@ -1,5 +1,5 @@
 """
-    ABINITPseudopotentialInfo
+    Xtal.ABINITPseudopotentialInfo
 
 Information about a pseudopotential used in an ABINIT calculation.
 """
@@ -25,7 +25,7 @@ end
 # Making this thing mutable is probably the best idea here
 # That way we can initialize the struct and then update all the data
 """
-    ABINITHeader
+    Xtal.ABINITHeader
 
 Header information from an abinit FORTRAN binary output file.
 
@@ -163,7 +163,7 @@ Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
 Base.setindex!(x, h::ABINITHeader, name::Symbol) = setfield!(x, h, name)
 
 """
-    symrel_to_sg(symrel::AbstractVector{<:AbstractMatrix{<:Integer}}) -> Int
+    Xtal.symrel_to_sg(symrel::AbstractVector{<:AbstractMatrix{<:Integer}}) -> Int
 
 Converts a list of ABINIT symmetry operations to the corresponding space group number and setting.
 """
@@ -207,7 +207,7 @@ function triang_index(n)
 end
 
 """
-    get_abinit_version(io::IO) -> NamedTuple{}
+    Xtal.get_abinit_version(io::IO) -> NamedTuple{}
 
 Gets the ABINIT version information from a calculation output header.
 """
@@ -223,7 +223,7 @@ function get_abinit_version(io::IO)
 end
 
 """
-    read_abinit_header_57(io::IO) -> ABINITHeader
+    Xtal.read_abinit_header_57(io::IO) -> ABINITHeader
 
 Reads in an abinit header from the outputs of calculations made by versions up to 7.10. These files
 will contain a `headform` value of 57.
@@ -384,7 +384,7 @@ function read_abinit_header_57(io::IO)
 end
 
 """
-    read_abinit_header_80(io::IO) -> ABINITHeader
+    Xtal.read_abinit_header_80(io::IO) -> ABINITHeader
 
 Reads in an abinit header from the outputs of calculations made by versions up to 8.10. These files
 will contain a `headform` value of 80.
@@ -575,7 +575,7 @@ function read_abinit_header_80(io::IO)
 end
 
 """
-    read_abinit_header(io::IO)
+    Xtal.read_abinit_header(io::IO)
 
 Reads the header of an ABINIT output file, automatically determining the format of the header
 from the first few digits.
@@ -607,12 +607,11 @@ function read_abinit_header(io::IO)
 end
 
 """
-    function read_abinit_datagrids(T, io, nspden, ngfft) -> Vector{Matrix{T}}
+    Xtal.read_abinit_datagrids(T, io, nspden, ngfft) -> Vector{Matrix{T}}
 
 Reads the datagrid portion of an abinit density output, following the header. 
 
-Electron density values are given in electrons/Bohr³ in the abinit output files. These are 
-converted to electrons/Å³ in the resulting grids.
+Electron density values are given in electrons/Bohr³ in the abinit output files.
 
 Depending on the value of `cplex` from the header, the resulting matrix may either contain
 `Float64` or `Complex{Float64}` data.
