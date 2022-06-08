@@ -479,18 +479,18 @@ Contains a wavefunction stored by k-points and bands in a planewave basis. Used 
 VASP WAVECAR files. Each k-point is expected to have the same number of bands.
 
 Every band has associated data containing coefficients of the constituent planewaves stored in a 
-`HKLData{D,Complex{T}}`. Unlike most data structures provided by this package, the type of
+`HKLDict{D,Complex{T}}`. Unlike most data structures provided by this package, the type of
 complex number used does not default to `Float64`: wavefunction data is often supplied as a 
 `Complex{Float32}` to reduce the size of the data.
 """
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
     rlatt::BasisVectors{D}
-    # Planewave coefficients: a Matrix (size nkpt*maxnband) of HKLData
-    waves::Matrix{HKLData{D,Complex{T}}}
+    # Planewave coefficients: a Matrix (size nkpt*maxnband) of HKLDicts
+    waves::Matrix{HKLDict{D,Complex{T}}}
     function ReciprocalWavefunction{D,T}(
         rlatt::BasisVectors{D},
-        waves::AbstractMatrix{HKLData{D,Complex{T}}}
+        waves::AbstractMatrix{<:AbstractHKL{D,Complex{T}}}
     ) where {D,T<:Real}
         # Checks were removed here
         return new(rlatt, waves)
@@ -499,7 +499,7 @@ end
 
 function ReciprocalWavefunction{D,T}(
     latt::AbstractLattice{D},
-    waves::AbstractMatrix{HKLData{D,Complex{T}}};
+    waves::AbstractMatrix{<:AbstractHKL{D,Complex{T}}};
     prim = true
 ) where {D,T<:Real}
     M = prim ? prim(latt) : conv(latt)
