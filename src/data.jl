@@ -158,24 +158,30 @@ function integrate(g::RealSpaceDataGrid{D,T}) where {D,T<:Number}
 end
 
 """
-    fft(g::RealSpaceDataGrid{D,<:Number}; limits=zeros(Int,D)) -> HKLData{D,<:Complex}
+    fft(g::RealSpaceDataGrid{D,<:Number}; maxhkl=zeros(Int,D)) -> HKLData{D,<:Complex}
 
 Performs a fast Fourier transform on the data in a `RealSpaceDataGrid{D,<:Number}` and
 generates an `HKLData{D,<:Complex}`.
 """
 function FFTW.fft(
-    g::RealSpaceDataGrid{D,<:Number}
-) where D
-    @info string("Limits:\t", limits)    
+    g::RealSpaceDataGrid{D,<:Number};
+    maxhkl::AbstractVector{<:Integer} = zeros(Int, D)
+) where D 
     # Generate the bounds needed for the HKLdata
     bounds = [range(div(sz, 2, RoundUp) - sz, length = sz) for sz in gridsize(g)]
-    @info string("Bounds:\t", bounds)
+    @debug string("Bounds:\t", bounds)
     # Calculate the shift factors to put the values in the right places
     shifts = [last(b) for b in bounds]
     # Take the grid fft
-    f = fft(grid(g))
     # Permute the elements to get the indexing working
-    return HKLData(circshift(f, shifts .+ 1), bounds)
+    f = circshift(fft(grid(g)), shifts .+ 1)
+    # With defined bounds, truncate the data
+    if all(!iszero, maxhkl)
+        ind = [(-x:x) .- first(b) .+ 1 for (x,b) in zip(abs.(maxhkl), bounds)]
+        f = f[ind...]
+        bounds = [-x:x for x in abs.(maxhkl)]
+    end
+    return HKLData(f, bounds)
 end
 
 #=
