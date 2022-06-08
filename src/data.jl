@@ -106,7 +106,7 @@ By default, units are assumed to be cubic angstroms.
 voxelsize(g::RealSpaceDataGrid) = volume(g) / prod(gridsize(g))
 
 """
-    grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
+    Xtal.grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
 
 Performs a check on two `RealSpaceDataGrid`s to ensure that the basis, origin shift, and grid
 dimensions are the same before performing mathematical operations.
@@ -387,7 +387,7 @@ end
 Base.has_offset_axes(g::HKLData) = true
 
 """
-    shiftbounds(g::HKLData{D,T}, inds) -> NTuple{D,<:Integer}
+    Xtal.shiftbounds(g::HKLData{D,T}, inds) -> NTuple{D,<:Integer}
 
 Checks that integer array indices used to access data in an `HKLData` are valid and shifts them to 
 access the correct portions of the backing array.
@@ -669,7 +669,7 @@ SphericalComponents(v::SVector{N,<:Real}) where N = SphericalComponents(v...)
 SphericalComponents(t::NTuple{N,<:Real}) where N = SphericalComponents(t...)
 
 """
-    sc_ind(l::Integer, m::Integer) -> Int
+    Xtal.sc_ind(l::Integer, m::Integer) -> Int
 
 Gets the associated linear index for a pair of (l,m) values used in `SphericalComponents`.
 """

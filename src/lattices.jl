@@ -1,5 +1,5 @@
 """
-    lattice_sanity_check(M::AbstractMatrix)
+    Xtal.lattice_sanity_check(M::AbstractMatrix)
 
 Runs checks on a matrix intended to represent basis vectors of a crystal unit cell. Returns
 nothing, but warns if the cell vectors form a left-handed coordinate system, and throws an 
@@ -215,7 +215,7 @@ end
 =#
 
 """
-    lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
+    Xtal.lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
 
 Generates a pair of 3D lattices that are related by common crystallographic transformations.
 
@@ -297,7 +297,7 @@ conventional cell volume may be calculated with `primitive=false`.
 volume(l::AbstractLattice; primitive::Bool=true) = volume(primitive ? prim(l) : conv(l))
 
 """
-    generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
+    Xtal.generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
 
 Generate pairs of integers up to `D` in ascending order.
 """
@@ -314,7 +314,7 @@ function generate_pairs(D::Integer)
 end
 
 """
-    generate_pairs(::Type{Val{D}}) -> SVector{D*(D-1)/2, NTuple{2,Int}}
+    Xtal.generate_pairs(::Type{Val{D}}) -> SVector{D*(D-1)/2, NTuple{2,Int}}
 
 Generate pairs of integers up to `D` in ascending order in an `SVector`.
 """
@@ -427,7 +427,7 @@ end
 maxHKLindex(b::BasisVectors{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
 
 """
-    maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)
+    Xtal.maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)
 
 Determines the maximum integer values of the reciprocal lattice vectors needed to store data out
 to a specific energy cutoff for a 3D lattice.

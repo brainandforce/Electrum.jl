@@ -50,7 +50,7 @@ const REDUCTION_MATRIX_3D =
 )
 
 """
-    TOL_DEF
+    Xtal.TOL_DEF
 
 Default tolerance for discrepancies in floating point values.
 """
@@ -81,14 +81,14 @@ const CVASP = 0.262465831
 # the correct value is actually 0.26246842360751754
 
 """
-    _allsame(itr)
+    Xtal._allsame(itr)
 
 Returns `true` if all the elements of an iterator are identical.
 """
 _allsame(itr) = all(x -> x == first(itr), itr)
 
 """
-    _selfdot(v)
+    Xtal._selfdot(v)
 
 Computes the dot product of a vector with itself.
 """
