@@ -373,7 +373,7 @@ end
 Stores information associated with specific sets of reciprocal lattice vectors. Data can be
 accessed and modified using regular indexing, where indices may be negative.
 """
-struct HKLData{D,T} <: AbstractReciprocalSpaceData{D}
+struct HKLData{D,T} <: AbstractHKL{D,T}
     # the actual data
     data::Array{T,D}
     # the bounds in each dimension
@@ -469,7 +469,7 @@ a large number of zero components. For wavefunction data, which is often specifi
 cutoff that corresponds to a distance in reciprocal space, there are many zero valued elements to
 the array. Unspecified elements in an `HKLDict` are assumed to be zero.
 """
-struct HKLDict{D,T} <: AbstractReciprocalSpaceData{D}
+struct HKLDict{D,T} <: AbstractHKL{D,T}
     dict::Dict{SVector{D,Int},T}
 end
 
