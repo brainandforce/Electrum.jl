@@ -99,7 +99,7 @@ reciprocal space vectors, since their dimensionality is fixed (and usually 3).
 The type `AtomList{D}` provides a great example of static vs. dynamic vector usage. The type 
 contains a `Vector{AtomPosition{D}}`, which is dynamic because the number of atoms in a crystal
 (either the generating set or the visual template) may vary greatly. However, the type 
-`AtomPostion{D}` contains a field for the atomic position vector, which is an `SVector{D,Float64}`
+`AtomPosition{D}` contains a field for the atomic position vector, which is an `SVector{D,Float64}`
 since atomic positions are not expected to vary in dimensionality.
 
 The `StaticArrays` package provides the `SArray` type, which is immutable (cannot be altered after
