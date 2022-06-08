@@ -1,6 +1,6 @@
 """
-    _is_linearly_independent(vecs::AbstractMatrix{<:Number}) -> Bool
-    _is_linearly_independent(vecs::AbstractVector{<:Number}...) -> Bool
+    Xtal._is_linearly_independent(vecs::AbstractMatrix{<:Number}) -> Bool
+    Xtal._is_linearly_independent(vecs::AbstractVector{<:Number}...) -> Bool
 
 Determines whether a set of vectors is linearly independent.
 
