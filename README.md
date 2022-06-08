@@ -16,8 +16,8 @@ You can access package mode by typing `]` at the REPL.
 ## Current features
 
 * Reading of common file formats:
-     + ABINIT potential, density, and wavefunction outputs from versions 7.10.5 and 8.10.4
-     + ABINIT HGH pseudopotentials
+     + abinit potential, density, and wavefunction outputs from versions 7.10.5 and 8.10.4
+     + abinit HGH pseudopotentials
      + VASP WAVECAR, DOSCAR, and PROCAR
      + XCrysDen XSF
      + XYZ files
