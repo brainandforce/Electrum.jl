@@ -61,6 +61,14 @@ abstract type AbstractReciprocalSpaceData{D} <: AbstractCrystalData{D}
 end
 
 """
+    AbstractReciprocalSpaceData{D}
+
+Supertype for crystal data stored by HKL index.
+"""
+abstract type AbstractHKL{D,T} <: AbstractReciprocalSpaceData{D}
+end
+
+"""
     AbstractDensityOfStates
 
 Supertype for all density of states data.
