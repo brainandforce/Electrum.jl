@@ -443,3 +443,18 @@ function maxHKLindex(L::AbstractLattice{3}, ecut::Real, prim=true, c = CVASP)
     M = ReciprocalLattice{3}(prim ? prim(L) : conv(L))
     return maxHKLindex(M, ecut, c=c)
 end
+
+"""
+    d_spacing(b::BasisVectors, miller::AbstractVector{<:Integer}, real=true) -> Float64
+
+Measures the real space distance between planes in a lattice given by a Miller index. By default, 
+the basis vectors are assumed to be real space basis vectors.
+"""
+function d_spacing(b::BasisVectors, miller::AbstractVector{<:Integer}; real::Bool=true)
+    return 1 / norm((real ? dual(b) : b) * miller)
+end
+
+function d_spacing(l::AbstractLattice, miller::AbstractVector{<:Integer}; primitive::Bool=false)
+    r = ReciprocalLattice(l)
+    return 1 / norm((primitive ? prim(r) : conv(r)) * miller)
+end
