@@ -458,3 +458,11 @@ function d_spacing(l::AbstractLattice, miller::AbstractVector{<:Integer}; primit
     r = ReciprocalLattice(l)
     return 1 / norm((primitive ? prim(r) : conv(r)) * miller)
 end
+
+function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer}; primitive::Bool=false)
+    return d_spacing(basis(x, primitive=primitive), miller)
+end
+
+function d_spacing(g::RealSpaceDataGrid, miller::AbstractVector{<:Integer})
+    return d_spacing(basis(g), miller)
+end
