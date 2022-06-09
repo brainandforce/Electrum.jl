@@ -556,7 +556,7 @@ function smear(
     # Convolute DOS with gaussian using Fourier transforms
     gsmear = real(ifft(fft(dos.dos) .* fft(gaussian(dos, sigma))))
     # Normalize gaussian smearing so that sum(gaussian smear) = sum(DOS)
-    return DensityOfStates(fermi(dos), energies(dos), (gsmear)*(sum(dos.dos)/sum(gsmear)))
+    return DensityOfStates(fermi(dos), energies(dos), (gsmear)*(sum(dos.dos)/sum(gsmear)), dos.int)
 end
 
 """
