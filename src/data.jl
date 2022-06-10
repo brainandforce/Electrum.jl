@@ -187,6 +187,10 @@ function FFTW.fft(
     return HKLData(f, bounds)
 end
 
+function d_spacing(g::RealSpaceDataGrid, miller::AbstractVector{<:Integer})
+    return d_spacing(basis(g), miller)
+end
+
 #=
 """
     interpolate(g::RealSpaceDataGrid{D,T}, inds...)
