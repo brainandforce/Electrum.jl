@@ -421,7 +421,7 @@ end
 Returns the array that contains the reciprocal space data. Note that this causes information
 about the index offset to be lost!
 """
-grid(hkl::HKLdata) = hkl.data
+grid(hkl::HKLData) = hkl.data
 
 """
     bounds(hkl::HKLData{D,T}) -> MVector{D,UnitRange{Int64}}
