@@ -443,15 +443,8 @@ function Base.zeros(
     return HKLData(data, MVector{D,UnitRange{Int}}(bounds))
 end
 
-function Base.abs(hkl::HKLData)
-    newdata = abs.(hkl.data)
-    return HKLData(newdata, hkl.bounds)
-end
-
-function Base.abs2(hkl::HKLData)
-    newdata = abs2.(hkl.data)
-    return HKLData(newdata, hkl.bounds)
-end
+Base.abs(hkl::HKLData) = HKLData(abs.(grid(hkl)), bounds(hkl))
+Base.abs2(hkl::HKLData) = HKLData(abs2.(grid(hkl)), bounds(hkl))
 
 """
     ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
