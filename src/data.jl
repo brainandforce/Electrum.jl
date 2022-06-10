@@ -416,13 +416,18 @@ function shiftbounds(hkl::HKLData{D,T}, inds) where {D,T}
 end
 
 """
-    grid(hkl::HKLData)
+    grid(hkl::HKLData{D,T}) -> Array{T,D}
 
 Returns the array that contains the reciprocal space data. Note that this causes information
 about the index offset to be lost!
 """
 grid(hkl::HKLdata) = hkl.data
 
+"""
+    bounds(hkl::HKLData{D,T}) -> MVector{D,UnitRange{Int64}}
+
+Returns a range of minimum and maximum indices along each dimension of an `HKLData`
+"""
 bounds(hkl::HKLData) = hkl.bounds
 
 # HKLData now supports indexing by Miller index
