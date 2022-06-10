@@ -462,7 +462,3 @@ end
 function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer}; primitive::Bool=false)
     return d_spacing(basis(x, primitive=primitive), miller)
 end
-
-function d_spacing(g::RealSpaceDataGrid, miller::AbstractVector{<:Integer})
-    return d_spacing(basis(g), miller)
-end
