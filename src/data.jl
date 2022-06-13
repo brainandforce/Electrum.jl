@@ -299,6 +299,7 @@ end
 Gets the number of k-points in a `KPointList`.
 """
 nkpt(k::KPointList) = length(k.points)
+Base.length(k::KPointList) = length(k.points)
 
 #= TODO: figure out how to get a k-point list from a grid
 #  This would require also getting the correct k-point weights
