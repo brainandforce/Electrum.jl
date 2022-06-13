@@ -199,6 +199,10 @@ function Crystal(h::ABINITHeader; convert=:P)
     )
 end
 
+function KPointList(h::ABINITHeader)
+    return KPointList(h.kpt, h.wtk)
+end
+
 # This function gets indices for the rhoij entries in a PAW calculation
 function triang_index(n)
     row = floor(Int,(1 + sqrt(8*n - 7))/2)
@@ -800,8 +804,8 @@ function read_abinit_wavefunction(io::IO)
             )
         end
         # Add the reciprocal wavefunction to the dictionary
-        data["spin" * string(sppol)] = ReciprocalWavefunction{3,Float64}(
-            rlatt/BOHR2ANG, waves
+        data["spin" * string(sppol)] = ReciprocalWavefunction(
+            rlatt/BOHR2ANG, KPointList(header), waves
         )
     end
     return CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}(Crystal(header), data)
