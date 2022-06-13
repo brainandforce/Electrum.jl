@@ -98,7 +98,7 @@ function readWAVECAR(io::IO)
         end
     end
     # Now call the constructors
-    return ReciprocalWavefunction{3,Float32}(rlatt, waves)
+    return ReciprocalWavefunction(rlatt, KPointList(klist), waves)
 end
 
 readWAVECAR(filename::AbstractString) = open(readWAVECAR, filename)
