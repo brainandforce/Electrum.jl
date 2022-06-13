@@ -263,7 +263,7 @@ struct KPointList{D} <: AbstractKPoints{D}
     function KPointList(
         points::AbstractVector{<:SVector{D,<:Real}},
         weights::AbstractVector{<:Real}
-    )
+    ) where D
         @assert length(points) == length(weights) "Number of k-points and weights do not match."
         return new{D}(points, weights)
     end
@@ -272,13 +272,13 @@ end
 function KPointList{D}(
     points::AbstractVector{<:AbstractVector{<:Real}},
     weights::AbstractVector{<:Real}
-)
-    @assert length.(points) == 3 "k-points have the wrong dimensionality"
-    svpoints = [SVector{3,Float64}(v) for v in points]
+) where D
+    @assert length.(points) == D "k-points have the wrong dimensionality"
+    svpoints = [SVector{D,Float64}(v) for v in points]
     return KPointList(svpoints, weights)
 end
 
-function KPointList{D}(points::AbstractVector{<:AbstractVector{<:Real}})
+function KPointList{D}(points::AbstractVector{<:AbstractVector{<:Real}}) where D
     return KPointList{D}(points, ones(length(points)))
 end
 
@@ -509,7 +509,7 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     waves::Matrix{HKLData{D,Complex{T}}}
     function ReciprocalWavefunction(
         rlatt::BasisVectors{D},
-        kpts::AbstractKPoints{D}
+        kpts::AbstractKPoints{D},
         waves::AbstractMatrix{HKLData{D,Complex{T}}}
     ) where {D,T<:Real}
         @assert length(kpts) == size(waves, 1) string(
