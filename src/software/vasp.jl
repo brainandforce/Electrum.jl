@@ -8,7 +8,9 @@ Information about VASP WAVECAR files and much of the code was pulled from the Wa
 (originally written in FORTRAN): https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 
 This function is limited to WAVECAR files which have an RTAG value of 45200 (meaning the data is
-given as a `Complex{Float64}`) and have only a collinear magnetic field applied, like WaveTrans.
+given as a `Complex{Float64}`) and have only a collinear magnetic field applied, like WaveTrans. It
+should also be noted that the weights of the k-points are not present in the WAVECAR file, and are
+set to 1 by default.
 """
 function readWAVECAR(io::IO)
     # Function to increment HKL values in place 
