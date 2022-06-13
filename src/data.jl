@@ -499,24 +499,30 @@ complex number used does not default to `Float64`: wavefunction data is often su
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
     rlatt::BasisVectors{D}
+    # k-points used to construct the wavefunction
+    kpts::KPointList{D}
     # Planewave coefficients: a Matrix (size nkpt*maxnband) of HKLData
     waves::Matrix{HKLData{D,Complex{T}}}
-    function ReciprocalWavefunction{D,T}(
+    function ReciprocalWavefunction(
         rlatt::BasisVectors{D},
+        kpts::AbstractKPoints{D}
         waves::AbstractMatrix{HKLData{D,Complex{T}}}
     ) where {D,T<:Real}
-        # Checks were removed here
-        return new(rlatt, waves)
+        @assert length(kpts) == size(waves, 1) string(
+            "k-point list length inconsistent with number of wavefunction entries"
+        )
+        return new{D,T}(rlatt, kpts, waves)
     end
 end
 
-function ReciprocalWavefunction{D,T}(
+function ReciprocalWavefunction(
     latt::AbstractLattice{D},
+    kpts::AbstractKPoints{D},
     waves::AbstractMatrix{HKLData{D,Complex{T}}};
-    prim = true
+    primitive::Bool = true
 ) where {D,T<:Real}
-    M = prim ? prim(latt) : conv(latt)
-    return ReciprocalWavefunction{D,T}(M, waves)
+    M = primitive ? prim(latt) : conv(latt)
+    return ReciprocalWavefunction(M, kpts, waves)
 end
 
 # Getting indices should pull from the waves struct: wf[kpt, band]
