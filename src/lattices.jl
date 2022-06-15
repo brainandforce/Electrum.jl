@@ -197,7 +197,7 @@ ReciprocalLattice(latt::ReciprocalLattice) = latt
 Converts a real lattice to its corresponding reciprocal lattice.
 """
 function ReciprocalLattice(latt::RealLattice)
-    return ReciprocalLattice(dual(prim(latt))*2π, dual(conv(latt)*2π))
+    return ReciprocalLattice(dual(prim(latt))*2π, dual(conv(latt))*2π)
 end
 
 """
@@ -206,7 +206,7 @@ end
 Converts a reciprocal lattice to its corresponding real lattice.
 """
 function RealLattice(latt::ReciprocalLattice)
-    return RealLattice(dual(prim(latt))/2π, dual(conv(latt)/2π))
+    return RealLattice(dual(prim(latt))/2π, dual(conv(latt))/2π)
 end
 
 Base.convert(::Type{RealLattice}, latt::AbstractLattice) = RealLattice(latt)
