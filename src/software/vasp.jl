@@ -191,8 +191,7 @@ function readPROCAR(io::IO)
     # occupancies = Matrix{Float64}(undef, nkpt, nband)
     energies = zeros(Float64, nkpt, nband)
     projband = zeros(Float64, 9, nion, nband, nkpt)
-    phase_real = zeros(Float64, 9, nion, nband, nkpt)
-    phase_imag = zeros(Float64, 9, nion, nband, nkpt)
+    phase = zeros(Complex{Float64}, 9, nion, nband, nkpt)
     # Begins loop
     for i in 1:nkpt
         readuntil(io, "k-point")
@@ -214,9 +213,9 @@ function readPROCAR(io::IO)
                 readline(io)
                 for k in 1:nion
                     ln = readline(io)
-                    phase_real[:,k,j,i] = parse.(Float64, split(ln)[2:10])
+                    re = parse.(Float64, split(ln)[2:10])
                     ln = readline(io)
-                    phase_imag[:,k,j,i] = parse.(Float64, split(ln)[2:10])
+                    phase[:,k,j,i] = a + re + parse.(Float64, split(ln)[2:10]) * im
                 end
             end
         end
@@ -226,8 +225,7 @@ function readPROCAR(io::IO)
     return FatBands{3}(
         energies,
         projband,
-        phase_real,
-        phase_imag,
+        phase
     )
 end
 
