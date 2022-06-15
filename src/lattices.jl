@@ -256,7 +256,7 @@ By default, inputs are assumed to describe a conventional cell.
 """
 =#
 function RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
-    return RealLattice{3}(lattice_pair_generator_3D(M, prim=prim, ctr=ctr)...)
+    return RealLattice(lattice_pair_generator_3D(M, prim=prim, ctr=ctr)...)
 end
 
 """
