@@ -185,7 +185,7 @@ function readXSF3D(
     end
     # If the conventional cell hasn't been defined, generate it
     if iszero(conv)
-        conv = BasisVectors{3}(REDUCTION_MATRIX_3D[ctr] \ matrix(prim))
+        conv = BasisVectors{3}(matrix(prim) / REDUCTION_MATRIX_3D[ctr])
     end
     # Generate the real space lattice
     latt = RealLattice(prim, conv)
