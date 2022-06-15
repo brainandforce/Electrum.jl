@@ -209,8 +209,8 @@ function RealLattice(latt::ReciprocalLattice)
     return RealLattice(dual(prim(latt))/2π, dual(conv(latt))/2π)
 end
 
-Base.convert(::Type{RealLattice}, latt::AbstractLattice) = RealLattice(latt)
-Base.convert(::Type{ReciprocalLattice}, latt::AbstractLattice) = ReciprocalLattice(latt)
+Base.convert(::Type{<:RealLattice}, latt::AbstractLattice) = RealLattice(latt)
+Base.convert(::Type{<:ReciprocalLattice}, latt::AbstractLattice) = ReciprocalLattice(latt)
 #=
 function convert(::Type{RealLattice{D}}, latt::AbstractLattice{D}) where D
     return RealLattice(latt)
