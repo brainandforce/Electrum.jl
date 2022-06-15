@@ -188,7 +188,7 @@ function readXSF3D(
         conv = BasisVectors{3}(REDUCTION_MATRIX_3D[ctr] \ matrix(prim))
     end
     # Generate the real space lattice
-    latt = RealLattice{3}(prim, conv)
+    latt = RealLattice(prim, conv)
     xtal = Crystal{3}(latt, spgrp, origin, atom_list, atom_list)
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3}}(xtal, data)
 end
