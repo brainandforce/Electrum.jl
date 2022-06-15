@@ -119,7 +119,7 @@ struct RealLattice{D} <: AbstractLattice{D}
     prim::BasisVectors{D}
     conv::BasisVectors{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
-    function RealLattice{D}(
+    function RealLattice(
         prim::BasisVectors{D},
         conv::BasisVectors{D}
     ) where D
@@ -128,7 +128,7 @@ struct RealLattice{D} <: AbstractLattice{D}
             "The larger set of basis vectors is not expressed in terms of integer multiples of",
             "the smaller set of basis vectors."
         )
-        new(prim, conv)
+        return new{D}(prim, conv)
     end
 end
 
@@ -141,7 +141,7 @@ struct ReciprocalLattice{D} <: AbstractLattice{D}
     prim::BasisVectors{D}
     conv::BasisVectors{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
-    function ReciprocalLattice{D}(
+    function ReciprocalLattice(
         prim::BasisVectors{D},
         conv::BasisVectors{D}
     ) where D
@@ -150,8 +150,15 @@ struct ReciprocalLattice{D} <: AbstractLattice{D}
             "The smaller set of basis vectors is not expressed in terms of integer reciprocals of",
             "the larger set of basis vectors."
         )
-        return new(prim, conv)
+        return new{D}(prim, conv)
     end
+end
+
+function (::Type{T})(
+    b::BasisVectors{D},
+    transform::AbstractMatrix=diagm(ones(D))
+) where {D,T<:AbstractLattice}
+    return T(b, BasisVectors{D}(transform*b))
 end
 
 # Get primitive and conventional lattices
@@ -171,11 +178,11 @@ Returns the conventional lattice in a `RealLattice` or a `ReciprocalLattice`.
 conv(l::AbstractLattice) = l.conv
 
 # Define the constructor for vectors of vectors
-function (Type{AbstractLattice{D}})(
+function (::Type{T})(
     prim::AbstractVector{<:AbstractVector{<:Real}},
     conv::AbstractVector{<:AbstractVector{<:Real}},
-) where D
-    return RealLattice{D}(BasisVectors{D}(prim), BasisVectors{D}(conv))
+) where {D,T<:AbstractLattice}
+    return RealLattice(BasisVectors{D}(prim), BasisVectors{D}(conv))
 end
 
 # Conversions between real and reciprocal lattices
@@ -189,8 +196,8 @@ ReciprocalLattice(latt::ReciprocalLattice) = latt
 
 Converts a real lattice to its corresponding reciprocal lattice.
 """
-function ReciprocalLattice(latt::RealLattice{D}) where D
-    return ReciprocalLattice{D}(dual(prim(latt))*2π, dual(conv(latt)*2π))
+function ReciprocalLattice(latt::RealLattice)
+    return ReciprocalLattice(dual(prim(latt))*2π, dual(conv(latt)*2π))
 end
 
 """
@@ -198,8 +205,8 @@ end
 
 Converts a reciprocal lattice to its corresponding real lattice.
 """
-function RealLattice(latt::ReciprocalLattice{D}) where D
-    return RealLattice{D}(dual(prim(latt))/2π, dual(conv(latt)/2π))
+function RealLattice(latt::ReciprocalLattice)
+    return RealLattice(dual(prim(latt))/2π, dual(conv(latt)/2π))
 end
 
 Base.convert(::Type{RealLattice}, latt::AbstractLattice) = RealLattice(latt)
