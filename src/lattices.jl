@@ -158,7 +158,7 @@ function (::Type{T})(
     b::BasisVectors{D},
     transform::AbstractMatrix=diagm(ones(D))
 ) where {D,T<:AbstractLattice}
-    return T(b, BasisVectors{D}(transform*b))
+    return T(b, BasisVectors{D}(b*transform))
 end
 
 # Get primitive and conventional lattices
