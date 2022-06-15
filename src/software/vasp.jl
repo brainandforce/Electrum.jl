@@ -215,7 +215,7 @@ function readPROCAR(io::IO)
                     ln = readline(io)
                     re = parse.(Float64, split(ln)[2:10])
                     ln = readline(io)
-                    phase[:,k,j,i] = a + re + parse.(Float64, split(ln)[2:10]) * im
+                    phase[:,k,j,i] = re + parse.(Float64, split(ln)[2:10]) * im
                 end
             end
         end
