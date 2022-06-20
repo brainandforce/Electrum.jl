@@ -1,3 +1,70 @@
+"""
+    readPOSCAR(io::IO; ctr=:P) -> Crystal{3}
+
+Reads a VASP POSCAR file.
+
+A POSCAR contains the basis vectors of the system (potentially given with a scaling factor), the 
+positions of all atoms as either Cartesian or reduced coordinates, and potentially information 
+needed to perform an ab initio MD run.
+
+Data is assumed to be given in a primitive cell, which may be converted to a conventional cell
+using the `ctr` keyword.
+"""
+function readPOSCAR(io::IO; ctr=:P)
+    # Skip the comment line
+    readline(io)
+    # Get the scaling factor
+    sc = parse(Float64, strip(readline(io)))
+    # Get the basis
+    latt = let lns = [readline(io) for n in 1:3]
+        # Get the vectors from the next three lines
+        vecs = [parse.(Float64, v) for v in split.(lns)]
+        # Return them as a lattice with desired centering
+        RealLattice(BasisVectors{3}(vecs), REDUCTION_MATRIX_3D[ctr])
+    end
+    # Check the next line for a letter.
+    # Newer versions of VASP seem to use the atom type as a line before the
+    # number of each type of atom and coordintes, but version 4.6 (which we 
+    # use) does not...
+    ln = readline(io)
+    if isletter(first(strip(ln)))
+        @info "A letter was found in the following line:\n" * ln
+        atomnames = split(ln)
+        ln = readline(io)
+    else
+        @warn string(
+            "This POSCAR does not contain atomic identity information.\n",
+            "Dummy atoms will be used as placeholders."
+        )
+        atomnames = String[]
+    end
+    # Get the number of each type of atom
+    natomtypes = parse.(Int, split(ln))
+    if isempty(atomnames)
+        atomnames = ["" for n in 1:length(natomtypes)]
+    end
+    # Find the "Direct" keyword
+    while true
+        contains("Direct", readline(io)) && break
+    end
+    # Generate the list of atoms
+    positions = Vector{AtomPosition{3}}(undef, sum(natomtypes))
+    ctr = 1
+    for (n,s) in enumerate(atomnames)
+        for x in 1:natomtypes[n]
+            positions[ctr] = AtomPosition{3}(s, parse.(Float64, split(readline(io))))
+            ctr = ctr + 1
+        end
+    end
+    list = AtomList{3}(latt, positions, prim=true)
+    # Skip out on velocities for now
+    return Crystal{3}(latt, 1, [0, 0, 0], list, list)
+end
+
+readPOSCAR(filename::AbstractString; kwargs...) = open(readPOSCAR, filename; kwargs...)
+
+readPOSCAR(; kwargs...) = open(readPOSCAR, "POSCAR"; kwargs...)
+
 # Kendall got everything done before 6 PM (2022-02-01)
 """
     readWAVECAR(io::IO) -> ReciprocalWavefunction{3,Float64,Float32}
