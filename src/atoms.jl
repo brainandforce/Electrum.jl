@@ -69,7 +69,7 @@ struct AtomList{D} <: AbstractRealSpaceData{D}
     coord::Vector{AtomPosition{D}}
     function AtomList{D}(
         basis::BasisVectors{D},
-        coord::AbstractVector{AtomPosition{D}}
+        coord::AbstractVector{<:AtomPosition{D}}
     ) where D
         # Remove any duplicate atoms if they come up
         return new{D}(basis, unique(coord))
@@ -78,7 +78,7 @@ end
 
 function AtomList{D}(
     basis::AbstractLattice{D},
-    coord::AbstractVector{AtomPosition{D}};
+    coord::AbstractVector{<:AtomPosition{D}};
     prim=false
 ) where D
     # Use either the primitive or conventional vectors depending on user input
