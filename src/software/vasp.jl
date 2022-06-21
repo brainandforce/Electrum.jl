@@ -56,7 +56,7 @@ function readPOSCAR(io::IO; ctr=:P)
             ctr = ctr + 1
         end
     end
-    list = AtomList{3}(latt, positions, prim=true)
+    list = AtomList(latt, positions, prim=true)
     # Skip out on velocities for now
     return Crystal{3}(latt, 1, [0, 0, 0], list, list)
 end

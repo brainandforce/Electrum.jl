@@ -182,7 +182,7 @@ symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 function Crystal(h::ABINITHeader; convert=:P)
     # Lattice vectors converted to angstroms
     latt = BasisVectors{3}(BOHR2ANG*h.rprimd)
-    atomlist = AtomList{3}(
+    atomlist = AtomList(
         latt,
         AtomPosition{3}.(
             Int.(h.znucltypat[h.typat]),
