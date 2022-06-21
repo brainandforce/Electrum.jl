@@ -70,7 +70,7 @@ function readXSF3D(
             # assign atom position struct
             apos[n] = AtomPosition{3}(num, basis\pos)
         end
-        return AtomList{3}(basis, apos)
+        return AtomList(basis, apos)
     end
     # Function to get grid data
     # By default, trim the edges of the grid (repeated points)
