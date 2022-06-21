@@ -184,7 +184,7 @@ function Crystal(h::ABINITHeader; convert=:P)
     latt = BasisVectors{3}(BOHR2ANG*h.rprimd)
     atomlist = AtomList(
         latt,
-        AtomPosition{3}.(
+        AtomPosition.(
             Int.(h.znucltypat[h.typat]),
             h.xred
         )
