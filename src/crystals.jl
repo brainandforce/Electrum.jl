@@ -23,7 +23,7 @@ struct Crystal{D} <: AbstractCrystal{D}
     # Positions of atoms explicitly generated (used to generate templates, XYZs, etc.)
     pos::AtomList{D}
     # Inner constructor
-    function Crystal{D}(
+    function Crystal(
         latt::AbstractLattice{D},
         sgno::Integer,
         orig::AbstractVector{<:Real},
