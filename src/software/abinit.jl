@@ -189,7 +189,7 @@ function Crystal(h::ABINITHeader; convert=:P)
             h.xred
         )
     )
-    return Crystal{3}(
+    return Crystal(
         # ABINIT seems to use bohr by default
         RealLattice{3}(BOHR2ANG*h.rprimd, prim=true, ctr=convert),
         symrel_to_sg(h),        # TODO: get space group from header?
