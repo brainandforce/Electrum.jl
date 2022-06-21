@@ -58,7 +58,7 @@ function readPOSCAR(io::IO; ctr=:P)
     end
     list = AtomList(latt, positions, prim=true)
     # Skip out on velocities for now
-    return Crystal{3}(latt, 1, [0, 0, 0], list, list)
+    return Crystal(latt, 1, [0, 0, 0], list, list)
 end
 
 readPOSCAR(filename::AbstractString; kwargs...) = open(readPOSCAR, filename; kwargs...)
