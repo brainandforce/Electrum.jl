@@ -52,7 +52,7 @@ function readPOSCAR(io::IO; ctr=:P)
     ctr = 1
     for (n,s) in enumerate(atomnames)
         for x in 1:natomtypes[n]
-            positions[ctr] = AtomPosition{3}(s, parse.(Float64, split(readline(io))))
+            positions[ctr] = AtomPosition(s, parse.(Float64, split(readline(io))))
             ctr = ctr + 1
         end
     end

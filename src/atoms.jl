@@ -13,23 +13,37 @@ struct AtomPosition{D} <: AbstractRealSpaceData{D}
     name::String
     num::Int
     pos::SVector{D,Float64}
-    function AtomPosition{D}(
+    function AtomPosition(
         name::AbstractString,
         num::Integer,
-        pos::AbstractVector{<:Real}
+        pos::SVector{D,<:Real}
     ) where D
-        # Don't allow empty names by default
+        # Don't allow empty names when an atomic number is passed.
         name = isempty(name) && num > 0 ? ELEMENTS[num] : name
         return new{D}(name, num, pos)
     end
 end
 
-function AtomPosition{D}(num::Integer, pos::AbstractVector{<:Real}) where D
-    return AtomPosition{D}(ELEMENTS[num], num, pos)
+function AtomPosition(name::AbstractString, pos::SVector{D,<:Real}) where D
+    return AtomPosition(name, get(ELEMENT_LOOKUP, name, 0), pos)
+end
+
+function AtomPosition(num::Integer, pos::SVector{D,<:Real}) where D
+    return AtomPosition(ELEMENTS[num], num, pos)
+end
+
+# The methods below require a type parameter in the constructor
+
+function AtomPosition{D}(name::AbstractString, num::Integer, pos::AbstractVector{<:Real}) where D
+    return AtomPosition(name, num, SVector{D,Float64}(pos))
 end
 
 function AtomPosition{D}(name::AbstractString, pos::AbstractVector{<:Real}) where D
-    return AtomPosition{D}(name, get(ELEMENT_LOOKUP, name, 0), pos)
+    return AtomPosition(name, SVector{D,Float64}(pos))
+end
+
+function AtomPosition{D}(num::Integer, pos::AbstractVector{<:Real}) where D
+    return AtomPosition(num, SVector{D,Float64}(pos))
 end
 
 """
