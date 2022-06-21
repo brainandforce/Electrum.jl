@@ -76,7 +76,7 @@ struct AtomList{D} <: AbstractRealSpaceData{D}
     end
 end
 
-function AtomList{D}(
+function AtomList(
     basis::AbstractLattice{D},
     coord::AbstractVector{<:AtomPosition{D}};
     prim=false
@@ -90,8 +90,8 @@ function AtomList{D}(
 end
 
 # Do it without adding a lattice
-function AtomList{D}(coord::AbstractVector{AtomPosition{D}}) where D
-    return AtomList{D}(zeros(BasisVectors{D}), coord)
+function AtomList(coord::AbstractVector{AtomPosition{D}}) where D
+    return AtomList(zeros(BasisVectors{D}), coord)
 end
 
 # Check if an AtomList{D} is empty
