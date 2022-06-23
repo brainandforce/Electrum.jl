@@ -61,7 +61,7 @@ abstract type AbstractReciprocalSpaceData{D} <: AbstractCrystalData{D}
 end
 
 """
-    AbstractReciprocalSpaceData{D}
+    AbstractHKL{D}
 
 Supertype for crystal data stored by HKL index.
 """
