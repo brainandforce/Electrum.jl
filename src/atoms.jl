@@ -81,7 +81,7 @@ angstroms.
 struct AtomList{D} <: AbstractRealSpaceData{D}
     basis::BasisVectors{D}
     coord::Vector{AtomPosition{D}}
-    function AtomList{D}(
+    function AtomList(
         basis::BasisVectors{D},
         coord::AbstractVector{<:AtomPosition{D}}
     ) where D
@@ -97,9 +97,9 @@ function AtomList(
 ) where D
     # Use either the primitive or conventional vectors depending on user input
     if prim
-        return AtomList{D}(basis.prim, unique(coord))
+        return AtomList(basis.prim, unique(coord))
     else
-        return AtomList{D}(basis.conv, unique(coord))
+        return AtomList(basis.conv, unique(coord))
     end
 end
 
