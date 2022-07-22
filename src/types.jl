@@ -99,21 +99,3 @@ Supertype for sets of k-points.
 """
 abstract type AbstractKPoints{D} <: AbstractReciprocalSpaceData{D}
 end
-
-#=
-"""
-    AbstractPotential
-
-Supertype for atomic potentials.
-"""
-abstract type AbstractPotential
-end
-
-"""
-    AbstractPseudopotential
-
-Supertype for atomic pseudopotentials.
-"""
-abstract type AbstractPseudopotential <: AbstractPotential
-end
-=#
