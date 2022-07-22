@@ -129,10 +129,6 @@ export DensityOfStates, ProjectedDensityOfStates, FatBands
 export fermi, smear, energies, nelectrons
 include("data/atomic.jl")
 export AtomicData, SphericalComponents
-#=
-include("potentials.jl")
-export XCFunctional, HGHPseudopotential, zatom, zion
-=#
 # Methods and structs for working with different file formats
 include("filetypes.jl")
 export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
