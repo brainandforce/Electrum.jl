@@ -24,6 +24,7 @@ You can access package mode by typing `]` at the REPL.
      + CPpackage2 outputs
 * Writing of common file formats:
      + XCrysDen XSF
+     + XYZ files
 * Operations on datagrids:
      + Addition, subtraction, multiplication
      + FFTs on real space data grids
@@ -33,7 +34,6 @@ You can access package mode by typing `]` at the REPL.
 This project is just starting to get off the ground, but here's what we have planned:
 
  * Reading and writing of common file formats:
-     + XYZ files
      + XTL files
      + CIF files
  * Manipulation of data grids associated with crystal structures
