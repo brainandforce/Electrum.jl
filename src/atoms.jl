@@ -130,7 +130,7 @@ function cartesian(l::AtomList{D}) where D
     # If the basis vectors are zero we're assuming Cartesian coordinates
     basis(l) == zeros(BasisVectors{D}) && return l
     newlist = map(a -> cartesian(l.basis, a), l.coord)
-    return AtomList{D}(zeros(BasisVectors{D}), newlist)
+    return AtomList(zeros(BasisVectors{D}), newlist)
 end
 
 # TODO: clean up these method definitions into something that makes more sense
