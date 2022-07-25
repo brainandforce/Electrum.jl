@@ -3,15 +3,17 @@ using Xtal
 
 makedocs(
     sitename = "Xtal",
-    format = Documenter.HTML(),
+    format = Documenter.HTML(prettyurls = (get(ENV, "CI", nothing) == true)),
     modules = [Xtal],
     pages = [
         "Home" => "index.md",
-        "Getting started" => Any[
-            "manual/getting-started.md"
-        ],
+        "Types" => "types.md",
         "API" => Any[
             "Lattices" => "api/lattices.md"
+            "Atoms" => "api/atoms.md"
+            "Crystals" => "api/crystals.md"
+            "Crystal data" => "api/data.md"
+            "File types" => "api/filetypes.md"
         ]
     ]
 )
