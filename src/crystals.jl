@@ -50,7 +50,7 @@ end
 
 A pairing of a `Crystal{D}` and a `Dict{K,V}` which allows for access to associated datasets.
 """
-struct CrystalWithDatasets{D,K,V} <: AbstractCrystalData{D}
+struct CrystalWithDatasets{D,K,V} <: AbstractCrystal{D}
     xtal::Crystal{D}
     data::Dict{K,V}
 end
