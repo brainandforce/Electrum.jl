@@ -83,6 +83,9 @@ basis(xtaldata::CrystalWithDatasets; primitive::Bool=false) = basis(xtaldata.xta
 volume(xtal::Crystal; primitive::Bool=false) = volume(xtal.latt; primitive)
 volume(xtaldata::CrystalWithDatasets; primitive::Bool=false) = volume(xtaldata.xtal; primitive)
 
+atoms(xtal::Crystal) = xtal.pos
+atoms(xtaldata::CrystalWithDatasets) = xtaldata.xtal.pos
+
 # TODO: fix this so that it gets the right number of atoms regardless of space group
 """
     natom_cell(xtal::Crystal)
