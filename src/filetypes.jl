@@ -29,6 +29,28 @@ end
 
 readXYZ(filename::AbstractString) = open(readXYZ, filename)
 
+function writeXYZ(io::IO, data::AbstractVector{<:AtomPosition})
+    # Write the number of atoms
+    println(io, length(data))
+    # Include the comment line
+    println(io, "File written by Xtal.jl")
+    # Write lines for all atoms
+    for atom in data
+        println(io, atomname(atom), join([lpad(@sprintf("%f", n), 11) for n in coord(atom)]))
+    end
+    return nothing
+end
+
+writeXYZ(io::IO, data::AtomList) = writeXYZ(io, coord(cartesian(data)))
+writeXYZ(io::IO, data::AbstractCrystal) = writeXYZ(io, atoms(data))
+
+function writeXYZ(filename::AbstractString, data) 
+    open(filename; write=true) do io
+        writeXYZ(io, data)
+    end
+    return nothing
+end
+
 """
     readXSF3D(
         io::IO;
