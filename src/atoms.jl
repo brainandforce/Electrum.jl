@@ -116,8 +116,9 @@ Base.getindex(l::AtomList, ind) = l.coord[ind]
 Base.iterate(l::AtomList) = iterate(l.coord)
 Base.iterate(l::AtomList, n) = iterate(l.coord, n)
 
-natom(l::AtomList) = length(l.coord)
 basis(l::AtomList) = l.basis
+coord(l::AtomList) = l.coord
+natom(l::AtomList) = length(coord(l))
 
 """
     cartesian(l::AtomList{D}) -> AtomList{D}
