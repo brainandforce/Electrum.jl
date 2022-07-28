@@ -53,6 +53,16 @@ function RealSpaceDataGrid(
     end
 end
 
+"""
+    RealSpaceDataGrid(f, g::RealSpaceDataGrid)
+
+Applies a function `f` elementwise to the grid elements of a `RealSpaceDataGrid` and returns a new
+`RealSpaceDataGrid`.
+"""
+function RealSpaceDataGrid(f, g::RealSpaceDataGrid)
+    return RealSpaceDataGrid(basis(g), shift(g), f.(grid(g)))
+end
+
 # getindex supports arbitrary integer indices for RealSpaceDataGrid
 function Base.getindex(g::RealSpaceDataGrid, inds...)
     # Perform modulo math to get the indices
