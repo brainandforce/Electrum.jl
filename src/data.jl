@@ -161,6 +161,15 @@ function integrate(g::RealSpaceDataGrid{D,T}) where {D,T<:Number}
 end
 
 """
+    integrate(f, g::RealSpaceDataGrid{D,T<:Number}) -> <:Number
+
+Applies the function `f` pointwise to the elements of a datagrid, then integrates the grid.
+"""
+function integrate(f, g::RealSpaceDataGrid{D,T}) where {D,T<:Number}
+    return sum(f.(grid(g))) * voxelsize(g)
+end
+
+"""
     fft(g::RealSpaceDataGrid{D,<:Number}; maxhkl=zeros(Int,D)) -> HKLData{D,<:Complex}
 
 Performs a fast Fourier transform on the data in a `RealSpaceDataGrid{D,<:Number}` and
