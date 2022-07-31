@@ -119,6 +119,32 @@ By default, units are assumed to be cubic angstroms.
 voxelsize(g::RealSpaceDataGrid) = volume(g) / prod(gridsize(g))
 
 """
+    coord(g::RealSpaceDataGrid, ind...) -> SVector{D,Float64}
+
+Returns the Cartesian coordinate associated with a grid datum at a given index.
+"""
+function coord(g::RealSpaceDataGrid{D,T}, ind::AbstractVector{<:Integer}) where {D,T}
+    return basis(g) * (ind ./ size(g))
+end
+
+function coord(g::RealSpaceDataGrid{D,T}, ind::Vararg{<:Integer,D}) where {D,T}
+    return coord(g, SVector{D,Int}(ind))
+end
+
+"""
+    nearest_index(g::RealSpaceDataGrid{D,T}, coord::AbstractVector{<:Real}) -> NTuple{D,Int}
+
+Gets the nearest integer index in a data grid associated with a Cartesian coordinate.
+
+The value returned by this function provides an index that may lie outside of the range of indices
+of the backing array. However, due to the definition of `getindex()` for `RealSpaceDataGrid`, which
+takes advantage of crystal periodicity, the index is guaranteed to return a value.
+"""
+function nearest_index(g::RealSpaceDataGrid{D,T}, coord::AbstractVector{<:Real}) where {D,T}
+    return Tuple(round.(Int, (basis(g) \ coord) .* size(g)))
+end
+
+"""
     Xtal.grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
 
 Performs a check on two `RealSpaceDataGrid`s to ensure that the basis, origin shift, and grid
