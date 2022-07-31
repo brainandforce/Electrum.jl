@@ -98,7 +98,7 @@ grid(g::RealSpaceDataGrid) = g.grid
 Gets the dimensions of the backing array corresponding to a `RealSpaceDataGrid`.
 """
 gridsize(g::RealSpaceDataGrid) = size(g.grid)
-#Base.size(g::RealSpaceDataGrid) = gridsize(g)
+Base.size(g::RealSpaceDataGrid) = size(g.grid)
 
 """
     volume(g::RealSpaceDataGrid) -> Float64
