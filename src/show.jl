@@ -36,19 +36,19 @@ function basis_string(
             ]
 end
 
-basis_string(b::BasisVectors; kwargs...) = basis_string(matrix(b), kwargs...)
+basis_string(b::BasisVectors; kwargs...) = basis_string(matrix(b); kwargs...)
 
 function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pad=0)
     s = basis_string(M, letters=letters, unit=unit)
     print(io, join(" "^pad .* s, "\n"))
 end
 
-printbasis(io::IO, b::BasisVectors; letters=true, pad=0) = 
-    printbasis(io::IO, matrix(b), letters=letters, pad=pad)
-printbasis(io::IO, a::AtomList; letters=true, pad=0) = 
-    printbasis(io, basis(a), letters=letters, pad=pad)
-printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; letters=true, pad=0) =
-    printbasis(io, basis(g), letters=letters, pad=pad)
+printbasis(io::IO, b::BasisVectors; kwargs...) = 
+    printbasis(io::IO, matrix(b), letters=true, pad=0; kwargs...)
+printbasis(io::IO, a::AtomList; kwargs...) = 
+    printbasis(io, basis(a), letters=true, pad=0; kwargs...)
+printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; kwargs...) =
+    printbasis(io, basis(g), letters=true, pad=0; kwargs...)
 
 """
     atom_string(a::AtomPosition; name=true, num=true)
@@ -95,7 +95,7 @@ formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, re
 
 function Base.show(io::IO, ::MIME"text/plain", b::BasisVectors)
     println(io, typeof(b), ":")
-    printbasis(io, b, pad=2)
+    printbasis(io, b, pad=2, unit="Å")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; name=true, num=true)
@@ -119,9 +119,9 @@ end
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
     dimstring = join(string.(gridsize(g)), "×") * " "
     println(io, dimstring, typeof(g), " with basis vectors:")
-    print(join(basis_string(basis(g)), "\n"))
-    println("\nCell volume: ", volume(g))
-    print("Voxel size: ", voxelsize(g))
+    print(join(basis_string(basis(g), unit="Å"), "\n"))
+    println("\nCell volume: ", volume(g), " Å³")
+    print("Voxel size: ", voxelsize(g), " Å³")
 end
 
 # ReciprocalWavefunction{D,T}
@@ -132,9 +132,9 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", l::AbstractLattice{D}) where D
     println(io, typeof(l), ":\n\n  Primitive basis vectors:")
-    printbasis(io, l.prim)
+    printbasis(io, l.prim, unit="Å")
     println(io, "\n\n  Conventional basis vectors:")
-    printbasis(io, l.conv)
+    printbasis(io, l.conv, unit="Å")
 end
 
 # TODO: Get rid of direct struct access
@@ -143,9 +143,9 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     println(io, typeof(xtal), " (space group ", xtal.sgno, "): ")
     # Print basis vectors
     println(io, "\n  Primitive basis vectors:")
-    printbasis(io, xtal.latt.prim, pad=2)
+    printbasis(io, xtal.latt.prim, pad=2, unit="Å")
     println(io, "\n\n  Conventional basis vectors:")
-    printbasis(io, xtal.latt.conv, pad=2)
+    printbasis(io, xtal.latt.conv, pad=2, unit="Å")
     # Add in more info about atomic positions, space group
     println(io, "\n\n  Generating set of atomic positions:")
     println(io, "    Num   ", "Name  ", "Position")
