@@ -132,9 +132,9 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", l::AbstractLattice{D}) where D
     println(io, typeof(l), ":\n\n  Primitive basis vectors:")
-    printbasis(io, l.prim, unit="Å")
+    printbasis(io, l.prim, unit="Å" * "⁻¹"^(l isa ReciprocalLattice))
     println(io, "\n\n  Conventional basis vectors:")
-    printbasis(io, l.conv, unit="Å")
+    printbasis(io, l.conv, unit="Å" * "⁻¹"^(l isa ReciprocalLattice))
 end
 
 # TODO: Get rid of direct struct access
