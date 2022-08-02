@@ -89,8 +89,6 @@ shift(g::RealSpaceDataGrid) = g.orig
 Gets the array that backs a `RealSpaceDataGrid{D,T}`, which is an `Array{T,D}`.
 """
 grid(g::RealSpaceDataGrid) = g.grid
-# Size of the data grid in entries per dimension
-# TODO: should we overload Base.size() as well?
 
 """
     gridsize(g::RealSpaceDataGrid{D,T}) -> NTuple{D,Int}
