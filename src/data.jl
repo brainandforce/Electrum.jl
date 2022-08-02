@@ -74,6 +74,11 @@ end
 # Iterator definitions: pass through matrix iteration
 Base.iterate(g::RealSpaceDataGrid) = iterate(grid(g))
 Base.iterate(g::RealSpaceDataGrid, state) = iterate(grid(g), state)
+# Needed to get eachindex()
+Base.keys(g::RealSpaceDataGrid) = keys(grid(g))
+# Definitions for linear and Cartesian indices
+Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(grid(g))
+Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(grid(g))
 
 """
     basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
