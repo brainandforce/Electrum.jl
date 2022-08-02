@@ -220,7 +220,8 @@ function FFTW.fft(
     shifts = [last(b) for b in bounds]
     # Take the grid fft
     # Permute the elements to get the indexing working
-    f = circshift(fft(grid(g)), shifts .+ 1)
+    # Multiply by the size of a voxel to get the right scaling
+    f = circshift(fft(grid(g)), shifts .+ 1) .* voxelsize(g)
     # With defined bounds, truncate the data
     if all(!iszero, maxhkl)
         ind = [(-x:x) .- first(b) .+ 1 for (x,b) in zip(abs.(maxhkl), bounds)]
