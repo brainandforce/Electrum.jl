@@ -123,12 +123,6 @@ function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where 
     print("Voxel size: ", voxelsize(g))
 end
 
-#= Crystal{D}
-function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D})
-    println(io, )
-end
-=#
-
 # ReciprocalWavefunction{D,T}
 function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) where {D,T}
     println(io,
