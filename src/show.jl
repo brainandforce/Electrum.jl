@@ -38,8 +38,8 @@ end
 
 basis_string(b::BasisVectors; kwargs...) = basis_string(matrix(b), kwargs...)
 
-function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, pad=0)
-    s = basis_string(M, letters=letters)
+function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pad=0)
+    s = basis_string(M, letters=letters, unit=unit)
     print(io, join(" "^pad .* s, "\n"))
 end
 
