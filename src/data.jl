@@ -134,6 +134,10 @@ function coord(g::RealSpaceDataGrid{D,T}, ind::Vararg{<:Integer,D}) where {D,T}
     return coord(g, SVector{D,Int}(ind))
 end
 
+function coord(g::RealSpaceDataGrid{D,T}, ind::CartesianIndex{D}) where {D,T}
+    return coord(g, SVector(ind.I))
+end
+
 """
     nearest_index(g::RealSpaceDataGrid{D,T}, coord::AbstractVector{<:Real}) -> NTuple{D,Int}
 
