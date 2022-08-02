@@ -19,7 +19,8 @@ function basis_string(
     pad="  ",
     brackets=true,
     letters=true,
-    length=true
+    length=true,
+    unit=""
 )
     # Format the numbers within a vector
     tostr(x, n) = lpad(@sprintf("%f", x), n)
@@ -30,7 +31,7 @@ function basis_string(
     return [
                 pad * string(Char(0x60 + n), ':', ' ')^letters *
                 vector_string(M[:,n], brackets=brackets) *
-                ("   (" * tostr(norm(M[:,n]), 0))^length * ")"
+                ("   (" * tostr(norm(M[:,n]), 0))^length * " "^!isempty(unit) * unit * ")"
                 for n in 1:size(M)[2]
             ]
 end
