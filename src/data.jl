@@ -165,8 +165,6 @@ function grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
     return nothing
 end
 
-# TODO: ensure that type inference works
-# We might be able to remove some type parameter tests as well
 function Base.:+(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
     # Check that the grids are identical
     grid_check(g1, g2)
@@ -189,11 +187,22 @@ function Base.:*(s::Number, g::RealSpaceDataGrid{D,T}) where {D,T}
 end
 
 Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
-
 # Multiply everything in the datagrid by -1
 Base.:-(g::RealSpaceDataGrid) = RealSpaceDataGrid(basis(g), shift(g), -grid(g))
 # Subtract two datagrids
 Base.:-(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid) = +(g1, -g2)
+# Divide a datagrid by a scalar
+Base.:/(g::RealSpaceDataGrid, s::Number) = RealSpaceDataGrid(basis(g), shift(g), grid(g) / s)
+# Absolute value
+Base.abs(g::RealSpaceDataGrid) = RealSpaceDataGrid(abs, g)
+# Squared absolute value (really common!)
+Base.abs2(g::RealSpaceDataGrid) = RealSpaceDataGrid(abs2, g)
+# Complex angle
+Base.angle(g::RealSpaceDataGrid) = RealSpaceDataGrid(g) do z
+    return angle(z) + 2pi*(imag(z) < 0)
+end
+# Complex conjugate
+Base.conj(g::RealSpaceDataGrid) = RealSpaceDataGrid(conj, g)
 
 """
     integrate(g::RealSpaceDataGrid{D,T<:Number}) -> <:Number
