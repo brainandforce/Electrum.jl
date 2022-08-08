@@ -95,7 +95,7 @@ formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, re
 
 function Base.show(io::IO, ::MIME"text/plain", b::BasisVectors)
     println(io, typeof(b), ":")
-    printbasis(io, b, pad=2, unit="Å")
+    printbasis(io, b, pad=2)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; name=true, num=true)
