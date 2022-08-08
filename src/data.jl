@@ -519,6 +519,11 @@ function shiftbounds(hkl::HKLData{D,T}, inds) where {D,T}
     return i
 end
 
+"""
+    basis(hkl::HKLData)
+
+Returns the real-space basis associated with an `HKLData` object.
+"""
 basis(hkl::HKLData) = hkl.basis
 
 """
