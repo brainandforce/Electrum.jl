@@ -468,23 +468,33 @@ Stores information associated with specific sets of reciprocal lattice vectors. 
 accessed and modified using regular indexing, where indices may be negative.
 """
 struct HKLData{D,T} <: AbstractHKL{D,T}
+    # REAL SPACE basis vectors
+    basis::BasisVectors{D}
     # the actual data
     data::Array{T,D}
     # the bounds in each dimension
     # mutable since the dimensions of Array{D,T} can be changed, in principle
     bounds::MVector{D,UnitRange{Int}}
     function HKLData(
+        basis::BasisVectors{D},
         data::AbstractArray{T,D},
         bounds::AbstractVector{<:AbstractRange{<:Integer}}
     ) where {D,T}
         # The size of the array should match the bounds given
-        # For instance, a HKLData with bounds  [-10:10, -10:10, -10:10] should Be
+        # For instance, a HKLData with bounds  [-10:10, -10:10, -10:10] should be
         # [21, 21, 21]
         @assert [s for s in size(data)] == [length(r) for r in bounds] string(
             "Array size incompatible with bounds."
         )
-        return new{D,T}(data, bounds)
+        return new{D,T}(basis, data, bounds)
     end
+end
+
+function HKLData(
+    data::AbstractArray{T,D},
+    bounds::AbstractVector{<:AbstractRange{<:Integer}}
+) where {D,T}
+    return HKLData(zero(BasisVectors{D}), data, bounds)
 end
 
 # Needed because HKLData will nearly always have unexpected indices
