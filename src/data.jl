@@ -519,6 +519,8 @@ function shiftbounds(hkl::HKLData{D,T}, inds) where {D,T}
     return i
 end
 
+basis(hkl::HKLData) = hkl.basis
+
 """
     grid(hkl::HKLData{D,T}) -> Array{T,D}
 
