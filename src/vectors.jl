@@ -18,6 +18,7 @@ end
 
 """
     Xtal.fbin(i::Integer) -> Vector{Int}
+    Xtal.fbin(v::AbstractVector) -> Vector{Int}
 
 Returns the coefficients corresponding to the smallest positive and negative frequencies 
 associated with each frequency bin in a discrete Fourier transform of a vector. For 
@@ -52,6 +53,7 @@ fbin(v::AbstractVector) = fbin(length(v))
 fbin(::SVector{N,<:Any}) where N = SVector{N,Int}(fbin(N))
 
 """
+    Xtal.fbins(i::Vararg{T,N}) -> Array{NTuple{N,Int},N}
     Xtal.fbins(x::AbstractArray{T,N}) -> Array{NTuple{N,Int},N}
 
 Returns the coefficients corresponding to the smallest positive and negative frequencies 
