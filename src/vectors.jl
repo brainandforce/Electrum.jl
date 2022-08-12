@@ -30,16 +30,8 @@ or negative value; it is selected to be positive.
 # Examples
 
 ```jldoctest
-julia> fbin(5)
-6-element Vector{Int64}:
-  0
-  1
-  2
- -2
- -1
-
 julia> fbin(6)
-7-element Vector{Int64}:
+6-element Vector{Int64}:
   0
   1
   2
