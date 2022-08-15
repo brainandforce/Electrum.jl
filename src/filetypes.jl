@@ -51,7 +51,6 @@ function writeXYZ(filename::AbstractString, data)
     return nothing
 end
 
-const readXSF = readXSF3D
 
 """
     readXSF3D(
@@ -265,6 +264,8 @@ function writeXSF(io::IO, xtal::Crystal{D}) where D
         println(io)
     end
 end
+
+const readXSF = readXSF3D
 
 """
     writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true)
