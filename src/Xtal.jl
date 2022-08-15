@@ -125,7 +125,7 @@ include("potentials.jl")
 export XCFunctional, HGHPseudopotential, zatom, zion
 # Methods and structs for working with different file formats
 include("filetypes.jl")
-export readXYZ, writeXYZ, readXSF3D, writeXSF, readCPcoeff, readCPgeo, readCPcell
+export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
 export read_abinit_density, read_abinit_potential, read_abinit_wavefunction, readHGH
 export readPOSCAR, readWAVECAR, readDOSCAR, readPROCAR
 # Show methods for pretty printing this module's structs

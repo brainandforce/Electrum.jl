@@ -51,6 +51,8 @@ function writeXYZ(filename::AbstractString, data)
     return nothing
 end
 
+const readXSF = readXSF3D
+
 """
     readXSF3D(
         io::IO;
