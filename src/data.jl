@@ -212,16 +212,16 @@ end
 Base.conj(g::RealSpaceDataGrid) = RealSpaceDataGrid(conj, g)
 
 """
-    integrate(g::RealSpaceDataGrid{D,T<:Number}) -> T
+    integrate(g::RealSpaceDataGrid{D,T}) -> T
 
 Performs an integration across all voxels, returning a scalar value.
 """
-function integrate(g::RealSpaceDataGrid{D,T}) where {D,T<:Number}
+function integrate(g::RealSpaceDataGrid)
     return sum(grid(g)) * voxelsize(g)
 end
 
 """
-    integrate(f::Function, g::RealSpaceDataGrid) -> <:Number
+    integrate(f::Function, g::RealSpaceDataGrid{D,T}) -> T
 
 Applies the function `f` pointwise to the elements of a datagrid, then integrates the grid.
 """
