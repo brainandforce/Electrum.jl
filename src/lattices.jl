@@ -79,7 +79,7 @@ matrix(b::BasisVectors{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n
 # This is needed for broadcasting
 Base.length(b::BasisVectors) = length(b.vs)
 Base.iterate(b::BasisVectors, state) = iterate(b.vs, state) 
-Base.iterate(b::BasisVectors) = iterate(b, 1)
+Base.iterate(b::BasisVectors) = iterate(b.vs)
 
 # TODO: does this make sense?
 Base.convert(::Type{SMatrix{D,D,Float64}}, b::BasisVectors{D}) where D = matrix(b)
