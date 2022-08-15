@@ -26,6 +26,21 @@ struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     end
 end
 
+
+"""
+    basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
+
+Gets the basis vectors of a `RealSpaceDataGrid`.
+"""
+basis(g::RealSpaceDataGrid) = g.latt
+
+"""
+    shift(g::RealSpaceDataGrid{D,T}) -> SVector{D,Float64}
+
+Gets the shift of the datagrid off of the origin of the basis vectors.
+"""
+shift(g::RealSpaceDataGrid) = g.orig
+
 """
     RealSpaceDataGrid(
         latt::AbstractLattice{D},
@@ -79,14 +94,6 @@ Base.keys(g::RealSpaceDataGrid) = keys(grid(g))
 # Definitions for linear and Cartesian indices
 Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(grid(g))
 Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(grid(g))
-
-"""
-    basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
-
-Gets the basis vectors of a `RealSpaceDataGrid`.
-"""
-basis(g::RealSpaceDataGrid) = g.latt
-shift(g::RealSpaceDataGrid) = g.orig
 
 """
     grid(g::RealSpaceDataGrid{D,T}) -> Array{T,D}
