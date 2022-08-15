@@ -267,14 +267,14 @@ Returns the lengths of the constituent vectors in a matrix representing cell vec
 cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
 # TODO: perhaps this is not necessary anymore
 # But removing it might break the API
-cell_lengths(b::BasisVectors) = cell_lengths(matrix(b))
+cell_lengths(b::BasisVectors) = SVector{D}(norm(v) for v in b)
 
 """
     lengths(b::BasisVectors) -> Vector{Float64}
 
 Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
-lengths(b::BasisVectors) = cell_lengths(matrix(b))
+lengths(b::BasisVectors{D}) = SVector{D}(norm(v) for v in b)
 
 """
     cell_volume(M::AbstractMatrix) -> Float64
