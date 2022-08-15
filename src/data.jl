@@ -223,7 +223,8 @@ end
 """
     integrate(f::Function, g::RealSpaceDataGrid{D,T}) -> T
 
-Applies the function `f` pointwise to the elements of a datagrid, then integrates the grid.
+Applies the function `f` pointwise to the elements of a datagrid, then integrates the grid across
+all voxels.
 """
 function integrate(f::Function, g::RealSpaceDataGrid)
     return sum(f.(grid(g))) * voxelsize(g)
