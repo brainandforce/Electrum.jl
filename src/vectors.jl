@@ -70,9 +70,8 @@ julia> fbins(6,5)
 ```   
 """
 fbins(i::Integer...) = collect(Iterators.product((fbin(x) for x in i)...))
-fbins(a::AbstractArray) = fbins(size(a)...)
-fbins(g::RealSpaceDataGrid) = fbins(size(g)...)
 fbins(s::SArray{S,<:Any,N}) where {S,N} = SArray{S,NTuple{N,Int}}(fbins(size(s)...))
+fbins(a) = fbins(size(a)...)
 
 #=
 """
