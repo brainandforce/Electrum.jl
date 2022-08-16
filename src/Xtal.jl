@@ -23,7 +23,7 @@ const ELEMENTS =
 )
 
 # TODO: can we modify this to make it unnecessary?
-const ELEMENT_LOOKUP = Dict{String, Int}([(ELEMENTS[n] => n) for n in 1:length(ELEMENTS)])
+const ELEMENT_LOOKUP = Dict{String, Int}([(ELEMENTS[n] => n) for n in eachindex(ELEMENTS)])
 
 # Matrices used to reduce conventional cells to corresponding primitive cells
 # These can be accessed by calling the centering letter as a symbol
