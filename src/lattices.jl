@@ -275,6 +275,8 @@ cell_lengths(b::BasisVectors) = SVector{D}(norm(v) for v in b)
 Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
 lengths(b::BasisVectors{D}) = SVector{D}(norm(v) for v in b)
+# Get the vector lengths for anything that has a defined basis
+lengths(x) = lengths(basis(x))
 
 """
     cell_volume(M::AbstractMatrix) -> Float64
@@ -294,6 +296,8 @@ Returns the volume of a unit cell defined by a matrix. This volume does not carr
 (negative for cells that do not follow the right hand rule).
 """
 volume(b::BasisVectors) = cell_volume(matrix(b))
+# Get the cell volume for anything that has a defined basis
+volume(x) = volume(basis(x))
 
 """
     volume(l::AbstractLattice; primitive=true) -> Float64
