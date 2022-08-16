@@ -231,6 +231,19 @@ function integrate(f::Function, g::RealSpaceDataGrid)
 end
 
 """
+    fftfreq(g::RealSpaceDataGrid{D,<:Any}) -> Array{NTuple{D,Float64},D}
+
+Returns the discrete Fourier transform frequency bins for a `RealSpaceDataGrid`.
+"""
+function FFTW.fftfreq(g::RealSpaceDataGrid{D,<:Any}) where D
+    return collect(
+        Iterators.product(
+            (fftfreq(size(g)[d], lengths(basis(g))[d]) for d in 1:D)...
+        )
+    )
+end
+
+"""
     fft(g::RealSpaceDataGrid{D,<:Number}; maxhkl=zeros(Int,D)) -> HKLData{D,<:Complex}
 
 Performs a fast Fourier transform on the data in a `RealSpaceDataGrid{D,<:Number}` and
