@@ -109,7 +109,7 @@ export dual, prim, conv, cell_lengths, cell_volume, lengths, volume, lattice2D, 
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export AtomPosition, AtomList
-export atomname, atomicno, coord, natom, basis, cartesian, reduce_coords
+export atomname, atomicno, coord, natom, basis, cartesian, reduce_coords, natomtypes
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export Crystal, CrystalWithDatasets
