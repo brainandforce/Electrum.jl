@@ -104,6 +104,8 @@ Returns the number of atoms in the crystal template.
 """
 natom_template(xtal::Crystal) = natom(xtal.pos)
 
+natomtypes(xtal::Crystal) = natomtypes(xtal.pos)
+
 #=
 """
     all_atoms_in_cell(spgrp::Integer, l::AtomList{D}; onbounds::Bool = false) -> AtomList{D}
