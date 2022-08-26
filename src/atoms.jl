@@ -111,6 +111,7 @@ end
 # Check if an AtomList{D} is empty
 Base.isempty(l::AtomList) = isempty(l.coord)
 Base.getindex(l::AtomList, ind) = l.coord[ind]
+Base.length(l::AtomList) = length(l.coord)
 
 # Iterate through an AtomList
 Base.iterate(l::AtomList) = iterate(l.coord)
@@ -181,4 +182,18 @@ function reduce_coords(
         reduce_coords(basis, a, incell = incell)
     end
     return AtomPosition{D}(basis, va_new)
+end
+
+"""
+    natomtypes(l::AtomList; dummy=false) -> Int
+
+Returns the number of types of atoms. The `dummy` keyword controls whether dummy atoms are counted
+as a separate atom type (`false` by default).
+"""
+function natomtypes(l::AtomList; dummy=false)
+    # Collect all of the atom types
+    types = [atomicno(a) for a in l]
+    # Subtract any dummy atoms
+    return length(unique(types)) - (!dummy * (0 in types))
+    # (There's probably a more efficient implementation, but this works)
 end
