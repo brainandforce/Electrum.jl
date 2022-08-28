@@ -100,6 +100,8 @@ Base.:*(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) * v
 Base.:*(v::AbstractVecOrMat, b::BasisVectors) = v * matrix(b)
 Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
 
+LinearAlgebra.isdiag(b::BasisVectors) = isdiag(matrix(b))
+
 """
     dual(b::BasisVectors)
 
