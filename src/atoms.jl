@@ -185,6 +185,13 @@ function reduce_coords(
 end
 
 """
+    remove_dummies(l::AtomList) -> AtomList
+
+Removes dummy atoms from an `AtomList`.
+"""
+ remove_dummies(l::AtomList) = AtomList(basis(l), filter(x -> !iszero(atomicno(x)), l.coord))
+
+"""
     natomtypes(l::AtomList; dummy=false) -> Int
 
 Returns the number of types of atoms. The `dummy` keyword controls whether dummy atoms are counted
@@ -196,4 +203,22 @@ function natomtypes(l::AtomList; dummy=false)
     # Subtract any dummy atoms
     return length(unique(types)) - (!dummy * (0 in types))
     # (There's probably a more efficient implementation, but this works)
+end
+
+"""
+    atomnames(l::AtomList; dummy=false)
+
+Returns the names of all the atoms in `l`. By default, dummy atoms are not included, but this may
+be changed by setting `dummy=true`.
+"""
+function atomnames(l::AtomList; dummy::Bool=false)
+    # Store results here
+    names = String[]
+    for atom in l
+        # Only add dummy atoms if requested
+        if atomicno(atom) != 0 || dummy
+            push!(names, atomname(atom))
+        end
+    end
+    return unique(names)
 end
