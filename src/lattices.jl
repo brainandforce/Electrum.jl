@@ -473,3 +473,26 @@ end
 function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer}; primitive::Bool=false)
     return d_spacing(basis(x, primitive=primitive), miller)
 end
+
+"""
+    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+
+Converts a set of basis vectors to an upper triangular form using QR decomposition.
+"""
+triangularize(b::BasisVectors) = BasisVectors(qr(matrix(b)).R)
+
+"""
+    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+
+Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
+included conversion to a larger supercell. 
+
+LAMMPS expects that basis vectors are given in this format.
+"""
+function triangularize(b::BasisVectors, supercell::AbstractMatrix{<:Integer})
+    # Get the supercell basis, but as a matrix
+    sb = matrix(b) * supercell
+    # Convert the matrix to upper triangular form using QR decomposition
+    # Q is the orthogonal matrix, R is the upper triangular matrix
+    return BasisVectors(qr(sb).R)
+end
