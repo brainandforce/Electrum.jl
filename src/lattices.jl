@@ -491,9 +491,9 @@ included conversion to a larger supercell.
 
 LAMMPS expects that basis vectors are given in this format.
 """
-function triangularize(b::BasisVectors, supercell::AbstractMatrix{<:Integer})
+function triangularize(b::BasisVectors{D}, supercell::AbstractMatrix{<:Integer}) where D
     # Get the supercell basis, but as a matrix
-    sb = matrix(b) * supercell
+    sb = SMatrix{D,D,Float64}(matrix(b) * supercell)
     # Convert the matrix to upper triangular form using QR decomposition
     # Q is the orthogonal matrix, R is the upper triangular matrix
     return BasisVectors(qr(sb).R)
