@@ -38,10 +38,12 @@ function write_lammps_data(
     atl = (dummy ? list : remove_dummies(list))
     # Enumerate the atoms - by name, not atomic number
     names = atomnames(atl)
+    # Print the atoms section
+    println(io, "\nAtoms  # atomic\n")
     # Loop through the atoms
     for (n,atom) in enumerate(atl)
         @printf(
-            io, "%i  %i  %f  %f  %f",
+            io, "%i  %i  %f  %f  %f\n",
             # Atom number, enumerated atom type, coordinates (currently only 3D)...
             n, findfirst(isequal(atomname(atom)), names), (basis(atl) * atom.pos)...
         )
