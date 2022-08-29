@@ -39,7 +39,7 @@ function write_lammps_data(
     for (n,atom) in enumerate(atl)
         println(
             io, n, " ", findfirst(isequal(atomname(atom)), names),
-            @sprintf("%f  %f  %f", atom.pos)
+            @sprintf("%f  %f  %f", basis(atl) * atom.pos)
         )
     end 
     # Print the atom list
