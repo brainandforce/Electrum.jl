@@ -112,6 +112,7 @@ end
 Base.isempty(l::AtomList) = isempty(l.coord)
 Base.getindex(l::AtomList, ind) = l.coord[ind]
 Base.length(l::AtomList) = length(l.coord)
+Base.size(l::AtomList) = size(l.coord)
 
 # Iterate through an AtomList
 Base.iterate(l::AtomList) = iterate(l.coord)

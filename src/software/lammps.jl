@@ -69,7 +69,7 @@ write_lammps_data(
 # Write to a filename
 function write_lammps_data(
     filename::AbstractString,
-    xtal,
+    xtal::Union{AbstractCrystal{D},AtomList{D}}, # this is weird...
     supercell = ones(Int, D);
     kwargs...
 ) where D
