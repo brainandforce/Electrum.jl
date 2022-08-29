@@ -19,7 +19,7 @@ function write_lammps_data(
 ) where D
     println(io, "# LAMMPS data file written by Xtal.jl (https://github.com/brainandforce/Xtal.jl)")
     # Get the number of atoms; write the corresponding line
-    natoms = size(list) * convert(Int, abs(det(supercell)))
+    natoms = length(list) * convert(Int, abs(det(supercell)))
     println(io, natoms, " atoms")
     # Get the number of atom types
     println(io, natomtypes(list), " atom types")
