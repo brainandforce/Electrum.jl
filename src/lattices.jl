@@ -482,22 +482,24 @@ end
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition.
 """
-triangularize(b::BasisVectors) = BasisVectors(qr(matrix(b)).R)
+triangularize(b::BasisVectors) = BasisVectors(qr(b).R * diagm([sign(R[x,x]) for x in D]))
 
 """
     triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
-included conversion to a larger supercell. 
+included conversion to a larger supercell. The resulting matrix that describes the basis vectors
+will have only positive values along the diagonal.
 
 LAMMPS expects that basis vectors are given in this format.
 """
-function triangularize(b::BasisVectors{D}, supercell::AbstractMatrix{<:Integer}) where D
-    # Get the supercell basis, but as a matrix
-    sb = SMatrix{D,D,Float64}(matrix(b) * supercell)
+function triangularize(
+    b::BasisVectors{D},
+    supercell::AbstractMatrix{<:Integer}
+) where D
     # Convert the matrix to upper triangular form using QR decomposition
     # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
-    R = qr(sb).R
-    # Convert the 
-    return BasisVectors(qr(sb).R)
+    R = qr(matrix(b) * supercell).R
+    # Ensure the diagonal elements are positive
+    return BasisVectors(R * diagm([sign(R[x,x]) for x in D]))
 end
