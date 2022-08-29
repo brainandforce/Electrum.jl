@@ -101,6 +101,7 @@ Base.:*(v::AbstractVecOrMat, b::BasisVectors) = v * matrix(b)
 Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
 
 LinearAlgebra.isdiag(b::BasisVectors) = isdiag(matrix(b))
+LinearAlgebra.qr(b::BasisVectors) = qr(matrix(b))
 
 """
     dual(b::BasisVectors)
@@ -495,6 +496,8 @@ function triangularize(b::BasisVectors{D}, supercell::AbstractMatrix{<:Integer})
     # Get the supercell basis, but as a matrix
     sb = SMatrix{D,D,Float64}(matrix(b) * supercell)
     # Convert the matrix to upper triangular form using QR decomposition
-    # Q is the orthogonal matrix, R is the upper triangular matrix
+    # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
+    R = qr(sb).R
+    # Convert the 
     return BasisVectors(qr(sb).R)
 end
