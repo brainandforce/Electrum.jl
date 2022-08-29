@@ -104,6 +104,33 @@ LinearAlgebra.isdiag(b::BasisVectors) = isdiag(matrix(b))
 LinearAlgebra.qr(b::BasisVectors) = qr(matrix(b))
 
 """
+    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+
+Converts a set of basis vectors to an upper triangular form using QR decomposition.
+"""
+triangularize(b::BasisVectors) = BasisVectors(qr(b).R * diagm([sign(R[x,x]) for x in D]))
+
+"""
+    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+
+Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
+included conversion to a larger supercell. The resulting matrix that describes the basis vectors
+will have only positive values along the diagonal.
+
+LAMMPS expects that basis vectors are given in this format.
+"""
+function triangularize(
+    b::BasisVectors{D},
+    supercell::AbstractMatrix{<:Integer}
+) where D
+    # Convert the matrix to upper triangular form using QR decomposition
+    # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
+    R = qr(matrix(b) * supercell).R
+    # Ensure the diagonal elements are positive
+    return BasisVectors(R * diagm([sign(R[x,x]) for x in D]))
+end
+
+"""
     dual(b::BasisVectors)
 
 Generates the dual lattice defined by a set of basis vectors.
@@ -475,31 +502,4 @@ end
 
 function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer}; primitive::Bool=false)
     return d_spacing(basis(x, primitive=primitive), miller)
-end
-
-"""
-    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
-
-Converts a set of basis vectors to an upper triangular form using QR decomposition.
-"""
-triangularize(b::BasisVectors) = BasisVectors(qr(b).R * diagm([sign(R[x,x]) for x in D]))
-
-"""
-    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
-
-Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
-included conversion to a larger supercell. The resulting matrix that describes the basis vectors
-will have only positive values along the diagonal.
-
-LAMMPS expects that basis vectors are given in this format.
-"""
-function triangularize(
-    b::BasisVectors{D},
-    supercell::AbstractMatrix{<:Integer}
-) where D
-    # Convert the matrix to upper triangular form using QR decomposition
-    # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
-    R = qr(matrix(b) * supercell).R
-    # Ensure the diagonal elements are positive
-    return BasisVectors(R * diagm([sign(R[x,x]) for x in D]))
 end
