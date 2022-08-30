@@ -127,7 +127,7 @@ function triangularize(
     # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
     R = qr(matrix(b) * supercell).R
     # Ensure the diagonal elements are positive
-    return BasisVectors(R * diagm([sign(R[x,x]) for x in D]))
+    return BasisVectors(R * diagm(sign.(diag(R))))
 end
 
 """
