@@ -80,6 +80,7 @@ The value of 2m_e/ħ^2 as used in VASP (eV^-1 * angstrom^-2, but not exactly).
 const CVASP = 0.262465831
 # the correct value is actually 0.26246842360751754
 
+# Functionality here has been superseded by allequal() in Julia 1.8.0
 """
     Xtal._allsame(itr)
 
