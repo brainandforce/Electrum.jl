@@ -16,6 +16,7 @@ function is_linearly_independent(vecs::AbstractVector{<:Number}...)
     return is_linearly_independent(hcat(vecs...))
 end
 
+#= This functionality is unneeded due to FFTW.fftfreq
 """
     Xtal.fbin(i::Integer) -> Vector{Int}
     Xtal.fbin(v::AbstractVector) -> Vector{Int}
@@ -72,6 +73,7 @@ julia> fbins(6,5)
 fbins(i::Integer...) = collect(Iterators.product((fbin(x) for x in i)...))
 fbins(s::SArray{S,<:Any,N}) where {S,N} = SArray{S,NTuple{N,Int}}(fbins(size(s)...))
 fbins(a) = fbins(size(a)...)
+=#
 
 #=
 """
