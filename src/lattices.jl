@@ -108,7 +108,10 @@ LinearAlgebra.qr(b::BasisVectors) = qr(matrix(b))
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition.
 """
-triangularize(b::BasisVectors) = BasisVectors(qr(b).R * diagm([sign(R[x,x]) for x in D]))
+function triangularize(b::BasisVectors{D}) where D 
+    R = qr(b).R
+    return BasisVectors(R * diagm(sign.(diag(R))))
+end
 
 """
     triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
