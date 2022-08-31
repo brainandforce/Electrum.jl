@@ -104,8 +104,8 @@ export AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceD
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export BasisVectors, RealLattice, ReciprocalLattice
-export dual, prim, conv, cell_lengths, cell_volume, lengths, volume, lattice2D, lattice3D,
-       maxHKLindex
+export triangularize, dual, prim, conv, cell_lengths, cell_volume, lengths, volume, lattice2D, 
+       lattice3D, maxHKLindex
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export AtomPosition, AtomList
