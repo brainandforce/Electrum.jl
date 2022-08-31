@@ -128,7 +128,7 @@ function triangularize(
 ) where D
     # Convert the matrix to upper triangular form using QR decomposition
     # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
-    R = qr(matrix(b) * supercell).R
+    R = SMatrix{D,D,Float64}(qr(matrix(b) * supercell).R)
     # Ensure the diagonal elements are positive
     return BasisVectors(R * diagm(sign.(diag(R))))
 end
