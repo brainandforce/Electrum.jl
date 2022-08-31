@@ -19,13 +19,14 @@ function write_lammps_data(io::IO, list::AtomList{D}, dummy::Bool=false) where D
     # Get the number of atom types
     println(io, natomtypes(list), " atom types")
     # Now print the new basis vectors
-    println(io, @sprintf("0.000000    %f", bnew[1,1]), "     xlo xhi")
-    println(io, @sprintf("0.000000    %f", bnew[2,2]), "     ylo yhi")
-    println(io, @sprintf("0.000000    %f", bnew[3,3]), "     zlo zhi")
+    println(io, "# Basis vector lengths:")
+    println(io, @sprintf("0.000000    %f", basis(list)[1,1]), "     xlo xhi")
+    println(io, @sprintf("0.000000    %f", basis(list)[2,2]), "     ylo yhi")
+    println(io, @sprintf("0.000000    %f", basis(list)[3,3]), "     zlo zhi")
     # Add in tilt factors if needed
-    if !isdiag(matrix(bnew))
+    if !isdiag(basis(list))
         println(io, "# Tilt factors:")
-        @printf(io, "%f %f %f xy xz yz", bnew[1,2], bnew[1,3], bnew[2,3])
+        @printf(io, "%f %f %f xy xz yz\n", basis(list)[1,2], basis(list)[1,3], basis(list)[2,3])
     end
     # Get the different atom types; strip dummy atoms if needed
     atl = (dummy ? list : remove_dummies(list))
@@ -76,11 +77,22 @@ write_lammps_data(
 # Write to a filename
 function write_lammps_data(
     filename::AbstractString,
-    xtal,
-    supercell = ones(Int, D);
+    xtal::Union{AbstractCrystal{D},AtomList{D}}, # this is weird...
+    supercell::AbstractVecOrMat{<:Integer};
     kwargs...
 ) where D
     open(filename, write=true) do io
         write_lammps_data(io, xtal, supercell; kwargs...)
+    end
+end
+
+# Write to a filename
+function write_lammps_data(
+    filename::AbstractString,
+    xtal::Union{AbstractCrystal{D},AtomList{D}}, # this is weird...
+    kwargs...
+) where D
+    open(filename, write=true) do io
+        write_lammps_data(io, xtal; kwargs...)
     end
 end
