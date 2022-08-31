@@ -100,6 +100,39 @@ Base.:*(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) * v
 Base.:*(v::AbstractVecOrMat, b::BasisVectors) = v * matrix(b)
 Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
 
+LinearAlgebra.isdiag(b::BasisVectors) = isdiag(matrix(b))
+LinearAlgebra.qr(b::BasisVectors) = qr(matrix(b))
+
+"""
+    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+
+Converts a set of basis vectors to an upper triangular form using QR decomposition.
+"""
+function triangularize(b::BasisVectors{D}) where D 
+    R = qr(b).R
+    return BasisVectors(R * diagm(sign.(diag(R))))
+end
+
+"""
+    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+
+Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
+included conversion to a larger supercell. The resulting matrix that describes the basis vectors
+will have only positive values along the diagonal.
+
+LAMMPS expects that basis vectors are given in this format.
+"""
+function triangularize(
+    b::BasisVectors{D},
+    supercell::AbstractMatrix{<:Integer}
+) where D
+    # Convert the matrix to upper triangular form using QR decomposition
+    # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
+    R = SMatrix{D,D,Float64}(qr(matrix(b) * supercell).R)
+    # Ensure the diagonal elements are positive
+    return BasisVectors(R * diagm(sign.(diag(R))))
+end
+
 """
     dual(b::BasisVectors)
 
