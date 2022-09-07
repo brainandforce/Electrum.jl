@@ -93,20 +93,17 @@ end
 Crystal(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.xtal
 data(xtaldata::CrystalWithDatasets{D,K,V}) where {D,K,V} = xtaldata.data
 
-RealLattice(xtal::Crystal) = xtal.latt
-ReciprocalLattice(xtal::Crystal) = ReciprocalLattice(xtal.latt)
+RealLattice(xtal::AbstractCrystal) = xtal.latt
+ReciprocalLattice(xtal::AbstractCrystal) = ReciprocalLattice(xtal.latt)
 
-prim(xtal::Crystal) = prim(RealLattice(xtal))
-conv(xtal::Crystal) = conv(RealLattice(xtal))
+prim(xtal::AbstractCrystal) = prim(RealLattice(xtal))
+conv(xtal::AbstractCrystal) = conv(RealLattice(xtal))
 
-basis(xtal::Crystal; primitive::Bool=false) = primitive ? prim(xtal.latt) : conv(xtal.latt)
-basis(xtaldata::CrystalWithDatasets; primitive::Bool=false) = basis(xtaldata.xtal; primitive)
+basis(xtal::AbstractCrystal; primitive::Bool=false) = primitive ? prim(xtal.latt) : conv(xtal.latt)
 
-volume(xtal::Crystal; primitive::Bool=false) = volume(xtal.latt; primitive)
-volume(xtaldata::CrystalWithDatasets; primitive::Bool=false) = volume(xtaldata.xtal; primitive)
+volume(xtal::AbstractCrystal; primitive::Bool=false) = volume(xtal.latt; primitive)
 
-atoms(xtal::Crystal) = xtal.pos
-atoms(xtaldata::CrystalWithDatasets) = xtaldata.xtal.pos
+atoms(xtal::AbstractCrystal) = xtal.pos
 
 # TODO: fix this so that it gets the right number of atoms regardless of space group
 """
@@ -117,16 +114,16 @@ Returns the number of atoms in a crystal's unit cell.
 This function is currently not aware of space groups or settings, so if the generating set does not
 contain all the atoms in the cell, it will return the wrong value.
 """
-natom_cell(xtal::Crystal) = natom(xtal.gen)
+natom_cell(xtal::AbstractCrystal) = natom(xtal.gen)
 
 """
     natom_template(xtal::Crystal)
 
 Returns the number of atoms in the crystal template.
 """
-natom_template(xtal::Crystal) = natom(xtal.pos)
+natom_template(xtal::AbstractCrystal) = natom(xtal.pos)
 
-natomtypes(xtal::Crystal) = natomtypes(xtal.pos)
+natomtypes(xtal::AbstractCrystal) = natomtypes(xtal.pos)
 
 #=
 """
