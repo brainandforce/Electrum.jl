@@ -381,13 +381,21 @@ function cell_angle_cos(M::AbstractMatrix)
     return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
 end
 
+cell_angle_cos(b::BasisVectors) = cell_angle_cos(matrix(b))
+
 """
-    cell_angle_rad(M::AbstractMatrix)
+    cell_angle_rad(b) -> Vector{Float64}
 
 Returns the angles (in radians) between each pair of basis vectors.
 """
-cell_angle_rad(M::AbstractMatrix) = acos.(cell_angle_cos(M))
-cell_angle_deg(M::AbstractMatrix) = acosd.(cell_angle_cos(M))
+cell_angle_rad(b) = acos.(cell_angle_cos(b))
+
+"""
+    cell_angle_deg(b) -> Vector{Float64}
+
+Returns the angles (in degrees) between each pair of basis vectors.
+"""
+cell_angle_deg(b) = acosd.(cell_angle_cos(b))
 
 """
     lengths(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
