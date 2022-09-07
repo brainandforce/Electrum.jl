@@ -410,7 +410,7 @@ function angles_deg(L::AbstractLattice{D}; prim=false) where D
 end
 
 """
-   angles_deg(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
+   angles_rad(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
 
 Returns the cell vector angles in radians.
 """
