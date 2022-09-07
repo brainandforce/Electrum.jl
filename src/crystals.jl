@@ -55,6 +55,28 @@ struct CrystalWithDatasets{D,K,V} <: AbstractCrystal{D}
     data::Dict{K,V}
 end
 
+# Expose the constituent crystal's fields
+Base.propertynames(::CrystalWithDatasets) = tuple(
+    fieldnames(CrystalWithDatasets)...,
+    fieldnames(Crystal)...,
+    fieldnames(Dict)...
+)
+
+function Base.getproperty(xtal::CrystalWithDatasets, f::Symbol)
+    # Core fields
+    if f in fieldnames(CrystalWithDatasets)
+        return getfield(xtal, f)
+    # Fields in the Crystal{D}
+    elseif f in fieldnames(Crystal)
+        return getproperty(getfield(xtal, :xtal), f)
+    # Fields in the Dict{K,V}
+    elseif f in fieldnames(Dict)
+        return getproperty(getfield(xtal, :data), f)
+    else
+        error("type CrystalWithDatasets has no field ", string(f))
+    end
+end
+
 # Allow for getting datasets by key; no need to reach into the Dict
 # TODO: figure out how autocompletion works and how to enable it here
 # UPDATE: seems like it's hard-coded into the REPL for `AbstractDict`
