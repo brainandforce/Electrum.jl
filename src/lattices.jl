@@ -68,6 +68,38 @@ function BasisVectors(M::AbstractMatrix{<:Real})
     return BasisVectors(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
 end
 
+"""
+    lattice2D(a::Real, b::Real, γ::Real) -> BasisVectors{2}
+
+Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 2D with the
+same length and angle parameters (in degrees).
+
+By default, the b-vector is oriented along y. This selection corresponds to the default orientation
+chosen by `lattice3D()`.
+"""
+function lattice2D(a::Real, b::Real, γ::Real)
+    return BasisVectors(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
+end
+
+"""
+    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> BasisVectors{3}
+
+Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the
+same length and angle parameters (in degrees).
+
+By default, the b-vector is oriented along y, and the a-vector is chosen to be perpendicular to
+z, leaving the c-vector to freely vary. This selection allows for the most convenient orientation
+of symmetry operations.
+"""
+function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
+    c1 = c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ)
+    c2 = c*cosd(α)
+    M = SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
+                                     0,        b,  0,
+                                c1, c2, sqrt(c^2 - (c1^2 + c2^2)))
+    return BasisVectors(M)
+end
+
 # This should get a vector
 Base.getindex(b::BasisVectors, ind) = b.vs[ind]
 # This should treat BasisVectors like matrices
@@ -425,38 +457,6 @@ Returns the cell vector angles in radians.
 function angles_rad(L::AbstractLattice{D}; prim=false) where D
     prim ? M = prim(L) : M = conv(L)
     return SVector{D,Float64}(cell_angles_rad(M))
-end
-
-"""
-    lattice2D(a::Real, b::Real, γ::Real) -> BasisVectors{2}
-
-Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 2D with the
-same length and angle parameters (in degrees).
-
-By default, the b-vector is oriented along y. This selection corresponds to the default orientation
-chosen by `lattice3D()`.
-"""
-function lattice2D(a::Real, b::Real, γ::Real)
-    return BasisVectors(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
-end
-
-"""
-    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> BasisVectors{3}
-
-Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the
-same length and angle parameters (in degrees).
-
-By default, the b-vector is oriented along y, and the a-vector is chosen to be perpendicular to
-z, leaving the c-vector to freely vary. This selection allows for the most convenient orientation
-of symmetry operations.
-"""
-function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
-    c1 = c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ)
-    c2 = c*cosd(α)
-    M = SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
-                                     0,        b,  0,
-                                c1, c2, sqrt(c^2 - (c1^2 + c2^2)))
-    return BasisVectors(M)
 end
 
 # TODO: Update and document this function a bit more.
