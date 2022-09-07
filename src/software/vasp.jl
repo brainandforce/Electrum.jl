@@ -66,6 +66,39 @@ readPOSCAR(filename::AbstractString; kwargs...) = open(readPOSCAR, filename; kwa
 
 readPOSCAR(; kwargs...) = open(readPOSCAR, "POSCAR"; kwargs...)
 
+"""
+    writePOSCAR4(io::IO, xtal::AbstractCrystal)
+
+Writes crystal data to a VASP 4.6 POSCAR output. Dummy atoms are not written.
+"""
+function writePOSCAR4(io::IO, list::AtomList)
+    # Write comment line and scaling factor
+    println(io, "Written by Xtal.jl\n1")
+    # Write the basis vectors
+    for v in basis(list)
+        println(io, (@sprintf("% -15.10f", x) for x in v)...)
+    end
+    # Figure out what types of atoms there are and how many
+    atom_types = atomtypes(list)
+    atom_counts = [count(a -> atomicno(a) == n, list) for n in atom_types]
+    # Print the number of different types of atoms, and the `Direct` keyword
+    println(io, (rpad(x, 4) for x in atom_counts)..., "\nDirect")
+    for t in atom_types
+        # Loop through the filtered list with one atom type
+        for a in filter(a -> atomicno(a) == t, list.coord)
+            println(io, (@sprintf("% -15.10f", x) for x in coord(a))...)
+        end
+    end
+end
+
+writePOSCAR4(io::IO, xtal::AbstractCrystal) = writePOSCAR4(io, xtal.gen)
+
+function writePOSCAR4(filename::AbstractString, data) 
+    open(filename, write=true) do io
+        writePOSCAR4(io, data)
+    end
+end
+
 # Kendall got everything done before 6 PM (2022-02-01)
 """
     readWAVECAR(io::IO) -> ReciprocalWavefunction{3,Float64,Float32}
