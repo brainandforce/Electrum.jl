@@ -34,14 +34,14 @@ function readPOSCAR(io::IO; ctr=:P)
     else
         @warn string(
             "This POSCAR does not contain atomic identity information.\n",
-            "Dummy atoms will be used as placeholders."
+            "Dummy atoms will be used as placeholders, with names such as X1, X2, etc."
         )
         atomnames = String[]
     end
     # Get the number of each type of atom
     natomtypes = parse.(Int, split(ln))
     if isempty(atomnames)
-        atomnames = ["" for n in 1:length(natomtypes)]
+        atomnames = [string("X", n) for n in 1:length(natomtypes)]
     end
     # Find the "Direct" keyword
     while true
