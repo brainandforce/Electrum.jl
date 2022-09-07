@@ -84,7 +84,7 @@ function lattice2D(a::Real, b::Real, γ::Real)
     return BasisVectors(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
 end
 
-# TODO: can we leverage QR decomposition to do this?
+# TODO: can we leverage QR or LU decomposition to do this generally?
 """
     lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> BasisVectors{3}
 
@@ -417,16 +417,11 @@ function lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
     return BasisVectors{3}.((Mp,Mc))
 end
 
-# It appears these next two docstrings are broken!
-#=
-"""
+#= This docstring is broken due to @doc: https://github.com/JuliaLang/julia/issues/28834
     RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
 
 Generates a 3-dimensional real space lattice given a set of conventional or primitive basis
-vectors and centering information.
-
-By default, inputs are assumed to describe a conventional cell.
-"""
+vectors and centering information.B y default, inputs are assumed to describe a conventional cell.
 =#
 function RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
     return RealLattice(lattice_pair_generator_3D(M, prim=prim, ctr=ctr)...)
