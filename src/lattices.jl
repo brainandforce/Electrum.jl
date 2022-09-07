@@ -14,7 +14,7 @@ nothing, but warns if the cell vectors form a left-handed coordinate system, and
         "cell vectors are not linearly independent.\n",
         "Matrix contents: ", M
     )
-    det(M) < 0  && @warn "cell vectors form a left-handed coordinate system."
+    det(M) < 0 && @warn "cell vectors form a left-handed coordinate system."
     return nothing
 end
 
@@ -68,6 +68,9 @@ function BasisVectors(M::AbstractMatrix{<:Real})
     return BasisVectors(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
 end
 
+# Tools to generate 2D and 3D lattices with given angles
+#-------------------------------------------------------------------------------------------------#
+
 """
     lattice2D(a::Real, b::Real, γ::Real) -> BasisVectors{2}
 
@@ -81,6 +84,7 @@ function lattice2D(a::Real, b::Real, γ::Real)
     return BasisVectors(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
 end
 
+# TODO: can we leverage QR decomposition to do this?
 """
     lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> BasisVectors{3}
 
@@ -100,6 +104,9 @@ function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     return BasisVectors(M)
 end
 
+# Fundamental methods for working with BasisVectors
+#-------------------------------------------------------------------------------------------------#
+
 # This should get a vector
 Base.getindex(b::BasisVectors, ind) = b.vs[ind]
 # This should treat BasisVectors like matrices
@@ -115,11 +122,13 @@ Base.iterate(b::BasisVectors) = iterate(b.vs)
 
 # TODO: does this make sense?
 Base.convert(::Type{SMatrix{D,D,Float64}}, b::BasisVectors{D}) where D = matrix(b)
-# TODO: do we need other kinds of conversions?
 
 Base.zero(::Type{BasisVectors{D}}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
 Base.zero(::BasisVectors{D}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
 Base.zeros(::Type{BasisVectors{D}}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
+
+# Mathematical function definitions for BasisVectors
+#-------------------------------------------------------------------------------------------------#
 
 # Definitions for multiplication/division by a scalar
 # TODO: there's probably a more efficient way to do this
@@ -131,6 +140,9 @@ Base.:/(b::BasisVectors, s::Number) = BasisVectors(matrix(b) / s)
 Base.:*(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) * v
 Base.:*(v::AbstractVecOrMat, b::BasisVectors) = v * matrix(b)
 Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
+
+# Unit cell metrics
+#-------------------------------------------------------------------------------------------------#
 
 """
     cell_lengths(M::AbstractMatrix) -> Vector{Float64}
@@ -237,6 +249,9 @@ Returns the angles (in degrees) between each pair of basis vectors.
 """
 cell_angle_deg(b) = acosd.(cell_angle_cos(b))
 
+# Linear algebraic manipulation of basis vector specification
+#-------------------------------------------------------------------------------------------------#
+
 LinearAlgebra.isdiag(b::BasisVectors) = isdiag(matrix(b))
 LinearAlgebra.qr(b::BasisVectors) = qr(matrix(b))
 
@@ -331,8 +346,6 @@ function (::Type{T})(
     return T(b, BasisVectors{D}(b*transform))
 end
 
-# Get primitive and conventional lattices
-# This is the preferred way of doing so
 """
     prim(l::AbstractLattice{D}) -> BasisVectors{D}
 
@@ -355,7 +368,6 @@ function (::Type{T})(
     return RealLattice(BasisVectors{D}(prim), BasisVectors{D}(conv))
 end
 
-# Conversions between real and reciprocal lattices
 # It's critical that the `RealLattice` and `ReciprocalLattice` constructors are idempotent
 # so that conversion can be completely seamless
 RealLattice(latt::RealLattice) = latt
@@ -381,15 +393,6 @@ end
 
 Base.convert(::Type{<:RealLattice}, latt::AbstractLattice) = RealLattice(latt)
 Base.convert(::Type{<:ReciprocalLattice}, latt::AbstractLattice) = ReciprocalLattice(latt)
-#=
-function convert(::Type{RealLattice{D}}, latt::AbstractLattice{D}) where D
-    return RealLattice(latt)
-end
-
-function convert(::Type{ReciprocalLattice{D}}, latt::AbstractLattice{D}) where D
-    return ReciprocalLattice(latt)
-end
-=#
 
 """
     Xtal.lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
@@ -400,7 +403,7 @@ Returns an `NTuple{2, BasisVectors{3}` with the first matrix containing the prim
 second containing the conventional basis.
 """
 function lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
-    # Without special centering just return the pair of basis vectors
+    # Without special centering, just return the pair of basis vectors
     ctr == :P && return BasisVectors{3}.((M,M))
     # Figure out which type of cell the input matrix defines
     # TODO: Try to ensure this operations favors a c axis pointing along the z direction
@@ -428,6 +431,9 @@ By default, inputs are assumed to describe a conventional cell.
 function RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
     return RealLattice(lattice_pair_generator_3D(M, prim=prim, ctr=ctr)...)
 end
+
+# Metrics, but for AbstractLattice subtypes
+#-------------------------------------------------------------------------------------------------#
 
 """
     lengths(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
