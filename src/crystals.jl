@@ -123,7 +123,8 @@ Returns the number of atoms in the crystal template.
 """
 natom_template(xtal::AbstractCrystal) = natom(xtal.pos)
 
-natomtypes(xtal::AbstractCrystal) = natomtypes(xtal.pos)
+atomtypes(xtal::AbstractCrystal) = atomtypes(xtal.gen)
+natomtypes(xtal::AbstractCrystal) = natomtypes(xtal.gen)
 
 #=
 """

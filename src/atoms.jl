@@ -221,6 +221,14 @@ Removes dummy atoms from an `AtomList`.
 """
  remove_dummies(l::AtomList) = AtomList(basis(l), filter(x -> !iszero(atomicno(x)), l.coord))
 
+ """
+    atomtypes(l::AtomList; dummy=false) -> Int
+
+Returns the atomic numbers of all the atoms in the `AtomList`. The `dummy` keyword controls whether
+dummy atoms are counted as a separate atom type (`false` by default).
+"""
+atomtypes(l::AtomList; dummy=false) = unique([atomicno(a) for a in l])
+
 """
     natomtypes(l::AtomList; dummy=false) -> Int
 
@@ -228,10 +236,8 @@ Returns the number of types of atoms. The `dummy` keyword controls whether dummy
 as a separate atom type (`false` by default).
 """
 function natomtypes(l::AtomList; dummy=false)
-    # Collect all of the atom types
-    types = [atomicno(a) for a in l]
     # Subtract any dummy atoms
-    return length(unique(types)) - (!dummy * (0 in types))
+    return length(atomtypes(l, dummy=dummy)) - (!dummy * (0 in types))
     # (There's probably a more efficient implementation, but this works)
 end
 
