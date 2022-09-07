@@ -132,6 +132,111 @@ Base.:*(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) * v
 Base.:*(v::AbstractVecOrMat, b::BasisVectors) = v * matrix(b)
 Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
 
+"""
+    cell_lengths(M::AbstractMatrix) -> Vector{Float64}
+
+Returns the lengths of the constituent vectors in a matrix representing cell vectors.
+"""
+cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
+# TODO: perhaps this is not necessary anymore
+# But removing it might break the API
+cell_lengths(b::BasisVectors{D}) where D = SVector{D}(norm(v) for v in b)
+
+"""
+    lengths(b::BasisVectors) -> Vector{Float64}
+
+Returns the lengths of the constituent vectors in a matrix representing cell vectors.
+"""
+lengths(b::BasisVectors{D}) where D = SVector{D}(norm(v) for v in b)
+# Get the vector lengths for anything that has a defined basis
+lengths(x) = lengths(basis(x))
+
+"""
+    cell_volume(M::AbstractMatrix) -> Float64
+
+Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
+(negative for cells that do not follow the right hand rule).
+"""
+cell_volume(M::AbstractMatrix) = abs(det(M))
+# TODO: perhaps this is not necessary anymore
+# But removing it might break the API
+cell_volume(b::BasisVectors) = cell_volume(matrix(b))
+
+"""
+    volume(b::BasisVectors) -> Float64
+
+Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
+(negative for cells that do not follow the right hand rule).
+"""
+volume(b::BasisVectors) = cell_volume(matrix(b))
+# Get the cell volume for anything that has a defined basis
+volume(x) = volume(basis(x))
+
+"""
+    volume(l::AbstractLattice; primitive=true) -> Float64
+
+Returns the volume of a lattice. By default, the primitive cell volume is used, but the
+conventional cell volume may be calculated with `primitive=false`.
+"""
+volume(l::AbstractLattice; primitive::Bool=true) = volume(primitive ? prim(l) : conv(l))
+
+"""
+    Xtal.generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
+
+Generate pairs of integers up to `D` in ascending order.
+"""
+function generate_pairs(D::Integer)
+    out = Vector{NTuple{2,Int}}(undef, Int(D*(D-1)/2))
+    c = 0
+    for a = 1:D
+        for b = (a+1):D
+            c += 1 
+            out[c] = (a,b)
+        end
+    end
+    return out
+end
+
+"""
+    Xtal.generate_pairs(::Type{Val{D}}) -> SVector{D*(D-1)/2, NTuple{2,Int}}
+
+Generate pairs of integers up to `D` in ascending order in an `SVector`.
+"""
+function generate_pairs(::Type{Val{D}}) where D
+    N = Int(D*(D-1)/2)
+    return SVector{N,NTuple{2,Int}}(generate_pairs(D))
+end
+
+"""
+    cell_angle_cos(M::AbstractMatrix)
+
+Generates the cosines of the unit cell angles.
+
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
+by reversing the output of `generate_pairs()`. For crystals with more spatial dimensions, this
+may lead to unexpected results.
+"""
+function cell_angle_cos(M::AbstractMatrix)
+    dimpairs = reverse(generate_pairs(size(M,1)))
+    return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
+end
+
+cell_angle_cos(b::BasisVectors) = cell_angle_cos(matrix(b))
+
+"""
+    cell_angle_rad(b) -> Vector{Float64}
+
+Returns the angles (in radians) between each pair of basis vectors.
+"""
+cell_angle_rad(b) = acos.(cell_angle_cos(b))
+
+"""
+    cell_angle_deg(b) -> Vector{Float64}
+
+Returns the angles (in degrees) between each pair of basis vectors.
+"""
+cell_angle_deg(b) = acosd.(cell_angle_cos(b))
+
 LinearAlgebra.isdiag(b::BasisVectors) = isdiag(matrix(b))
 LinearAlgebra.qr(b::BasisVectors) = qr(matrix(b))
 
@@ -323,111 +428,6 @@ By default, inputs are assumed to describe a conventional cell.
 function RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
     return RealLattice(lattice_pair_generator_3D(M, prim=prim, ctr=ctr)...)
 end
-
-"""
-    cell_lengths(M::AbstractMatrix) -> Vector{Float64}
-
-Returns the lengths of the constituent vectors in a matrix representing cell vectors.
-"""
-cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
-# TODO: perhaps this is not necessary anymore
-# But removing it might break the API
-cell_lengths(b::BasisVectors{D}) where D = SVector{D}(norm(v) for v in b)
-
-"""
-    lengths(b::BasisVectors) -> Vector{Float64}
-
-Returns the lengths of the constituent vectors in a matrix representing cell vectors.
-"""
-lengths(b::BasisVectors{D}) where D = SVector{D}(norm(v) for v in b)
-# Get the vector lengths for anything that has a defined basis
-lengths(x) = lengths(basis(x))
-
-"""
-    cell_volume(M::AbstractMatrix) -> Float64
-
-Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
-(negative for cells that do not follow the right hand rule).
-"""
-cell_volume(M::AbstractMatrix) = abs(det(M))
-# TODO: perhaps this is not necessary anymore
-# But removing it might break the API
-cell_volume(b::BasisVectors) = cell_volume(matrix(b))
-
-"""
-    volume(b::BasisVectors) -> Float64
-
-Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
-(negative for cells that do not follow the right hand rule).
-"""
-volume(b::BasisVectors) = cell_volume(matrix(b))
-# Get the cell volume for anything that has a defined basis
-volume(x) = volume(basis(x))
-
-"""
-    volume(l::AbstractLattice; primitive=true) -> Float64
-
-Returns the volume of a lattice. By default, the primitive cell volume is used, but the
-conventional cell volume may be calculated with `primitive=false`.
-"""
-volume(l::AbstractLattice; primitive::Bool=true) = volume(primitive ? prim(l) : conv(l))
-
-"""
-    Xtal.generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
-
-Generate pairs of integers up to `D` in ascending order.
-"""
-function generate_pairs(D::Integer)
-    out = Vector{NTuple{2,Int}}(undef, Int(D*(D-1)/2))
-    c = 0
-    for a = 1:D
-        for b = (a+1):D
-            c += 1 
-            out[c] = (a,b)
-        end
-    end
-    return out
-end
-
-"""
-    Xtal.generate_pairs(::Type{Val{D}}) -> SVector{D*(D-1)/2, NTuple{2,Int}}
-
-Generate pairs of integers up to `D` in ascending order in an `SVector`.
-"""
-function generate_pairs(::Type{Val{D}}) where D
-    N = Int(D*(D-1)/2)
-    return SVector{N,NTuple{2,Int}}(generate_pairs(D))
-end
-
-"""
-    cell_angle_cos(M::AbstractMatrix)
-
-Generates the cosines of the unit cell angles.
-
-The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `generate_pairs()`. For crystals with more spatial dimensions, this
-may lead to unexpected results.
-"""
-function cell_angle_cos(M::AbstractMatrix)
-    dimpairs = reverse(generate_pairs(size(M,1)))
-    return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
-end
-
-cell_angle_cos(b::BasisVectors) = cell_angle_cos(matrix(b))
-
-"""
-    cell_angle_rad(b) -> Vector{Float64}
-
-Returns the angles (in radians) between each pair of basis vectors.
-"""
-cell_angle_rad(b) = acos.(cell_angle_cos(b))
-
-"""
-    cell_angle_deg(b) -> Vector{Float64}
-
-Returns the angles (in degrees) between each pair of basis vectors.
-"""
-cell_angle_deg(b) = acosd.(cell_angle_cos(b))
 
 """
     lengths(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
