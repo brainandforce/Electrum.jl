@@ -118,6 +118,15 @@ Base.size(l::AtomList) = size(l.coord)
 Base.iterate(l::AtomList) = iterate(l.coord)
 Base.iterate(l::AtomList, n) = iterate(l.coord, n)
 
+"""
+    sort_atomicno(l::AtomList; rev=false) -> AtomList
+
+Sorts an `AtomList` by atomic number, return a new `AtomList` with the sorted elements.
+
+The `rev` keyword is supported if a reversed order is desired.
+"""
+sort_atomicno(l::AtomList; kwargs...) = AtomList(basis(l), sort(l.coord, by=atomicno; kwargs...))
+
 basis(l::AtomList) = l.basis
 coord(l::AtomList) = l.coord
 natom(l::AtomList) = length(coord(l))
