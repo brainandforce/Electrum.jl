@@ -205,8 +205,10 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
     # Conversion to upper triangular form should make this easier to work with
     scb = triangularize(basis(l), M)
     # Use LU decomposition to generate the translation bounds
+    decomp = lu(M)
     # Convert to a positive integer to generate valid indices
-    tmax = SVector{D,Int}(abs.(diag(lu(M).U)))
+    # Make sure that the matrix is correctly permuted for this process
+    tmax = SVector{D,Int}(abs.(diag(decomp.U))[decomp.p])
     # Generate all the sites in the supercell where new atoms have to be placed
     newpts = [(v.I .- 1) ./ tmax for v in CartesianIndices(Tuple(tmax))]
     # Shift everything over for each new point
