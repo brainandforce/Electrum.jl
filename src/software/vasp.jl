@@ -28,7 +28,7 @@ function readPOSCAR(io::IO; ctr=:P)
     # use) does not...
     ln = readline(io)
     if isletter(first(strip(ln)))
-        @info "A letter was found in the following line:\n" * ln
+        @debug "A letter was found in the following line:\n" * ln
         atomnames = split(ln)
         ln = readline(io)
     else
@@ -56,7 +56,6 @@ function readPOSCAR(io::IO; ctr=:P)
             ctr = ctr + 1
         end
     end
-    @info "latt:\t" * string(typeof(latt))
     list = AtomList(latt, positions, prim=true)
     # Skip out on velocities for now
     return Crystal(latt, 1, [0, 0, 0], list, list)
