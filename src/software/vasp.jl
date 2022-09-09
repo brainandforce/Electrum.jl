@@ -66,13 +66,31 @@ readPOSCAR(filename::AbstractString; kwargs...) = open(readPOSCAR, filename; kwa
 readPOSCAR(; kwargs...) = open(readPOSCAR, "POSCAR"; kwargs...)
 
 """
-    writePOSCAR4(io::IO, xtal::AbstractCrystal)
+    writePOSCAR4(
+        io::IO,
+        list::AtomList;
+        comment = Written by Xtal.jl,
+        names = false
+    )
+    writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...)
+    writePOSCAR4(filename::AbstractString, data; kwargs...)
 
 Writes crystal data to a VASP 4.6 POSCAR output. Dummy atoms are not written.
+
+The first line, normally used to describe the system, may be altered by passing a printable object
+to `comment`.
+
+By default, atom names are not written (since this seems to break VASP 4.6) but this may be
+overridden by setting `names` to `true.`
 """
-function writePOSCAR4(io::IO, list::AtomList)
+function writePOSCAR4(
+    io::IO,
+    list::AtomList;
+    comment = "Written by Xtal.jl",
+    names = false
+)
     # Write comment line and scaling factor
-    println(io, "Written by Xtal.jl\n1")
+    println(io, comment, "\n1")
     # Write the basis vectors
     for v in basis(list)
         println(io, (@sprintf("% -15.10f", x) for x in v)...)
@@ -80,6 +98,10 @@ function writePOSCAR4(io::IO, list::AtomList)
     # Figure out what types of atoms there are and how many
     atom_types = atomtypes(list)
     atom_counts = [count(a -> atomicno(a) == n, list) for n in atom_types]
+    # If names is true, print the atom names line
+    if names
+        println(io, (rpad(s,4) for s in atomnames(list))...)
+    end
     # Print the number of different types of atoms, and the `Direct` keyword
     println(io, (rpad(x, 4) for x in atom_counts)..., "\nDirect")
     for t in atom_types
@@ -90,11 +112,11 @@ function writePOSCAR4(io::IO, list::AtomList)
     end
 end
 
-writePOSCAR4(io::IO, xtal::AbstractCrystal) = writePOSCAR4(io, xtal.gen)
+writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.gen; kwargs...)
 
-function writePOSCAR4(filename::AbstractString, data) 
+function writePOSCAR4(filename::AbstractString, data; kwargs...) 
     open(filename, write=true) do io
-        writePOSCAR4(io, data)
+        writePOSCAR4(io, data; kwargs...)
     end
 end
 
