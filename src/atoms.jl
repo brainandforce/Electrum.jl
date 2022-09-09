@@ -216,7 +216,8 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
         AtomPosition(
             atomname(atom),
             atomicno(atom),
-            (v = M \ coord(atom) + d;  v - floor.(v)) # Keep the new atoms inside the supercell
+            # Keep the new atoms inside the supercell
+            (v = M \ coord(atom) + d;  SVector{D,Float64}(v - floor.(v)))
         )
         for atom in l.coord, d in newpts
     ]
