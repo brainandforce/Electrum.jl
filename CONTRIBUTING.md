@@ -80,9 +80,10 @@ All functions and structs must have an associated docstring explaining the purpo
 them with the module name in the docstring.
 
 It's better to be verbose about what's going on with your code. Even if a remark seems obvious, 
-feel free to leave it in.
+feel free to leave it in. Perhaps the best assumption to make is that whoever is looking at the
+code may not have any experience writing Julia code (or any code, for that matter).
 
-Comments are generally placed above the lines that they refer to. Inline comments are fine, this is
+Comments are generally placed above the lines that they refer to. Inline comments are fine; this is
 just the pattern that's been used consistently in the code.
 
 ### Type parameters of newly defined types
