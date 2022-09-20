@@ -6,8 +6,17 @@ Thanks for taking interest in our package!
 
 The `main` branch contains a version of the code that builds and can be used immediately. For now,
 we have a `dev` branch that acts as a buffer while we test code manually. This will likely change
-in the near future. If you'd like to implement a feature, create a new local branch, implement the
-feature, then push the branch and open a pull request on Github.
+in the near future. We also have a `next` branch which contains code that has API-breaking changes
+which could affect code you've already written. 
+
+As mentioned in the [README](README.md), you can track any of these branches with the Julia package
+manager if you'd like to test new features that have been added, or just feel like living life on
+the edge.
+
+If you'd like to implement a feature, create a new local branch, implement the feature, then push
+branch and open a pull request on Github. To do this, you may need to fork the repo to your own
+GitHub, and then push your changes there. The pull request tools on our instance of the repo should
+let your create a pull request from your fork to our `main`, `dev`, or `next` branches.
 
 All merging should be done through a rebase operation. This is simpler than using a standard merge,
 as it maintains a linear commit history. However, you will have to ensure that you have fetched or
