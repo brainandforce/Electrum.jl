@@ -1,7 +1,8 @@
 # Xtal.jl
 
 A Julia package for working with crystal structures, associated data, and various file formats,
-with the aim of making theory development easier for everyone.
+with the aim of making theory development for solid state chemistry and materials science easier
+for everyone.
 
 ## How to install
 
