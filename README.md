@@ -7,8 +7,8 @@ with the aim of making theory development easier for everyone.
 
 Xtal.jl is not in the Julia package registry yet, so you'll need to install it like this:
 
-```julia-repl
-(@v1.7) pkg> add https://github.com/brainandforce/Xtal.jl 
+```
+(@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl 
 ```
 
 You can access package mode by typing `]` at the REPL.
@@ -18,13 +18,15 @@ You can access package mode by typing `]` at the REPL.
 * Reading of common file formats:
      + abinit potential, density, and wavefunction outputs from versions 7.10.5 and 8.10.4
      + abinit HGH pseudopotentials
-     + VASP WAVECAR, DOSCAR, and PROCAR
+     + VASP POSCAR, WAVECAR, DOSCAR, and PROCAR
      + XCrysDen XSF
      + XYZ files
      + CPpackage2 outputs
 * Writing of common file formats:
      + XCrysDen XSF
      + XYZ files
+     + VASP POSCAR
+     + LAMMPS atomic position data
 * Operations on datagrids:
      + Addition, subtraction, multiplication
      + FFTs on real space data grids
@@ -36,8 +38,10 @@ This project is just starting to get off the ground, but here's what we have pla
  * Reading and writing of common file formats:
      + XTL files
      + CIF files
+     + abinit input and output files
  * Manipulation of data grids associated with crystal structures
      + Real space grid reinterpolation
+     + Gradient calculations
      
 ...and more that we will decide in time! If you'd like to contibute, be sure to read the included
-contributing guidelines.
+[contributing guidelines.](CONTRIBUTING.md)
