@@ -13,6 +13,8 @@ As mentioned in the [README](README.md), you can track any of these branches wit
 manager if you'd like to test new features that have been added, or just feel like living life on
 the edge.
 
+### How to branch for contributions
+
 If you'd like to implement a feature, create a new local branch, implement the feature, then push
 branch and open a pull request on Github. To do this, you may need to fork the repo to your own
 GitHub, and then push your changes there. The pull request tools on our instance of the repo should
@@ -21,6 +23,12 @@ let your create a pull request from your fork to our `main`, `dev`, or `next` br
 All merging should be done through a rebase operation. This is simpler than using a standard merge,
 as it maintains a linear commit history. However, you will have to ensure that you have fetched or
 pulled from the origin repo and rebased on the parent branch to avoid serious merge conflicts.
+
+If you use VS Code, we recommend the "Git Graph" extension so you can visualize what you're doing
+when you create a new branch, make commits, or push to a remote repo.
+
+In general, new features and fixes are merged into `dev` or `next`, not `main`. However, 
+documentation updates can go directly into `main`.
 
 ## Testing and continuous integrations
 
