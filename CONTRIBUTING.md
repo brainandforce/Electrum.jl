@@ -45,7 +45,7 @@ pure Julia.
 
 ## Coding style and standards
 
-The following conventions are maintained throughout CrystalStructures.jl.
+The following conventions are maintained throughout Xtal.jl.
 
 When in doubt, follow the Julia style guide, located here: https://docs.julialang.org/en/v1/manual/style-guide/
 
