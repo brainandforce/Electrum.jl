@@ -919,6 +919,21 @@ Base.:*(sh::SphericalComponents, x::Real) = SphericalComponents(x .* sh.v)
 Base.:/(sh::SphericalComponents, x::Real) = SphericalComponents(sh.v ./ x)
 
 """
+    dot(sh1::SphericalHarmonics, sh2::SphericalHarmonics) -> Float64
+
+Calculates the dot product between the components of two spherical harmonics, which can be used to
+measure the degree of similarity between them. Note that this does not account for differences in
+rotation between the spherical harmonics.
+"""
+function LinearAlgebra.dot(sh1::SphericalComponents, sh2::SphericalComponents)
+    # Get the lengths of the smallest set of harmonics 
+    # (assume all not included are zero)
+    l = div(min(sizeof.((sh1, sh2))...), sizeof(Float64))
+    # Restrict dot product calculation to the minimum length
+    return dot(sh1.v[1:l], sh2.v[1:l])
+end
+
+"""
     Xtal.sc_ind(l::Integer, m::Integer) -> Int
 
 Gets the associated linear index for a pair of (l,m) values used in `SphericalComponents`.
