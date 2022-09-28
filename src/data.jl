@@ -913,6 +913,11 @@ projections of data onto atomic sites.
 SphericalComponents(v::SVector{N,<:Real}) where N = SphericalComponents(v...)
 SphericalComponents(t::NTuple{N,<:Real}) where N = SphericalComponents(t...)
 
+# Multiplication with scalars
+Base.:*(x::Real, sh::SphericalComponents) = SphericalComponents(x .* sh.v)
+Base.:*(sh::SphericalComponents, x::Real) = SphericalComponents(x .* sh.v)
+Base.:/(sh::SphericalComponents, x::Real) = SphericalComponents(sh.v ./ x)
+
 """
     Xtal.sc_ind(l::Integer, m::Integer) -> Int
 
