@@ -24,7 +24,7 @@ function lattice_sanity_check(vs::AbstractVector{<:AbstractVector{<:Real}})
 end
 
 """
-    BasisVectors{D}
+    BasisVectors{D} <: AbstractBasis{D}
 
 Collection of `D` basis vectors spanning `D`-dimensional space.
 
@@ -35,7 +35,7 @@ length declaration that would be required by an `SMatrix`.
 indexing with a single value returns an `SVector{D,Float64}`, not a value as would happen with most
 subtypes of `AbstractMatrix`.
 """
-struct BasisVectors{D}
+struct BasisVectors{D} <: AbstractBasis{D}
     vs::SVector{D,SVector{D,Float64}}
     # TODO: there's probably a nicer way to handle this, but whatever
     # Inner constructor for all matrices
