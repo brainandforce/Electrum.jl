@@ -20,15 +20,12 @@ struct Crystal{D} <: AbstractCrystal{D}
     orig::SVector{D,Float64}
     # Positions of generating atoms (needed to fill the whole structure given the space group)
     gen::AtomList{D}
-    # Positions of atoms explicitly generated (used to generate templates, XYZs, etc.)
-    pos::AtomList{D}
     # Inner constructor
     function Crystal(
         latt::AbstractLattice{D},
         sgno::Integer,
         orig::AbstractVector{<:Real},
-        gen::AtomList{D},
-        pos::AtomList{D}
+        gen::AtomList{D}
     ) where D
         # TODO: include some validation
         # If the atom list doesn't have a basis defined (assuming Cartesian coordinates)
@@ -39,7 +36,7 @@ struct Crystal{D} <: AbstractCrystal{D}
             # from a computation, conv(latt) should generally match the primitive cell
             gen = AtomList{D}(conv(latt), reduce_coords(conv(latt), gen, incell=true))
         end
-        return new{D}(RealLattice(latt), sgno, orig, gen, pos)
+        return new{D}(RealLattice(latt), sgno, orig, gen)
     end
 end
 
@@ -103,8 +100,6 @@ basis(xtal::AbstractCrystal; primitive::Bool=false) = primitive ? prim(xtal.latt
 
 volume(xtal::AbstractCrystal; primitive::Bool=false) = volume(xtal.latt; primitive)
 
-atoms(xtal::AbstractCrystal) = xtal.pos
-
 # TODO: fix this so that it gets the right number of atoms regardless of space group
 """
     natom_cell(xtal::Crystal)
@@ -115,13 +110,6 @@ This function is currently not aware of space groups or settings, so if the gene
 contain all the atoms in the cell, it will return the wrong value.
 """
 natom_cell(xtal::AbstractCrystal) = natom(xtal.gen)
-
-"""
-    natom_template(xtal::Crystal)
-
-Returns the number of atoms in the crystal template.
-"""
-natom_template(xtal::AbstractCrystal) = natom(xtal.pos)
 
 atomtypes(xtal::AbstractCrystal) = atomtypes(xtal.gen)
 natomtypes(xtal::AbstractCrystal) = natomtypes(xtal.gen)
