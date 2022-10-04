@@ -12,6 +12,22 @@ strictly binding, but make sure that you know why you're breaking the rules if y
 =#
 
 """
+    AbstractBasis{D}
+
+Supertype for sets of basis vectors in `D` dimensions.
+
+This supertype includes the `BasisVectors{D}` type as well as the new `RealBasis{D}` and
+`ReciprocalBasis{D}` types, which explicitly indicate their units (assumed to be either angstroms
+or inverse angstroms).
+
+Members of `AbstractBasis` must implement the following checks:
+  * That the basis vectors are linearly independent and form a right-handed coordinate system, 
+unless an explicit zero basis is constructed (implying no periodicity).
+"""
+abstract type AbstractBasis{D}
+end
+
+"""
     AbstractLattice{D}
 
 Supertype for all lattices of dimension D.
