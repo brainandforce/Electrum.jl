@@ -360,7 +360,7 @@ readPROCAR() = open(readPROCAR, "PROCAR")
 
 Reads an OUTCAR file and returns the Fermi Energy.
 """
-function getFermi(io::IO)
+function get_Fermi(io::IO)
     readuntil(io, "E-fermi :")
     fermi = parse.(Float64, split(readline(io))[1])
     return fermi
@@ -378,6 +378,7 @@ Reads a KPOINTS file to get the k-point mesh. So far only supports regular mesh.
 function readKPOINTS(io::IO)
     ln = readlines(io)
     mesh = diagm(parse.(Int64,split(ln[4])))
+    # Optional 5th line contains shift of k-point mesh
     if length(ln) == 5
         shift = parse.(Float64,split(ln[5]))
     else
