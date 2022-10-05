@@ -366,7 +366,7 @@ function get_fermi(io::IO)
     return fermi
 end
 
-get_fermi(filename::AbstractString) = open(getFermi, filename)
+get_fermi(filename::AbstractString) = open(get_fermi, filename)
 
 get_fermi() = open(get_fermi, "OUTCAR")
 
