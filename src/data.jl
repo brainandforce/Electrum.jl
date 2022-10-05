@@ -323,7 +323,7 @@ struct KPointGrid{D} <: AbstractKPoints{D}
     orig::SVector{D,Float64}
     function KPointGrid{D}(grid::AbstractMatrix{<:Integer}, orig::AbstractVector{<:Real}) where D
         # only allow positive values in the grid matrix
-        @assert all(x -> x > 0, grid) "negative values are disallowed in the grid matrix"
+        @assert all(x -> x >= 0, grid) "negative values are disallowed in the grid matrix"
         # Keep shift inside the Brillouin zone
         orig = orig -  round.(orig)
         return new(grid, orig)
