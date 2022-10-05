@@ -354,3 +354,39 @@ end
 readPROCAR(filename::AbstractString) = open(readPROCAR, filename)
 
 readPROCAR() = open(readPROCAR, "PROCAR")
+
+"""
+    getFermi(io::IO) -> Float64
+
+Reads an OUTCAR file and returns the Fermi Energy.
+"""
+function getFermi(io::IO)
+    readuntil(io, "E-fermi :")
+    fermi = parse.(Float64, split(readline(io))[1])
+    return fermi
+end
+
+getFermi(filename::AbstractString) = open(getFermi, filename)
+
+getFermi() = open(getFermi, "OUTCAR")
+
+"""
+    readKPOINTS(io::IO) -> Float64
+
+Reads a KPOINTS file to get the k-point mesh. So far only supports regular mesh.
+"""
+function readKPOINTS(io::IO)
+    ln = readlines(io)
+    mesh = diagm(parse.(Int64,split(ln[4])))
+    if length(ln) == 5
+        shift = parse.(Float64,split(ln[5]))
+    else
+        shift = [0.0,0.0,0.0]
+    end
+    kptgrid = KPointGrid{3}(mesh, shift)
+    return kptgrid
+end    
+
+readKPOINTS(filename::AbstractString) = open(readKPOINTS, filename)
+
+readKPOINTS() = open(readKPOINTS, "KPOINTS")
