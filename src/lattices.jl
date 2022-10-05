@@ -23,6 +23,7 @@ function lattice_sanity_check(vs::AbstractVector{<:AbstractVector{<:Real}})
     return lattice_sanity_check(hcat(vs...))
 end
 
+# TODO: deprecate in favor of `RealBasis` and `ReciprocalBasis`
 """
     BasisVectors{D} <: AbstractBasis{D}
 
@@ -66,6 +67,58 @@ BasisVectors{D}(vs::AbstractVector{<:AbstractVector}) where D = BasisVectors{D}(
 # TODO: might this be better off as an inner constructor?
 function BasisVectors(M::AbstractMatrix{<:Real})
     return BasisVectors(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
+end
+
+#---New RealBasis and ReciprocalBasis types-------------------------------------------------------#
+"""
+    RealBasis{D} <: AbstractBasis{D}
+
+A set of real space basis vectors, assumed to be in angstroms.
+"""
+struct RealBasis{D} <: AbstractBasis{D}
+    vs::SVector{D,SVector{D,Float64}}
+    function RealBasis(vs::StaticVector{D,<:StaticVector{D,<:Real}}) where D
+        lattice_sanity_check(vs)
+        return new{D}(vs)
+    end
+    function RealBasis{D}(vs::AbstractVector{<:AbstractVector{<:Real}}) where D
+        lattice_sanity_check(vs)
+        return new(vs)
+    end
+end
+
+"""
+    ReciprocalBasis{D} <: AbstractBasis{D}
+
+A set of reciprocal space basis vectors, assumed to be in inverse angstroms.
+"""
+struct ReciprocalBasis{D} <: AbstractBasis{D}
+    vs::SVector{D,SVector{D,Float64}}
+    function ReciprocalBasis(vs::StaticVector{D,<:StaticVector{D,<:Real}}) where D
+        lattice_sanity_check(vs)
+        return new{D}(vs)
+    end
+    function ReciprocalBasis{D}(vs::AbstractVector{<:AbstractVector{<:Real}}) where D
+        lattice_sanity_check(vs)
+        return new(vs)
+    end
+end
+
+function (::Type{T})(M::StaticMatrix{D,D,<:Real}) where {T<:AbstractBasis,D}
+    # Convert the matrix to a vector of vectors
+    vs = SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D)
+    # Call the inner constructor
+    return T(vs)
+end
+
+function (::Type{T})(M::AbstractMatrix{<:Real}) where {T<:AbstractBasis}
+    # Only allow square matrices
+    @assert _allsame(size(M)) "Matrix is not square."
+    # Convert the matrix to a vector of vectors
+    D = size(M)[1]
+    vs = SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D)
+    # Call the inner constructor
+    return T(vs)
 end
 
 # Tools to generate 2D and 3D lattices with given angles
