@@ -368,7 +368,7 @@ end
 
 get_fermi(filename::AbstractString) = open(getFermi, filename)
 
-get_fermi() = open(getFermi, "OUTCAR")
+get_fermi() = open(get_fermi, "OUTCAR")
 
 """
     readKPOINTS(io::IO) -> KPointGrid{3}
