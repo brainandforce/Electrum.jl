@@ -360,15 +360,15 @@ readPROCAR() = open(readPROCAR, "PROCAR")
 
 Reads an OUTCAR file and returns the Fermi Energy.
 """
-function get_Fermi(io::IO)
+function get_fermi(io::IO)
     readuntil(io, "E-fermi :")
     fermi = parse.(Float64, split(readline(io))[1])
     return fermi
 end
 
-getFermi(filename::AbstractString) = open(getFermi, filename)
+get_fermi(filename::AbstractString) = open(getFermi, filename)
 
-getFermi() = open(getFermi, "OUTCAR")
+get_fermi() = open(getFermi, "OUTCAR")
 
 """
     readKPOINTS(io::IO) -> KPointGrid{3}
