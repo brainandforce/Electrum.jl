@@ -129,7 +129,7 @@ export XCFunctional, HGHPseudopotential, zatom, zion
 include("filetypes.jl")
 export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
 export read_abinit_density, read_abinit_potential, read_abinit_wavefunction, readHGH
-export readPOSCAR, writePOSCAR4, readWAVECAR, readDOSCAR, readPROCAR
+export readPOSCAR, writePOSCAR4, readWAVECAR, readDOSCAR, readPROCAR, getFermi, readKPOINTS
 export write_lammps_data
 # Show methods for pretty printing this module's structs
 include("show.jl")
