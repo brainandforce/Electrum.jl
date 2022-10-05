@@ -371,7 +371,7 @@ getFermi(filename::AbstractString) = open(getFermi, filename)
 getFermi() = open(getFermi, "OUTCAR")
 
 """
-    readKPOINTS(io::IO) -> Float64
+    readKPOINTS(io::IO) -> KPointGrid{3}
 
 Reads a KPOINTS file to get the k-point mesh. So far only supports regular mesh.
 """
