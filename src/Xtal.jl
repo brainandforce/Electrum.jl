@@ -104,7 +104,7 @@ export AbstractBasis, AbstractLattice, AbstractCrystal, AbstractCrystalData, Abs
        AbstractPotential, AbstractPseudopotential
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
-export BasisVectors, RealLattice, ReciprocalLattice
+export BasisVectors, RealBasis, ReciprocalBasis, RealLattice, ReciprocalLattice
 export triangularize, dual, prim, conv, cell_lengths, cell_volume, lengths, volume, lattice2D, 
        lattice3D, maxHKLindex
 # Methods and structs for working with atomic positions
