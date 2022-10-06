@@ -41,6 +41,10 @@ state, and not the release version. You can do this by specifying the branch you
 julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl", rev="dev")
 ```
 
-# License
+# Licensing and attribution
 
-Xtal.jl is MIT licensed.
+Xtal.jl is [MIT licensed](https://mit-license.org/). In short, this means that you can use this 
+package however you like, without restrictions on relicensing.
+
+You are not required to cite this package if you use it in research, however, attribution is
+*always* appreciated.
