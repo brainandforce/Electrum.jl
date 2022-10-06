@@ -1,0 +1,41 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Xtal.jl
+message: >-
+  This software is MIT licensed, which means that
+  citation is not required to use this package in
+  research. However, citations are always greatly
+  appreciated!
+type: software
+authors:
+  - given-names: Brandon
+    family-names: Flores
+    email: bsflores@wisc.edu
+    affiliation: University of Wisconsin-Madison
+    orcid: 'https://orcid.org/0000-0003-0816-4491'
+  - given-names: Amber
+    family-names: Lim
+    email: xalim@wisc.edu
+    affiliation: University of Wisconsin-Madison
+    orcid: 'https://orcid.org/0000-0001-9893-1740'
+  - given-names: Patrick
+    family-names: Cross
+    email: pcross@wisc.edu
+    affiliation: University of Wisconsin-Madison
+identifiers:
+  - type: other
+    value: b7bf5f09-dce4-461b-b741-5180c76f4cfe
+    description: Julia package UUID
+repository-code: 'https://github.com/brainandforce/Xtal.jl'
+url: 'https://github.com/brainandforce/Xtal.jl'
+repository: 'https://github.com/brainandforce/Xtal.jl'
+abstract: >-
+  A Julia library for working with crystal structures
+  and associated data with the goal of making theory
+  development easier.
+keywords:
+  - crystallography
+  - computational chemistry
+license: MIT
