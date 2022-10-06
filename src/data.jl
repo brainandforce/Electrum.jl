@@ -370,8 +370,8 @@ function KPointList(points::AbstractVector{<:SVector{D,<:Real}}) where D
     return KPointList(points, ones(length(points)))
 end
 
-# Index like the vector it is internally
-Base.getindex(k::KPointList, i) = k.list[i]
+# Get the k-point and its associated weight as a NamedTuple
+Base.getindex(k::KPointList, i) = (kpt=k.points[i], weight=k.weights[i])
 
 function Base.setindex!(k::KPointList, v::AbstractVector, i)
     k.points[i] = v
