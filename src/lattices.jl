@@ -38,26 +38,13 @@ subtypes of `AbstractMatrix`.
 """
 struct BasisVectors{D} <: AbstractBasis{D}
     vs::SVector{D,SVector{D,Float64}}
-    # TODO: there's probably a nicer way to handle this, but whatever
-    # Inner constructor for all matrices
-    function BasisVectors{D}(M::AbstractMatrix{<:Real}) where D
-        lattice_sanity_check(M)
-        return new{D}([M[:,n] for n in 1:size(M,2)])
-    end
-    # And for all vectors of vectors
-    function BasisVectors{D}(M::AbstractVector{AbstractVector{<:Real}}) where D
-        lattice_sanity_check(M)
-        return new{D}([M[:,n] for n in 1:size(M,2)])
-    end
-    # If SVectors are used directly, this one can be called
-    function BasisVectors(vs::SVector{D,<:SVector{D,<:Real}}) where D
+    function BasisVectors(vs::StaticVector{D,<:StaticVector{D,<:Real}}) where D
         lattice_sanity_check(vs)
         return new{D}(vs)
     end
-    # Same for SMatrices
-    function BasisVectors(M::SMatrix{D,D,<:Real}) where D
-        lattice_sanity_check(M)
-        return new{D}(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
+    function BasisVectors{D}(vs::AbstractVector{<:AbstractVector{<:Real}}) where D
+        lattice_sanity_check(vs)
+        return new(vs)
     end
 end
 
@@ -161,38 +148,43 @@ end
 #-------------------------------------------------------------------------------------------------#
 
 # This should get a vector
-Base.getindex(b::BasisVectors, ind) = b.vs[ind]
+Base.getindex(b::AbstractBasis, ind) = b.vs[ind]
 # This should treat BasisVectors like matrices
-Base.getindex(b::BasisVectors, i1, i2) = b[i2][i1]
+Base.getindex(b::AbstractBasis, i1, i2) = b[i2][i1]
 
-vectors(b::BasisVectors) = b.vs
-matrix(b::BasisVectors{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
+vectors(b::AbstractBasis) = b.vs
+matrix(b::AbstractBasis{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
 
 # This is needed for broadcasting
-Base.length(b::BasisVectors) = length(b.vs)
-Base.iterate(b::BasisVectors, state) = iterate(b.vs, state) 
-Base.iterate(b::BasisVectors) = iterate(b.vs)
+Base.size(::AbstractBasis{D}) where D = (D,D)
+Base.length(b::AbstractBasis) = length(b.vs)
+Base.iterate(b::AbstractBasis, state) = iterate(b.vs, state) 
+Base.iterate(b::AbstractBasis) = iterate(b.vs)
 
 # TODO: does this make sense?
-Base.convert(::Type{SMatrix{D,D,Float64}}, b::BasisVectors{D}) where D = matrix(b)
+Base.convert(::Type{SMatrix{D,D,Float64}}, b::AbstractBasis{D}) where D = matrix(b)
 
-Base.zero(::Type{BasisVectors{D}}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
-Base.zero(::BasisVectors{D}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
-Base.zeros(::Type{BasisVectors{D}}) where D = BasisVectors(zeros(SVector{D,SVector{D,Float64}}))
+# Construct zero basis
+function Base.zero(T::Type{<:AbstractBasis{D}}) where D
+    return T(zeros(SVector{D,SVector{D,Float64}}))
+end
+
+Base.zero(::T) where {T<:AbstractBasis} = zero(T)
+Base.zeros(::Type{T}) where T<:AbstractBasis = zero(T)
 
 # Mathematical function definitions for BasisVectors
 #-------------------------------------------------------------------------------------------------#
 
 # Definitions for multiplication/division by a scalar
 # TODO: there's probably a more efficient way to do this
-Base.:*(s::Number, b::BasisVectors) = BasisVectors(matrix(b) * s)
-Base.:*(b::BasisVectors, s::Number) = s * b
-Base.:/(b::BasisVectors, s::Number) = BasisVectors(matrix(b) / s)
+Base.:*(s::Number, b::AbstractBasis) = BasisVectors(matrix(b) * s)
+Base.:*(b::AbstractBasis, s::Number) = s * b
+Base.:/(b::AbstractBasis, s::Number) = BasisVectors(matrix(b) / s)
 
 # And multiplication/division by vectors
-Base.:*(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) * v
-Base.:*(v::AbstractVecOrMat, b::BasisVectors) = v * matrix(b)
-Base.:\(b::BasisVectors, v::AbstractVecOrMat) = matrix(b) \ v
+Base.:*(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) * v
+Base.:*(v::AbstractVecOrMat, b::AbstractBasis) = v * matrix(b)
+Base.:\(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) \ v
 
 # Unit cell metrics
 #-------------------------------------------------------------------------------------------------#
@@ -205,14 +197,14 @@ Returns the lengths of the constituent vectors in a matrix representing cell vec
 cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
 # TODO: perhaps this is not necessary anymore
 # But removing it might break the API
-cell_lengths(b::BasisVectors{D}) where D = SVector{D}(norm(v) for v in b)
+cell_lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
 
 """
-    lengths(b::BasisVectors) -> Vector{Float64}
+    lengths(b::AbstractBasis) -> Vector{Float64}
 
 Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
-lengths(b::BasisVectors{D}) where D = SVector{D}(norm(v) for v in b)
+lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
 # Get the vector lengths for anything that has a defined basis
 lengths(x) = lengths(basis(x))
 
@@ -225,15 +217,15 @@ Returns the volume of a unit cell defined by a matrix. This volume does not carr
 cell_volume(M::AbstractMatrix) = abs(det(M))
 # TODO: perhaps this is not necessary anymore
 # But removing it might break the API
-cell_volume(b::BasisVectors) = cell_volume(matrix(b))
+cell_volume(b::AbstractBasis) = cell_volume(matrix(b))
 
 """
-    volume(b::BasisVectors) -> Float64
+    volume(b::AbstractBasis) -> Float64
 
 Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
 (negative for cells that do not follow the right hand rule).
 """
-volume(b::BasisVectors) = cell_volume(matrix(b))
+volume(b::AbstractBasis) = cell_volume(matrix(b))
 # Get the cell volume for anything that has a defined basis
 volume(x) = volume(basis(x))
 
@@ -286,7 +278,7 @@ function cell_angle_cos(M::AbstractMatrix)
     return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
 end
 
-cell_angle_cos(b::BasisVectors) = cell_angle_cos(matrix(b))
+cell_angle_cos(b::AbstractBasis) = cell_angle_cos(matrix(b))
 
 """
     cell_angle_rad(b) -> Vector{Float64}
@@ -305,21 +297,21 @@ cell_angle_deg(b) = acosd.(cell_angle_cos(b))
 # Linear algebraic manipulation of basis vector specification
 #-------------------------------------------------------------------------------------------------#
 
-LinearAlgebra.isdiag(b::BasisVectors) = isdiag(matrix(b))
-LinearAlgebra.qr(b::BasisVectors) = qr(matrix(b))
+LinearAlgebra.isdiag(b::AbstractBasis) = isdiag(matrix(b))
+LinearAlgebra.qr(b::AbstractBasis) = qr(matrix(b))
 
 """
-    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+    triangularize(l::T) where T<:AbstractBasis -> T
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition.
 """
-function triangularize(b::BasisVectors{D}) where D 
+function triangularize(b::T) where T<:AbstractBasis
     R = qr(b).R
-    return BasisVectors(R * diagm(sign.(diag(R))))
+    return T(R * diagm(sign.(diag(R))))
 end
 
 """
-    triangularize(l::BasisVectors, supercell::AbstractMatrix{<:Integer}) -> BasisVectors
+    triangularize(l::T, supercell::AbstractMatrix{<:Integer}) where T<:AbstractBasis -> T
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
 included conversion to a larger supercell. The resulting matrix that describes the basis vectors
@@ -327,15 +319,12 @@ will have only positive values along the diagonal.
 
 LAMMPS expects that basis vectors are given in this format.
 """
-function triangularize(
-    b::BasisVectors{D},
-    supercell::AbstractMatrix{<:Integer}
-) where D
+function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBasis
     # Convert the matrix to upper triangular form using QR decomposition
     # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
-    R = SMatrix{D,D,Float64}(qr(matrix(b) * supercell).R)
+    R = SMatrix{length(b),length(b),Float64}(qr(matrix(b) * sc).R)
     # Ensure the diagonal elements are positive
-    return BasisVectors(R * diagm(sign.(diag(R))))
+    return T(R * diagm(sign.(diag(R))))
 end
 
 """
