@@ -19,8 +19,12 @@ module:
 julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl")
 ```
 
-If you'd like to track a specific branch, you can specify this as well:
+If you'd like to track a specific branch, you can specify this as well (here, `dev` is used as an
+example):
 
+```
+(@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl#dev
+```
 ```julia-repl
 julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl", rev="dev")
 ```
