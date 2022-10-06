@@ -350,7 +350,7 @@ struct KPointList{D} <: AbstractKPoints{D}
         weights::AbstractVector{<:Real}
     ) where D
         @assert length(points) == length(weights) "Number of k-points and weights do not match."
-        return new{D}(points, weights)
+        return new{D}(points, weights / sum(weights))
     end
 end
 
