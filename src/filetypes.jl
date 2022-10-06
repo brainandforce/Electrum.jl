@@ -153,7 +153,7 @@ function readXSF3D(
                 if contains(ln, "DATAGRID_3D")
                     # Get the name of the datagrid
                     @debug "Line contents: \"" * ln * "\""
-                    name = split(ln, "DATAGRID_3D_")[2]
+                    name = rstrip(split(ln, "DATAGRID_3D_")[2])
                     # Get the dimensions of the datagrid
                     ln = iterate(iter)[1]
                     dims = parse.(Int, split(ln))
