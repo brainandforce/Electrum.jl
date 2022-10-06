@@ -108,6 +108,23 @@ function (::Type{T})(M::AbstractMatrix{<:Real}) where {T<:AbstractBasis}
     return T(vs)
 end
 
+"""
+    convert(::Type{<:RealBasis}, b::ReciprocalBasis) -> RealBasis
+    convert(::Type{<:ReciprocalBasis}, b::RealBasis) -> ReciprocalBasis
+
+Converts between real space and reciprocal space representations of bases. Note that this includes
+a factor of 2π that is used conventionally in crystallography: conversion from `RealBasis` to
+`ReciprocalBasis` multiplies by 2π, and vice versa. This ensures that the dot products between
+corresponding real and reciprocal space basis vectors are always 2π.
+"""
+function Base.convert(::Type{<:RealBasis}, b::ReciprocalBasis)
+    return RealBasis(2π * inv(transpose(matrix(b))))
+end
+
+function Base.convert(::Type{<:ReciprocalBasis}, b::RealBasis)
+    return ReciprocalBasis(inv(transpose(matrix(b))) / 2π)
+end
+
 # Tools to generate 2D and 3D lattices with given angles
 #-------------------------------------------------------------------------------------------------#
 
