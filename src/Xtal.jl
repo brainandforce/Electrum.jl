@@ -117,12 +117,18 @@ include("crystals.jl")
 export Crystal, CrystalWithDatasets
 export natom_template, data, prim, conv, volume
 # Methods and structs for working with different types of data associated with crystals
-include("data.jl")
-export RealSpaceDataGrid, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData, HKLDict,
-       ReciprocalWavefunction, DensityOfStates, ProjectedDensityOfStates, FatBands, AtomicData,
-       SphericalComponents
-export shift, grid, gridsize, volume, voxelsize, coord, nearest_index, integrate, fft, nkpt, nband,
-       bounds, fermi, smear, energies, nelectrons
+include("data/realspace.jl")
+export RealSpaceDataGrid
+export shift, grid, gridsize, volume, voxelsize, coord, nearest_index, integrate, fft
+include("data/reciprocalspace.jl")
+export KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData, HKLDict,
+       ReciprocalWavefunction
+export nkpt, nband, bounds
+include("data/dos.jl")
+export DensityOfStates, ProjectedDensityOfStates, FatBands
+export fermi, smear, energies, nelectrons
+include("data/atomic.jl")
+export AtomicData, SphericalComponents
 include("potentials.jl")
 export XCFunctional, HGHPseudopotential, zatom, zion
 # Methods and structs for working with different file formats
