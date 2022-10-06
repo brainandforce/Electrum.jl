@@ -51,11 +51,6 @@ end
 BasisVectors(vs::Vararg{AbstractVector{<:Real}, D}) where D = BasisVectors{D}(hcat(vs...))
 BasisVectors{D}(vs::AbstractVector{<:AbstractVector}) where D = BasisVectors{D}(hcat(vs...))
 
-# TODO: might this be better off as an inner constructor?
-function BasisVectors(M::AbstractMatrix{<:Real})
-    return BasisVectors(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
-end
-
 #---New RealBasis and ReciprocalBasis types-------------------------------------------------------#
 """
     RealBasis{D} <: AbstractBasis{D}
