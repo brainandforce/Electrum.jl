@@ -29,21 +29,21 @@ function basis_string(
     # Letters should work up to 26 dimensions, but who's gonna deal with 26D crystals?
     # Bosonic string theorists, maybe?
     return [
-                pad * string(Char(0x60 + n), ':', ' ')^letters *
-                vector_string(M[:,n], brackets=brackets) *
-                ("   (" * tostr(norm(M[:,n]), 0))^length * " "^!isempty(unit) * unit * ")"
-                for n in 1:size(M)[2]
-            ]
+        pad * string(Char(0x60 + n), ':', ' ')^letters *
+        vector_string(M[:,n], brackets=brackets) *
+        ("   (" * tostr(norm(M[:,n]), 0))^length * " "^!isempty(unit) * unit * ")"
+        for n in 1:size(M)[2]
+    ]
 end
 
-basis_string(b::BasisVectors; kwargs...) = basis_string(matrix(b); kwargs...)
+basis_string(b::AbstractBasis; kwargs...) = basis_string(matrix(b); kwargs...)
 
 function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pad=0)
     s = basis_string(M, letters=letters, unit=unit)
     print(io, join(" "^pad .* s, "\n"))
 end
 
-printbasis(io::IO, b::BasisVectors; kwargs...) = 
+printbasis(io::IO, b::AbstractBasis; kwargs...) = 
     printbasis(io::IO, matrix(b), letters=true, pad=0; kwargs...)
 printbasis(io::IO, a::AtomList; kwargs...) = 
     printbasis(io, basis(a), letters=true, pad=0; kwargs...)
@@ -93,9 +93,19 @@ will be reduced.
 """
 formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, reduce=reduce)
 
-function Base.show(io::IO, ::MIME"text/plain", b::BasisVectors)
+function Base.show(io::IO, ::MIME"text/plain", b::AbstractBasis)
     println(io, typeof(b), ":")
     printbasis(io, b, pad=2)
+end
+
+function Base.show(io::IO, ::MIME"text/plain", b::RealBasis)
+    println(io, typeof(b), ":")
+    printbasis(io, b, pad=2, unit="Å")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", b::ReciprocalBasis)
+    println(io, typeof(b), ":")
+    printbasis(io, b, pad=2, unit="Å⁻¹")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; name=true, num=true)
