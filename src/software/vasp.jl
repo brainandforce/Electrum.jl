@@ -164,8 +164,8 @@ function readWAVECAR(io::IO)
     # Energy cutoff
     ecut = read(io, Float64)
     # Real and reciprocal lattice vectors
-    latt = BasisVectors{3}([read(io, Float64) for a = 1:3, b = 1:3])
-    rlatt = dual(latt) * 2pi
+    latt = RealBasis{3}([read(io, Float64) for a = 1:3, b = 1:3])
+    rlatt = convert(ReciprocalBasis, latt)
     # Get HKL coefficient bounds (as done in WaveTrans)
     hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut))
     # List of k-points

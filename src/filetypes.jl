@@ -77,7 +77,7 @@ function readXSF3D(
     function getlattice!(itr)
         vecs = [parse.(Float64, split(iterate(itr)[1])) for n in 1:3]
         @debug string("Found vectors:\n", vecs)
-        return BasisVectors{3}(hcat(vecs...))
+        return RealBasis{3}(hcat(vecs...))
     end
     # Function for getting 3D lists of atoms
     function getatoms!(itr, basis, natom)
@@ -124,8 +124,8 @@ function readXSF3D(
     count = 0
     # Preallocated variables
     # Basis vectors
-    prim = zeros(BasisVectors{3})
-    conv = zeros(BasisVectors{3})
+    prim = zeros(RealBasis{3})
+    conv = zeros(RealBasis{3})
     # Atomic positions
     local atom_list::AtomList{3}
     data = Dict{String,RealSpaceDataGrid{3,Float64}}()
@@ -208,7 +208,7 @@ function readXSF3D(
     end
     # If the conventional cell hasn't been defined, generate it
     if iszero(conv)
-        conv = BasisVectors{3}(matrix(prim) / REDUCTION_MATRIX_3D[ctr])
+        conv = RealBasis{3}(matrix(prim) / REDUCTION_MATRIX_3D[ctr])
     end
     # Generate the real space lattice
     latt = RealLattice(prim, conv)
@@ -378,13 +378,13 @@ end
 readCPgeo(filename::AbstractString) = open(readCPgeo, filename)
 
 """
-    readCPcell(io::IO) -> BasisVectors{3}
+    readCPcell(io::IO) -> RealBasis{3}
 
 Reads the basis vectors of the unit cell used for a CPpackage2 calculation.
 """
 function readCPcell(io::IO)
     matrix = hcat([parse.(Float64, v) for v in split.(readlines(io))]...)
-    return BasisVectors{3}(matrix)
+    return RealBasis{3}(matrix)
 end
 
 readCPcell(filename::AbstractString) = open(readCPcell, filename)

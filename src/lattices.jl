@@ -142,7 +142,7 @@ By default, the b-vector is oriented along y. This selection corresponds to the 
 chosen by `lattice3D()`.
 """
 function lattice2D(a::Real, b::Real, γ::Real)
-    return BasisVectors(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
+    return RealBasis(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
 end
 
 # TODO: can we leverage QR or LU decomposition to do this generally?
@@ -162,7 +162,7 @@ function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     M = SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
                                      0,        b,  0,
                                 c1, c2, sqrt(c^2 - (c1^2 + c2^2)))
-    return BasisVectors(M)
+    return RealBasis(M)
 end
 
 # Fundamental methods for working with BasisVectors
@@ -364,12 +364,12 @@ dual(b::BasisVectors) = BasisVectors(inv(transpose(matrix(b))))
 Describes a real space crystal lattice with primitive and conventional basis vectors.
 """
 struct RealLattice{D} <: AbstractLattice{D}
-    prim::BasisVectors{D}
-    conv::BasisVectors{D}
+    prim::RealBasis{D}
+    conv::RealBasis{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
     function RealLattice(
-        prim::BasisVectors{D},
-        conv::BasisVectors{D}
+        prim::AbstractBasis{D},
+        conv::AbstractBasis{D}
     ) where D
         # Perform checks on the lattice pairs
         @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(prim)\matrix(conv)) string(
@@ -386,12 +386,12 @@ end
 Describes a reciprocal space crystal lattice with primitive and conventional basis vectors.
 """
 struct ReciprocalLattice{D} <: AbstractLattice{D}
-    prim::BasisVectors{D}
-    conv::BasisVectors{D}
+    prim::ReciprocalBasis{D}
+    conv::ReciprocalBasis{D}
     # Inner constructor should take any AbstractMatrix{<:Real} as input
     function ReciprocalLattice(
-        prim::BasisVectors{D},
-        conv::BasisVectors{D}
+        prim::AbstractBasis{D},
+        conv::AbstractBasis{D}
     ) where D
         # Perform checks on the lattice pairs
         @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(conv)\matrix(prim)) string(
@@ -403,21 +403,21 @@ struct ReciprocalLattice{D} <: AbstractLattice{D}
 end
 
 function (::Type{T})(
-    b::BasisVectors{D},
+    b::AbstractBasis{D},
     transform::AbstractMatrix=diagm(ones(D))
 ) where {D,T<:AbstractLattice}
     return T(b, BasisVectors{D}(b*transform))
 end
 
 """
-    prim(l::AbstractLattice{D}) -> BasisVectors{D}
+    prim(l::AbstractLattice) -> AbstractBasis
 
 Returns the primitive lattice in a `RealLattice` or a `ReciprocalLattice`.
 """
 prim(l::AbstractLattice) = l.prim
 
 """
-    conv(l::AbstractLattice{D}) -> BasisVectors{D}
+    conv(l::AbstractLattice) -> AbstractBasis
 
 Returns the conventional lattice in a `RealLattice` or a `ReciprocalLattice`.
 """
@@ -540,7 +540,7 @@ function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
 end
 
 # Assume that the basis vectors are defined in reciprocal space (??)
-maxHKLindex(b::BasisVectors{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
+maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
 
 """
     Xtal.maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)
