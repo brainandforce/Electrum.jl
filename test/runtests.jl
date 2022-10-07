@@ -11,6 +11,8 @@ xsf = readXSF3D("files/test.xsf")
 end
 
 @testset "File formats" begin
+    # Check that the key name is correct
     @test haskey(xsf.data, "this_is_3Dgrid#1")
+    # Check that the size of the RealSpaceDataGrid is correct
     @test size(xsf["this_is_3Dgrid#1"]) == (4, 4, 4)
 end
