@@ -120,6 +120,15 @@ function Base.convert(::Type{<:ReciprocalBasis}, b::RealBasis)
     return ReciprocalBasis(inv(transpose(matrix(b))) / 2π)
 end
 
+"""
+    convert(::Type{T}, b::BasisVectors) T<:Union{RealBasis,ReciprocalBasis} -> T
+
+Conversion from the now deprecated `BasisVectors` type to the preferred `RealBasis` and 
+`ReciprocalBasis` types. This conversion does not change any values in the `BasisVectors`, so
+convert to the type that matches how the `BasisVectors` were being used.
+"""
+Base.convert(::Type{T}, b::BasisVectors) where T<:Union{RealBasis,ReciprocalBasis} = T(b.vs)
+
 # Tools to generate 2D and 3D lattices with given angles
 #-------------------------------------------------------------------------------------------------#
 
