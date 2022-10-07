@@ -4,6 +4,13 @@
 
 ## Breaking changes
 
+### Basis vectors and lattices
+
+* `AbstractLattice` and its subtypes (`RealLattice` and `ReciprocalLattice`) have been removed.
+* `BasisVectors` has been removed in favor of `RealBasis` and `ReciprocalBasis`, which are subtypes
+of `AbstractBasis`. These have the advantage of explicitly declaring whether the vectors describe
+real or reciprocal space.
+
 ### Crystal data
 * The `pos` field of `Crystal`, which was used to store explicit atomic positions, has been 
 removed, as have all methods that depend on this field.
