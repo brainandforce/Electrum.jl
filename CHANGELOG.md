@@ -12,8 +12,7 @@ removed, as have all methods that depend on this field.
 * All potential and pseudopotential functionality has been removed from this package and will be 
 placed in a new package.
 
-### Miscellaneous
-* Many unnecessarily long function names have been removed or simplified..
-** `cell_angle_cos()`, `cell_angle_rad()`, and `cell_angle_deg()` have been simplified to 
+### Renaming of structs, functions, and constants
+* `cell_angle_cos()`, `cell_angle_rad()`, and `cell_angle_deg()` have been simplified to 
 `angles_cos()`, `angles_rad()`, and `angles_deg()`.
-** 
+* 
