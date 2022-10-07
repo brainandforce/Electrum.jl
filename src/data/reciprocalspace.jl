@@ -396,12 +396,12 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     rlatt::ReciprocalBasis{D}
     # k-points used to construct the wavefunction
     kpts::KPointList{D}
-    # Planewave coefficients: a Matrix (size nkpt*maxnband) of HKLData
-    waves::Matrix{HKLData{D,Complex{T}}}
+    # Planewave coefficients: a Matrix (size nspin*nkpt*maxnband) of HKLData
+    waves::AbstractArray{HKLData{D,Complex{T}},3}
     function ReciprocalWavefunction(
         rlatt::AbstractBasis{D},
         kpts::AbstractKPoints{D},
-        waves::AbstractMatrix{HKLData{D,Complex{T}}}
+        waves::AbstractArray{HKLData{D,Complex{T}},3}
     ) where {D,T<:Real}
         @assert length(kpts) == size(waves, 1) string(
             "k-point list length inconsistent with number of wavefunction entries"
@@ -413,7 +413,7 @@ end
 function ReciprocalWavefunction(
     latt::AbstractLattice{D},
     kpts::AbstractKPoints{D},
-    waves::AbstractMatrix{HKLData{D,Complex{T}}};
+    waves::AbstractArray{HKLData{D,Complex{T}},3};
     primitive::Bool = true
 ) where {D,T<:Real}
     M = primitive ? prim(latt) : conv(latt)
@@ -423,5 +423,24 @@ end
 # Getting indices should pull from the waves struct: wf[kpt, band]
 Base.getindex(wf::ReciprocalWavefunction{D,T}, inds...) where {D,T} = wf.waves[inds...]
 
-nkpt(wf::ReciprocalWavefunction{D,T}) where {D,T} = size(wf.waves, 1)
-nband(wf::ReciprocalWavefunction{D,T}) where {D,T} = size(wf.waves, 2)
+"""
+    nspin(wf::ReciprocalWavefunction) -> Int
+
+Returns the number of spins associated with a `ReciprocalWavefunction`.
+"""
+nspin(wf::ReciprocalWavefunction) = size(wf.waves, 1)
+
+"""
+    nkpt(wf::ReciprocalWavefunction) -> Int
+
+Returns the number of k-points associated with a `ReciprocalWavefunction`.
+"""
+nkpt(wf::ReciprocalWavefunction) = size(wf.waves, 2)
+
+"""
+    nband(wf::ReciprocalWavefunction) -> Int
+
+Returns the number of bands associated with a `ReciprocalWavefunction`. It is assumed that the 
+number of bands is the same for each k-point and spin.
+"""
+nband(wf::ReciprocalWavefunction) = size(wf.waves, 3)
