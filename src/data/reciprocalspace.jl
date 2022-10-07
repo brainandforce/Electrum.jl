@@ -404,7 +404,7 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
         kpts::AbstractKPoints{D},
         waves::AbstractArray{HKLData{D,Complex{T}},3}
     ) where {D,T<:Real}
-        @assert length(kpts) == size(waves, 1) string(
+        @assert length(kpts) == size(waves, 2) string(
             "k-point list length inconsistent with number of wavefunction entries"
         )
         return new{D,T}(rlatt, kpts, waves)
