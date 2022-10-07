@@ -192,9 +192,7 @@ function readWAVECAR(io::IO)
             npw = Int(read(io, Float64))
             # Add the position of the k-point to the list
             klist[kp] = [read(io, Float64) for n = 1:3]
-            # Get the bands associated with the k-point
-            # bands[kp] = [(read(io, Float64), (skip(io, 8); read(io, Float64))) for b in 1:nband]
-            @debug "This is the problem line"
+            # Get energies and occupancies
             for b in 1:nband
                 energies[s,kp,b] = read(io, Float64)
                 skip(io, 8)
