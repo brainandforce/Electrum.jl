@@ -389,7 +389,8 @@ VASP WAVECAR files. Each k-point is expected to have the same number of bands.
 Every band has associated data containing coefficients of the constituent planewaves stored in a 
 `HKLData{D,Complex{T}}`. Unlike most data structures provided by this package, the type of
 complex number used does not default to `Float64`: wavefunction data is often supplied as a 
-`Complex{Float32}` to reduce the size of the data.
+`Complex{Float32}` since wavefunctions usually only converge to single precision, and `Float64`
+storage would waste space.
 """
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
