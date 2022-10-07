@@ -128,6 +128,7 @@ Conversion from the now deprecated `BasisVectors` type to the preferred `RealBas
 convert to the type that matches how the `BasisVectors` were being used.
 """
 Base.convert(::Type{T}, b::BasisVectors) where T<:Union{RealBasis,ReciprocalBasis} = T(b.vs)
+(::Type{T})(b::AbstractBasis) where T<:Union{RealBasis,ReciprocalBasis} = convert(T, b)
 
 # Tools to generate 2D and 3D lattices with given angles
 #-------------------------------------------------------------------------------------------------#
