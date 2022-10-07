@@ -173,12 +173,13 @@ function readWAVECAR(io::IO)
     # containing tuples (containing band energy and occupancy)
     bands = [Vector{NTuple{2,Float64}}(undef, nband) for kp in 1:nkpt]
     # Plane wave coefficients
-    # Vector (size nkpt) of vectors (size nband) of vectors (size npw) of ComplexF32
-    # so planewave coeffs per band per k-point - that is a *lot* of data
     waves = [
         zeros(HKLData{3,Complex{Float32}}, hklbounds...) 
         for s in 1:nspin, kp in 1:nkpt, b in 1:nband
     ]
+    # Energy and occupancy data
+    energies = zeros(Float64, nspin, nkpt, nband)
+    occupancies = zeros(Float64, nspin, nkpt, nband)
     # Loop through the spins
     for s in 1:nspin
         # Loop through the k-points
@@ -192,7 +193,13 @@ function readWAVECAR(io::IO)
             # Add the position of the k-point to the list
             klist[kp] = [read(io, Float64) for n = 1:3]
             # Get the bands associated with the k-point
-            bands[kp] = [(read(io, Float64), (skip(io, 8); read(io, Float64))) for b in 1:nband]
+            # bands[kp] = [(read(io, Float64), (skip(io, 8); read(io, Float64))) for b in 1:nband]
+            @debug "This is the problem line"
+            for b in 1:nband
+                energies[s,kp,b] = read(io, Float64)
+                skip(io, 8)
+                occupancies[s,kp,b] = read(io, Float64)
+            end
             @info string(
                 "Read in data for k-point ", kp, "/", nkpt, " (", npw, " planewaves/band)\n",
                 "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", klist[kp]...)
@@ -224,7 +231,7 @@ function readWAVECAR(io::IO)
         end
     end
     # Now call the constructors
-    return ReciprocalWavefunction(rlatt, KPointList(klist), waves)
+    return ReciprocalWavefunction(rlatt, KPointList(klist), waves, energies, occupancies)
 end
 
 readWAVECAR(filename::AbstractString) = open(readWAVECAR, filename)
