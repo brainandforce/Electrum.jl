@@ -17,8 +17,3 @@ placed in a new package.
 ** `cell_angle_cos()`, `cell_angle_rad()`, and `cell_angle_deg()` have been simplified to 
 `angles_cos()`, `angles_rad()`, and `angles_deg()`.
 ** 
-
-## Organizational changes
-
-The `data.jl` file will be split into multiple files within the `src/data` directory. (This has
-caused some of the file history to be lost to Git)
