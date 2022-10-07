@@ -47,7 +47,7 @@ function delaunay_periodic(l::AtomList{D}) where D
     # Initialize the adjacency matrix
     M = BitMatrix(zeros(Bool, length(points), length(points)))
     # Throw an exception if there is no basis given
-    basis(l) == zeros(BasisVectors{D}) && error("No basis vectors were provided.")
+    basis(l) == zeros(RealBasis{D}) && error("No basis vectors were provided.")
 
     return M
 end

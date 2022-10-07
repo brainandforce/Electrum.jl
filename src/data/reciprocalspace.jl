@@ -182,14 +182,14 @@ accessed and modified using regular indexing, where indices may be negative.
 """
 struct HKLData{D,T} <: AbstractHKL{D,T}
     # REAL SPACE basis vectors
-    basis::BasisVectors{D}
+    basis::ReciprocalBasis{D}
     # the actual data
     data::Array{T,D}
     # the bounds in each dimension
     # mutable since the dimensions of Array{D,T} can be changed, in principle
     bounds::MVector{D,UnitRange{Int}}
     function HKLData(
-        basis::BasisVectors{D},
+        basis::AbstractBasis{D},
         data::AbstractArray{T,D},
         bounds::AbstractVector{<:AbstractRange{<:Integer}}
     ) where {D,T}
@@ -393,13 +393,13 @@ complex number used does not default to `Float64`: wavefunction data is often su
 """
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
-    rlatt::BasisVectors{D}
+    rlatt::ReciprocalBasis{D}
     # k-points used to construct the wavefunction
     kpts::KPointList{D}
     # Planewave coefficients: a Matrix (size nkpt*maxnband) of HKLData
     waves::Matrix{HKLData{D,Complex{T}}}
     function ReciprocalWavefunction(
-        rlatt::BasisVectors{D},
+        rlatt::AbstractBasis{D},
         kpts::AbstractKPoints{D},
         waves::AbstractMatrix{HKLData{D,Complex{T}}}
     ) where {D,T<:Real}

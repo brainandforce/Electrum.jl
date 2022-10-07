@@ -33,7 +33,7 @@ struct Crystal{D} <: AbstractCrystal{D}
         # TODO: include some validation
         # If the atom list doesn't have a basis defined (assuming Cartesian coordinates)
         # generate a new AtomList 
-        if basis(gen) == zeros(BasisVectors{D})
+        if basis(gen) == zeros(RealBasis{D})
             # Do we want to use the conventional basis vectors all the time?
             # I think it's a good temporary choice, just because if a dataset is being loaded in
             # from a computation, conv(latt) should generally match the primitive cell
