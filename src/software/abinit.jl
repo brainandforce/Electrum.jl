@@ -762,12 +762,13 @@ function read_abinit_wavefunction(io::IO)
     occ = fill(NaN, header.nkpt, nb)
     # Generate the dictionary
     data = Dict{String,ReciprocalWavefunction{3,Float64}}()
+    # Wavefunction data is stored here for now
+    waves = [
+        zeros(HKLData{3,Complex{Float64}}, hklbounds...) 
+        for s in 1:header.nsppol, kp in 1:header.nkpt, b in 1:nb
+    ]
     # Loop over all the spin polarizations
     for sppol in 1:header.nsppol
-        # Start with a new wave matrix
-        waves = [
-            zeros(HKLData{3,Complex{Float64}}, hklbounds...) for kp in 1:header.nkpt, b in 1:nb
-        ]
         # Loop over all the k-points
         for kpt in 1:header.nkpt
             # Skip over record length
@@ -793,7 +794,7 @@ function read_abinit_wavefunction(io::IO)
                 cg = [read(io, Complex{Float64}) for m in 1:npw, n in 1:nspinor]
                 # Use the information to fill the HKLData
                 for (ind, coeff) in zip(hklinds, cg)
-                    waves[kpt, band][ind...] = coeff
+                    waves[sppol, kpt, band][ind...] = coeff
                 end
                 # Skip marker
                 read(io, Int32)
@@ -804,7 +805,7 @@ function read_abinit_wavefunction(io::IO)
             )
         end
         # Add the reciprocal wavefunction to the dictionary
-        data["spin" * string(sppol)] = ReciprocalWavefunction(
+        data["wavefunction"] = ReciprocalWavefunction(
             rlatt/BOHR2ANG, KPointList(header), waves
         )
     end
