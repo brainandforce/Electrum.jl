@@ -570,6 +570,14 @@ function d_spacing(b::BasisVectors, miller::AbstractVector{<:Integer}; real::Boo
     return 1 / norm((real ? dual(b) : b) * miller)
 end
 
+function d_spacing(b::RealBasis, miller::AbstractVector{<:Integer})
+    return 1 / norm(transpose(inv(matrix(b))) * miller)
+end
+
+function d_spacing(b::ReciprocalBasis, miller::AbstractVector{<:Integer})
+    return 2π / norm(matrix(b) * miller)
+end
+
 function d_spacing(l::AbstractLattice, miller::AbstractVector{<:Integer}; primitive::Bool=false)
     r = ReciprocalLattice(l)
     return 1 / norm((primitive ? prim(r) : conv(r)) * miller)
