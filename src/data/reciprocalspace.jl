@@ -69,6 +69,9 @@ function Base.setindex!(k::KPointList, v::AbstractVector, i)
     k.points[i] = v
 end
 
+Base.firstindex(k::KPointList) = firstindex(k.points)
+Base.lastindex(k::KPointList) = lastindex(k.points)
+
 """
     nkpt(k::KPointList{D}) -> Int
 
@@ -76,6 +79,10 @@ Gets the number of k-points in a `KPointList`.
 """
 nkpt(k::KPointList) = length(k.points)
 Base.length(k::KPointList) = length(k.points)
+
+# Iterate through a KPointList
+Base.iterate(k::KPointList) = (k[1], 2)
+Base.iterate(k::KPointList, state) = state > lastindex(k) ? nothing : (k[state], state + 1)
 
 #= TODO: figure out how to get a k-point list from a grid
 #  This would require also getting the correct k-point weights
