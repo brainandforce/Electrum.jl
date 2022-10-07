@@ -439,8 +439,13 @@ function ReciprocalWavefunction(
     return ReciprocalWavefunction(M, kpts, waves, energies, occupancies)
 end
 
-# Getting indices should pull from the waves struct: wf[kpt, band]
-Base.getindex(wf::ReciprocalWavefunction{D,T}, inds...) where {D,T} = wf.waves[inds...]
+function Base.getindex(wf::ReciprocalWavefunction, i...)
+    return (
+        coeffs = wf.waves[inds...],
+        energies = wf.energies[inds...],
+        occupancies = wf.occupancies[inds...]
+    )
+end
 
 """
     nspin(wf::ReciprocalWavefunction) -> Int
