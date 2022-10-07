@@ -137,7 +137,11 @@ end
 # ReciprocalWavefunction{D,T}
 function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) where {D,T}
     println(io,
-        typeof(wf), " with ", string(nkpt(wf)), " k-points and ", string(nband(wf)), " bands")
+        typeof(wf), " with ",
+        string(nspin(wf)), " spins",
+        string(nkpt(wf)), " k-points and ",
+        string(nband(wf)), " bands"
+    )
 end
 
 function Base.show(io::IO, ::MIME"text/plain", l::AbstractLattice{D}) where D
