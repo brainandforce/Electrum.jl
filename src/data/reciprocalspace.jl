@@ -439,7 +439,7 @@ function ReciprocalWavefunction(
     return ReciprocalWavefunction(M, kpts, waves, energies, occupancies)
 end
 
-function Base.getindex(wf::ReciprocalWavefunction, i...)
+function Base.getindex(wf::ReciprocalWavefunction, inds...)
     return (
         coeffs = wf.waves[inds...],
         energies = wf.energies[inds...],
