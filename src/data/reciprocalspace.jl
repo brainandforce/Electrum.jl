@@ -397,28 +397,46 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     rlatt::ReciprocalBasis{D}
     # k-points used to construct the wavefunction
     kpts::KPointList{D}
-    # Planewave coefficients: a Matrix (size nspin*nkpt*maxnband) of HKLData
-    waves::AbstractArray{HKLData{D,Complex{T}},3}
+    # Planewave coefficients: an Array{HKLData,3} (size nspin*nkpt*maxnband)
+    waves::Array{HKLData{D,Complex{T}},3}
+    # Energies and occupancies, Array{Float64,3} with the same size as above
+    energies::Array{Float64,3}
+    occupancies::Array{Float64,3}
     function ReciprocalWavefunction(
         rlatt::AbstractBasis{D},
         kpts::AbstractKPoints{D},
-        waves::AbstractArray{HKLData{D,Complex{T}},3}
+        waves::AbstractArray{HKLData{D,Complex{T}},3},
+        energies::AbstractArray{<:Real,3},
+        occupancies::AbstractArray{<:Real,3},
     ) where {D,T<:Real}
         @assert length(kpts) == size(waves, 2) string(
             "k-point list length inconsistent with number of wavefunction entries"
         )
-        return new{D,T}(rlatt, kpts, waves)
+        return new{D,T}(rlatt, kpts, waves, energies, occupancies)
     end
+end
+
+# When eneregies and occupancies are not specified
+function ReciprocalWavefunction(   
+    rlatt::AbstractBasis{D},
+    kpts::AbstractKPoints{D},
+    waves::AbstractArray{HKLData{D,Complex{T}},3}
+) where {D,T<:Real}
+    # Construct zero matrix
+    z = zeros(Float64, size(waves))
+    return ReciprocalWavefunction(rlatt, kpts, waves, z, z)
 end
 
 function ReciprocalWavefunction(
     latt::AbstractLattice{D},
     kpts::AbstractKPoints{D},
-    waves::AbstractArray{HKLData{D,Complex{T}},3};
+    waves::AbstractArray{HKLData{D,Complex{T}},3},
+    energies::AbstractArray{<:Real,3},
+    occupancies::AbstractArray{<:Real,3};
     primitive::Bool = true
 ) where {D,T<:Real}
     M = primitive ? prim(latt) : conv(latt)
-    return ReciprocalWavefunction(M, kpts, waves)
+    return ReciprocalWavefunction(M, kpts, waves, energies, occupancies)
 end
 
 # Getting indices should pull from the waves struct: wf[kpt, band]
