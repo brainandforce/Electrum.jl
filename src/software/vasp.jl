@@ -122,7 +122,7 @@ end
 
 # Kendall got everything done before 6 PM (2022-02-01)
 """
-    readWAVECAR(io::IO) -> ReciprocalWavefunction{3,Float64,Float32}
+    readWAVECAR(io::IO) -> ReciprocalWavefunction{3,Float32}
 
 Reads a WAVECAR file output from a VASP 4.6 calcuation.
 
@@ -130,7 +130,7 @@ Information about VASP WAVECAR files and much of the code was pulled from the Wa
 (originally written in FORTRAN): https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 
 This function is limited to WAVECAR files which have an RTAG value of 45200 (meaning the data is
-given as a `Complex{Float64}`) and have only a collinear magnetic field applied, like WaveTrans. It
+given as a `Complex{Float32}`) and have only a collinear magnetic field applied, like WaveTrans. It
 should also be noted that the weights of the k-points are not present in the WAVECAR file, and are
 set to 1 by default.
 """
