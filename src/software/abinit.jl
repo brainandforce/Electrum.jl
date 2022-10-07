@@ -756,10 +756,6 @@ function read_abinit_wavefunction(io::IO)
         "Calculated from ecut = ", header.ecut, " Hartree"
     )
     nb = maximum(header.nband)
-    # Eigenvalue and occupancy matrices
-    # Not returned (yet) but will be stored anyway
-    eigenvals = fill(NaN, header.nkpt, nb)
-    occ = fill(NaN, header.nkpt, nb)
     # Generate the dictionary
     data = Dict{String,ReciprocalWavefunction{3,Float64}}()
     # Wavefunction data is stored here for now
@@ -767,6 +763,9 @@ function read_abinit_wavefunction(io::IO)
         zeros(HKLData{3,Complex{Float64}}, hklbounds...) 
         for s in 1:header.nsppol, kp in 1:header.nkpt, b in 1:nb
     ]
+    # Energy and occupancy data
+    energies = zeros(Float64, header.nsppol, header.nkpt, nb)
+    occupancies = zeros(Float64, header.nsppol, header.nkpt, nb)
     # Loop over all the spin polarizations
     for sppol in 1:header.nsppol
         # Loop over all the k-points
@@ -782,10 +781,10 @@ function read_abinit_wavefunction(io::IO)
             # Skip over another pair of record lengths
             read(io, Int32); read(io, Int32)
             # Eigenvalues and band occupancy at the current k-point
-            eigenvals[kpt,:] = [read(io, Float64) for n in (1:nband)]
+            energies[sppol, kpt, :] = [read(io, Float64) for n in (1:nband)]
             # TODO: Occupancy data isn't stored in a ReciprocalWavefunction object
             # It might be necessary to include a field to store this
-            occ[kpt,:] = [read(io, Float64) for n in (1:nband)]
+            occupancies[sppol, kpt, :] = [read(io, Float64) for n in (1:nband)]
             read(io, Int32)
             # Loop over all the bands (given in previous entry, not from header)
             for band in 1:nband
@@ -804,11 +803,11 @@ function read_abinit_wavefunction(io::IO)
                 "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", header.kpt[kpt]...)
             )
         end
-        # Add the reciprocal wavefunction to the dictionary
-        data["wavefunction"] = ReciprocalWavefunction(
-            rlatt/BOHR2ANG, KPointList(header), waves
-        )
     end
+    # Add the reciprocal wavefunction to the dictionary
+    data["wavefunction"] = ReciprocalWavefunction(
+        rlatt/BOHR2ANG, KPointList(header), waves, energies, occupancies
+    )
     return CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}(Crystal(header), data)
 end
 
