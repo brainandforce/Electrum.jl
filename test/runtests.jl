@@ -5,9 +5,10 @@ xsf = readXSF3D("files/test.xsf")
 
 @testset "Basis vectors" begin
     # Get basis vectors from the XSF file
-    real_basis = basis(xsf.gen)
+    b = basis(xsf.gen)
     # Check that conversion between real and reciprocal bases is invertible
-    @test (RealBasis(ReciprocalBasis(b)).vs .- b.vs) ≈ 0
+    # The difference between their elements should be very small (though not exactly zero)
+    @test all(RealBasis(ReciprocalBasis(b)).vs[m][n] ≈ b.vs[m][n] for m in 1:3, n in 1:3)
 end
 
 @testset "File formats" begin
