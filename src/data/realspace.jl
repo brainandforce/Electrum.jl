@@ -5,14 +5,14 @@ A data grid defined in real space, containing data of type T.
 """
 struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     # Basis vectors defining the lattice
-    latt::BasisVectors{D}
+    latt::RealBasis{D}
     # Shift of the origin from the lattice
     orig::SVector{D,Float64}
     # The actual data grid
     grid::Array{T,D}
     # Inner constructor
     function RealSpaceDataGrid(
-        latt::BasisVectors{D},
+        latt::AbstractBasis{D},
         orig::AbstractVector{<:Real},
         grid::Array{T,D}
     ) where {D,T}

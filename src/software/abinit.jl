@@ -181,7 +181,7 @@ symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 
 function Crystal(h::ABINITHeader; convert=:P)
     # Lattice vectors converted to angstroms
-    latt = BasisVectors{3}(BOHR2ANG*h.rprimd)
+    latt = RealBasis{3}(BOHR2ANG*h.rprimd)
     atomlist = AtomList(
         latt,
         AtomPosition.(
@@ -661,7 +661,7 @@ function read_abinit_density(io::IO)
     # Add each dataset to the dictionary
     data = Dict{String, RealSpaceDataGrid{3,T}}()
     # Convert the basis
-    basis = BasisVectors(BOHR2ANG * header.rprimd)
+    basis = RealBasis(BOHR2ANG * header.rprimd)
     # Fill the dictionary
     data["density_total"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
     if header.nspden == 2
@@ -702,7 +702,7 @@ function read_abinit_potential(io::IO)
     # No conversion will occur here: assume units of Hartree
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
     data = Dict{String, RealSpaceDataGrid{3,T}}()
-    basis = BasisVectors{3}(BOHR2ANG * header.rprimd)
+    basis = RealBasis{3}(BOHR2ANG * header.rprimd)
     if header.nspden == 1
         data["potential_total"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
     elseif header.nspden == 2
@@ -744,7 +744,7 @@ function read_abinit_wavefunction(io::IO)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the reciprocal lattice
-    rlatt = 2*pi*dual(BasisVectors(header.rprimd))
+    rlatt = convert(ReciprocalBasis, RealBasis(header.rprimd))
     # Get the minimum and maximum HKL values needed
     # Units for c (2*m_e/ħ^2) are hartree^-1 bohr^-2
     # this should affect only the size of the preallocated arrays
