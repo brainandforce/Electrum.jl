@@ -468,3 +468,5 @@ Returns the number of bands associated with a `ReciprocalWavefunction`. It is as
 number of bands is the same for each k-point and spin.
 """
 nband(wf::ReciprocalWavefunction) = size(wf.waves, 3)
+
+basis(wf::ReciprocalWavefunction) = wf.rlatt
