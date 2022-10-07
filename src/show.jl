@@ -138,9 +138,9 @@ end
 function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) where {D,T}
     println(io,
         typeof(wf), " with ",
-        string(nspin(wf)), " spins",
-        string(nkpt(wf)), " k-points and ",
-        string(nband(wf)), " bands"
+        string(nspin(wf)), " spin", "s"^(nspin(wf) != 1), ", ",
+        string(nkpt(wf)), " k-point", "s"^(nkpt(wf) != 1), ", and ",
+        string(nband(wf)), " band", "s"^(nband(wf) != 1)
     )
 end
 
