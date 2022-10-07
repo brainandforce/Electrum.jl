@@ -113,11 +113,11 @@ a factor of 2π that is used conventionally in crystallography: conversion from 
 corresponding real and reciprocal space basis vectors are always 2π.
 """
 function Base.convert(::Type{<:RealBasis}, b::ReciprocalBasis)
-    return RealBasis(2π * inv(transpose(matrix(b))))
+    return RealBasis(2π * inv(transpose(matrix(b))) )
 end
 
 function Base.convert(::Type{<:ReciprocalBasis}, b::RealBasis)
-    return ReciprocalBasis(inv(transpose(matrix(b))) / 2π)
+    return ReciprocalBasis(transpose(2π * inv(matrix(b))))
 end
 
 """
