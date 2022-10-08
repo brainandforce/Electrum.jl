@@ -22,3 +22,13 @@ Performs a fast Fourier transform on the data in a `RealSpaceDataGrid` and retur
 function FFTW.fft(g::RealSpaceDataGrid)
     return HKLData(ReciprocalBasis(basis(g)), fft(grid(g)) * voxelsize(g))
 end
+
+"""
+    ifft(g::HKLData) -> RealSpaceDataGrid
+
+Performs an inverse fast Fourier transform on an `HKLData` and returns a `RealSpaceDataGrid`.
+"""
+function FFTW.ifft(hkl::HKLData)
+    # TODO: Get voxel size for the associated RealSpaceDataGrid
+    return RealSpaceDataGrid(RealBasis(basis(hkl)), ifft(grid(g)) / voxelsize(g))
+end
