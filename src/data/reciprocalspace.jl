@@ -201,6 +201,14 @@ function HKLData(
     return HKLData(zero(BasisVectors{D}), data, bounds)
 end
 
+function Base.zeros(
+    ::Type{HKLData{D,T}},
+    basis::AbstractBasis{D},
+    ranges::Vararg{AbstractUnitRange{<:Integer},D}
+) where {D,T}
+    return HKLData(ReciprocalBasis(basis), zeros(T, length.(ranges)))
+end
+
 """
     basis(hkl::HKLData)
 
