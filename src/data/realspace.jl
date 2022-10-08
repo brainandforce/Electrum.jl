@@ -127,7 +127,7 @@ Gets the size of a single voxel of a `RealSpaceDataGrid`.
 
 By default, units are assumed to be cubic angstroms.
 """
-voxelsize(g::RealSpaceDataGrid) = volume(g) / prod(gridsize(g))
+voxelsize(g::RealSpaceDataGrid) = volume(g) / length(g)
 
 """
     coord(g::RealSpaceDataGrid, ind...) -> SVector{D,Float64}
