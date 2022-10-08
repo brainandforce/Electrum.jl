@@ -287,7 +287,7 @@ function generate_pairs(::Type{Val{D}}) where D
 end
 
 """
-    cell_angle_cos(M::AbstractMatrix)
+    cell_angles_cos(M::AbstractMatrix)
 
 Generates the cosines of the unit cell angles.
 
@@ -295,26 +295,26 @@ The angles are generated in the correct order [α, β, γ] for 3-dimensional cel
 by reversing the output of `generate_pairs()`. For crystals with more spatial dimensions, this
 may lead to unexpected results.
 """
-function cell_angle_cos(M::AbstractMatrix)
+function cell_angles_cos(M::AbstractMatrix)
     dimpairs = reverse(generate_pairs(size(M,1)))
     return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
 end
 
-cell_angle_cos(b::AbstractBasis) = cell_angle_cos(matrix(b))
+cell_angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
 
 """
-    cell_angle_rad(b) -> Vector{Float64}
+    cell_angles_rad(b) -> Vector{Float64}
 
 Returns the angles (in radians) between each pair of basis vectors.
 """
-cell_angle_rad(b) = acos.(cell_angle_cos(b))
+cell_angles_rad(b) = acos.(cell_angles_cos(b))
 
 """
-    cell_angle_deg(b) -> Vector{Float64}
+    cell_angles_deg(b) -> Vector{Float64}
 
 Returns the angles (in degrees) between each pair of basis vectors.
 """
-cell_angle_deg(b) = acosd.(cell_angle_cos(b))
+cell_angles_deg(b) = acosd.(cell_angles_cos(b))
 
 # Linear algebraic manipulation of basis vector specification
 #-------------------------------------------------------------------------------------------------#
@@ -531,7 +531,7 @@ function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
     # I think the parts below convert a set of basis vectors into their reciprocals
     # But we already have ways to do that with `dual(::BasisVectors)`
     #--------------------------------------------------------------------------#
-    cosines = cell_angle_cos(M)
+    cosines = cell_angles_cos(M)
     crosses = [cross(M[:,a], M[:,b]) for (a,b) in zip([2,3,1], [3,1,2])]
     triples = [dot(M[:,n], crosses[n])/(norm(crosses[n])*norm(M[:,n])) for n in 1:3]
     sines = hcat([[sqrt(1-c^2), sqrt(1-c^2) ,t] for (c,t) in zip(cosines, triples)]...)
