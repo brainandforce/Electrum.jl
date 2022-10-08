@@ -23,6 +23,9 @@ struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     end
 end
 
+function RealSpaceDataGrid(latt::AbstractBasis{D}, grid::Array{T,D}) where {D,T}
+    return RealSpaceDataGrid(latt, zeros(SVector{D,Float64}), grid)
+end
 
 """
     basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
