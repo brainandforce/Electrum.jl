@@ -174,7 +174,7 @@ function readWAVECAR(io::IO)
     bands = [Vector{NTuple{2,Float64}}(undef, nband) for kp in 1:nkpt]
     # Plane wave coefficients
     waves = [
-        zeros(HKLData{3,Complex{Float32}}, hklbounds...) 
+        zeros(HKLData{3,Complex{Float32}}, rlatt, hklbounds...) 
         for s in 1:nspin, kp in 1:nkpt, b in 1:nband
     ]
     # Energy and occupancy data

@@ -760,7 +760,7 @@ function read_abinit_wavefunction(io::IO)
     data = Dict{String,ReciprocalWavefunction{3,Float64}}()
     # Wavefunction data is stored here for now
     waves = [
-        zeros(HKLData{3,Complex{Float64}}, hklbounds...) 
+        zeros(HKLData{3,Complex{Float64}}, rlatt, hklbounds...) 
         for s in 1:header.nsppol, kp in 1:header.nkpt, b in 1:nb
     ]
     # Energy and occupancy data
