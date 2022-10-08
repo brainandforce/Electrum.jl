@@ -179,27 +179,18 @@ end
 
 Stores information associated with specific sets of reciprocal lattice vectors. Data can be
 accessed and modified using regular indexing, where indices may be negative.
+
+Internally, the data is stored such that the zero frequency components are at the first indices
+along that dimension. 
 """
 struct HKLData{D,T} <: AbstractHKL{D,T}
-    # REAL SPACE basis vectors
     basis::ReciprocalBasis{D}
-    # the actual data
     data::Array{T,D}
-    # the bounds in each dimension
-    # mutable since the dimensions of Array{D,T} can be changed, in principle
-    bounds::MVector{D,UnitRange{Int}}
     function HKLData(
         basis::AbstractBasis{D},
-        data::AbstractArray{T,D},
-        bounds::AbstractVector{<:AbstractRange{<:Integer}}
+        data::AbstractArray{T,D}
     ) where {D,T}
-        # The size of the array should match the bounds given
-        # For instance, a HKLData with bounds  [-10:10, -10:10, -10:10] should be
-        # [21, 21, 21]
-        @assert [s for s in size(data)] == [length(r) for r in bounds] string(
-            "Array size incompatible with bounds."
-        )
-        return new{D,T}(basis, data, bounds)
+        return new{D,T}(basis, data)
     end
 end
 
@@ -208,28 +199,6 @@ function HKLData(
     bounds::AbstractVector{<:AbstractRange{<:Integer}}
 ) where {D,T}
     return HKLData(zero(BasisVectors{D}), data, bounds)
-end
-
-# Needed because HKLData will nearly always have unexpected indices
-Base.has_offset_axes(g::HKLData) = true
-
-"""
-    Xtal.shiftbounds(g::HKLData{D,T}, inds) -> NTuple{D,<:Integer}
-
-Checks that integer array indices used to access data in an `HKLData` are valid and shifts them to 
-access the correct portions of the backing array.
-"""
-function shiftbounds(hkl::HKLData{D,T}, inds) where {D,T}
-    # Check that all the indices are in bounds
-    if !mapreduce((i,r) -> i in r, &, inds, bounds(hkl))
-        # TODO: does this produce a reasonable error message with correct bounds?
-        throw(BoundsError(hkl, inds))
-    end
-    # Adjust the indices to match the array
-    # Subtract the minimum index then add 1
-    # So if the range is -10:10, an index of 0 should be 0 - -10 + 1 = 11
-    i = inds .- minimum.(bounds(hkl)) .+ 1
-    return i
 end
 
 """
@@ -247,41 +216,20 @@ about the index offset to be lost!
 """
 grid(hkl::HKLData) = hkl.data
 
-"""
-    bounds(hkl::HKLData{D,T}) -> MVector{D,UnitRange{Int64}}
-
-Returns a range of minimum and maximum indices along each dimension of an `HKLData`
-"""
-bounds(hkl::HKLData) = hkl.bounds
+Base.size(g::HKLData) = size(g.data)
+Base.length(g::HKLData) = length(g.data)
+Base.iterate(g::HKLData, i::Integer = 1) = iterate(g.grid, i)
 
 # HKLData now supports indexing by Miller index
-function Base.getindex(g::HKLData{D,T}, inds...) where {D,T}
-    i = shiftbounds(g, inds)
-    return g.data[i...]
-end
+Base.getindex(g::HKLData, inds...) = getindex(g.grid, (mod.(inds, size(g)) .+ 1)...)
 
-function Base.setindex!(g::HKLData{D,T}, x::T, inds...) where {D,T}
-    i = shiftbounds(g, inds)
+function Base.setindex!(g::HKLData, x, inds...)
+    i = mod.(inds, size(g)) .+ 1
     g.data[i...] = x
 end
 
-function HKLData(
-    a::AbstractArray{T,D},
-    bounds::Vararg{AbstractUnitRange{<:Integer},D}
-) where {D,T}
-    return HKLData(a, bounds)
-end
-
-function Base.zeros(
-    ::Type{HKLData{D,T}},
-    bounds::Vararg{AbstractUnitRange{<:Integer}, D}
-) where {D,T}
-    data = zeros(T, length.(bounds))
-    return HKLData(data, MVector{D,UnitRange{Int}}(bounds))
-end
-
-Base.abs(hkl::HKLData) = HKLData(abs.(grid(hkl)), bounds(hkl))
-Base.abs2(hkl::HKLData) = HKLData(abs2.(grid(hkl)), bounds(hkl))
+Base.abs(hkl::HKLData) = HKLData(basis(hkl), abs.(grid(hkl)))
+Base.abs2(hkl::HKLData) = HKLData(basis(hkl), abs2.(grid(hkl)))
 
 """
     HKLDict{D,T}

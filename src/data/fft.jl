@@ -15,29 +15,10 @@ function FFTW.fftfreq(g::RealSpaceDataGrid{D,<:Any}) where D
 end
 
 """
-    fft(g::RealSpaceDataGrid{D,<:Number}; maxhkl=zeros(Int,D)) -> HKLData{D,<:Complex}
+    fft(g::RealSpaceDataGrid) -> HKLData
 
-Performs a fast Fourier transform on the data in a `RealSpaceDataGrid{D,<:Number}` and
-generates an `HKLData{D,<:Complex}`.
+Performs a fast Fourier transform on the data in a `RealSpaceDataGrid` and returns an `HKLData`.
 """
-function FFTW.fft(
-    g::RealSpaceDataGrid{D,<:Number};
-    maxhkl::AbstractVector{<:Integer} = zeros(Int, D)
-) where D 
-    # Generate the bounds needed for the HKLdata
-    bounds = [range(div(sz, 2, RoundUp) - sz, length = sz) for sz in gridsize(g)]
-    @debug string("Bounds:\t", bounds)
-    # Calculate the shift factors to put the values in the right places
-    shifts = [last(b) for b in bounds]
-    # Take the grid fft
-    # Permute the elements to get the indexing working
-    # Multiply by the size of a voxel to get the right scaling
-    f = circshift(fft(grid(g)), shifts .+ 1) .* voxelsize(g)
-    # With defined bounds, truncate the data
-    if all(!iszero, maxhkl)
-        ind = [(-x:x) .- first(b) .+ 1 for (x,b) in zip(abs.(maxhkl), bounds)]
-        f = f[ind...]
-        bounds = [-x:x for x in abs.(maxhkl)]
-    end
-    return HKLData(f, bounds)
+function FFTW.fft(g::RealSpaceDataGrid)
+    return HKLData(ReciprocalBasis(basis(g)), fft(grid(g)) * voxelsize(g))
 end
