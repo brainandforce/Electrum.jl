@@ -1,3 +1,5 @@
+#! /usr/bin/env julia
+
 using Documenter
 using Xtal
 
@@ -8,12 +10,13 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Types" => "types.md",
+        "File formats" => "filetypes.md",
         "API" => Any[
             "Lattices" => "api/lattices.md"
             "Atoms" => "api/atoms.md"
             "Crystals" => "api/crystals.md"
             "Crystal data" => "api/data.md"
-            "File types" => "api/filetypes.md"
+            "File formats" => "api/filetypes.md"
         ]
     ]
 )
