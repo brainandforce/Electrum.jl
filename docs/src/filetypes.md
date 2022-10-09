@@ -48,9 +48,13 @@ Xtal.jl.
 
 The DOSCAR file contains data need to plot a density of states curve.
 
-### POSCAR
+### POSCAR and CONTCAR
 
-The POSCAR file contains all of the atomic positions associated with 
+The POSCAR file contains the basis vectors and all of the atomic positions used to generate a
+crystal structure. 
+
+The CONTCAR file is where the atomic positions from a calculation are written. In the case of
+geometry optimizations, the contents of this file will differ.
 
 ### PROCAR
 
