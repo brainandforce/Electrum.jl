@@ -1,6 +1,23 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+(Well, to be honest, we do the best we can - we're a bunch of relatively new developers and we're
+trying our best to learn good practices as we build the tools we need for our research. Changes from
+the 0.1 series aren't properly documented, but we're moving towards using strict changelogs and 
+semantic versioning from 0.2 onwards.)
+
 # Changes from the 0.1 series
 
 ## New features
+
+* A documentation suite has been added using
+[Documenter.jl](https://juliadocs.github.io/Documenter.jl/stable/).
+* A testing suite has been added using [Test.jl](https://docs.julialang.org/en/v1/stdlib/Test/).
+* Citation is facilitated with [`CITATION.cff`](CITATION.cff).
 
 ## Breaking changes
 
