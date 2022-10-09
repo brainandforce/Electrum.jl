@@ -9,10 +9,13 @@ real-world cases, such as incommensurately modulated crystals.
 
 ## Basis vectors
 
-The `BasisVectors` type is used to store basis vectors.
+The `AbstractBasis` type contains two subtypes, `RealBasis` and `ReciprocalBasis`, which can be
+used to represent the basis vectors of a crystal.
 
-If a system is not periodic, the zero element is used to represent this by convention. You can use
-`zero(BasisVectors{D})` to generate 
+`AbstractBasis` types use the following conventions:
+  * The units are assumed to be angstroms or inverse angstroms.
+  * Conversion between the two involve a factor of 2π (multiplication for the `RealBasis` >  
+`ReciprocalBasis` conversion, and vice versa).
 
 ### Why not use `SMatrix` for basis vectors?
 
@@ -29,17 +32,15 @@ which poses a serious problem in the declaration of structs. Technically, a type
 value of `L` can be inferred from `D1` and `D2`. By declaring a struct to have this type, there
 seems to be a significant performance drop.
 
-The `BasisVectors{D}` type wraps an `SVector{D,SVector{D,Float64}}`. This only requires a single 
+The `AbstractBasis{D}` types wrap an `SVector{D,SVector{D,Float64}}`. This only requires a single 
 type parameter `D`, and allows for fully concrete struct declarations. Various methods are defined
 on this type to make it work like a normal matrix, such as matrix multiplication.
 
-Other packages like [Crystalline.jl](https://github.com/thchr/Crystalline.jl) face this issue and
-have devised their own solution. In the future, we may switch back to `SMatrix` as the default type
-for basis vectors by using custom macros, or we may use 
-[ComputedFieldTypes.jl](https://github.com/vtjnash/ComputedFieldTypes.jl) which permits structs to
-have computed type parameters.
+The other issue is that there are contexts where real space basis vectors are easier to use and
+others where reciprocal basis vectors are easier to use. It's better to treat them as two
+interconvertible types for that reason.
 
-## Real and reciprocal lattices
+# Real and reciprocal lattices
 
 Xtal.jl provides real and reciprocal lattices as their own types: `RealLattice` and 
 `ReciprocalLattice`. Both of these are instances of `AbstractLattice`, and they may be freely
@@ -49,7 +50,7 @@ converted between each other.
 may be accessed with `prim()` and a conventional set of basis vectors which may be accessed with
 `conv()`.
 
-# Crystals
+## Crystals
 
 The `AbstractCrystal` supertype contains two concrete types, `Crystal{D}` and 
 `CrystalWithDatasets{D,K,V}`. The `CrystalWithDatasets` type is a combination of a `Crystal{D}`
@@ -109,13 +110,14 @@ Fourier transform (`FFTW.fft()`).
 
 Binary operations, however, need checks to ensure that two grids are compatible with each other.
 "Compatible" means:
-  * The datagrids are of the same spatial dimension
-  * The basis vectors of both grids are identical
-  * The shifts of both grids are identical
-  * The number of elements along each dimension are identical
+  * The datagrids are of the same spatial dimension.
+  * The basis vectors of both grids are identical.
+  * The shifts of both grids are identical.
+  * The number of elements along each dimension are identical.
 
 Failure to meet any of these criteria will result in an `AssertionError` being thrown. The internal
 function `Xtal.grid_check()` performs these checks and is called before binary operations are 
 performed.
 
-In the future, we may relax the third requirement.
+In the future, we may relax the third requirement by using interpolation, though a warning will be
+thrown if this is invoked.
