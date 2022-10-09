@@ -47,4 +47,4 @@ Xtal.jl is [MIT licensed](https://mit-license.org/). In short, this means that y
 package however you like, without restrictions on relicensing.
 
 You are not required to cite this package if you use it in research, however, attribution is
-*always* appreciated.
+*always* appreciated. This is facilitated by the `CITATION.cff` file included in the repository.
