@@ -181,11 +181,11 @@ end
 function Base.show(
     io::IO,
     ::MIME"text/plain",
-    s::SphericalComponents{Lmax};
+    s::SphericalHarmonic{Lmax};
     showto = 3
 ) where Lmax
     # Don't include generated second type parameter
-    print(io, "SphericalComponents{$Lmax}", ":\n", " "^13)
+    print(io, "SphericalHarmonic{$Lmax}", ":\n", " "^13)
     # Only print up to l=3 components by default (kw showto)
     Lmax_eff = min(showto, Lmax)
     for m = -Lmax_eff:Lmax_eff
