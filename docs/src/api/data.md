@@ -6,7 +6,6 @@
 Xtal.AbstractRealSpaceData
 Xtal.RealSpaceDataGrid
 Xtal.grid
-Xtal.gridsize
 Xtal.volume
 Xtal.voxelsize
 Xtal.integrate
@@ -29,7 +28,6 @@ Xtal.HKLDict
 Xtal.ReciprocalWavefunction
 Xtal.nkpt
 Xtal.nband
-Xtal.bounds
 ```
 
 ## Density of states
