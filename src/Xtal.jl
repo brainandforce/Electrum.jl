@@ -127,7 +127,7 @@ include("data/dos.jl")
 export DensityOfStates, ProjectedDensityOfStates, FatBands
 export fermi, smear, energies, nelectrons
 include("data/atomic.jl")
-export AtomicData, SphericalComponents
+export AtomicData, SphericalHarmonic
 include("data/fft.jl")
 # Methods and structs for working with different file formats
 include("filetypes.jl")
