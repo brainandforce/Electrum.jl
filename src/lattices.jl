@@ -428,7 +428,7 @@ conv(l::AbstractLattice) = l.conv
 function (::Type{T})(
     prim::AbstractVector{<:AbstractVector{<:Real}},
     conv::AbstractVector{<:AbstractVector{<:Real}},
-) where {D,T<:AbstractLattice}
+) where {T<:AbstractLattice}
     return RealLattice(BasisVectors{D}(prim), BasisVectors{D}(conv))
 end
 

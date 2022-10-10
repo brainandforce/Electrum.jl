@@ -179,24 +179,17 @@ end
 
 symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 
-function Crystal(h::ABINITHeader; convert=:P)
-    # Lattice vectors converted to angstroms
-    latt = RealBasis{3}(BOHR2ANG*h.rprimd)
+function Crystal(h::ABINITHeader)
     atomlist = AtomList(
-        latt,
+        # Convert to angstroms
+        RealBasis{3}(BOHR2ANG*h.rprimd),
         AtomPosition.(
             Int.(h.znucltypat[h.typat]),
             h.xred
         )
     )
-    return Crystal(
-        # ABINIT seems to use bohr by default
-        RealLattice{3}(BOHR2ANG*h.rprimd, prim=true, ctr=convert),
-        symrel_to_sg(h),        # TODO: get space group from header?
-        [0, 0, 0],              # TODO: get origin setting from header?
-        atomlist,       
-        atomlist,
-    )
+    # Don't include space group data since all atomic positions are generated (use defaults)
+    return Crystal(atomlist)
 end
 
 function KPointList(h::ABINITHeader)
@@ -671,10 +664,7 @@ function read_abinit_density(io::IO)
         data["density_spinup_y"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
         data["density_spinup_z"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
     end
-    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
-        Crystal(header),
-        data
-    )
+    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
 end
 
 """
@@ -714,10 +704,7 @@ function read_abinit_potential(io::IO)
         data["potential_up_down_real"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
         data["potential_up_down_imag"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
     end
-    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(
-        Crystal(header),
-        data
-    )
+    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
 end
 
 """

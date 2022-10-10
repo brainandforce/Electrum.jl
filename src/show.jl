@@ -157,33 +157,23 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     println(io, typeof(xtal), " (space group ", xtal.sgno, "): ")
     # Print basis vectors
     println(io, "\n  Primitive basis vectors:")
-    printbasis(io, xtal.latt.prim, pad=2, unit="Å")
-    println(io, "\n\n  Conventional basis vectors:")
-    printbasis(io, xtal.latt.conv, pad=2, unit="Å")
-    # Add in more info about atomic positions, space group
-    println(io, "\n\n  Generating set of atomic positions:")
+    printbasis(io, basis(xtal), pad=2, unit="Å")
+    if xtal.transform != SMatrix{D,D,Float64}(LinearAlgebra.I)
+        println(io, "\n\n  Conventional basis vectors:")
+        printbasis(io, basis(xtal) * xtal.transform, pad=2, unit="Å")
+    end
+    # TODO: Add in more info about atomic positions, space group
+    println(io, "\n\n  Atomic positions:")
     println(io, "    Num   ", "Name  ", "Position")
-    for atom in xtal.gen.coord
+    for atom in xtal.atoms
         println(io, "    ", atom_string(atom, name=true, num=true, entrysz=6))
     end
     # Determine what basis the atomic coordinates are given in.
     # If the basis is zero, assume Cartesian coordinates in Å
-    if basis(xtal.gen) == zeros(BasisVectors{D})
-        println("  in Cartesian coordinates (assumed to be in units of Å)")
-        return nothing
-    end
-    gen_primbasis = xtal.gen.basis == xtal.latt.prim
-    gen_convbasis = xtal.gen.basis == xtal.latt.conv 
-    # If both bases are identical, don't specify primitive or conventional
-    if gen_primbasis && gen_convbasis
-        print("  with respect to crystal basis")
-    elseif gen_primbasis
-        print(io, "  with respect to primitive basis")
-    elseif gen_convbasis
-        print(io, "  with respect to conventional basis")
+    if basis(xtal.atoms) == zeros(BasisVectors{D})
+        print("  in Cartesian coordinates (assumed to be Å)")
     else
-        println(io, "basis:")
-        printbasis(io, xtal.gen.basis, pad=2)
+        print("  in fractional coordinates")
     end
 end
 
