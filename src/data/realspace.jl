@@ -75,12 +75,6 @@ Gets the array that backs a `RealSpaceDataGrid{D,T}`, which is an `Array{T,D}`.
 """
 grid(g::RealSpaceDataGrid) = g.grid
 
-"""
-    gridsize(g::RealSpaceDataGrid{D,T}) -> NTuple{D,Int}
-
-Gets the dimensions of the backing array corresponding to a `RealSpaceDataGrid`.
-"""
-gridsize(g::RealSpaceDataGrid) = size(grid(g))
 Base.size(g::RealSpaceDataGrid) = size(grid(g))
 Base.length(g::RealSpaceDataGrid) = length(grid(g))
 

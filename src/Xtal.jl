@@ -118,7 +118,7 @@ export data, volume, natom, atomtypes, natomtypes
 # Methods and structs for working with different types of data associated with crystals
 include("data/realspace.jl")
 export RealSpaceDataGrid
-export shift, grid, gridsize, volume, voxelsize, coord, nearest_index, integrate, fft
+export basis, shift, grid, volume, voxelsize, coord, nearest_index, integrate
 include("data/reciprocalspace.jl")
 export KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData, HKLDict,
        ReciprocalWavefunction
