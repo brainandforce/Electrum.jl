@@ -3,21 +3,20 @@
 ## Constructors and types
 
 ```@docs
-Xtal.AbstractLattice
-Xtal.BasisVectors
-Xtal.RealLattice
-Xtal.ReciprocalLattice
+Xtal.AbstractBasis
+Xtal.RealBasis
+Xtal.ReciprocalBasis
+Xtal.lattice2D
+Xtal.lattice3D
 ```
 
 ## Methods
 
 ```@docs
-Xtal.dual
-Xtal.prim
-Xtal.conv
-Xtal.cell_lengths
-Xtal.cell_volume
-Xtal.lattice2D
-Xtal.lattice3D
+Xtal.lengths
+Xtal.volume
+Xtal.angles_cos
+Xtal.angles_rad
+Xtal.angles_deg
 Xtal.maxHKLindex
 ```
