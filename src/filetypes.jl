@@ -71,7 +71,6 @@ function readXSF3D(
     io::IO;
     spgrp::Integer = 0,
     origin::AbstractVector{<:Real} = [0, 0, 0],
-    ctr::Symbol = :P
 )
     # Function for getting lattice basis vectors
     function getlattice!(itr)
@@ -206,14 +205,11 @@ function readXSF3D(
             spgrp = 1
         end
     end
-    # If the conventional cell hasn't been defined, generate it
-    if iszero(conv)
-        conv = RealBasis{3}(matrix(prim) / REDUCTION_MATRIX_3D[ctr])
-    end
-    # Generate the real space lattice
-    latt = RealLattice(prim, conv)
-    xtal = Crystal(latt, spgrp, origin, atom_list, atom_list)
-    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3}}(xtal, data)
+    # Generate the transform between primitive and conventional lattices, if needed
+    transform = iszero(conv) ? SMatrix{3,3,Float64}(LinearAlgebra.I) : prim / conv
+    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}(
+        Crystal(atom_list, spgrp, origin, transform), data
+    )
 end
 
 """

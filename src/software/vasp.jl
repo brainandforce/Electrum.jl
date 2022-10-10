@@ -6,11 +6,8 @@ Reads a VASP POSCAR file.
 A POSCAR contains the basis vectors of the system (potentially given with a scaling factor), the 
 positions of all atoms as either Cartesian or reduced coordinates, and potentially information 
 needed to perform an ab initio MD run.
-
-Data is assumed to be given in a primitive cell, which may be converted to a conventional cell
-using the `ctr` keyword.
 """
-function readPOSCAR(io::IO; ctr=:P)
+function readPOSCAR(io::IO)
     # Skip the comment line
     readline(io)
     # Get the scaling factor
@@ -19,8 +16,8 @@ function readPOSCAR(io::IO; ctr=:P)
     latt = let lns = [readline(io) for n in 1:3]
         # Get the vectors from the next three lines
         vecs = [parse.(Float64, v) for v in split.(lns)]
-        # Return them as a lattice with desired centering
-        RealLattice(BasisVectors{3}(vecs), REDUCTION_MATRIX_3D[ctr])
+        # Convert to RealBasis and return
+        RealBasis{3}(vecs)
     end
     # Check the next line for a letter.
     # Newer versions of VASP seem to use the atom type as a line before the
@@ -56,9 +53,8 @@ function readPOSCAR(io::IO; ctr=:P)
             ctr = ctr + 1
         end
     end
-    list = AtomList(latt, positions, prim=true)
-    # Skip out on velocities for now
-    return Crystal(latt, 1, [0, 0, 0], list, list)
+    # Velocity data is ignored
+    return Crystal(AtomList(latt, positions))
 end
 
 readPOSCAR(filename::AbstractString; kwargs...) = open(readPOSCAR, filename; kwargs...)
