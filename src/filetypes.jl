@@ -283,7 +283,7 @@ datagrid occurs (values are repeated at the end of each dimension).
 function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) where {D,T}
     println(io, "    DATAGRID_", D, "D_", key)
     # Print the grid size (+1)
-    println(io, " "^8, join([rpad(string(n + 1), 8) for n in gridsize(data)]))
+    println(io, " "^8, join([rpad(string(n + 1), 8) for n in size(data)]))
     # Print the grid offset
     print(io, " "^4)
     for x in data.orig
@@ -297,7 +297,7 @@ function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) wher
     end
     # This should generate a view that wraps around for a "general grid"
     if periodic
-        g = view(grid(data), (1 .+ (0:n) .% n for n in gridsize(data))...)
+        g = view(grid(data), (1 .+ (0:n) .% n for n in size(data))...)
     else
         g = view(M, (1:n for n in size(M))...)
     end
