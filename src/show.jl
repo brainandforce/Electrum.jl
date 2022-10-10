@@ -127,7 +127,7 @@ function Base.show(io::IO, ::MIME"text/plain", a::AtomList; name=true, num=true,
 end
 
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
-    dimstring = join(string.(gridsize(g)), "×") * " "
+    dimstring = join(string.(size(g)), "×") * " "
     println(io, dimstring, typeof(g), " with basis vectors:")
     print(join(basis_string(basis(g), unit="Å"), "\n"))
     println("\nCell volume: ", volume(g), " Å³")

@@ -55,7 +55,7 @@ end
 function Base.getindex(g::RealSpaceDataGrid, inds...)
     # Perform modulo math to get the indices
     # WARNING: Julia % is the remainder function, not modulo!
-    imod = mod.(inds .- 1,  gridsize(g)) .+ 1
+    imod = mod.(inds .- 1,  size(g)) .+ 1
     return getindex(grid(g), imod...)
 end
 
