@@ -29,6 +29,13 @@ end
 
 readXYZ(filename::AbstractString) = open(readXYZ, filename)
 
+"""
+    writeXYZ(io::IO, data::AbstractVector{<:AtomPosition})
+    writeXYZ(io::IO, data::AtomList)
+    writeXYZ(io::IO, data::AbstractCrystal)
+
+Write an XYZ file based on a set of atomic coordinates.
+"""
 function writeXYZ(io::IO, data::AbstractVector{<:AtomPosition})
     # Write the number of atoms
     println(io, length(data))
