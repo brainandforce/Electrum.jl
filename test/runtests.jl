@@ -1,5 +1,7 @@
 using LinearAlgebra, StaticArrays
-using Test, Xtal
+using Test, Aqua, Xtal
+
+Aqua.test_all(Xtal)
 
 xsf = readXSF3D("files/test.xsf")
 
