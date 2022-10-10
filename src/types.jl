@@ -16,31 +16,14 @@ strictly binding, but make sure that you know why you're breaking the rules if y
 
 Supertype for sets of basis vectors in `D` dimensions.
 
-This supertype includes the `BasisVectors{D}` type as well as the new `RealBasis{D}` and
-`ReciprocalBasis{D}` types, which explicitly indicate their units (assumed to be either angstroms
-or inverse angstroms).
+This supertype includes the `RealBasis{D}` and `ReciprocalBasis{D}` types, which explicitly 
+indicate their units (assumed to be either angstroms or inverse angstroms).
 
 Members of `AbstractBasis` must implement the following checks:
   * That the basis vectors are linearly independent and form a right-handed coordinate system, 
 unless an explicit zero basis is constructed (implying no periodicity).
 """
 abstract type AbstractBasis{D}
-end
-
-"""
-    AbstractLattice{D}
-
-Supertype for all lattices of dimension D.
-
-Members consist of a set of primitive lattice vectors and a set of conventional lattice vectors, 
-each stored in `BasisVectors{D}`.
-
-An `AbstractLattice` must implement the following checks:
-  * That the basis vectors are linearly independent and form a right-handed coordinate system.
-  * That the set of lattice vectors spanning the largest volume can be expressed in terms of 
-    integer linear combinations of the primitive basis vectors.
-"""
-abstract type AbstractLattice{D}
 end
 
 """

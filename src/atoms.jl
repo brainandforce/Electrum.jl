@@ -90,19 +90,6 @@ struct AtomList{D} <: AbstractRealSpaceData{D}
     end
 end
 
-function AtomList(
-    basis::AbstractLattice{D},
-    coord::AbstractVector{<:AtomPosition{D}};
-    prim=false
-) where D
-    # Use either the primitive or conventional vectors depending on user input
-    if prim
-        return AtomList(basis.prim, unique(coord))
-    else
-        return AtomList(basis.conv, unique(coord))
-    end
-end
-
 # Do it without adding a lattice
 function AtomList(coord::AbstractVector{AtomPosition{D}}) where D
     return AtomList(zeros(RealBasis{D}), coord)

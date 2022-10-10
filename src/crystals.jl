@@ -138,3 +138,7 @@ natom(xtal::AbstractCrystal) = natom(AtomList(xtal))
 
 atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(AtomList(xtal); kwargs...)
 natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(AtomList(xtal); kwargs...)
+
+function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer})
+    return d_spacing(basis(x), miller)
+end
