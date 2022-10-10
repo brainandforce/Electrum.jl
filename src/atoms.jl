@@ -231,30 +231,31 @@ supercell(l::AtomList, v::AbstractVector{<:Integer}) = supercell(l, diagm(v))
 
 Removes dummy atoms from an `AtomList`.
 """
- remove_dummies(l::AtomList) = AtomList(basis(l), filter(x -> !iszero(atomicno(x)), l.coord))
+remove_dummies(l::AtomList) = AtomList(basis(l), filter(x -> !iszero(atomicno(x)), l.coord))
 
  """
-    atomtypes(l::AtomList; dummy=false) -> Int
+    atomtypes(l::AtomList; dummy=false) -> Vector{Int}
+    atomtypes(xtal::AbstractCrystal; dummy=false) -> Vector{Int}
 
 Returns the atomic numbers of all the atoms in the `AtomList`. The `dummy` keyword controls whether
 dummy atoms are counted as a separate atom type (`false` by default).
 """
-atomtypes(l::AtomList; dummy=false) = unique([atomicno(a) for a in l])
+function atomtypes(l::AtomList; dummy=false)
+    m = dummy ? remove_dummies(l) : l
+    return unique([atomicno(a) for a in m])
+end
 
 """
     natomtypes(l::AtomList; dummy=false) -> Int
+    natomtypes(xtal::AbstractCrystal; dummy=false) -> Int
 
 Returns the number of types of atoms. The `dummy` keyword controls whether dummy atoms are counted
 as a separate atom type (`false` by default).
 """
-function natomtypes(l::AtomList; dummy=false)
-    # Subtract any dummy atoms
-    return length(atomtypes(l, dummy=dummy)) - (!dummy * (0 in types))
-    # (There's probably a more efficient implementation, but this works)
-end
+natomtypes(l::AtomList; dummy=false) = length(atomtypes(l, dummy=dummy))
 
 """
-    atomnames(l::AtomList; dummy=false)
+    atomnames(l::AtomList; dummy=false) -> Vector{String}
 
 Returns the names of all the atoms in `l`. By default, dummy atoms are not included, but this may
 be changed by setting `dummy=true`.
