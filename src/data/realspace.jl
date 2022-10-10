@@ -51,22 +51,22 @@ function RealSpaceDataGrid(f, g::RealSpaceDataGrid)
     return RealSpaceDataGrid(basis(g), shift(g), f.(grid(g)))
 end
 
-# getindex supports arbitrary integer indices for RealSpaceDataGrid
+# getindex() supports arbitrary integer indices for RealSpaceDataGrid
+# By convention, it's zero based, so data at fractional coordinate [0,0,0] is indexable at [0,0,0]
 function Base.getindex(g::RealSpaceDataGrid, inds...)
-    # Perform modulo math to get the indices
-    # WARNING: Julia % is the remainder function, not modulo!
-    imod = mod.(inds .- 1,  size(g)) .+ 1
+    # Perform modulo math to get the indices (to support wraparound)
+    imod = mod.(inds, size(g)) .+ 1
     return getindex(grid(g), imod...)
 end
 
 # Iterator definitions: pass through matrix iteration
 Base.iterate(g::RealSpaceDataGrid) = iterate(grid(g))
 Base.iterate(g::RealSpaceDataGrid, state) = iterate(grid(g), state)
-# Needed to get eachindex()
-Base.keys(g::RealSpaceDataGrid) = keys(grid(g))
 # Definitions for linear and Cartesian indices
 Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(grid(g))
-Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(grid(g))
+Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(Tuple(0:n-1 for n in size(g)))
+# Needed to get eachindex()
+Base.keys(g::RealSpaceDataGrid) = CartesianIndices(g)
 
 """
     grid(g::RealSpaceDataGrid{D,T}) -> Array{T,D}
