@@ -110,7 +110,7 @@ export triangularize, dual, prim, conv, cell_lengths, cell_volume, lengths, volu
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export AtomPosition, AtomList
-export atomname, atomicno, sort_atomino, coord, natom, basis, cartesian, reduce_coords, supercell,
+export atomname, atomicno, sort_atomicno, coord, natom, basis, cartesian, reduce_coords, supercell,
        atomtypes, natomtypes
 # Methods and structs for working with crystal data
 include("crystals.jl")
