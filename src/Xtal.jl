@@ -99,14 +99,12 @@ _selfdot(v) = dot(v,v)
 include("vectors.jl")
 # Abstract types used in type tree
 include("types.jl")
-export AbstractBasis, AbstractLattice, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData,
-       AbstractReciprocalSpaceData, AbstractHKL, AbstractKPoints, AbstractDensityOfStates,
-       AbstractPotential, AbstractPseudopotential
+export AbstractBasis, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData,
+       AbstractReciprocalSpaceData, AbstractHKL, AbstractKPoints, AbstractDensityOfStates
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
-export BasisVectors, RealBasis, ReciprocalBasis, RealLattice, ReciprocalLattice
-export triangularize, dual, prim, conv, cell_lengths, cell_volume, lengths, volume, lattice2D, 
-       lattice3D, maxHKLindex
+export RealBasis, ReciprocalBasis
+export triangularize, cell_lengths, cell_volume, lengths, volume, lattice2D, lattice3D, maxHKLindex
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export AtomPosition, AtomList

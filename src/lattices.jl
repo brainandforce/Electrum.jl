@@ -23,34 +23,6 @@ function lattice_sanity_check(vs::AbstractVector{<:AbstractVector{<:Real}})
     return lattice_sanity_check(hcat(vs...))
 end
 
-# TODO: deprecate in favor of `RealBasis` and `ReciprocalBasis`
-"""
-    BasisVectors{D} <: AbstractBasis{D}
-
-Collection of `D` basis vectors spanning `D`-dimensional space.
-
-Internally, a `BasisVectors{D}` is represented as an `SVector{D,SVector{D,Float64}}`. This avoids a
-length declaration that would be required by an `SMatrix`.
-
-`BasisVectors` can be indexed similarly to a matrix. However, there is one major difference: 
-indexing with a single value returns an `SVector{D,Float64}`, not a value as would happen with most
-subtypes of `AbstractMatrix`.
-"""
-struct BasisVectors{D} <: AbstractBasis{D}
-    vs::SVector{D,SVector{D,Float64}}
-    function BasisVectors(vs::StaticVector{D,<:StaticVector{D,<:Real}}) where D
-        lattice_sanity_check(vs)
-        return new{D}(vs)
-    end
-    function BasisVectors{D}(vs::AbstractVector{<:AbstractVector{<:Real}}) where D
-        lattice_sanity_check(vs)
-        return new(vs)
-    end
-end
-
-BasisVectors(vs::Vararg{AbstractVector{<:Real}, D}) where D = BasisVectors{D}(hcat(vs...))
-BasisVectors{D}(vs::AbstractVector{<:AbstractVector}) where D = BasisVectors{D}(hcat(vs...))
-
 #---New RealBasis and ReciprocalBasis types-------------------------------------------------------#
 """
     RealBasis{D} <: AbstractBasis{D}
@@ -120,21 +92,11 @@ function Base.convert(::Type{<:ReciprocalBasis}, b::RealBasis)
     return ReciprocalBasis(transpose(2π * inv(matrix(b))))
 end
 
-"""
-    convert(::Type{T}, b::BasisVectors) T<:Union{RealBasis,ReciprocalBasis} -> T
-
-Conversion from the now deprecated `BasisVectors` type to the preferred `RealBasis` and 
-`ReciprocalBasis` types. This conversion does not change any values in the `BasisVectors`, so
-convert to the type that matches how the `BasisVectors` were being used.
-"""
-Base.convert(::Type{T}, b::BasisVectors) where T<:Union{RealBasis,ReciprocalBasis} = T(b.vs)
-(::Type{T})(b::AbstractBasis) where T<:Union{RealBasis,ReciprocalBasis} = convert(T, b)
-
 # Tools to generate 2D and 3D lattices with given angles
 #-------------------------------------------------------------------------------------------------#
 
 """
-    lattice2D(a::Real, b::Real, γ::Real) -> BasisVectors{2}
+    lattice2D(a::Real, b::Real, γ::Real) -> RealBasis{2}
 
 Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 2D with the
 same length and angle parameters (in degrees).
@@ -148,7 +110,7 @@ end
 
 # TODO: can we leverage QR or LU decomposition to do this generally?
 """
-    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> BasisVectors{3}
+    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> RealBasis{3}
 
 Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the
 same length and angle parameters (in degrees).
@@ -166,12 +128,12 @@ function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     return RealBasis(M)
 end
 
-# Fundamental methods for working with BasisVectors
+# Fundamental methods for working with basis vectors
 #-------------------------------------------------------------------------------------------------#
 
 # This should get a vector
 Base.getindex(b::AbstractBasis, ind) = b.vs[ind]
-# This should treat BasisVectors like matrices
+# This should treat a basis like a matrix
 Base.getindex(b::AbstractBasis, i1, i2) = b[i2][i1]
 
 vectors(b::AbstractBasis) = b.vs
@@ -194,14 +156,14 @@ end
 Base.zero(::T) where {T<:AbstractBasis} = zero(T)
 Base.zeros(::Type{T}) where T<:AbstractBasis = zero(T)
 
-# Mathematical function definitions for BasisVectors
+# Mathematical function definitions for basis vectors
 #-------------------------------------------------------------------------------------------------#
 
 # Definitions for multiplication/division by a scalar
 # TODO: there's probably a more efficient way to do this
-Base.:*(s::Number, b::AbstractBasis) = BasisVectors(matrix(b) * s)
-Base.:*(b::AbstractBasis, s::Number) = s * b
-Base.:/(b::AbstractBasis, s::Number) = BasisVectors(matrix(b) / s)
+Base.:*(s::Number, b::T) where T<:AbstractBasis = T(matrix(b) * s)
+Base.:*(b::T, s::Number) where T<:AbstractBasis = s * b
+Base.:/(b::T, s::Number) where T<:AbstractBasis = T(matrix(b) / s)
 
 # And multiplication/division by vectors
 Base.:*(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) * v
@@ -250,14 +212,6 @@ Returns the volume of a unit cell defined by a matrix. This volume does not carr
 volume(b::AbstractBasis) = cell_volume(matrix(b))
 # Get the cell volume for anything that has a defined basis
 volume(x) = volume(basis(x))
-
-"""
-    volume(l::AbstractLattice; primitive=true) -> Float64
-
-Returns the volume of a lattice. By default, the primitive cell volume is used, but the
-conventional cell volume may be calculated with `primitive=false`.
-"""
-volume(l::AbstractLattice; primitive::Bool=true) = volume(primitive ? prim(l) : conv(l))
 
 """
     Xtal.generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
@@ -349,187 +303,11 @@ function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBas
     return T(R * diagm(sign.(diag(R))))
 end
 
-"""
-    dual(b::BasisVectors)
-
-Generates the dual lattice defined by a set of basis vectors.
-
-"Dual" refers to the basis generated with the inverse transpose. This does not include factors of τ
-that are used crystallographically (τ = 2π).
-"""
-dual(b::BasisVectors) = BasisVectors(inv(transpose(matrix(b))))
-
-"""
-    RealLattice{D}
-
-Describes a real space crystal lattice with primitive and conventional basis vectors.
-"""
-struct RealLattice{D} <: AbstractLattice{D}
-    prim::RealBasis{D}
-    conv::RealBasis{D}
-    # Inner constructor should take any AbstractMatrix{<:Real} as input
-    function RealLattice(
-        prim::AbstractBasis{D},
-        conv::AbstractBasis{D}
-    ) where D
-        # Perform checks on the lattice pairs
-        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(prim)\matrix(conv)) string(
-            "The larger set of basis vectors is not expressed in terms of integer multiples of",
-            "the smaller set of basis vectors."
-        )
-        return new{D}(prim, conv)
-    end
-end
-
-"""
-    ReciprocalLattice{D}
-
-Describes a reciprocal space crystal lattice with primitive and conventional basis vectors.
-"""
-struct ReciprocalLattice{D} <: AbstractLattice{D}
-    prim::ReciprocalBasis{D}
-    conv::ReciprocalBasis{D}
-    # Inner constructor should take any AbstractMatrix{<:Real} as input
-    function ReciprocalLattice(
-        prim::AbstractBasis{D},
-        conv::AbstractBasis{D}
-    ) where D
-        # Perform checks on the lattice pairs
-        @assert all(x -> x - round(Int, x) < TOL_DEF, matrix(conv)\matrix(prim)) string(
-            "The smaller set of basis vectors is not expressed in terms of integer reciprocals of",
-            "the larger set of basis vectors."
-        )
-        return new{D}(prim, conv)
-    end
-end
-
-function (::Type{T})(
-    b::AbstractBasis{D},
-    transform::AbstractMatrix=diagm(ones(D))
-) where {D,T<:AbstractLattice}
-    return T(b, BasisVectors{D}(b*transform))
-end
-
-"""
-    prim(l::AbstractLattice) -> AbstractBasis
-
-Returns the primitive lattice in a `RealLattice` or a `ReciprocalLattice`.
-"""
-prim(l::AbstractLattice) = l.prim
-
-"""
-    conv(l::AbstractLattice) -> AbstractBasis
-
-Returns the conventional lattice in a `RealLattice` or a `ReciprocalLattice`.
-"""
-conv(l::AbstractLattice) = l.conv
-
-# Define the constructor for vectors of vectors
-function (::Type{T})(
-    prim::AbstractVector{<:AbstractVector{<:Real}},
-    conv::AbstractVector{<:AbstractVector{<:Real}},
-) where {T<:AbstractLattice}
-    return RealLattice(BasisVectors{D}(prim), BasisVectors{D}(conv))
-end
-
-# It's critical that the `RealLattice` and `ReciprocalLattice` constructors are idempotent
-# so that conversion can be completely seamless
-RealLattice(latt::RealLattice) = latt
-ReciprocalLattice(latt::ReciprocalLattice) = latt
-
-"""
-    ReciprocalLattice(latt::RealLattice{D})
-
-Converts a real lattice to its corresponding reciprocal lattice.
-"""
-function ReciprocalLattice(latt::RealLattice)
-    return ReciprocalLattice(dual(prim(latt))*2π, dual(conv(latt))*2π)
-end
-
-"""
-    RealLattice(latt::ReciprocalLattice{D})
-
-Converts a reciprocal lattice to its corresponding real lattice.
-"""
-function RealLattice(latt::ReciprocalLattice)
-    return RealLattice(dual(prim(latt))/2π, dual(conv(latt))/2π)
-end
-
-Base.convert(::Type{<:RealLattice}, latt::AbstractLattice) = RealLattice(latt)
-Base.convert(::Type{<:ReciprocalLattice}, latt::AbstractLattice) = ReciprocalLattice(latt)
-
-"""
-    Xtal.lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
-
-Generates a pair of 3D lattices that are related by common crystallographic transformations.
-
-Returns an `NTuple{2, BasisVectors{3}` with the first matrix containing the primitive basis and the
-second containing the conventional basis.
-"""
-function lattice_pair_generator_3D(M::AbstractMatrix; prim=false, ctr=:P)
-    # Without special centering, just return the pair of basis vectors
-    ctr == :P && return BasisVectors{3}.((M,M))
-    # Figure out which type of cell the input matrix defines
-    # TODO: Try to ensure this operations favors a c axis pointing along the z direction
-    if prim
-        Mp = M
-        Mc = inv(REDUCTION_MATRIX_3D[ctr]) * M
-    else
-        Mc = M
-        Mp = REDUCTION_MATRIX_3D[ctr] * M
-    end
-    return BasisVectors{3}.((Mp,Mc))
-end
-
-#= This docstring is broken due to @doc: https://github.com/JuliaLang/julia/issues/28834
-    RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
-
-Generates a 3-dimensional real space lattice given a set of conventional or primitive basis
-vectors and centering information.B y default, inputs are assumed to describe a conventional cell.
-=#
-function RealLattice{3}(M::AbstractMatrix{<:Real}; prim=false, ctr=:P)
-    return RealLattice(lattice_pair_generator_3D(M, prim=prim, ctr=ctr)...)
-end
-
-# Metrics, but for AbstractLattice subtypes
-#-------------------------------------------------------------------------------------------------#
-
-"""
-    lengths(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
-
-Returns the cell vector lengths. By default, returns the lengths of the conventional cell vectors.
-"""
-function lengths(L::AbstractLattice{D}; prim=false) where D
-    prim ? M = prim(L) : M = conv(L)
-    return SVector{D,Float64}(cell_lengths(M))
-end
-
-"""
-    angles_deg(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
-
-Returns the cell vector angles in degrees.
-"""
-function angles_deg(L::AbstractLattice{D}; prim=false) where D
-    prim ? M = prim(L) : M = conv(L)
-    return SVector{D,Float64}(cell_angles_deg(M))
-end
-
-"""
-   angles_rad(L::AbstractLattice{D}; prim=false) -> SVector{D,Float64}
-
-Returns the cell vector angles in radians.
-"""
-function angles_rad(L::AbstractLattice{D}; prim=false) where D
-    prim ? M = prim(L) : M = conv(L)
-    return SVector{D,Float64}(cell_angles_rad(M))
-end
-
 # TODO: Update and document this function a bit more.
 # It works, but that really isn't enough for me.
 # I think this was pulled directly from the WaveTrans source code
 function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
     # I think the parts below convert a set of basis vectors into their reciprocals
-    # But we already have ways to do that with `dual(::BasisVectors)`
     #--------------------------------------------------------------------------#
     cosines = cell_angles_cos(M)
     crosses = [cross(M[:,a], M[:,b]) for (a,b) in zip([2,3,1], [3,1,2])]
@@ -540,11 +318,8 @@ function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
     return floor.(Int, vec(maximum(nbmax, dims=1)))
 end
 
-# Assume that the basis vectors are defined in reciprocal space (??)
-maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
-
 """
-    Xtal.maxHKLindex(L::AbstractLattice, ecut::Real; prim=true, c = CVASP)
+    Xtal.maxHKLindex(b::AbstractBasis, ecut::Real; prim=true, c = CVASP)
 
 Determines the maximum integer values of the reciprocal lattice vectors needed to store data out
 to a specific energy cutoff for a 3D lattice.
@@ -556,34 +331,19 @@ value (which is incorrect!). Different values of c may be used for different uni
 The functionality implemented here was taken from WaveTrans:
 https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 """
-function maxHKLindex(L::AbstractLattice{3}, ecut::Real, prim=true, c = CVASP)
-    M = ReciprocalLattice{3}(prim ? prim(L) : conv(L))
-    return maxHKLindex(M, ecut, c=c)
-end
+# Assume that the basis vectors are defined in reciprocal space (??)
+maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
 
 """
-    d_spacing(b::BasisVectors, miller::AbstractVector{<:Integer}, real=true) -> Float64
+    d_spacing(b::AbstractBasis, miller::AbstractVector{<:Integer}, real=true) -> Float64
 
 Measures the real space distance between planes in a lattice given by a Miller index. By default, 
 the basis vectors are assumed to be real space basis vectors.
 """
-function d_spacing(b::BasisVectors, miller::AbstractVector{<:Integer}; real::Bool=true)
-    return 1 / norm((real ? dual(b) : b) * miller)
-end
-
 function d_spacing(b::RealBasis, miller::AbstractVector{<:Integer})
     return 1 / norm(transpose(inv(matrix(b))) * miller)
 end
 
 function d_spacing(b::ReciprocalBasis, miller::AbstractVector{<:Integer})
     return 2π / norm(matrix(b) * miller)
-end
-
-function d_spacing(l::AbstractLattice, miller::AbstractVector{<:Integer}; primitive::Bool=false)
-    r = ReciprocalLattice(l)
-    return 1 / norm((primitive ? prim(r) : conv(r)) * miller)
-end
-
-function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer}; primitive::Bool=false)
-    return d_spacing(basis(x, primitive=primitive), miller)
 end
