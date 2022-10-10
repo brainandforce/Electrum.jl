@@ -65,8 +65,7 @@ function Base.getindex(g::RealSpaceDataGrid, inds...)
 end
 
 # Iterator definitions: pass through matrix iteration
-Base.iterate(g::RealSpaceDataGrid) = iterate(grid(g))
-Base.iterate(g::RealSpaceDataGrid, state) = iterate(grid(g), state)
+Base.iterate(g::RealSpaceDataGrid, i::Integer = 1) = iterate(grid(g), i)
 # Definitions for linear and Cartesian indices
 Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(grid(g)) .- 1
 Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(Tuple(0:n-1 for n in size(g)))
