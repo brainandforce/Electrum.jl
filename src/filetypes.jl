@@ -361,7 +361,7 @@ function readCPcoeff(io::IO, Lmax::Val{L}=Val(6)) where L
     ncoeff = (L + 1)^2
     natom = div(length(data), ncoeff)
     @debug "ncoeff = $ncoeff, natom = $natom"
-    return [SphericalComponents{L}(data[(n - 1)*ncoeff .+ (1:ncoeff)]) for n in 1:natom]
+    return [SphericalHarmonic{L}(data[(n - 1)*ncoeff .+ (1:ncoeff)]) for n in 1:natom]
 end
 
 readCPcoeff(filename::AbstractString) = open(readCPcoeff, filename)
