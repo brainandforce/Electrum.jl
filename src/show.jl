@@ -144,13 +144,6 @@ function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) 
     )
 end
 
-function Base.show(io::IO, ::MIME"text/plain", l::AbstractLattice{D}) where D
-    println(io, typeof(l), ":\n\n  Primitive basis vectors:")
-    printbasis(io, l.prim, unit="Å" * "⁻¹"^(l isa ReciprocalLattice))
-    println(io, "\n\n  Conventional basis vectors:")
-    printbasis(io, l.conv, unit="Å" * "⁻¹"^(l isa ReciprocalLattice))
-end
-
 # TODO: Get rid of direct struct access
 # Use methods to get the data instead.
 function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
@@ -170,7 +163,7 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     end
     # Determine what basis the atomic coordinates are given in.
     # If the basis is zero, assume Cartesian coordinates in Å
-    if basis(xtal.atoms) == zeros(BasisVectors{D})
+    if basis(xtal.atoms) == zeros(RealBasis{D})
         print("  in Cartesian coordinates (assumed to be Å)")
     else
         print("  in fractional coordinates")

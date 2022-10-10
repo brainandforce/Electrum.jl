@@ -205,7 +205,7 @@ function HKLData(
     data::AbstractArray{T,D},
     bounds::AbstractVector{<:AbstractRange{<:Integer}}
 ) where {D,T}
-    return HKLData(zero(BasisVectors{D}), data, bounds)
+    return HKLData(zero(ReciprocalBasis{D}), data, bounds)
 end
 
 function Base.zeros(
@@ -368,18 +368,6 @@ function ReciprocalWavefunction(
     # Construct zero matrix
     z = zeros(Float64, size(waves))
     return ReciprocalWavefunction(rlatt, kpts, waves, z, z)
-end
-
-function ReciprocalWavefunction(
-    latt::AbstractLattice{D},
-    kpts::AbstractKPoints{D},
-    waves::AbstractArray{HKLData{D,Complex{T}},3},
-    energies::AbstractArray{<:Real,3},
-    occupancies::AbstractArray{<:Real,3};
-    primitive::Bool = true
-) where {D,T<:Real}
-    M = primitive ? prim(latt) : conv(latt)
-    return ReciprocalWavefunction(M, kpts, waves, energies, occupancies)
 end
 
 function Base.getindex(wf::ReciprocalWavefunction, inds...)

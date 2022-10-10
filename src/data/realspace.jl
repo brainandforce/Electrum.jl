@@ -28,7 +28,7 @@ function RealSpaceDataGrid(latt::AbstractBasis{D}, grid::Array{T,D}) where {D,T}
 end
 
 """
-    basis(g::RealSpaceDataGrid{D,T}) -> BasisVectors{D}
+    basis(g::RealSpaceDataGrid{D,T}) -> RealBasis{D}
 
 Gets the basis vectors of a `RealSpaceDataGrid`.
 """
@@ -40,33 +40,6 @@ basis(g::RealSpaceDataGrid) = g.latt
 Gets the shift of the datagrid off of the origin of the basis vectors.
 """
 shift(g::RealSpaceDataGrid) = g.orig
-
-"""
-    RealSpaceDataGrid(
-        latt::AbstractLattice{D},
-        orig::AbstractVector{<:Real},
-        grid::AbstractArray{T,D};
-        prim=true
-    )
-
-Creates a real space data grid using lattice information from an `AbstractLattice`. By default,
-data is assumed to be given in terms of the primitive lattice (as is usually the case for
-computational data).
-"""
-function RealSpaceDataGrid(
-    latt::AbstractLattice{D},
-    orig::AbstractVector{<:Real},
-    grid::AbstractArray{T,D};
-    prim=true
-) where {D,T}
-    # Conversion for safety
-    l = RealLattice(latt)
-    if prim
-        return RealSpaceDataGrid(prim(l), orig, grid)
-    else
-        return RealSpaceDataGrid(conv(l), orig, grid)
-    end
-end
 
 """
     RealSpaceDataGrid(f, g::RealSpaceDataGrid)
