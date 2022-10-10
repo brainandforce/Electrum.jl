@@ -4,6 +4,11 @@ A Julia package for working with crystal structures, associated data, and variou
 with the aim of making theory development for solid state chemistry and materials science easier
 for everyone.
 
+This package is written in pure Julia with minimal dependencies, so instead of pulling operations
+from established packages in other languages (such as scipy) they are implemented in this package.
+We hope that Xtal.jl can serve as a reference for both useful operations on crystal structures and
+well-maintained scientific software.
+
 ## How to install
 
 Xtal.jl is not in the Julia package registry yet, so you'll need to install it like this:
