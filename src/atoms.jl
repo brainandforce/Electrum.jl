@@ -116,6 +116,11 @@ sort_atomicno(l::AtomList; kwargs...) = AtomList(basis(l), sort(l.coord, by=atom
 
 basis(l::AtomList) = l.basis
 coord(l::AtomList) = l.coord
+"""
+    natom(l::AtomList) -> Int
+
+Gets the number of atoms in an `AtomList`.
+"""
 natom(l::AtomList) = length(coord(l))
 
 """
