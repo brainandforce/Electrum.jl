@@ -174,34 +174,28 @@ Base.:\(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) \ v
 #-------------------------------------------------------------------------------------------------#
 
 """
-    cell_lengths(M::AbstractMatrix) -> Vector{Float64}
+    Xtal.cell_lengths(M::AbstractMatrix) -> Vector{Float64}
 
 Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
 cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
-# TODO: perhaps this is not necessary anymore
-# But removing it might break the API
-cell_lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
 
 """
     lengths(b::AbstractBasis) -> Vector{Float64}
 
-Returns the lengths of the constituent vectors in a matrix representing cell vectors.
+Returns the lengths of the basis vectors.
 """
 lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
 # Get the vector lengths for anything that has a defined basis
 lengths(x) = lengths(basis(x))
 
 """
-    cell_volume(M::AbstractMatrix) -> Float64
+    Xtal.cell_volume(M::AbstractMatrix) -> Float64
 
 Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
 (negative for cells that do not follow the right hand rule).
 """
 cell_volume(M::AbstractMatrix) = abs(det(M))
-# TODO: perhaps this is not necessary anymore
-# But removing it might break the API
-cell_volume(b::AbstractBasis) = cell_volume(matrix(b))
 
 """
     volume(b::AbstractBasis) -> Float64
@@ -241,12 +235,12 @@ function generate_pairs(::Type{Val{D}}) where D
 end
 
 """
-    cell_angles_cos(M::AbstractMatrix)
+    Xtal.cell_angles_cos(M::AbstractMatrix) -> Vector{Float64}
 
 Generates the cosines of the unit cell angles.
 
 The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `generate_pairs()`. For crystals with more spatial dimensions, this
+by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
 may lead to unexpected results.
 """
 function cell_angles_cos(M::AbstractMatrix)
@@ -254,21 +248,38 @@ function cell_angles_cos(M::AbstractMatrix)
     return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
 end
 
-cell_angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
+"""
+    angles_cos(b::AbstractBasis) -> Vector{Float64}
+
+Generates the cosines of the unit cell angles.
+
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
+by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
+may lead to unexpected results.
+"""
+angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
 
 """
-    cell_angles_rad(b) -> Vector{Float64}
+    angles_rad(b) -> Vector{Float64}
 
 Returns the angles (in radians) between each pair of basis vectors.
+
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
+by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
+may lead to unexpected results.
 """
-cell_angles_rad(b) = acos.(cell_angles_cos(b))
+angles_rad(b::AbstractBasis) = acos.(angles_cos(b))
 
 """
-    cell_angles_deg(b) -> Vector{Float64}
+    angles_deg(b) -> Vector{Float64}
 
 Returns the angles (in degrees) between each pair of basis vectors.
+
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
+by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
+may lead to unexpected results.
 """
-cell_angles_deg(b) = acosd.(cell_angles_cos(b))
+angles_deg(b::AbstractBasis) = acosd.(angles_cos(b))
 
 # Linear algebraic manipulation of basis vector specification
 #-------------------------------------------------------------------------------------------------#
