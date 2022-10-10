@@ -1,5 +1,4 @@
 #=
-
 IMPORTANT NOTE:
 
 Unfortuantely, Julia does not include any structure within abstract types. This can pose a problem,
@@ -8,7 +7,6 @@ because it's not possible to immediately determine what requirements abstract ty
 Therefore, any declared abstract type must contain a comment describing those requirements, either 
 in the docstring or in a comment within the abstract type declaration. Of course, they are not 
 strictly binding, but make sure that you know why you're breaking the rules if you choose to do so.
-
 =#
 
 """
@@ -47,6 +45,9 @@ end
     AbstractRealSpaceData{D}
 
 Supertype for crystal data that is defined in real space. This includes atomic coordinates.
+
+Any basis that is stored with a subtype of this type will be a `RealBasis`, and calling `basis()`
+on that subtype will always return a `RealBasis.`
 """
 abstract type AbstractRealSpaceData{D} <: AbstractCrystalData{D}
 end
@@ -55,6 +56,9 @@ end
     AbstractReciprocalSpaceData{D}
 
 Supertype for crystal data that is defined in reciprocal space.
+
+Any basis that is stored with a subtype of this type will be a `ReciprocalBasis`, and calling
+`basis()` on that subtype will always return a `ReciprocalBasis.`
 """
 abstract type AbstractReciprocalSpaceData{D} <: AbstractCrystalData{D}
 end
