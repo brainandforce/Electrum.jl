@@ -2,6 +2,11 @@
     RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
 
 A data grid defined in real space, containing data of type T.
+
+By convention, indexing of `RealSpaceDataGrid` is zero-based. This convention is used so that
+datasets where the first entry corresponds to data at the origin can be indexed with zeros.
+However, `getindex()` is implemented such that the dataset may be indexed by any integer, with
+modulo math used to convert to an index within the grid.
 """
 struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     # Basis vectors defining the lattice
@@ -63,10 +68,17 @@ end
 Base.iterate(g::RealSpaceDataGrid) = iterate(grid(g))
 Base.iterate(g::RealSpaceDataGrid, state) = iterate(grid(g), state)
 # Definitions for linear and Cartesian indices
-Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(grid(g))
+Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(grid(g)) .- 1
 Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(Tuple(0:n-1 for n in size(g)))
-# Needed to get eachindex()
+
+# Fast linear indexing
+Base.IndexStyle(::RealSpaceDataGrid) = IndexLinear()
+Base.IndexStyle(::Type{<:RealSpaceDataGrid}) = IndexLinear()
+
 Base.keys(g::RealSpaceDataGrid) = CartesianIndices(g)
+
+Base.eachindex(s::IndexStyle, g::RealSpaceDataGrid) = eachindex(s, g.grid)
+Base.eachindex(g) = (@inline(); eachindex(IndexStyle(g), g))
 
 """
     grid(g::RealSpaceDataGrid{D,T}) -> Array{T,D}
