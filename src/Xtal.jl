@@ -129,6 +129,7 @@ export fermi, smear, energies, nelectrons
 include("data/atomic.jl")
 export AtomicData, SphericalHarmonic
 include("data/fft.jl")
+export fftfreq, fft, ifft
 # Methods and structs for working with different file formats
 include("filetypes.jl")
 export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
