@@ -269,6 +269,12 @@ performing an inverse Fourier transform on the `HKLData`.
 """
 voxelsize(g::HKLData) = volume(RealBasis(basis(g))) / length(g)
 
+function Base.isapprox(g1::HKLData, g2::HKLData; kwargs...)
+    @assert basis(g1) === basis(g2) "Grid basis vectors for each grid are not identical."
+    @assert size(grid(g1)) === size(grid(g2)) "Grid sizes are different."
+    return isapprox(grid(g1), grid(g2), kwargs...)
+end
+
 """
     HKLDict{D,T}
 
