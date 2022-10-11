@@ -1,5 +1,8 @@
 # Xtal.jl
 
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://brainandforce.github.io/Xtal.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://brainandforce.github.io/Xtal.jl/dev)
+
 A Julia package for working with crystal structures, associated data, and various file formats,
 with the aim of making theory development for solid state chemistry and materials science easier
 for everyone.
