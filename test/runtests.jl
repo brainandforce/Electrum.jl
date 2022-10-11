@@ -5,15 +5,28 @@ xsf = readXSF3D("files/test.xsf")
 
 @testset "Basis vectors" begin
     # Get basis vectors from the XSF file
-    b = basis(xsf)
+    b = basis(xsf["this_is_3Dgrid#1"])
+    # Inversion should give us 2π along the diagonal
+    @test ReciprocalBasis(b) == ReciprocalBasis{3}(diagm([2π,2π,2π]))
     # Check that conversion between real and reciprocal bases is invertible
-    # The difference between their elements should be very small (though not exactly zero)
-    @test all(RealBasis(ReciprocalBasis(b)).vs[m][n] ≈ b.vs[m][n] for m in 1:3, n in 1:3)
+    @test b ≈ RealBasis(ReciprocalBasis(b))
+end
+
+@testset "RealSpaceDataGrid" begin
+    g = xsf["this_is_3Dgrid#1"]
+    # Check the indexing
+    @test g[0] === 0.0
+    @test g[1] === 1.000
+    @test g[0,0,0] === 0.0
+    @test g[1,1,1] === 1.732
+    @test g[1,2,3] === 3.742
 end
 
 @testset "Fourier transforms" begin
     g = xsf["this_is_3Dgrid#1"]
-    @test 
+    hkl = fft(g)
+    # Check that the Fourier transform and its inverse undo each other
+    @test g ≈ ifft(fft(g))
 end
 
 @testset "File formats" begin
