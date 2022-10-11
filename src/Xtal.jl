@@ -104,8 +104,7 @@ export AbstractBasis, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceDat
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export RealBasis, ReciprocalBasis
-export triangularize, lengths, volume, angles_cos, angles_rad, angles_deg, lattice2D, lattice3D, 
-       maxHKLindex
+export triangularize, lengths, volume, angles_cos, angles_rad, angles_deg, isdiag, qr, maxHKLindex
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export AtomPosition, AtomList
