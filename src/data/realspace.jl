@@ -85,8 +85,8 @@ Base.IndexStyle(::Type{<:RealSpaceDataGrid}) = IndexLinear()
 
 Base.keys(g::RealSpaceDataGrid) = CartesianIndices(g)
 
-Base.eachindex(s::IndexStyle, g::RealSpaceDataGrid) = eachindex(s, g.grid)
-Base.eachindex(g::RealSpaceDataGrid) = (@inline(); eachindex(IndexStyle(g), g))
+Base.eachindex(s::IndexStyle, g::RealSpaceDataGrid) = eachindex(s, grid(g))
+Base.eachindex(g::RealSpaceDataGrid) = eachindex(IndexStyle(g), g)
 
 """
     grid(g::RealSpaceDataGrid{D,T}) -> Array{T,D}

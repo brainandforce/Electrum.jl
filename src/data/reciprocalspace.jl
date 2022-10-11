@@ -260,7 +260,7 @@ Base.IndexStyle(::Type{<:HKLData}) = IndexLinear()
 Base.keys(g::HKLData) = CartesianIndices(g)
 
 Base.eachindex(s::IndexStyle, g::HKLData) = eachindex(s, grid(g))
-Base.eachindex(g::HKLData) = (@inline(); eachindex(IndexStyle(g), g))
+Base.eachindex(g::HKLData) = eachindex(IndexStyle(g), g)
 
 Base.abs(hkl::HKLData) = HKLData(basis(hkl), abs.(grid(hkl)))
 Base.abs2(hkl::HKLData) = HKLData(basis(hkl), abs2.(grid(hkl)))
