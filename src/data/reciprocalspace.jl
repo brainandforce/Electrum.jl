@@ -232,7 +232,7 @@ about the index offset to be lost!
 grid(hkl::HKLData) = hkl.data
 
 # HKLData now supports indexing by Miller index
-Base.getindex(g::HKLData, inds...) = getindex(g.grid, (mod.(inds, size(g)) .+ 1)...)
+Base.getindex(g::HKLData, inds...) = getindex(grid(g), (mod.(inds, size(g)) .+ 1)...)
 
 function Base.setindex!(g::HKLData, x, inds...)
     i = mod.(inds, size(g)) .+ 1
@@ -240,8 +240,8 @@ function Base.setindex!(g::HKLData, x, inds...)
 end
 
 # Linear index support
-Base.getindex(g::HKLData, ind) = getindex(g.grid, mod(ind, size(g)) + 1)
-Base.setindex!(g::HKLData, ind) = setindex!(g.grid, x, mod(ind, size(g)) + 1)
+Base.getindex(g::HKLData, ind) = getindex(grid(g), mod(ind, size(g)) + 1)
+Base.setindex!(g::HKLData, ind) = setindex!(grid(g), x, mod(ind, size(g)) + 1)
 
 Base.size(g::HKLData) = size(grid(g))
 Base.length(g::HKLData) = length(grid(g))
