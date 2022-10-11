@@ -239,6 +239,10 @@ function Base.setindex!(g::HKLData, x, inds...)
     setindex!(grid(g), x, i...)
 end
 
+# Linear index support
+Base.getindex(g::HKLData, ind) = getindex(g.grid, mod(ind, size(g)) + 1)
+Base.setindex!(g::HKLData, ind) = setindex!(g.grid, x, mod(ind, size(g)) + 1)
+
 Base.size(g::HKLData) = size(grid(g))
 Base.length(g::HKLData) = length(grid(g))
 Base.iterate(g::HKLData, i::Integer = 1) = iterate(grid(g), i)

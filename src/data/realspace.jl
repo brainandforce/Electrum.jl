@@ -69,6 +69,10 @@ function Base.setindex!(g::RealSpaceDataGrid, x, inds...)
     setindex!(grid(g), x, i...)
 end
 
+# Linear index support
+Base.getindex(g::RealSpaceDataGrid, ind) = getindex(grid(g), mod(ind, prod(size(g))) + 1)
+Base.setindex!(g::RealSpaceDataGrid, x, ind) = setindex!(grid(g), x, mod(ind, prod(size(g))) + 1)
+
 # Iterator definitions: pass through matrix iteration
 Base.iterate(g::RealSpaceDataGrid, i::Integer = 1) = iterate(grid(g), i)
 # Definitions for linear and Cartesian indices
