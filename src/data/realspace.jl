@@ -60,8 +60,13 @@ end
 # By convention, it's zero based, so data at fractional coordinate [0,0,0] is indexable at [0,0,0]
 function Base.getindex(g::RealSpaceDataGrid, inds...)
     # Perform modulo math to get the indices (to support wraparound)
-    imod = mod.(inds, size(g)) .+ 1
-    return getindex(grid(g), imod...)
+    i = mod.(inds, size(g)) .+ 1
+    return getindex(grid(g), i...)
+end
+
+function Base.setindex!(g::RealSpaceDataGrid, x, inds...)
+    i = mod.(inds, size(g)) .+ 1
+    setindex!(grid(g), x, i...)
 end
 
 # Iterator definitions: pass through matrix iteration
