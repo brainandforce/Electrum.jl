@@ -231,17 +231,32 @@ about the index offset to be lost!
 """
 grid(hkl::HKLData) = hkl.data
 
-Base.size(g::HKLData) = size(g.data)
-Base.length(g::HKLData) = length(g.data)
-Base.iterate(g::HKLData, i::Integer = 1) = iterate(g.grid, i)
-
 # HKLData now supports indexing by Miller index
 Base.getindex(g::HKLData, inds...) = getindex(g.grid, (mod.(inds, size(g)) .+ 1)...)
 
 function Base.setindex!(g::HKLData, x, inds...)
     i = mod.(inds, size(g)) .+ 1
-    g.data[i...] = x
+    setindex!(grid(g), x, i...)
 end
+
+Base.size(g::HKLData) = size(grid(g))
+Base.length(g::HKLData) = length(grid(g))
+Base.iterate(g::HKLData, i::Integer = 1) = iterate(grid(g), i)
+
+Base.LinearIndices(g::HKLData) = LinearIndices(grid(g)) .- 1
+function Base.CartesianIndices(g::HKLData)
+    # Shift the range down to get the FFT indices
+    return CartesianIndices(Tuple((1:n) .- (div(n, 2) + 1) for n in size(g)))
+end
+
+# Fast linear indexing
+Base.IndexStyle(::HKLData) = IndexLinear()
+Base.IndexStyle(::Type{<:HKLData}) = IndexLinear()
+
+Base.keys(g::HKLData) = CartesianIndices(g)
+
+Base.eachindex(s::IndexStyle, g::HKLData) = eachindex(s, g.grid)
+Base.eachindex(g::HKLData) = (@inline(); eachindex(IndexStyle(g), g))
 
 Base.abs(hkl::HKLData) = HKLData(basis(hkl), abs.(grid(hkl)))
 Base.abs2(hkl::HKLData) = HKLData(basis(hkl), abs2.(grid(hkl)))
