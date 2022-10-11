@@ -92,6 +92,9 @@ function Base.convert(::Type{<:ReciprocalBasis}, b::RealBasis)
     return ReciprocalBasis(transpose(2π * inv(matrix(b))))
 end
 
+RealBasis(b::AbstractBasis) = convert(RealBasis, b)
+ReciprocalBasis(b::AbstractBasis) = convert(ReciprocalBasis, b)
+
 # Tools to generate 2D and 3D lattices with given angles
 #-------------------------------------------------------------------------------------------------#
 
