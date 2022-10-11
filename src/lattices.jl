@@ -162,8 +162,12 @@ Base.zeros(::Type{T}) where T<:AbstractBasis = zero(T)
 # Mathematical function definitions for basis vectors
 #-------------------------------------------------------------------------------------------------#
 
+# Approximate equality
+function Base.isapprox(b1::AbstractBasis, b2::AbstractBasis; kwargs...) 
+    return isapprox(matrix(b1), matrix(b2); kwargs...)
+end
+
 # Definitions for multiplication/division by a scalar
-# TODO: there's probably a more efficient way to do this
 Base.:*(s::Number, b::T) where T<:AbstractBasis = T(matrix(b) * s)
 Base.:*(b::T, s::Number) where T<:AbstractBasis = s * b
 Base.:/(b::T, s::Number) where T<:AbstractBasis = T(matrix(b) / s)
