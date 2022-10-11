@@ -155,6 +155,11 @@ function grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
     return nothing
 end
 
+function Base.isapprox(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid; kwargs...)
+    grid_check(g1, g2)
+    return isapprox(grid(g1), grid(g2), kwargs...)
+end
+
 function Base.:+(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
     # Check that the grids are identical
     grid_check(g1, g2)
