@@ -395,6 +395,30 @@ function ReciprocalWavefunction(
     return ReciprocalWavefunction(rlatt, kpts, waves, z, z)
 end
 
+"""
+    bounds(wf::ReciprocalWavefunction)
+
+Gets the range of valid G-vectors in a `ReciprocalWavefunction`.
+"""
+function bounds(wf::ReciprocalWavefunction{D,T}) where {D,T}
+    inds = CartesianIndices((0:0, 0:0, 0:0))
+    # Loop through each HKLData
+    for hkl in wf.waves
+        i = CartesianIndices(hkl)
+        # Skip this if the new indices are equal
+        if i != inds
+            # Create a tuple with every longer range
+            inds = CartesianIndices(
+                NTuple{D,UnitRange{Int}}(
+                    length(a) >= length(b) ? a : b
+                    for (a,b) in zip(i.indices, inds.indices)
+                )
+            )
+        end
+    end
+    return inds
+end
+
 function Base.getindex(wf::ReciprocalWavefunction, inds...)
     return (
         coeffs = wf.waves[inds...],
