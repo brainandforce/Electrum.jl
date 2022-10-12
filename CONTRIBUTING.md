@@ -55,7 +55,8 @@ pure Julia.
 
 The following conventions are maintained throughout Xtal.jl.
 
-When in doubt, follow the Julia style guide, located here: https://docs.julialang.org/en/v1/manual/style-guide/
+When in doubt, follow the Julia style guide, located here:
+https://docs.julialang.org/en/v1/manual/style-guide/
 
 ### Exceptions to the Julia style guide
 
@@ -80,6 +81,12 @@ make sure to test this before pushing.
 
 Stick to PascalCase for the names of types and modules, and snake_case for the names of variables
 and functions.
+
+Functions for reading VASP inputs and outputs are usually given names like `readWAVECAR()`,
+`writePOSCAR4()`,etc. with no spaces, and a version number afterwards for function writing. For 
+files which have the same format but a different name, for instance, `CONTCAR` files, you are 
+encouraged to add corresponding methods that contain the name of that particular file (for
+instance, `readCONTCAR()`).
 
 ### Comments and documentation
 
