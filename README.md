@@ -33,8 +33,8 @@ julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl", rev="release")
 ```
 The current development state is kept in the `main` branch, and the most recent stable version is
 the head of the `release` branch. Specific releases for a minor version may be found by suffixing
-the minor version with `/release` - for instance, `0.1/release` contains the latest release version
-in the 0.1 series.
+the minor version with `/release`: for instance, `0.1/release` contains the latest release version
+in the 0.1 series (currently 0.1.26).
 
 ## Current features
 
@@ -52,7 +52,7 @@ in the 0.1 series.
      + LAMMPS atomic position data
 * Operations on datagrids:
      + Addition, subtraction, multiplication
-     + FFTs on real space data grids
+     + FFTs and inverse FFTs on real and reciprocal space data
 
 ## Planned features
 
@@ -64,7 +64,6 @@ This project is just starting to get off the ground, but here's what we have pla
      + abinit input and output files
  * Manipulation of data grids associated with crystal structures
      + Real space grid reinterpolation
-     + Gradient calculations
      
 ...and more that we will decide in time! If you'd like to contibute, be sure to read the included
 [contributing guidelines.](CONTRIBUTING.md)
