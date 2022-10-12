@@ -11,8 +11,7 @@ current release version is kept at `release`, and older release versions can be 
 prefixing with the minor version number, like so: `0.1/release`.
 
 As mentioned in the [README](README.md), you can track any of these branches with the Julia package
-manager if you'd like to test new features that have been added, or just feel like living life on
-the edge.
+manager. In the future, you should be able to get Xtal.jl directly from the General registry.
 
 ### How to branch for contributions
 
