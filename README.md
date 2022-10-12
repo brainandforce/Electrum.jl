@@ -58,12 +58,14 @@ in the 0.1 series (currently 0.1.26).
 
 This project is just starting to get off the ground, but here's what we have planned:
 
- * Reading and writing of common file formats:
-     + XTL files
-     + CIF files
-     + abinit input and output files
- * Manipulation of data grids associated with crystal structures
-     + Real space grid reinterpolation
+  * Reading and writing of common file formats:
+      + XTL files
+      + CIF files
+      + abinit input and output files
+  * Manipulation of data grids associated with crystal structures
+      + Real space grid reinterpolation
+  * Other operations
+      + Converting k-point meshes to symmetry-reduced lists of weighted k-points
      
 ...and more that we will decide in time! If you'd like to contibute, be sure to read the included
 [contributing guidelines.](CONTRIBUTING.md)
