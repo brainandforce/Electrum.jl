@@ -1,11 +1,15 @@
 """
     readPOSCAR(io::IO) -> Crystal{3}
+    readCONTCAR(io::IO) -> Crystal{3}
 
-Reads a VASP POSCAR file.
+Reads a VASP POSCAR or CONTCAR file.
 
 A POSCAR contains the basis vectors of the system (potentially given with a scaling factor), the 
 positions of all atoms as either Cartesian or reduced coordinates, and potentially information 
 needed to perform an ab initio MD run.
+
+A CONTCAR file is written at the end of a VASP run and contains the atomic coordinates after the
+calculation completed. This is relevant for geometry optimizations.
 """
 function readPOSCAR(io::IO)
     # Skip the comment line
@@ -57,15 +61,26 @@ function readPOSCAR(io::IO)
     return Crystal(AtomList(latt, positions))
 end
 
+readCONTCAR(io::IO) = readPOSCAR(io)
+
 function readPOSCAR(filename::AbstractString)
     # Append POSCAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "POSCAR"
     end
-    open(readPOSCAR, filename; kwargs...)
+    open(readPOSCAR, filename)
+end
+
+function readCONTCAR(filename::AbstractString)
+    # Append POSCAR if only a directory name is given
+    if last(filename) == '/'
+        filename = filename * "CONTCAR"
+    end
+    open(readPOSCAR, filename)
 end
 
 readPOSCAR() = open(readPOSCAR, "POSCAR")
+readCONTCAR() = open(readPOSCAR, "CONTCAR")
 
 """
     writePOSCAR4(
