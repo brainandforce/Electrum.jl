@@ -132,7 +132,7 @@ export fftfreq, fft, ifft
 # Methods and structs for working with different file formats
 include("filetypes.jl")
 export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
-export read_abinit_density, read_abinit_potential, read_abinit_wavefunction, readHGH
+export read_abinit_density, read_abinit_potential, read_abinit_wavefunction
 export readPOSCAR, writePOSCAR4, readWAVECAR, readDOSCAR, readPROCAR, get_fermi, readKPOINTS
 export write_lammps_data
 # Show methods for pretty printing this module's structs
