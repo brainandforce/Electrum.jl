@@ -132,6 +132,10 @@ end
 writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.gen; kwargs...)
 
 function writePOSCAR4(filename::AbstractString, data; kwargs...) 
+    # Append POSCAR if only a directory name is given
+    if last(filename) == '/'
+        filename = filename * "POSCAR"
+    end
     open(filename, write=true) do io
         writePOSCAR4(io, data; kwargs...)
     end
