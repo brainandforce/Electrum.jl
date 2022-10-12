@@ -4,10 +4,11 @@ Thanks for taking interest in our package!
 
 ## Branch strategy
 
-The `main` branch contains a version of the code that builds and can be used immediately. For now,
-we have a `dev` branch that acts as a buffer while we test code manually. This will likely change
-in the near future. We also have a `next` branch which contains code that has API-breaking changes
-which could affect code you've already written. 
+The `main` branch contains the latest development version of the code, which is guaranteed to build
+and run (though it is possible it may not pass all tests). We also have a `next` branch which
+contains code that has API-breaking changes which could affect code you've already written. The
+current release version is kept at `release`, and older release versions can be accessed by
+prefixing with the minor version number, like so: `0.1/release`.
 
 As mentioned in the [README](README.md), you can track any of these branches with the Julia package
 manager if you'd like to test new features that have been added, or just feel like living life on
@@ -18,7 +19,12 @@ the edge.
 If you'd like to implement a feature, create a new local branch, implement the feature, then push
 branch and open a pull request on Github. To do this, you may need to fork the repo to your own
 GitHub, and then push your changes there. The pull request tools on our instance of the repo should
-let your create a pull request from your fork to our `main`, `dev`, or `next` branches.
+let your create a pull request from your fork to our `main` or `next` branches.
+
+We encourage you to prefix a branch with `feature/` if you are adding a feature to the package,
+`fix/` for a fix, and `docs/` for changes to documentation. Note that features will only be merged
+into `main`: old versions will not get new features, but they will get documentation updates and
+fixes.
 
 All merging should be done through a rebase operation. This is simpler than using a standard merge,
 as it maintains a linear commit history. However, you will have to ensure that you have fetched or
@@ -27,13 +33,17 @@ pulled from the origin repo and rebased on the parent branch to avoid serious me
 If you use VS Code, we recommend the "Git Graph" extension so you can visualize what you're doing
 when you create a new branch, make commits, or push to a remote repo.
 
-In general, new features and fixes are merged into `dev` or `next`, not `main`. However, 
-documentation updates can go directly into `main`.
+## Continuous integration
 
-## Testing and continuous integrations
+Currently, we have automatically building documentation courtesy of Documenter.jl and its
+integration with GitHub Actions. GitHub Actions are also used to automatically test the package
+for every pull request and every merge into `main`. These tests should run automatically when you
+create a pull request, and you should see the status of the tests after a few minutes. Pull
+requests that do not pass tests generally will not be merged.
 
-As of now, there is not any testing implemented yet, nor are there continuous integrations. We hope
-to use `Documenter` to generate documentation from docstrings in the near future.
+We use Aqua.jl to perform automatic package testing that covers some basic needs: method
+ambiguities, stale dependencies, etc. Note that Aqua.jl is a bit picky about how `Project.toml` is
+formatted.
 
 ## Dependencies
 
