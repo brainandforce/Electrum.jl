@@ -15,31 +15,26 @@ well-maintained scientific software.
 ## How to install
 
 Xtal.jl is not in the Julia package registry yet, so you'll need to install it like this:
-
 ```
 (@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl 
 ```
-
 You can access package mode by typing `]` at the REPL. Alternatively, you can work with the `Pkg`
 module:
-
 ```julia-repl
 julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl")
 ```
-
-If you'd like to track a specific branch, you can specify this as well (here, `dev` is used as an
-example):
-
+If you'd like to track a specific branch, you can specify this as well (here, `release` is used as
+an example):
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl#dev
+(@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl#release
 ```
 ```julia-repl
-julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl", rev="dev")
+julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl", rev="release")
 ```
-
-Our current branching strategy involves the `main` branch (tracked by default), the `dev` branch 
-(contains features and fixes that will make it to the next patch to the current minor version), and
-the `next` branch (contains potentially breaking changes to the next minor version).
+The current development state is kept in the `main` branch, and the most recent stable version is
+the head of the `release` branch. Specific releases for a minor version may be found by suffixing
+the minor version with `/release` - for instance, `0.1/release` contains the latest release version
+in the 0.1 series.
 
 ## Current features
 
