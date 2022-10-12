@@ -160,7 +160,7 @@ end
 
 # Index notation for this thing, just in case that's easier
 Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
-Base.setindex!(x, h::ABINITHeader, name::Symbol) = setfield!(x, h, name)
+Base.setindex!(h::ABINITHeader, x, name::Symbol) = setfield!(x, h, name)
 
 """
     Xtal.symrel_to_sg(symrel::AbstractVector{<:AbstractMatrix{<:Integer}}) -> Int
