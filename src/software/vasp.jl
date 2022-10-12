@@ -1,5 +1,5 @@
 """
-    readPOSCAR(io::IO; ctr=:P) -> Crystal{3}
+    readPOSCAR(io::IO) -> Crystal{3}
 
 Reads a VASP POSCAR file.
 
@@ -57,9 +57,15 @@ function readPOSCAR(io::IO)
     return Crystal(AtomList(latt, positions))
 end
 
-readPOSCAR(filename::AbstractString; kwargs...) = open(readPOSCAR, filename; kwargs...)
+function readPOSCAR(filename::AbstractString)
+    # Append POSCAR if only a directory name is given
+    if last(filename) == '/'
+        filename = filename * "POSCAR"
+    end
+    open(readPOSCAR, filename; kwargs...)
+end
 
-readPOSCAR(; kwargs...) = open(readPOSCAR, "POSCAR"; kwargs...)
+readPOSCAR() = open(readPOSCAR, "POSCAR")
 
 """
     writePOSCAR4(
@@ -228,7 +234,13 @@ function readWAVECAR(io::IO)
     return ReciprocalWavefunction(rlatt, KPointList(klist), waves, energies, occupancies)
 end
 
-readWAVECAR(filename::AbstractString) = open(readWAVECAR, filename)
+function readWAVECAR(filename::AbstractString)
+    # Append WAVECAR if only a directory name is given
+    if last(filename) == '/'
+        filename = filename * "WAVECAR"
+    end
+    open(readWAVECAR, filename)
+end
 # Read a WAVECAR in the current directory
 readWAVECAR() = readWAVECAR("WAVECAR")
 
@@ -286,7 +298,13 @@ function readDOSCAR(io::IO)
     return (tdos, pdos)
 end
 
-readDOSCAR(filename::AbstractString) = open(readDOSCAR, filename)
+function readDOSCAR(filename::AbstractString; kwargs...)
+    # Append DOSCAR if only a directory name is given
+    if last(filename) == '/'
+        filename = filename * "DOSCAR"
+    end
+    open(readDOSCAR, filename; kwargs...)
+end
 
 readDOSCAR() = open(readDOSCAR, "DOSCAR")
 
@@ -354,7 +372,13 @@ function readPROCAR(io::IO)
     )
 end
 
-readPROCAR(filename::AbstractString) = open(readPROCAR, filename)
+function readPROCAR(filename::AbstractString)
+    # Append PROCAR if only a directory name is given
+    if last(filename) == '/'
+        filename = filename * "PROCAR"
+    end
+    open(readPROCAR, filename)
+end
 
 readPROCAR() = open(readPROCAR, "PROCAR")
 
@@ -391,6 +415,12 @@ function readKPOINTS(io::IO)
     return kptgrid
 end    
 
-readKPOINTS(filename::AbstractString) = open(readKPOINTS, filename)
+function readKPOINTS(filename::AbstractString)
+    # Append KPOINTS if only a directory name is given
+    if last(filename) == '/'
+        filename = filename * "KPOINTS"
+    end
+    open(readKPOINTS, filename)
+end
 
 readKPOINTS() = open(readKPOINTS, "KPOINTS")
