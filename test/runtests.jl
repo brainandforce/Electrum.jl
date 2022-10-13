@@ -1,9 +1,10 @@
 using LinearAlgebra, StaticArrays
 using Test, Aqua, Xtal
 
-Aqua.test_all(Xtal)
 
 xsf = readXSF3D("files/test.xsf")
+v80_den = read_abinit_density("files/Sc_eq_o_DEN")
+v80_wfk = read_abinit_wavefunction("files/Sc_eq_o_WFK")
 
 @testset "Basis vectors" begin
     # Get basis vectors from the XSF file
@@ -31,9 +32,18 @@ end
     @test g ≈ ifft(fft(g))
 end
 
-@testset "File formats" begin
+@testset "XSF files" begin
     # Check that the key name is correct
     @test haskey(xsf.data, "this_is_3Dgrid#1")
     # Check that the size of the RealSpaceDataGrid is correct
     @test size(xsf["this_is_3Dgrid#1"]) == (4, 4, 4)
+end
+
+@testset "abinit outputs" begin
+    den = v80_den["density_total"]
+    wfk = v80_wfk["wavefunction"]
+    # Check that the correct FFT grid size is read
+    @test size(den) == (24, 24, 36)
+    # Check that there's 1 spin, 4 k-points, and 8 bands
+    @test size(wfk) == (1, 4, 8)
 end
