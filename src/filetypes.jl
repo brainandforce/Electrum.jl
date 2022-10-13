@@ -395,8 +395,3 @@ function readCPcell(io::IO)
 end
 
 readCPcell(filename::AbstractString) = open(readCPcell, filename)
-
-# Include code for processing specific types of files
-include("software/abinit.jl")
-include("software/vasp.jl")
-include("software/lammps.jl")
