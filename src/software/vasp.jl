@@ -365,8 +365,10 @@ Reads an OUTCAR file and returns the Fermi Energy.
 """
 function get_fermi(io::IO)
     readuntil(io, "E-fermi :")
-    fermi = parse.(Float64, split(readline(io))[1])
-    return fermi
+    ln = split(readline(io))
+    fermi = parse.(Float64, ln[1])
+    alphabeta = parse.(Float64, strip(ln[5],':'))
+    return fermi, alphabeta
 end
 
 get_fermi(filename::AbstractString) = open(get_fermi, filename)
