@@ -817,3 +817,7 @@ with explicit treatment of spin will return spin-dependent potentials.
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
 read_abinit_wavefunction(filename::AbstractString) = open(read_abinit_wavefunction, filename)
+
+const read_abinit_DEN = read_abinit_density
+const read_abinit_POT = read_abinit_potential
+const read_abinit_WFK = read_abinit_wavefunction
