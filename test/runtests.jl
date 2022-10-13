@@ -1,6 +1,7 @@
 using LinearAlgebra, StaticArrays
 using Test, Aqua, Xtal
 
+Aqua.test_all(Xtal; project_toml_formatting=false)
 
 xsf = readXSF3D("files/test.xsf")
 v80_den = read_abinit_density("files/Sc_eq_o_DEN")
