@@ -419,6 +419,9 @@ function bounds(wf::ReciprocalWavefunction{D,T}) where {D,T}
     return inds
 end
 
+Base.size(wf::ReciprocalWavefunction) = size(wf.waves)
+Base.length(wf::ReciprocalWavefunction) = length(wf.waves)
+
 function Base.getindex(wf::ReciprocalWavefunction, inds...)
     return (
         coeffs = wf.waves[inds...],
