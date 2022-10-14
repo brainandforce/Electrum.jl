@@ -402,7 +402,7 @@ end
 readPROCAR() = open(readPROCAR, "PROCAR")
 
 """
-    get_fermi(io::IO) -> NTuple{2,Float64}
+    get_fermi(io::IO) -> NamedTuple{(:fermi, :alphabeta), NTuple{2,Float64}}
 
 Reads an OUTCAR file and returns the Fermi Energy and alpha+beta value.
 """
