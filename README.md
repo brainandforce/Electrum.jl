@@ -2,7 +2,8 @@
 
 [![Documentation (stable)][docs-stable-img]][docs-stable-url]
 [![Documentation (dev)][docs-dev-img]][docs-dev-url]
-[![Aqua QA][aqua-img]][aqua-url]
+[![Codecov][codecov-img]][codecov-url]
+[![Aqua.jl][aqua-img]][aqua-url]
 
 A Julia package for working with crystal structures, associated data, and various file formats,
 with the aim of making theory development for solid state chemistry and materials science easier
@@ -77,3 +78,5 @@ This project is just starting to get off the ground, but here's what we have pla
 [docs-dev-url]:     https://brainandforce.github.io/Xtal.jl/dev
 [aqua-img]:         https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg
 [aqua-url]:         https://github.com/JuliaTesting/Aqua.jl
+[codecov-img]:      https://codecov.io/gh/brainandforce/Xtal.jl/branch/main/graph/badge.svg
+[codecov-url]:      https://codecov.io/gh/brainandforce/Xtal.jl/
