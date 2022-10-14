@@ -402,7 +402,7 @@ end
 readPROCAR() = open(readPROCAR, "PROCAR")
 
 """
-    get_fermi(io::IO) -> Float64, Float64
+    get_fermi(io::IO) -> NTuple{2,Float64}
 
 Reads an OUTCAR file and returns the Fermi Energy and alpha+beta value.
 """
@@ -411,7 +411,7 @@ function get_fermi(io::IO)
     ln = split(readline(io))
     fermi = parse.(Float64, ln[1])
     alphabeta = parse.(Float64, strip(ln[5],':'))
-    return fermi, alphabeta
+    return (fermi = fermi, alphabeta = alphabeta)
 end
 
 get_fermi(filename::AbstractString) = open(get_fermi, filename)
