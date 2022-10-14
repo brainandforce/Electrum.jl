@@ -6,6 +6,7 @@ Aqua.test_all(Xtal; project_toml_formatting=false)
 xsf = readXSF3D("files/test.xsf")
 v80_den = read_abinit_density("files/Sc_eq_o_DEN")
 v80_wfk = read_abinit_wavefunction("files/Sc_eq_o_WFK")
+poscar = readPOSCAR("files/")
 
 @testset "Basis vectors" begin
     # Get basis vectors from the XSF file
@@ -47,4 +48,11 @@ end
     @test size(den) == (24, 24, 36)
     # Check that there's 1 spin, 4 k-points, and 8 bands
     @test size(wfk) == (1, 4, 8)
+end
+
+@testset "VASP outputs" begin
+    @test natom(poscar) == 4
+    @test atomnames(poscar) == ["Ir", "Si"]
+    @test atomtypes(poscar) == [77, 14]
+    @test natomtypes(poscar) == 2
 end
