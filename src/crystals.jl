@@ -134,8 +134,7 @@ This function is currently not aware of space groups or settings, so if the gene
 contain all the atoms in the cell, it will return the wrong value.
 """
 natom(xtal::AbstractCrystal) = natom(AtomList(xtal))
-
-
+atomnames(xtal::AbstractCrystal) = atomnames(AtomList(xtal))
 atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(AtomList(xtal); kwargs...)
 natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(AtomList(xtal); kwargs...)
 
