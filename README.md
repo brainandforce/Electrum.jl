@@ -2,6 +2,7 @@
 
 [![Documentation (stable)][docs-stable-img]][docs-stable-url]
 [![Documentation (dev)][docs-dev-img]][docs-dev-url]
+[![CI status][ci-status-img]][ci-status-url]
 [![Codecov][codecov-img]][codecov-url]
 [![Aqua.jl][aqua-img]][aqua-url]
 
@@ -76,6 +77,8 @@ This project is just starting to get off the ground, but here's what we have pla
 [docs-stable-url]:  https://brainandforce.github.io/Xtal.jl/stable
 [docs-dev-img]:     https://img.shields.io/badge/docs-dev-blue.svg
 [docs-dev-url]:     https://brainandforce.github.io/Xtal.jl/dev
+[ci-status-img]:    https://github.com/brainandforce/Xtal.jl/workflows/CI/badge.svg
+[ci-status-url]:    https://github.com/brainandforce/Xtal.jl/actions
 [aqua-img]:         https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg
 [aqua-url]:         https://github.com/JuliaTesting/Aqua.jl
 [codecov-img]:      https://codecov.io/gh/brainandforce/Xtal.jl/branch/main/graph/badge.svg
