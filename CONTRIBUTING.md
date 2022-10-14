@@ -120,7 +120,27 @@ type definitions.
 This is the opposite of the format used for Julia's built-in `AbstractArray` but matches the 
 convention used for `NTuple`.
 
-### Use of static vs. dynamic arrays and tuples
+### `Tuple` and `NamedTuple`
+
+When constructing a `Tuple` or a `NamedTuple`, parenthesize the construction for clarity. While
+Julia can interpret statements like this correctly:
+```julia
+return a, b, c
+```
+it's a bit clearer to write it as
+```julia
+return (a, b, c)
+```
+Consider using a `NamedTuple` to work with related but disparate data. These can be thought of as
+anonymous structs or immutable dictionaries that allow for indexing with a `Symbol`:
+```julia-repl
+julia> nt = (a=1, b=2)
+(a = 1, b = 2)
+
+julia> nt[:b]
+2
+```
+### Use of static vs. dynamic arrays
 
 The `StaticArrays.jl` package provides support for static (fixed dimension) vectors, matrices, and 
 arrays. While dynamic arrays are convenient and don't require prior knowledge of array dimensions,
@@ -158,6 +178,7 @@ package by entering the following:
 
 ```julia-repl
 julia> ENV["JULIA_DEBUG"] = Xtal
+Xtal
 ```
 
 Try to minimize the use of repeated `@info`, `@warn`, or `@error` statements in loops. Printing to
