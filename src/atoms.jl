@@ -83,26 +83,28 @@ struct AtomList{D} <: AbstractRealSpaceData{D}
     coord::Vector{AtomPosition{D}}
     function AtomList(
         basis::AbstractBasis{D},
-        coord::AbstractVector{<:AtomPosition{D}}
+        atoms::AbstractVector{<:AtomPosition{D}}
     ) where D
         # Warn on atomic pairs that are *really* close
         # Transforming the data to Cartesian coordinates isn't necessary
-        for m in eachindex(coord)
-            for n in m+1:length(coord)
-                dist = norm(coord[m].pos - coord[n].pos)
-                if isapprox(dist, 0)
+        for m in eachindex(atoms)
+            for n in m+1:length(atoms)
+                (a,b) = atoms[[m,n]]
+                dist = norm(coord(a) - coord(b))
+                sametype = atomname(a) == atomname(b) && atomicno(a) == atomicno(b)
+                if sametype && isapprox(dist, 0, atol=sqrt(eps(Float64)))
                     @warn string(
                         "Atoms $m and $n are very close, but not identical!\n",
-                        "Is it possible is structure has mixed sites?\n",
-                        "Atom $m: ", repr("text/plain", coord[m]),
-                        "Atom $n: ", repr("text/plain", coord[n]),
+                        "Is it possible this structure has mixed sites?\n",
+                        "Atom $m: ", repr("text/plain", atoms[m]),
+                        "Atom $n: ", repr("text/plain", atoms[n]),
                         "Distance (in supplied basis): $dist"
                     )
                 end
             end
         end
         # Remove any duplicate atoms if they come up
-        return new{D}(basis, unique(coord))
+        return new{D}(basis, unique(atoms))
     end
 end
 
