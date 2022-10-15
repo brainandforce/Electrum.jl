@@ -267,15 +267,18 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
     tmax = SVector{D,Int}(abs.(diag(decomp.U))[decomp.p])
     # Generate all the sites in the supercell where new atoms have to be placed
     newpts = [(v.I .- 1) ./ tmax for v in CartesianIndices(Tuple(tmax))]
+    dedup = deduplicate(
+        [AtomPosition(atomname(a), atomicno(a), mod.(coord(a), 1)) for a in l.coord]
+    )
     # Shift everything over for each new point
     sclist = [
         AtomPosition(
             atomname(atom),
             atomicno(atom),
             # Keep the new atoms inside the supercell
-            (v = M \ coord(atom) + d;  SVector{D,Float64}(v - floor.(v)))
+            (v = M \ coord(atom) + d; mod.(v, 1))
         )
-        for atom in l.coord, d in newpts
+        for atom in dedup, d in newpts
     ]
     return AtomList(scb, vec(sclist))
 end
