@@ -107,6 +107,17 @@ Base.size(l::AtomList) = size(l.coord)
 Base.iterate(l::AtomList) = iterate(l.coord)
 Base.iterate(l::AtomList, n) = iterate(l.coord, n)
 
+Base.filter(f, l::AtomList) = AtomList(basis(l), filter(f, l.coord))
+# More filter definitons that might be useful
+"""
+    Base.filter(name::AbstractString, l::AtomList) -> AtomList
+    Base.filter(no::Integer, l::AtomList) -> AtomList
+
+Filters an `AtomList` by atomic name or number.
+"""
+Base.filter(name::AbstractString, l::AtomList) = filter(a -> atomname(a) == name, l)
+Base.filter(no::Integer, l::AtomList) = filter(a -> atomicno(a) == no, l)
+
 """
     sort_atomicno(l::AtomList; rev=false) -> AtomList
 
