@@ -94,8 +94,8 @@ struct AtomList{D} <: AbstractRealSpaceData{D}
                     @warn string(
                         "Atoms $m and $n are very close, but not identical!\n",
                         "Is it possible is structure has mixed sites?\n",
-                        "Atom $m:\t", repr("text/plain", coord[m]), "\n",
-                        "Atom $n:\t", repr("text/plain", coord[n]), "\n",
+                        "Atom $m: ", repr("text/plain", coord[m]),
+                        "Atom $n: ", repr("text/plain", coord[n]),
                         "Distance (in supplied basis): $dist"
                     )
                 end
@@ -233,6 +233,11 @@ function deduplicate(l::AbstractVector{<:AtomPosition})
                 # If they're too close, set the kept_inds entry to zero
                 if isapprox(norm(coord(a)), norm(coord(b)), atol=sqrt(eps(Float64)))
                     kept_inds[n] = 0
+                    @debug string(
+                        "Removing atom $n:\n",
+                        "Atom $m: ", repr("text/plain", a),
+                        "Atom $n: ", repr("text/plain", b)
+                    )
                 end
             end
         end
@@ -270,6 +275,7 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
     dedup = deduplicate(
         [AtomPosition(atomname(a), atomicno(a), mod.(coord(a), 1)) for a in l.coord]
     )
+    @debug string("dedup has ", length(dedup), " atoms.\n", repr("text/plain", dedup))
     # Shift everything over for each new point
     sclist = [
         AtomPosition(
