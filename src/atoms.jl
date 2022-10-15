@@ -97,6 +97,8 @@ end
 
 # Check if an AtomList{D} is empty
 Base.isempty(l::AtomList) = isempty(l.coord)
+Base.firstindex(l::AtomList) = firstindex(l.coord)
+Base.lastindex(l::AtomList) = lastindex(l.coord)
 Base.getindex(l::AtomList, ind) = l.coord[ind]
 Base.length(l::AtomList) = length(l.coord)
 Base.size(l::AtomList) = size(l.coord)
