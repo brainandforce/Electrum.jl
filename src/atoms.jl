@@ -92,14 +92,22 @@ struct AtomList{D} <: AbstractRealSpaceData{D}
                 (a,b) = atoms[[m,n]]
                 dist = norm(coord(a) - coord(b))
                 sametype = atomname(a) == atomname(b) && atomicno(a) == atomicno(b)
-                if sametype && isapprox(dist, 0, atol=sqrt(eps(Float64)))
-                    @warn string(
-                        "Atoms $m and $n are very close, but not identical!\n",
-                        "Is it possible this structure has mixed sites?\n",
-                        "Atom $m: ", repr("text/plain", atoms[m]),
-                        "Atom $n: ", repr("text/plain", atoms[n]),
-                        "Distance (in supplied basis): $dist"
-                    )
+                if isapprox(dist, 0, atol=sqrt(eps(Float64)))
+                    if sametype
+                        @warn string(
+                            "Atoms $m and $n are very close or identical!\n",
+                            "Atom $m: ", repr("text/plain", a),
+                            "Atom $n: ", repr("text/plain", b),
+                            "Distance (in supplied basis): $dist"
+                        )
+                    else
+                        @warn string(
+                            "Atoms $m and $n are very close! Is this a mixed occupancy site?\n",
+                            "Atom $m: ", repr("text/plain", a),
+                            "Atom $n: ", repr("text/plain", b),
+                            "Distance (in supplied basis): $dist"
+                        )
+                    end
                 end
             end
         end
