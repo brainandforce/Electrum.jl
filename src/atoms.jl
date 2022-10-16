@@ -346,3 +346,28 @@ function atomnames(l::AtomList; dummy::Bool=false)
     end
     return unique(names)
 end
+
+"""
+    rotate(l::AtomList, M::AbstractMatrix{<:Real}, ctr::AbstractVector{<:Real}) -> AtomList
+
+Rotates the atoms in an `AtomList` using the rotation matrix `M` applied at the position `ctr`
+(specified in Cartesian coordinates).
+"""
+function rotate(l::AtomList, M::AbstractMatrix{<:Real}, ctr::AbstractVector{<:Real})
+    @assert M' ≈ inv(M) "The supplied matrix is not orthogonal!"
+    va = iszero(basis(l)) ? l.coord : cartesian(l).coord
+    positions = [coord(a) - ctr for a in va]
+    new_positions = [M*v + ctr for v in positions]
+    return AtomList(
+        [AtomPosition(atomname(a), atomicno(a), v) for (a,v) in zip(va, new_positions)]
+    )
+end
+
+function rotate(l::AtomList, M::AbstractMatrix{<:Real})
+    @assert M' ≈ inv(M) "The supplied matrix is not orthogonal!"
+    va = iszero(basis(l)) ? l.coord : cartesian(l).coord
+    new_positions = [M*v for v in coord.(va)]
+    return AtomList(
+        [AtomPosition(atomname(a), atomicno(a), v) for (a,v) in zip(va, new_positions)]
+    )
+end
