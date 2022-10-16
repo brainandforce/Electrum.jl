@@ -365,3 +365,5 @@ end
 function d_spacing(b::ReciprocalBasis, miller::AbstractVector{<:Integer})
     return 2π / norm(matrix(b) * miller)
 end
+
+d_spacing(x, miller::AbstractVector{<:Integer}) = d_spacing(basis(x), miller)

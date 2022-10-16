@@ -140,7 +140,3 @@ atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(AtomList(xtal); kwargs..
 natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(AtomList(xtal); kwargs...)
 
 cartesian(xtal::AbstractCrystal) = cartesian(AtomList(xtal))
-
-function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer})
-    return d_spacing(basis(x), miller)
-end
