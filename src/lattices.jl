@@ -75,6 +75,10 @@ function (::Type{T})(M::AbstractMatrix{<:Real}) where {T<:AbstractBasis}
     return T(vs)
 end
 
+vectors(b::AbstractBasis) = b.vs
+matrix(b::AbstractBasis{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
+Base.convert(::Type{T}, b::AbstractBasis) where T<:AbstractMatrix = convert(T, matrix(b))
+
 """
     convert(::Type{<:RealBasis}, b::ReciprocalBasis) -> RealBasis
     convert(::Type{<:ReciprocalBasis}, b::RealBasis) -> ReciprocalBasis
@@ -138,9 +142,6 @@ end
 Base.getindex(b::AbstractBasis, ind) = b.vs[ind]
 # This should treat a basis like a matrix
 Base.getindex(b::AbstractBasis, i1, i2) = b[i2][i1]
-
-vectors(b::AbstractBasis) = b.vs
-matrix(b::AbstractBasis{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
 
 # This is needed for broadcasting
 Base.size(::AbstractBasis{D}) where D = (D,D)
