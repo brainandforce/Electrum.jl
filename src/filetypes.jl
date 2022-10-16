@@ -240,30 +240,27 @@ function readXSF3D(filename::AbstractString; kwargs...)
 end
 
 """
-    writeXSF(io, xtal::Crystal{D})
+    writeXSF(io, xtal::AtomList{D})
 
 Writes the crystal component of an XCrysDen XSF file.
 """
-function writeXSF(io::IO, xtal::Crystal{D}) where D
+function writeXSF(io::IO, l::AtomList{D}) where D
     println(io, "# Written by Xtal.jl")
     # Dimension information
     println(io, "DIM_GROUP")
     println(io, D, "  1")
     # Primitive cell vectors
     println(io, "PRIMVEC")
-    for (n, x) in enumerate(matrix(prim(xtal)))
+    for (n, x) in enumerate(matrix(basis(l)))
         @printf(io, "%20.14f  ", x)
         n % D == 0 && println(io)
     end
     # Coordinates of the atoms in the primitive cell
     println(io, "PRIMCOORD")
-    # Throw warning if the space group number is greater than 1
-    # This probably means the generating set of atoms is incomplete
-    xtal.sgno > 1 && @warn "Symmetrization of the unit cell has not been implemented yet."
     # Print the number of atoms in the structure
-    println(io, lpad(string(natom(xtal.gen)), 6), "    1")
+    println(io, lpad(string(natom(l)), 6), "    1")
     # Print all of the atoms
-    for a in cartesian(xtal.gen)
+    for a in cartesian(l)
         @printf(io, "%6i", atomicno(a))
         for x in coord(a)
             @printf(io, "%20.14f  ", x)
@@ -271,6 +268,8 @@ function writeXSF(io::IO, xtal::Crystal{D}) where D
         println(io)
     end
 end
+
+writeXSF(io::IO, xtal::Crystal) = writeXSF(io, AtomList(xtal))
 
 const readXSF = readXSF3D
 
@@ -338,15 +337,9 @@ function writeXSF(
     writeXSF(io, data(xtaldata), periodic=periodic)
 end
 
-function writeXSF(filename::AbstractString, xtal::Crystal)
+function writeXSF(filename::AbstractString, data; kwargs...)
     open(filename, write=true) do io
-        writeXSF(io, xtal)
-    end
-end
-
-function writeXSF(filename::AbstractString, xtaldata::CrystalWithDatasets; periodic=true)
-    open(filename, write=true) do io
-        writeXSF(io, xtaldata, periodic=periodic)
+        writeXSF(io, data; kwargs...)
     end
 end
 
