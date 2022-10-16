@@ -119,6 +119,7 @@ Base.convert(::Type{<:Crystal}, xtaldata::CrystalWithDatasets) = xtaldata.xtal
 Crystal(xtaldata::CrystalWithDatasets) = xtaldata.xtal
 data(xtaldata::CrystalWithDatasets) = xtaldata.data
 
+# TODO: Generate the full atom list when symmetry operations are implemented.
 AtomList(xtal::AbstractCrystal) = xtal.atoms
 basis(xtal::AbstractCrystal) = basis(AtomList(xtal))
 
@@ -137,6 +138,8 @@ natom(xtal::AbstractCrystal) = natom(AtomList(xtal))
 atomnames(xtal::AbstractCrystal) = atomnames(AtomList(xtal))
 atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(AtomList(xtal); kwargs...)
 natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(AtomList(xtal); kwargs...)
+
+cartesian(xtal::AbstractCrystal) = cartesian(AtomList(xtal))
 
 function d_spacing(x::AbstractCrystal, miller::AbstractVector{<:Integer})
     return d_spacing(basis(x), miller)
