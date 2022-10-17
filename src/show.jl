@@ -125,13 +125,13 @@ function Base.show(io::IO, ::MIME"text/plain", a::AtomList; name=true, num=true,
     # Print type name
     println(io, typeof(a), ":")
     # Print atomic positions
-    println(io, "  Atomic positions:")
+    println(io, "  ", natom(a), " atomic positions:")
     for atom in a.coord
         println(io, "    ", atom_string(atom, name=name, num=num))
     end
     # Print basis vectors
     println("  defined in terms of basis vectors:")
-    printbasis(io, basis(a), pad=2)
+    printbasis(io, a, pad=2)
 end
 
 #---Types from data/realspace.jl------------------------------------------------------------------#
@@ -187,19 +187,17 @@ end
 
 #---Types from crystals.jl------------------------------------------------------------------------#
 
-# TODO: Get rid of direct struct access
-# Use methods to get the data instead.
 function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     println(io, typeof(xtal), " (space group ", xtal.sgno, "): ")
     # Print basis vectors
     println(io, "\n  Primitive basis vectors:")
-    printbasis(io, basis(xtal), pad=2, unit="Å")
+    printbasis(io, xtal, pad=2, unit="Å")
     if xtal.transform != SMatrix{D,D,Float64}(LinearAlgebra.I)
         println(io, "\n\n  Conventional basis vectors:")
         printbasis(io, basis(xtal) * xtal.transform, pad=2, unit="Å")
     end
     # TODO: Add in more info about atomic positions, space group
-    println(io, "\n\n  Atomic positions:")
+    println(io, "\n\n  ", length(xtal.atoms), " atomic positions:")
     println(io, "    Num   ", "Name  ", "Position")
     for atom in xtal.atoms
         println(io, "    ", atom_string(atom, name=true, num=true, entrysz=6))
