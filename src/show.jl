@@ -1,3 +1,4 @@
+#---Helper functions used to print common features (e.g. basis vectors)---------------------------#
 """
     vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
 
@@ -93,6 +94,14 @@ will be reduced.
 """
 formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, reduce=reduce)
 
+#---Actual show methods---------------------------------------------------------------------------#
+
+# These are what you see when something is returned in the REPL.
+# To define these methods for a type, just overload show(::IO, ::MIME"text/plain", ::T)
+# To get the result as a string, just use repr("text/plain", x)
+
+#---Types from lattices.jl (RealBasis, ReciprocalBasis)-------------------------------------------#
+
 function Base.show(io::IO, ::MIME"text/plain", b::AbstractBasis)
     println(io, typeof(b), ":")
     printbasis(io, b, pad=2)
@@ -107,6 +116,8 @@ function Base.show(io::IO, ::MIME"text/plain", b::ReciprocalBasis)
     println(io, typeof(b), ":")
     printbasis(io, b, pad=2, unit="Å⁻¹")
 end
+
+#---Types from atoms.jl (AtomPosition, AtomList)--------------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; name=true, num=true)
     println(io, typeof(a), ":")
@@ -126,6 +137,8 @@ function Base.show(io::IO, ::MIME"text/plain", a::AtomList; name=true, num=true,
     printbasis(io, basis(a), pad=2)
 end
 
+#---Types from data/realspace.jl------------------------------------------------------------------#
+
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
     dimstring = join(string.(size(g)), "×") * " "
     println(io, dimstring, typeof(g), " with basis vectors:")
@@ -134,7 +147,8 @@ function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where 
     print("Voxel size: ", voxelsize(g), " Å³")
 end
 
-# ReciprocalWavefunction{D,T}
+#---Types from data/reciprocalspace.jl------------------------------------------------------------#
+
 function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) where {D,T}
     println(io,
         typeof(wf), " with ",
@@ -143,6 +157,39 @@ function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) 
         string(nband(wf)), " band", "s"^(nband(wf) != 1)
     )
 end
+
+#---Types from data/atomic.jl---------------------------------------------------------------------#
+
+function Base.show(
+    io::IO,
+    ::MIME"text/plain",
+    s::SphericalHarmonic{Lmax};
+    showto = 3
+) where Lmax
+    # Don't include generated second type parameter
+    print(io, "SphericalHarmonic{$Lmax}", ":\n", " "^13)
+    # Only print up to l=3 components by default (kw showto)
+    Lmax_eff = min(showto, Lmax)
+    for m = -Lmax_eff:Lmax_eff
+        print(io, rpad("m = $m", 12))
+    end
+    for l in 0:Lmax_eff
+        print(io, "\n", rpad("l = $l:", 8))
+        for m = -Lmax_eff:Lmax_eff
+            if abs(m) <= l
+                print(io, lpad(@sprintf("%6f", s[l,m]), 12))
+            else
+                print(io, " "^12)
+            end
+        end
+    end
+    if showto < Lmax
+        print(io, "\n(higher order components omitted for brevity)")
+    end
+end
+
+
+#---Types from crystals.jl------------------------------------------------------------------------#
 
 # TODO: Get rid of direct struct access
 # Use methods to get the data instead.
@@ -176,32 +223,4 @@ function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets{D,K,V}) wh
     show(io, MIME("text/plain"), x.xtal)
     print("\n\nand a ")
     show(io, MIME("text/plain"), x.data)
-end
-
-function Base.show(
-    io::IO,
-    ::MIME"text/plain",
-    s::SphericalHarmonic{Lmax};
-    showto = 3
-) where Lmax
-    # Don't include generated second type parameter
-    print(io, "SphericalHarmonic{$Lmax}", ":\n", " "^13)
-    # Only print up to l=3 components by default (kw showto)
-    Lmax_eff = min(showto, Lmax)
-    for m = -Lmax_eff:Lmax_eff
-        print(io, rpad("m = $m", 12))
-    end
-    for l in 0:Lmax_eff
-        print(io, "\n", rpad("l = $l:", 8))
-        for m = -Lmax_eff:Lmax_eff
-            if abs(m) <= l
-                print(io, lpad(@sprintf("%6f", s[l,m]), 12))
-            else
-                print(io, " "^12)
-            end
-        end
-    end
-    if showto < Lmax
-        print(io, "\n(higher order components omitted for brevity)")
-    end
 end
