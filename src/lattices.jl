@@ -306,15 +306,22 @@ function triangularize(b::T) where T<:AbstractBasis
 end
 
 """
-    triangularize(l::T, supercell::AbstractMatrix{<:Integer}) where T<:AbstractBasis -> T
+    triangularize(l::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBasis -> T
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
 included conversion to a larger supercell. The resulting matrix that describes the basis vectors
-will have only positive values along the diagonal.
+will have only positive values along the diagonal, and therefore, is always right-handed
+(regardless of the transformation matrix used).
 
 LAMMPS expects that basis vectors are given in this format.
 """
 function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBasis
+    # Warnings for 
+    det(sc) < 0 && @warn string(
+        "The transformation matrix has a negative determinant.\n",
+        "However, this function always returns a right-handed basis."
+    )
+    det(sc) == 0 && error("supplied transformation matrix is singular")
     # Convert the matrix to upper triangular form using QR decomposition
     # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
     R = SMatrix{length(b),length(b),Float64}(qr(matrix(b) * sc).R)
