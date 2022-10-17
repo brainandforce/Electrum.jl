@@ -130,7 +130,7 @@ function AtomList(coord::AbstractVector{AtomPosition{D}}) where D
     return AtomList(zeros(RealBasis{D}), coord)
 end
 
-==(l1::AtomList, l2::AtomList) = (l1.basis === l2.basis && l1.coord == l2.coord)
+Base.:(==)(l1::AtomList, l2::AtomList) = (l1.basis === l2.basis && l1.coord == l2.coord)
 Base.isempty(l::AtomList) = isempty(l.coord)
 Base.firstindex(l::AtomList) = firstindex(l.coord)
 Base.lastindex(l::AtomList) = lastindex(l.coord)
