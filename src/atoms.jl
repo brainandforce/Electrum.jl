@@ -32,6 +32,15 @@ function AtomPosition(num::Integer, pos::SVector{D,<:Real}) where D
     return AtomPosition(ELEMENTS[num], num, pos)
 end
 
+# More convenience constructors...
+function AtomPosition(name::AbstractString, num::Integer, pos::Vararg{<:Real,D}) where D
+    return AtomPosition(name, num, SVector{D,Float64}(pos))
+end
+
+function AtomPosition(n, pos::Vararg{<:Real,D}) where D
+    return AtomPosition(n, SVector{D,Float64}(pos))
+end
+
 # The methods below require a type parameter in the constructor
 
 function AtomPosition{D}(name::AbstractString, num::Integer, pos::AbstractVector{<:Real}) where D
