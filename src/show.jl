@@ -73,7 +73,7 @@ function formula_string(v::Vector{AtomPosition{D}}, reduce=true) where D
     # Get all of the types of atoms
     for atom in atomnos
         # Skip dummy atoms
-        atom = 0 && continue
+        atom == 0 && continue
         # Increment the atom counts
         atomcount[atom] += 1
     end
@@ -82,7 +82,7 @@ function formula_string(v::Vector{AtomPosition{D}}, reduce=true) where D
     # Loop through all the atom counts
     for (atom, ct) in enumerate(atomcounts)
         # Skip any zeros
-        ct = 0 && continue
+        ct == 0 && continue
         str *= ELEMENT_LOOKUP[atom] * string(ct) * space
     end
     return str
@@ -189,7 +189,6 @@ function Base.show(
         print(io, "\n(higher order components omitted for brevity)")
     end
 end
-
 
 #---Types from crystals.jl------------------------------------------------------------------------#
 
