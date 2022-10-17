@@ -104,11 +104,6 @@ formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, re
 
 #---Types from lattices.jl (RealBasis, ReciprocalBasis)-------------------------------------------#
 
-function Base.show(io::IO, ::MIME"text/plain", b::AbstractBasis)
-    println(io, typeof(b), ":")
-    printbasis(io, b, pad=2)
-end
-
 function Base.show(io::IO, ::MIME"text/plain", b::RealBasis)
     println(io, typeof(b), ":")
     printbasis(io, b, pad=2, unit="Å")
