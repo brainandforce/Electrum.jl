@@ -248,16 +248,17 @@ function deduplicate(l::AbstractVector{<:AtomPosition})
     for m in eachindex(l)
         for n in m+1:length(l)
             (a,b) = l[[m,n]]
-            if atomname(a) == atomname(b) && atomicno(a) == atomicno(b)
-                # If they're too close, set the kept_inds entry to zero
-                if isapprox(norm(coord(a)), norm(coord(b)), atol=sqrt(eps(Float64)))
-                    kept_inds[n] = 0
-                    @debug string(
-                        "Removing atom $n:\n",
-                        "Atom $m: ", repr("text/plain", a),
-                        "Atom $n: ", repr("text/plain", b)
-                    )
-                end
+            # Check that atoms are of the same type
+            sametype = atomname(a) == atomname(b) && atomicno(a) == atomicno(b)
+            dist = norm(coord(a) - coord(b))
+            # If they're too close, set the kept_inds entry to zero
+            if sametype && isapprox(dist, 0, atol=sqrt(eps(Float64)))
+                kept_inds[n] = 0
+                @debug string(
+                    "Removing atom $n:\n",
+                    "Atom $m: ", repr("text/plain", a),
+                    "Atom $n: ", repr("text/plain", b)
+                )
             end
         end
     end
