@@ -1,6 +1,6 @@
 #---Helper functions used to print common features (e.g. basis vectors)---------------------------#
 """
-    vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
+    Xtal.vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
 
 Prints a representation of a vector as a string.
 """
@@ -11,7 +11,7 @@ function vector_string(v::AbstractVector{<:Real}; brackets=true)
 end
 
 """
-    basis_string(M::AbstractMatrix{<:Real}; letters=true) -> Vector{String}
+    Xtal.basis_string(M::AbstractMatrix{<:Real}; letters=true) -> Vector{String}
 
 Prints each basis vector with an associated letter.
 """
@@ -39,17 +39,19 @@ end
 
 basis_string(b::AbstractBasis; kwargs...) = basis_string(matrix(b); kwargs...)
 
+"""
+    Xtal.printbasis(io::IO, b; kwargs...)
+
+Prints the result of `basis_string()` to `io`.
+"""
 function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pad=0)
     s = basis_string(M, letters=letters, unit=unit)
     print(io, join(" "^pad .* s, "\n"))
 end
 
 printbasis(io::IO, b::AbstractBasis; kwargs...) = 
-    printbasis(io::IO, matrix(b), letters=true, pad=0; kwargs...)
-printbasis(io::IO, a::AtomList; kwargs...) = 
-    printbasis(io, basis(a), letters=true, pad=0; kwargs...)
-printbasis(io::IO, g::RealSpaceDataGrid{D,T} where {D,T}; kwargs...) =
-    printbasis(io, basis(g), letters=true, pad=0; kwargs...)
+    printbasis(io, matrix(b), letters=true, pad=0; kwargs...)
+printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
 
 """
     atom_string(a::AtomPosition; name=true, num=true)
