@@ -224,10 +224,33 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     end
 end
 
-# CrystalWithDatasets{D,K,V}
 function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets)
     println(io, typeof(x), " containing:\n")
     show(io, MIME("text/plain"), x.xtal)
     print("\n\nand a ")
     show(io, MIME("text/plain"), x.data)
+end
+
+#---Other internal types--------------------------------------------------------------------------#
+
+function Base.show(io::IO, ::MIME"text/plain", h::ABINITHeader)  
+    println(io, "abinit ", repr(h.codvsn)[3:end-1], " header (version ", h.headform, "):")
+    for name in fieldnames(ABINITHeader)[3:end]
+        print(io, "  ", rpad(string(name) * ":", 18))
+        x = getfield(h, name)
+        if typeof(x) <: Union{<:Number,<:SVector}
+            println(io, x)
+        elseif typeof(x) <: SMatrix
+            println(io, replace(repr("text/plain", x), "\n " => "\n" * " "^21))
+        elseif typeof(x) <: AbstractArray
+            sizestr = if length(size(x)) == 1
+                lpad(string(length(x), "-element "), 12)
+            else    
+                join(string.(size(x)), "×") * " "
+            end
+            println(io, sizestr, typeof(x), "...")
+        else
+            println(io, typeof(x), "...")
+        end
+    end
 end
