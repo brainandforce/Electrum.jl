@@ -65,7 +65,7 @@ function atom_string(a::AtomPosition; name=true, num=true, entrysz=4)
 end
 
 # TODO: make this work with occupancy information, since we'll probably need that
-function formula_string(v::Vector{AtomPosition{D}}, reduce=true) where D
+function formula_string(v::AbstractVector{<:AtomPosition}, reduce=true)
     # Number of each type of atoms is stored in this vector
     atomcount = zeros(Int, size(ELEMENTS)...)
     # Get all atomic numbers in the 
@@ -94,7 +94,7 @@ end
 Generates a string giving the atomic formula for an `AtomicPosition`. By default, common factors
 will be reduced.
 """
-formula_string(a::AtomList{D}; reduce=true) where D = formula_string(a.coord, reduce=reduce)
+formula_string(a::AtomList; reduce=true) = formula_string(a.coord, reduce=reduce)
 
 #---Actual show methods---------------------------------------------------------------------------#
 
@@ -136,7 +136,7 @@ end
 
 #---Types from data/realspace.jl------------------------------------------------------------------#
 
-function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid{D,T}) where {D,T}
+function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid)
     dimstring = join(string.(size(g)), "×") * " "
     println(io, dimstring, typeof(g), " with basis vectors:")
     print(join(basis_string(basis(g), unit="Å"), "\n"))
@@ -146,7 +146,7 @@ end
 
 #---Types from data/reciprocalspace.jl------------------------------------------------------------#
 
-function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction{D,T}) where {D,T}
+function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction)
     println(io,
         typeof(wf), " with ",
         string(nspin(wf)), " spin", "s"^(nspin(wf) != 1), ", ",
@@ -212,7 +212,7 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
 end
 
 # CrystalWithDatasets{D,K,V}
-function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets{D,K,V}) where {D,K,V}
+function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets)
     println(io, typeof(x), " containing:\n")
     show(io, MIME("text/plain"), x.xtal)
     print("\n\nand a ")
