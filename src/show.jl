@@ -138,13 +138,24 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid)
     dimstring = join(string.(size(g)), "×") * " "
-    println(io, dimstring, typeof(g), " with basis vectors:")
+    println(io, dimstring, typeof(g), " with real space basis vectors:")
     print(join(basis_string(basis(g), unit="Å"), "\n"))
-    println("\nCell volume: ", volume(g), " Å³")
-    print("Voxel size: ", voxelsize(g), " Å³")
+    @printf("\nCell volume: %16.10f Å", volume(g))
+    @printf("\nVoxel size:  %16.10f Å", voxelsize(g))
 end
 
 #---Types from data/reciprocalspace.jl------------------------------------------------------------#
+
+function Base.show(io::IO, ::MIME"text/plain", g::HKLData)
+    dimstring = join(string.(size(g)), "×") * " "
+    println(io, dimstring, typeof(g), " with reciprocal space basis vectors:")
+    print(join(basis_string(basis(g), unit="Å⁻¹"), "\n"))
+    print("\nMaximum spatial frequencies:")
+    for n in 1:length(basis(g))
+        print("\n  ", '`' + n, ":", )
+        @printf("%12.6f Å⁻¹", size(g)[n] * lengths(basis(g))[n])
+    end
+end
 
 function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction)
     println(io,
