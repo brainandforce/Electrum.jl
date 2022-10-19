@@ -14,6 +14,13 @@ end
     Xtal.basis_string(M::AbstractMatrix{<:Real}; letters=true) -> Vector{String}
 
 Prints each basis vector with an associated letter.
+
+# Example
+```
+a: [  0.000000  3.500000  3.500000 ]   (4.949747 Å)
+b: [  3.500000  0.000000  3.500000 ]   (4.949747 Å)
+c: [  3.500000  3.500000  0.000000 ]   (4.949747 Å)
+```
 """
 function basis_string(
     M::AbstractMatrix{<:Real};
@@ -37,7 +44,8 @@ function basis_string(
     ]
 end
 
-basis_string(b::AbstractBasis; kwargs...) = basis_string(matrix(b); kwargs...)
+basis_string(b::RealBasis, kwargs...) = basis_string(matrix(b), unit="Å", kwargs...)
+basis_string(b::ReciprocalBasis, kwargs...) = basis_string(matrix(b), unit="Å⁻¹", kwargs...)
 
 """
     Xtal.printbasis(io::IO, b; kwargs...)
@@ -49,8 +57,10 @@ function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pa
     print(io, join(" "^pad .* s, "\n"))
 end
 
-printbasis(io::IO, b::AbstractBasis; kwargs...) = 
-    printbasis(io, matrix(b), letters=true, pad=0; kwargs...)
+printbasis(io::IO, b::RealBasis; kwargs...) = 
+    printbasis(io, matrix(b), letters=true, pad=0, unit="Å"; kwargs...)
+printbasis(io::IO, b::ReciprocalBasis; kwargs...) = 
+    printbasis(io, matrix(b), letters=true, unit="Å⁻¹", pad=0; kwargs...)
 printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
 
 """
@@ -104,30 +114,25 @@ formula_string(a::AtomList; reduce=true) = formula_string(a.coord, reduce=reduce
 
 #---Types from lattices.jl (RealBasis, ReciprocalBasis)-------------------------------------------#
 
-function Base.show(io::IO, ::MIME"text/plain", b::RealBasis)
+function Base.show(io::IO, ::MIME"text/plain", b::AbstractBasis)
     println(io, typeof(b), ":")
-    printbasis(io, b, pad=2, unit="Å")
-end
-
-function Base.show(io::IO, ::MIME"text/plain", b::ReciprocalBasis)
-    println(io, typeof(b), ":")
-    printbasis(io, b, pad=2, unit="Å⁻¹")
+    printbasis(io, b, pad=2)
 end
 
 #---Types from atoms.jl (AtomPosition, AtomList)--------------------------------------------------#
 
-function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; name=true, num=true)
+function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; kwargs...)
     println(io, typeof(a), ":")
-    println(io, "  ", atom_string(a, name=name, num=num))
+    println(io, "  ", atom_string(a; kwargs...))
 end
 
-function Base.show(io::IO, ::MIME"text/plain", a::AtomList; name=true, num=true, letters=true)
+function Base.show(io::IO, ::MIME"text/plain", a::AtomList; letters=true, kwargs...)
     # Print type name
     println(io, typeof(a), ":")
     # Print atomic positions
     println(io, "  ", natom(a), " atomic positions:")
     for atom in a.coord
-        println(io, "    ", atom_string(atom, name=name, num=num))
+        println(io, "    ", atom_string(atom; kwargs...))
     end
     # Print basis vectors
     println("  defined in terms of basis vectors:")
