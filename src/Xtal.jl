@@ -1,10 +1,11 @@
 module Xtal
 
-using StaticArrays
 using LinearAlgebra
+using StaticArrays
+using FFTW
 using Printf
 using ComputedFieldTypes
-using FFTW
+using NormalForms
 
 const ELEMENTS = 
 ( 
