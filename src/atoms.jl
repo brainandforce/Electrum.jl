@@ -285,11 +285,8 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
     # Convert the provided basis vectors to the supercell basis
     # Conversion to upper triangular form should make this easier to work with
     scb = triangularize(basis(l), M)
-    # Use LU decomposition to generate the translation bounds (diagonal of U matrix)
-    decomp = lu(M)
-    # Convert to a positive integer to generate valid indices
-    # Make sure that the matrix is correctly permuted for this process
-    tmax = SVector{D,Int}(abs.(diag(decomp.U))[decomp.p])
+    # Convert to a positive integer to generate valid indices using Hermite normal form
+    tmax = diag(snf(M))
     # Generate all the sites in the supercell where new atoms have to be placed
     newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(tmax))])
     # Move all positions into the cell; remove duplciates
@@ -306,7 +303,6 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
         )
         for atom in dedup, d in newpts
     ]
-    @debug "Vector of AtomPositions to be added:\n" * repr(vec(sclist))
     return AtomList(scb, vec(sclist))
 end
 
