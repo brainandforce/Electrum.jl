@@ -337,9 +337,9 @@ function writeXSF(
     writeXSF(io, data(xtaldata), periodic=periodic)
 end
 
-function writeXSF(filename::AbstractString, data; kwargs...)
+function writeXSF(filename::AbstractString, data...; kwargs...)
     open(filename, write=true) do io
-        writeXSF(io, data; kwargs...)
+        writeXSF(io, data...; kwargs...)
     end
 end
 
