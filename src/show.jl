@@ -144,7 +144,7 @@ end
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid)
     dimstring = join(string.(size(g)), "×") * " "
     println(io, dimstring, typeof(g), " with real space basis vectors:")
-    print(io, join(basis_string(basis(g), unit="Å"), "\n"))
+    print(io, join(basis_string(basis(g)), "\n"))
     @printf(io, "\nCell volume: %16.10f Å", volume(g))
     @printf(io, "\nVoxel size:  %16.10f Å", voxelsize(g))
 end
