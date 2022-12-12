@@ -285,11 +285,11 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
     # Convert the provided basis vectors to the supercell basis
     # Conversion to upper triangular form should make this easier to work with
     scb = triangularize(basis(l), M)
-    # Convert to a positive integer to generate valid indices using Hermite normal form
-    tmax = diag(snf(M))
+    # Get the Smith normal form of the transformation matrix
+    (S,U) = snf(M)
     # Generate all the sites in the supercell where new atoms have to be placed
-    newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(tmax))])
-    # Move all positions into the cell; remove duplciates
+    newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(diag(S)))])
+    # Move all positions into the cell; remove duplicates
     dedup = deduplicate(
         [AtomPosition(atomname(a), atomicno(a), mod.(coord(a), 1)) for a in l.coord]
     )
@@ -299,7 +299,8 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
             atomname(atom),
             atomicno(atom),
             # Keep the new atoms inside the supercell
-            mod.(SMatrix{D,D}(M)\(coord(atom) + d), 1)
+            # Multiply the coordinate by U
+            mod.(SMatrix{D,D}(M)\(coord(atom) + U*d), 1)
         )
         for atom in dedup, d in newpts
     ]
