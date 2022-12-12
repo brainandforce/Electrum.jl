@@ -170,7 +170,7 @@ function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction)
         string(nband(wf)), " band", "s"^(nband(wf) != 1)
     )
     println(io, "Reciprocal space basis vectors:")
-    print(io, join(basis_string(basis(wf), unit="Å⁻¹"), "\n"))
+    print(io, join(basis_string(basis(wf)), "\n"))
 end
 
 #---Types from data/atomic.jl---------------------------------------------------------------------#
