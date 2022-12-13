@@ -57,10 +57,8 @@ function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pa
     print(io, join(" "^pad .* s, "\n"))
 end
 
-printbasis(io::IO, b::RealBasis; kwargs...) = 
-    printbasis(io, matrix(b), letters=true, pad=0, unit="Å"; kwargs...)
-printbasis(io::IO, b::ReciprocalBasis; kwargs...) = 
-    printbasis(io, matrix(b), letters=true, unit="Å⁻¹", pad=0; kwargs...)
+printbasis(io::IO, b::RealBasis; kwargs...) = printbasis(io, matrix(b), unit="Å"; kwargs...)
+printbasis(io::IO, b::ReciprocalBasis; kw...) = printbasis(io, matrix(b), unit="Å⁻¹"; kw...)
 printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
 
 """
