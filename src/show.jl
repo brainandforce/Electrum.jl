@@ -11,15 +11,36 @@ function vector_string(v::AbstractVector{<:Real}; brackets=true)
 end
 
 """
-    Xtal.basis_string(M::AbstractMatrix{<:Real}; letters=true) -> Vector{String}
+    Xtal.basis_string(
+        M::AbstractMatrix{<:Real};
+        pad="  ",
+        brackets=true,
+        letters=true,
+        length=true,
+        unit=""
+    ) -> Vector{String}
 
-Prints each basis vector with an associated letter.
+Creates an array of strings that represent the basis vectors of a crystal lattice given by `M`.
+Several options exist to control the formatting of the output:
+  * `pad` adds padding characters to the beginning of the string, allowing for indenting.
+  * `brackets` adds square brackets to delimit the vector.
+  * `letters` assigns letter labels to each basis vector.
+  * `length` appends the lengths of the basis vector to the end of each string.
+  * `unit` appends a unit to the lengths. This parameter is ignored if `length` is set to `false`.
 
 # Example
 ```
-a: [  0.000000  3.500000  3.500000 ]   (4.949747 Å)
-b: [  3.500000  0.000000  3.500000 ]   (4.949747 Å)
-c: [  3.500000  3.500000  0.000000 ]   (4.949747 Å)
+julia> M = 3.5 * [0 1 1; 1 0 1; 1 1 0]
+3×3 Matrix{Float64}:
+ 0.0  3.5  3.5
+ 3.5  0.0  3.5
+ 3.5  3.5  0.0
+
+julia> Xtal.basis_string(M, letters=true, length=true, unit="Å")
+3-element Vector{String}:
+ "  a: [  0.000000  3.500000  3.500000 ]   (4.949747 Å)"
+ "  b: [  3.500000  0.000000  3.500000 ]   (4.949747 Å)"
+ "  c: [  3.500000  3.500000  0.000000 ]   (4.949747 Å)"
 ```
 """
 function basis_string(
@@ -40,7 +61,7 @@ function basis_string(
         pad * string(Char(0x60 + n), ':', ' ')^letters *
         vector_string(M[:,n], brackets=brackets) *
         ("   (" * tostr(norm(M[:,n]), 0))^length * " "^!isempty(unit) * unit * ")"
-        for n in 1:size(M)[2]
+        for n in axes(M,2)
     ]
 end
 
@@ -48,9 +69,23 @@ basis_string(b::RealBasis, kwargs...) = basis_string(matrix(b), unit="Å", kwar
 basis_string(b::ReciprocalBasis, kwargs...) = basis_string(matrix(b), unit="Å⁻¹", kwargs...)
 
 """
-    Xtal.printbasis(io::IO, b; kwargs...)
+    Xtal.printbasis([io::IO = stdout], b; kwargs...)
 
 Prints the result of `basis_string()` to `io`.
+
+# Examples
+```jldoctest
+julia> M = 3.5 * [0 1 1; 1 0 1; 1 1 0]
+3×3 Matrix{Float64}:
+ 0.0  3.5  3.5
+ 3.5  0.0  3.5
+ 3.5  3.5  0.0
+
+julia> Xtal.printbasis(stdout, M)
+  a: [  0.000000  3.500000  3.500000 ]   (4.949747)
+  b: [  3.500000  0.000000  3.500000 ]   (4.949747)
+  c: [  3.500000  3.500000  0.000000 ]   (4.949747
+```
 """
 function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pad=0)
     s = basis_string(M, letters=letters, unit=unit)
@@ -60,6 +95,7 @@ end
 printbasis(io::IO, b::RealBasis; kwargs...) = printbasis(io, matrix(b), unit="Å"; kwargs...)
 printbasis(io::IO, b::ReciprocalBasis; kw...) = printbasis(io, matrix(b), unit="Å⁻¹"; kw...)
 printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
+printbasis(a) = printbasis(stdout, a)
 
 """
     atom_string(a::AtomPosition; name=true, num=true)
