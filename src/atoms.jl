@@ -323,7 +323,7 @@ remove_dummies(l::AtomList) = AtomList(basis(l), filter(x -> !iszero(atomicno(x)
 Returns the atomic numbers of all the atoms in the `AtomList`. The `dummy` keyword controls whether
 dummy atoms are counted as a separate atom type (`false` by default).
 """
-function atomtypes(l::AtomList; dummy=false)
+function atomtypes(l::AtomList; dummy::Bool=false)
     m = dummy ? remove_dummies(l) : l
     return unique([atomicno(a) for a in m])
 end
@@ -335,7 +335,7 @@ end
 Returns the number of types of atoms. The `dummy` keyword controls whether dummy atoms are counted
 as a separate atom type (`false` by default).
 """
-natomtypes(l::AtomList; dummy=false) = length(atomtypes(l, dummy=dummy))
+natomtypes(l::AtomList; dummy::Bool=false) = length(atomtypes(l, dummy=dummy))
 
 """
     atomnames(l::AtomList; dummy=false) -> Vector{String}
@@ -343,16 +343,16 @@ natomtypes(l::AtomList; dummy=false) = length(atomtypes(l, dummy=dummy))
 Returns the names of all the atoms in `l`. By default, dummy atoms are not included, but this may
 be changed by setting `dummy=true`.
 """
-function atomnames(l::AtomList; dummy::Bool=false)
-    # Store results here
-    names = String[]
-    for atom in l
-        # Only add dummy atoms if requested
-        if atomicno(atom) != 0 || dummy
-            push!(names, atomname(atom))
-        end
-    end
-    return unique(names)
+atomnames(l::AtomList; dummy::Bool=false) = [ELEMENTS[n] for n in atomtypes(l, dummy=dummy)]
+
+"""
+    atomcounts(l::AtomList; dummy=false) -> Vector{Pair{Int,Int}}
+
+Returns pairs of atomic numbers and the number of atoms in the `AtomList` with that atomic number.
+By default, dummy atoms are not included, but this may be changed by setting `dummy=true`.
+"""
+function atomcount(l::AtomList; dummy=false)
+    return [Pair(n, count(a -> atomicno(a) == n, l)) for n in atomtypes(l, dummy=dummy)]
 end
 
 """

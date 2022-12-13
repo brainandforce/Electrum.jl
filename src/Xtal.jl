@@ -110,7 +110,7 @@ export triangularize, lengths, volume, angles_cos, angles_rad, angles_deg, isdia
 include("atoms.jl")
 export AtomPosition, AtomList
 export atomname, atomicno, sort_atomicno, coord, natom, basis, cartesian, reduce_coords, supercell,
-       atomnames, atomtypes, natomtypes
+       atomnames, atomtypes, natomtypes, atomcount
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export Crystal, CrystalWithDatasets
