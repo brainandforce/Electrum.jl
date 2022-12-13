@@ -111,7 +111,7 @@ end
 printbasis(io::IO, b::RealBasis; kwargs...) = printbasis(io, matrix(b), unit="Å"; kwargs...)
 printbasis(io::IO, b::ReciprocalBasis; kw...) = printbasis(io, matrix(b), unit="Å⁻¹"; kw...)
 printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
-printbasis(a) = printbasis(stdout, a)
+printbasis(a; kwargs...) = printbasis(stdout, a; kwargs...)
 
 """
     atom_string(a::AtomPosition; name=true, num=true)
@@ -124,37 +124,30 @@ function atom_string(a::AtomPosition; name=true, num=true, entrysz=4)
     return rpad(string(a.num), entrysz)^num * rpad(a.name, entrysz)^name * vector_string(a.pos)
 end
 
-# TODO: make this work with occupancy information, since we'll probably need that
-function formula_string(v::AbstractVector{<:AtomPosition}, reduce=true)
-    # Number of each type of atoms is stored in this vector
-    atomcount = zeros(Int, size(ELEMENTS)...)
-    # Get all atomic numbers in the 
-    atomnos = [a.num for a in v]
-    # Get all of the types of atoms
-    for atom in atomnos
-        # Skip dummy atoms
-        atom == 0 && continue
-        # Increment the atom counts
-        atomcount[atom] += 1
-    end
-    # Create output string
-    str = ""
-    # Loop through all the atom counts
-    for (atom, ct) in enumerate(atomcounts)
-        # Skip any zeros
-        ct == 0 && continue
-        str *= ELEMENT_LOOKUP[atom] * string(ct) * space
-    end
-    return str
+"""
+    Xtal.formula_string(l::AtomList; reduce=true, show_ones=false) -> String
+    Xtal.formula_string(l::AbstractCrystal; kwargs...) -> String
+
+Prints a string which represents the chemical formula of the atoms within an `AtomList` or 
+`AbstractCrystal`.
+
+By default, the formula is reduced by common factors of the atom counts. This may be disabled by
+setting `reduce=false`. Ones are also eliminated from the formula string; this may be disabled by
+setting `show_ones=true`.
+"""
+function formula_string(l::AtomList; reduce=true, show_ones=false)
+    counts = [count(a -> n == atomicno(a), l) for n in atomtypes(l)]
+    counts = div.(counts, gcd(counts)^reduce)
+    return join(
+        [
+            # Print if the count is not 1 and/or show_ones is true
+            n * subscript_string(c)^(!isone(c) || show_ones)
+            for (n,c) in zip(atomnames(l), counts)
+        ]
+    )
 end
 
-"""
-    formula_string(a::AtomList; reduce=true) -> String
-
-Generates a string giving the atomic formula for an `AtomicPosition`. By default, common factors
-will be reduced.
-"""
-formula_string(a::AtomList; reduce=true) = formula_string(a.coord, reduce=reduce)
+formula_string(l::AbstractCrystal; kwargs...) = formula_string(AtomList(l); kwargs...)
 
 #---Actual show methods---------------------------------------------------------------------------#
 
@@ -176,17 +169,17 @@ function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; kwargs...)
     println(io, "  ", atom_string(a; kwargs...))
 end
 
-function Base.show(io::IO, ::MIME"text/plain", a::AtomList; letters=true, kwargs...)
+function Base.show(io::IO, ::MIME"text/plain", l::AtomList; kwargs...)
     # Print type name
-    println(io, typeof(a), ":")
+    println(io, typeof(l), " (", formula_string(l), "):")
     # Print atomic positions
-    println(io, "  ", natom(a), " atomic positions:")
-    for atom in a.coord
+    println(io, "  ", natom(l), " atomic positions:")
+    for atom in l
         println(io, "    ", atom_string(atom; kwargs...))
     end
     # Print basis vectors
     println("  defined in terms of basis vectors:")
-    printbasis(io, a, pad=2)
+    printbasis(io, l, pad=2)
 end
 
 #---Types from data/realspace.jl------------------------------------------------------------------#
@@ -256,7 +249,7 @@ end
 #---Types from crystals.jl------------------------------------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
-    println(io, typeof(xtal), " (space group ", xtal.sgno, "): ")
+    println(io, typeof(xtal), " (", formula_string(xtal), ", space group ", xtal.sgno, "): ")
     # Print basis vectors
     println(io, "\n  Primitive basis vectors:")
     printbasis(io, xtal, pad=2, unit="Å")
