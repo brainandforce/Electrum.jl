@@ -1,5 +1,20 @@
 #---Helper functions used to print common features (e.g. basis vectors)---------------------------#
 """
+    Xtal.subscript_string(x::Number) -> String
+
+Produces a string representation of a number in subscript format.
+"""
+function subscript_string(x::Number)
+    str = collect(string(x))
+    for (n,c) in enumerate(str)
+        ('0' <= c <= '9') && (str[n] = c + 0x2050)
+        (c === '-') && (str[n] = '₋')
+        (c === '+') && (str[n] = '₊')
+    end
+    return String(str)
+end
+
+"""
     Xtal.vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
 
 Prints a representation of a vector as a string. The numbers use the standard C float (`%f`)
