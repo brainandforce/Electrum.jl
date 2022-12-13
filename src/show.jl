@@ -136,11 +136,11 @@ setting `reduce=false`. Ones are also eliminated from the formula string; this m
 setting `show_ones=true`.
 """
 function formula_string(l::AtomList; reduce=true, show_ones=false)
-    counts = [count(a -> n == atomicno(a), l) for n in atomtypes(l)]
+    counts = [x.second for x in atomcount(l)]
     counts = div.(counts, gcd(counts)^reduce)
     return join(
         [
-            # Print if the count is not 1 and/or show_ones is true
+            # Print only if the count is not 1 and/or show_ones is true
             n * subscript_string(c)^(!isone(c) || show_ones)
             for (n,c) in zip(atomnames(l), counts)
         ]
