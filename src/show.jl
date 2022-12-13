@@ -2,7 +2,8 @@
 """
     Xtal.vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
 
-Prints a representation of a vector as a string.
+Prints a representation of a vector as a string. The numbers use the standard C float (`%f`)
+formatting.
 """
 function vector_string(v::AbstractVector{<:Real}; brackets=true)
     # Format the numbers within a vector
@@ -13,7 +14,7 @@ end
 """
     Xtal.basis_string(
         M::AbstractMatrix{<:Real};
-        pad="  ",
+        pad=2,
         brackets=true,
         letters=true,
         length=true,
@@ -22,7 +23,7 @@ end
 
 Creates an array of strings that represent the basis vectors of a crystal lattice given by `M`.
 Several options exist to control the formatting of the output:
-  * `pad` adds padding characters to the beginning of the string, allowing for indenting.
+  * `pad` is the number of spaces used to indent the output (2 by default).
   * `brackets` adds square brackets to delimit the vector.
   * `letters` assigns letter labels to each basis vector.
   * `length` appends the lengths of the basis vector to the end of each string.
@@ -45,7 +46,7 @@ julia> Xtal.basis_string(M, letters=true, length=true, unit="Å")
 """
 function basis_string(
     M::AbstractMatrix{<:Real};
-    pad="  ",
+    pad=2,
     brackets=true,
     letters=true,
     length=true,
@@ -58,7 +59,7 @@ function basis_string(
     # Letters should work up to 26 dimensions, but who's gonna deal with 26D crystals?
     # Bosonic string theorists, maybe?
     return [
-        pad * string(Char(0x60 + n), ':', ' ')^letters *
+        " "^pad * string(Char(0x60 + n), ':', ' ')^letters *
         vector_string(M[:,n], brackets=brackets) *
         ("   (" * tostr(norm(M[:,n]), 0))^length * " "^!isempty(unit) * unit * ")"
         for n in axes(M,2)
@@ -84,7 +85,7 @@ julia> M = 3.5 * [0 1 1; 1 0 1; 1 1 0]
 julia> Xtal.printbasis(stdout, M)
   a: [  0.000000  3.500000  3.500000 ]   (4.949747)
   b: [  3.500000  0.000000  3.500000 ]   (4.949747)
-  c: [  3.500000  3.500000  0.000000 ]   (4.949747
+  c: [  3.500000  3.500000  0.000000 ]   (4.949747)
 ```
 """
 function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pad=0)
