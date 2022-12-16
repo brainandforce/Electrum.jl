@@ -824,11 +824,15 @@ const read_abinit_WFK = read_abinit_wavefunction
 
 """
     read_abinit_anaddb_out(filename::AbstractString)
-        -> ( FatBands{3}, Array{SVector{6,Float64}}, Vector{Float64})
+        -> ( Int64, FatBands{3}, Array{SVector{6,Float64}}, Vector{Float64})
 
-Reads an output file from anaddb and returns phonon dispersion bands (FatBands{3}),
-real and imaginary vectors for each atom in each mode (Array{SVector{6,Float64}}) at gamma,
-and energies in Ha for each mode (Vector{Float64}).
+Reads an output file from anaddb and returns the fineness of the kpoint path,
+phonon dispersion bands (FatBands{3}), real and imaginary vectors for each atom
+in each mode (Array{SVector{6,Float64}}) at gamma, and energies in Ha for each
+mode (Vector{Float64}).
+
+The fineness of the kpoint path is assumed to be the same for all three directions and
+read from the first of the three numbers (Int64).
 
 Phonon bands: Only the FatBands.bands field is filled with information. The other fields in FatBands
 are defaulted to 0.
@@ -846,6 +850,9 @@ function read_abinit_anaddb_out(filename::AbstractString)
         # number of atoms
         readuntil(io, "natifc")
         num_atom = parse(Int64, readline(io))
+        # fineness of grid
+        readuntil(io, "ng2qpt")
+        kptmesh = parse(Int64,split(readline(io))[1])
         # number of points along kpath
         readuntil(io,"nph1l")
         num_wavevect = parse(Int64,readline(io))
@@ -888,6 +895,7 @@ function read_abinit_anaddb_out(filename::AbstractString)
         end
         return (
             #kptlist,
+            kptmesh,
             FatBands{3}(frequencies, zeros(Float64, 9 , num_atom, num_atom*3, num_wavevect), zeros(Complex{Float64}, 9, num_atom, num_atom*3, num_wavevect)),
             modes,
             energies)
@@ -895,19 +903,30 @@ function read_abinit_anaddb_out(filename::AbstractString)
 end
 
 """
-    read_abinit_anaddb_in(filename::AbstractString)
-        -> ( Vector{String}, Int64 )
+    read_abinit_anaddb_in(filename::AbstractString) -> Vector{String}
 
-Reads an input file for anaddb to determine the path through reciprocal space (Vector{String})
-for plotting the phonon dispersion curves, as well as the fineness of the kpoint mesh.
+Reads an input file for anaddb to determine the string of the path through reciprocal
+space (Vector{String}) to plot the phonon dispersion curves. Also returns the fineness
+of the kpoint path.
 
-The fineness of the kpoint mesh is assumed to be the same for all three directions and
-read from the first of the three numbers (Int64).
+Note that the strings we return gathered here are user-input. Example section of The
+input file:
+qph1l       0.00   0.00   0.00   1   !GAMMA
+            0.00   0.05   0.00   1  
+            0.00   0.10   0.00   1  
+            0.00   0.15   0.00   1  
+            0.00   0.20   0.00   1  
+            0.00   0.25   0.00   1  
+            0.00   0.30   0.00   1  
+            0.00   0.35   0.00   1  
+            0.00   0.40   0.00   1  
+            0.00   0.45   0.00   1  
+            0.00   0.50   0.00   1   !X
+
+Here, the "GAMMA" and "X" are returned in the Vector{String}.
 """
 function read_abinit_anaddb_in(filename::AbstractString)
     open(filename,"r") do io
-        readuntil(io,"ng2qpt")
-        kptmesh = parse(Int64,split(readline(io))[1])
         readuntil(io, "nph1l")
         num_phonons = parse(Int64,split(readline(io))[1])
         kpath = Vector{String}(undef,ceil(Int,num_phonons/kptmesh))
@@ -919,7 +938,7 @@ function read_abinit_anaddb_in(filename::AbstractString)
             end
         end
         kpath[ceil(Int,num_phonons/kptmesh)] = filter(e->e≠'!',split(readline(io))[5])
-        return (kpath, kptmesh)
+        return kpath
     end
 
     
