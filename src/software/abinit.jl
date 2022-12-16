@@ -821,3 +821,124 @@ read_abinit_wavefunction(filename::AbstractString) = open(read_abinit_wavefuncti
 const read_abinit_DEN = read_abinit_density
 const read_abinit_POT = read_abinit_potential
 const read_abinit_WFK = read_abinit_wavefunction
+
+"""
+    read_abinit_anaddb_out(filename::AbstractString)
+        -> ( FatBands{3}, Array{SVector{6,Float64}}, Vector{Float64})
+
+Reads an output file from anaddb and returns phonon dispersion bands (FatBands{3}),
+real and imaginary vectors for each atom in each mode (Array{SVector{6,Float64}}) at gamma,
+and energies in Ha for each mode (Vector{Float64}).
+
+Phonon bands: Only the FatBands.bands field is filled with information. The other fields in FatBands
+are defaulted to 0.
+
+Modes: Each atom in the mode has real and imaginary vectors given in a static array, with the
+first three numbers corresponding to the x, y, and z directions of the real vector, then
+the next three numbers corresponding to the x, y, and z directions of the imaginary vector.
+Note that the vectors are grabbed from the Gamma point in reciprocal space, which is assumed
+to be the first k-point entered in the anaddb analysis.
+
+Energies: Energies are given in a Vector{Float64} with a length matching the number of modes.
+"""
+function read_abinit_anaddb_out(filename::AbstractString)
+    open(filename,"r") do io
+        # number of atoms
+        readuntil(io, "natifc")
+        num_atom = parse(Int64, readline(io))
+        # number of points along kpath
+        readuntil(io,"nph1l")
+        num_wavevect = parse(Int64,readline(io))
+        # kpath - not used so commented out right now
+        # kptlist = Vector{SVector{3,Float64}}(undef,num_wavevect)
+        readuntil(io, "qph1l")
+        readline(io)
+        #==for wv in 1:num_wavevect
+            kptlist[wv] = parse.(Float64,split(readline(io)))[1:3]
+        ==#
+        frequencies = zeros(Float64, num_wavevect, num_atom*3)
+        modes = Array{SVector{6,Float64}}(undef,num_atom*3,num_atom)
+        energies = Vector{Float64}(undef,num_atom*3)
+        for wv in 1:num_wavevect
+            readuntil(io,"in Thz")
+            temp = split(readuntil(io, "Phonon energies"), ['\n',':',' '], keepempty=false)
+            filter!(e->e≠"-",temp)
+            frequencies[wv,:] = parse.(Float64,temp)
+
+            # for now, only grab phonon modes at gamma, assumed to be the first point
+            if wv == 1
+                for m in 1:num_atom*3
+                    readuntil(io, "Mode number")
+                    energies[m] = parse(Float64,split(readline(io))[3])
+                    for n in 1:num_atom
+                        temp = readline(io)
+                        # Skip lines if it warns about low frequency mode
+                        if startswith(strip(temp),"Attention")
+                            readline(io)
+                            real = parse.(Float64,split(readline(io))[3:5])
+                        else
+                            real = parse.(Float64,split(temp)[3:5])
+                        end
+                        imag = parse.(Float64,split(readline(io))[2:4])
+                        temp = vcat(real,imag)
+                        modes[m,n] = SVector{6}(temp)
+                    end
+                end
+            end
+        end
+        return (
+            #kptlist,
+            FatBands{3}(frequencies, zeros(Float64, 9 , num_atom, num_atom*3, num_wavevect), zeros(Complex{Float64}, 9, num_atom, num_atom*3, num_wavevect)),
+            modes,
+            energies)
+    end
+end
+
+"""
+    read_abinit_anaddb_in(filename::AbstractString)
+        -> ( Vector{String}, Int64 )
+
+Reads an input file for anaddb to determine the path through reciprocal space (Vector{String})
+for plotting the phonon dispersion curves, as well as the fineness of the kpoint mesh.
+
+The fineness of the kpoint mesh is assumed to be the same for all three directions and
+read from the first of the three numbers (Int64).
+"""
+function read_abinit_anaddb_in(filename::AbstractString)
+    open(filename,"r") do io
+        readuntil(io,"ng2qpt")
+        kptmesh = parse(Int64,split(readline(io))[1])
+        readuntil(io, "nph1l")
+        num_phonons = parse(Int64,split(readline(io))[1])
+        kpath = Vector{String}(undef,ceil(Int,num_phonons/kptmesh))
+        readuntil(io, "qph1l")
+        for i in 1:floor(Int,num_phonons/kptmesh)
+            kpath[i] = filter(e->e≠'!',split(readline(io))[5])
+            for j in 1:kptmesh-1
+                readline(io)
+            end
+        end
+        kpath[ceil(Int,num_phonons/kptmesh)] = filter(e->e≠'!',split(readline(io))[5])
+        return (kpath, kptmesh)
+    end
+
+    
+"""
+    write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{Float64})
+
+Writes the real and imaginary vectors into a .dat file for each mode. Each line in the
+.dat file corresponds to the real x, y, z then imaginary x, y, z vectors of the
+corresponding atom. The vectors are given in Cartesian.
+"""
+function write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{Float64})
+    for i in 1:length(energies)
+        filename = string("mode_",i,"_energy_",energies[i],".dat")
+        open(filename,"w") do io
+            for n in 1:size(modes)[2]
+                # prints real vector then imag vector
+                # cartesian coordinates
+                println(io,strip(string(modes[i,n]),['[',']']))
+            end
+        end
+    end
+end
