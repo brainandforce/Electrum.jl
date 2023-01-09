@@ -938,8 +938,9 @@ function read_abinit_anaddb_in(filename::AbstractString)
             end
         end
         kpath[ceil(Int,num_phonons/kptmesh)] = filter(e->e≠'!',split(readline(io))[5])
-        return (kpath, kptmesh)
+        return kpath
     end
+end
 
     
 """
@@ -962,3 +963,4 @@ function write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{F
     end
 <<<<<<< HEAD
 end
+
