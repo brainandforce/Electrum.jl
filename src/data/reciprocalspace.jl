@@ -478,8 +478,8 @@ function fermi(wf::ReciprocalWavefunction)
     # If the next element has an occupancy equal to maxocc/2, just use that
     (eo_sorted[ind][2] == maxocc/2) && return eo_sorted[ind][1]
     # Weight the energies so that the band with closer to half occupancy contributes more
-    w = [1/(maxocc/2 - eo_sorted[ind+n][2])^2 for n in 0:1]
+    w = [1/abs(maxocc/2 - eo_sorted[ind+n][2]) for n in 0:1]
     # Reweight here for numerical stability/robustness
     w = w / sum(w)
-    return sum(eo_sorted[ind + 1][1] * w[1+n] for n in 0:1)
+    return sum(eo_sorted[ind + n][1] * w[1+n] for n in 0:1)
 end
