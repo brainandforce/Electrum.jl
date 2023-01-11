@@ -360,6 +360,9 @@ Every band has associated data containing coefficients of the constituent planew
 complex number used does not default to `Float64`: wavefunction data is often supplied as a 
 `Complex{Float32}` since wavefunctions usually only converge to single precision, and `Float64`
 storage would waste space.
+
+The energies and occupancies are also stored in fields with the corresponding names, and can be
+accessed by spins, k-points, and bands, with indices in that order.
 """
 struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     # Reciprocal lattice on which the k-points are defined
@@ -454,3 +457,29 @@ number of bands is the same for each k-point and spin.
 nband(wf::ReciprocalWavefunction) = size(wf.waves, 3)
 
 basis(wf::ReciprocalWavefunction) = wf.rlatt
+
+"""
+    fermi(wf::ReciprocalWavefunction) -> Float64
+
+Estimates the Fermi energy associated with a reciprocal space wavefunction using the energy and
+occupancy data in the `ReciprocalWavefunction`.
+"""
+function fermi(wf::ReciprocalWavefunction)
+    # Generate a matrix of energies, occupancies, and indices
+    eo = collect(zip(wf.energies, wf.occupancies))
+    # Get the maximum occupancy
+    maxocc = round(Int, maximum(x -> x[2], eo))
+    @assert maxocc in 1:2 "The calculated maximum occupancy was $maxocc."
+    # Convert it to a vector sorted by energies
+    eo_sorted = sort!(vec(eo), by=(x -> x[1]))
+    # Find the index of the last occupancy that's greater than half of maxocc
+    ind = findlast(x -> x[2] > maxocc/2, eo_sorted)
+    @info "ind = $ind"
+    # If the next element has an occupancy equal to maxocc/2, just use that
+    (eo_sorted[ind][2] == maxocc/2) && return eo_sorted[ind][1]
+    # Weight the energies so that the band with closer to half occupancy contributes more
+    w = [1/(maxocc/2 - eo_sorted[ind+n][2])^2 for n in 0:1]
+    # Reweight here for numerical stability/robustness
+    w = w / sum(w)
+    return sum(eo_sorted[ind + 1][1] * w[1+n] for n in 0:1)
+end
