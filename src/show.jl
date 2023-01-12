@@ -198,10 +198,15 @@ function Base.show(io::IO, ::MIME"text/plain", g::HKLData)
     dimstring = join(string.(size(g)), "×") * " "
     println(io, dimstring, typeof(g), " with reciprocal space basis vectors:")
     printbasis(io, g)
-    print(io, "\nMaximum spatial frequencies:")
+    print(io, "\nSpatial frequency ranges:")
     for n in 1:length(basis(g))
         print(io, "\n  ", '`' + n, ":", )
-        @printf(io, "%12.6f Å⁻¹", size(g)[n] * lengths(basis(g))[n])
+        sz = size(g)[n]
+        @printf(
+            io, "%12.6f Å⁻¹ to %.6f Å⁻¹",
+            -div(sz-1, 2) * lengths(basis(g))[n],
+            div(sz, 2) * lengths(basis(g))[n],
+        )
     end
 end
 
