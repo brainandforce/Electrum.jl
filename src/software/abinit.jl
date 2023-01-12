@@ -961,7 +961,6 @@ function write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{F
             end
         end
     end
-<<<<<<< HEAD
 end
 
 
