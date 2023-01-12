@@ -53,22 +53,22 @@ Creates as copy of the array that backs a `RealSpaceDataGrid{D,T}`, which is an 
 """
 grid(g::RealSpaceDataGrid) = deepcopy(g.grid)
 
-Base.size(g::RealSpaceDataGrid) = size(grid(g))
-Base.size(g::RealSpaceDataGrid, i::Integer) = size(grid(g), i)
+Base.size(g::RealSpaceDataGrid) = size(g.grid)
+Base.size(g::RealSpaceDataGrid, i::Integer) = size(g.grid, i)
 
 Base.axes(g::RealSpaceDataGrid) = range.(0, size(g) .- 1)
 Base.axes(g::RealSpaceDataGrid, i::Integer) = 0:size(g, i) - 1
 
-Base.length(g::RealSpaceDataGrid) = length(grid(g))
+Base.length(g::RealSpaceDataGrid) = length(g.grid)
 
 """
-    RealSpaceDataGrid(f, g::RealSpaceDataGrid)
+    RealSpaceDataGrid(f::Function, g::RealSpaceDataGrid)
 
 Applies a function `f` elementwise to the grid elements of a `RealSpaceDataGrid` and returns a new
 `RealSpaceDataGrid`.
 """
-function RealSpaceDataGrid(f, g::RealSpaceDataGrid)
-    return RealSpaceDataGrid(basis(g), shift(g), f.(grid(g)))
+function RealSpaceDataGrid(f::Function, g::RealSpaceDataGrid)
+    return RealSpaceDataGrid(basis(g), shift(g), f.(g.grid))
 end
 
 """
@@ -104,7 +104,7 @@ Base.IndexStyle(::Type{<:RealSpaceDataGrid}) = IndexLinear()
 
 Base.keys(g::RealSpaceDataGrid) = CartesianIndices(g)
 
-Base.eachindex(s::IndexStyle, g::RealSpaceDataGrid) = eachindex(s, grid(g))
+Base.eachindex(s::IndexStyle, g::RealSpaceDataGrid) = eachindex(s, g.grid)
 Base.eachindex(g::RealSpaceDataGrid) = eachindex(IndexStyle(g), g)
 
 """
@@ -164,20 +164,20 @@ dimensions are the same before performing mathematical operations.
 function grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
     @assert basis(g1) === basis(g2) "Grid basis vectors for each grid are not identical."
     @assert shift(g1) === shift(g2) "Grid shifts from origin are not identical."
-    @assert size(grid(g1)) === size(grid(g2)) "Grid sizes are different."
+    @assert size(g1) === size(g2) "Grid sizes are different."
     return nothing
 end
 
 function Base.isapprox(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid; kwargs...)
     grid_check(g1, g2)
-    return isapprox(grid(g1), grid(g2), kwargs...)
+    return isapprox(g1.grid, g2.grid, kwargs...)
 end
 
 function Base.:+(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
     # Check that the grids are identical
     grid_check(g1, g2)
     # Add the two datagrids elementwise
-    newgrid = grid(g1) + grid(g2)
+    newgrid = g1.grid .+ g2.grid
     return RealSpaceDataGrid(basis(g1), shift(g1), newgrid)
 end
 
@@ -185,22 +185,22 @@ function Base.:*(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where
     # Check that the grids are identical
     grid_check(g1, g2)
     # Add the two datagrids elementwise
-    newgrid = grid(g1) .* grid(g2)
+    newgrid = g1.grid .* g2.grid
     return RealSpaceDataGrid(basis(g1), shift(g1), newgrid)
 end
 
 function Base.:*(s::Number, g::RealSpaceDataGrid{D,T}) where {D,T}
-    newgrid = s * grid(g)
+    newgrid = s * g.grid
     return RealSpaceDataGrid(basis(g), shift(g), newgrid)
 end
 
 Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
 # Multiply everything in the datagrid by -1
-Base.:-(g::RealSpaceDataGrid) = RealSpaceDataGrid(basis(g), shift(g), -grid(g))
+Base.:-(g::RealSpaceDataGrid) = RealSpaceDataGrid(basis(g), shift(g), -g.grid)
 # Subtract two datagrids
 Base.:-(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid) = +(g1, -g2)
 # Divide a datagrid by a scalar
-Base.:/(g::RealSpaceDataGrid, s::Number) = RealSpaceDataGrid(basis(g), shift(g), grid(g) / s)
+Base.:/(g::RealSpaceDataGrid, s::Number) = RealSpaceDataGrid(basis(g), shift(g), g.grid / s)
 # Absolute value
 Base.abs(g::RealSpaceDataGrid) = RealSpaceDataGrid(abs, g)
 # Squared absolute value (really common!)
@@ -218,7 +218,7 @@ Base.conj(g::RealSpaceDataGrid) = RealSpaceDataGrid(conj, g)
 Performs an integration across all voxels, returning a scalar value.
 """
 function integrate(g::RealSpaceDataGrid)
-    return sum(grid(g)) * voxelsize(g)
+    return sum(g.grid) * voxelsize(g)
 end
 
 """
@@ -228,7 +228,7 @@ Applies the function `f` pointwise to the elements of a datagrid, then integrate
 all voxels.
 """
 function integrate(f::Function, g::RealSpaceDataGrid)
-    return sum(f.(grid(g))) * voxelsize(g)
+    return sum(f.(g.grid)) * voxelsize(g)
 end
 
 function d_spacing(g::RealSpaceDataGrid, miller::AbstractVector{<:Integer})
