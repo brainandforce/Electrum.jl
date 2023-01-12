@@ -47,6 +47,21 @@ Gets the shift of the datagrid off of the origin of the basis vectors.
 shift(g::RealSpaceDataGrid) = g.orig
 
 """
+    grid(g::RealSpaceDataGrid{D,T}) -> Array{T,D}
+
+Creates as copy of the array that backs a `RealSpaceDataGrid{D,T}`, which is an `Array{T,D}`.
+"""
+grid(g::RealSpaceDataGrid) = deepcopy(g.grid)
+
+Base.size(g::RealSpaceDataGrid) = size(grid(g))
+Base.size(g::RealSpaceDataGrid, i::Integer) = size(grid(g), i)
+
+Base.axes(g::RealSpaceDataGrid) = range.(0, size(g) .- 1)
+Base.axes(g::RealSpaceDataGrid, i::Integer) = 0:size(g, i) - 1
+
+Base.length(g::RealSpaceDataGrid) = length(grid(g))
+
+"""
     RealSpaceDataGrid(f, g::RealSpaceDataGrid)
 
 Applies a function `f` elementwise to the grid elements of a `RealSpaceDataGrid` and returns a new
@@ -56,28 +71,32 @@ function RealSpaceDataGrid(f, g::RealSpaceDataGrid)
     return RealSpaceDataGrid(basis(g), shift(g), f.(grid(g)))
 end
 
+"""
+    Xtal.reinterpret_index(g::RealSpaceDataGrid, inds::Tuple)
+
+Converts indices provided in a call to `getindex()` to valid array indices of the backing field
+that contains the data.
+"""
+function reinterpret_index(g::RealSpaceDataGrid, inds::Tuple)
+    return ntuple(Val{length(inds)}()) do i
+        inds[i] isa Colon ? Colon() : mod.(inds[i], size(g, i)) .+ 1
+    end
+end
+
 # getindex() supports arbitrary integer indices for RealSpaceDataGrid
 # By convention, it's zero based, so data at fractional coordinate [0,0,0] is indexable at [0,0,0]
-function Base.getindex(g::RealSpaceDataGrid, inds...)
-    # Perform modulo math to get the indices (to support wraparound)
-    i = mod.(inds, size(g)) .+ 1
-    return getindex(grid(g), i...)
-end
-
-function Base.setindex!(g::RealSpaceDataGrid, x, inds...)
-    i = mod.(inds, size(g)) .+ 1
-    setindex!(grid(g), x, i...)
-end
+Base.getindex(g::RealSpaceDataGrid, i...) = getindex(g.grid, reinterpret_index(g, i)...)
+Base.setindex!(g::RealSpaceDataGrid, x, i...) = setindex!(g.grid, x, reinterpret_index(g, i)...)
 
 # Linear index support
-Base.getindex(g::RealSpaceDataGrid, ind) = getindex(grid(g), mod(ind, prod(size(g))) + 1)
-Base.setindex!(g::RealSpaceDataGrid, x, ind) = setindex!(grid(g), x, mod(ind, prod(size(g))) + 1)
+Base.getindex(g::RealSpaceDataGrid, ind) = getindex(g.grid, mod(ind, length(g)) + 1)
+Base.setindex!(g::RealSpaceDataGrid, x, ind) = setindex!(g.grid, x, mod(ind, length(g)) + 1)
 
 # Iterator definitions: pass through matrix iteration
-Base.iterate(g::RealSpaceDataGrid, i::Integer = 1) = iterate(grid(g), i)
+Base.iterate(g::RealSpaceDataGrid, i::Integer = 0) = (first(iterate(g.grid, i+1)), i+1)
 # Definitions for linear and Cartesian indices
-Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(grid(g)) .- 1
-Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(Tuple(0:n-1 for n in size(g)))
+Base.LinearIndices(g::RealSpaceDataGrid) = LinearIndices(g.grid) .- 1
+Base.CartesianIndices(g::RealSpaceDataGrid) = CartesianIndices(axes(g))
 
 # Fast linear indexing
 Base.IndexStyle(::RealSpaceDataGrid) = IndexLinear()
@@ -87,16 +106,6 @@ Base.keys(g::RealSpaceDataGrid) = CartesianIndices(g)
 
 Base.eachindex(s::IndexStyle, g::RealSpaceDataGrid) = eachindex(s, grid(g))
 Base.eachindex(g::RealSpaceDataGrid) = eachindex(IndexStyle(g), g)
-
-"""
-    grid(g::RealSpaceDataGrid{D,T}) -> Array{T,D}
-
-Gets the array that backs a `RealSpaceDataGrid{D,T}`, which is an `Array{T,D}`.
-"""
-grid(g::RealSpaceDataGrid) = g.grid
-
-Base.size(g::RealSpaceDataGrid) = size(grid(g))
-Base.length(g::RealSpaceDataGrid) = length(grid(g))
 
 """
     volume(g::RealSpaceDataGrid) -> Float64
