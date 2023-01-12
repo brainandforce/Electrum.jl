@@ -226,28 +226,29 @@ basis(hkl::HKLData) = hkl.basis
 """
     grid(hkl::HKLData{D,T}) -> Array{T,D}
 
-Returns the array that contains the reciprocal space data. Note that this causes information
-about the index offset to be lost!
+Returns a copy of the array that contains the reciprocal space data.
 """
-grid(hkl::HKLData) = hkl.data
+grid(hkl::HKLData) = deepcopy(hkl.data)
+
+Base.size(g::HKLData) = size(g.data)
+Base.size(g::HKLData, i::Integer) = size(g.data, i)
+
+Base.axes(g::HKLData) = range.(0, size(g) .- 1)
+Base.axes(g::HKLData, i::Integer) = 0:size(g, i) - 1
+
+Base.length(g::HKLData) = length(g.data)
 
 # HKLData now supports indexing by Miller index
-Base.getindex(g::HKLData, inds...) = getindex(grid(g), (mod.(inds, size(g)) .+ 1)...)
-
-function Base.setindex!(g::HKLData, x, inds...)
-    i = mod.(inds, size(g)) .+ 1
-    setindex!(grid(g), x, i...)
-end
+Base.getindex(g::HKLData, i...) = getindex(g.data, reinterpret_index(g, i)...)
+Base.setindex!(g::HKLData, x, i...) = setindex!(g.grid, x, reinterpret_index(g, i)...)
 
 # Linear index support
-Base.getindex(g::HKLData, ind) = getindex(grid(g), mod(ind, size(g)) + 1)
-Base.setindex!(g::HKLData, ind) = setindex!(grid(g), x, mod(ind, size(g)) + 1)
+Base.getindex(g::HKLData, ind) = getindex(g.data, mod(ind, size(g)) + 1)
+Base.setindex!(g::HKLData, ind) = setindex!(g.data, x, mod(ind, size(g)) + 1)
 
-Base.size(g::HKLData) = size(grid(g))
-Base.length(g::HKLData) = length(grid(g))
-Base.iterate(g::HKLData, i::Integer = 1) = iterate(grid(g), i)
+Base.iterate(g::HKLData, i::Integer = 1) = iterate(g.data, i)
 
-Base.LinearIndices(g::HKLData) = LinearIndices(grid(g)) .- 1
+Base.LinearIndices(g::HKLData) = LinearIndices(g.data) .- 1
 function Base.CartesianIndices(g::HKLData)
     # Shift the range down to get the FFT indices
     return CartesianIndices(Tuple((1:n) .- (div(n, 2) + 1) for n in size(g)))
@@ -259,11 +260,11 @@ Base.IndexStyle(::Type{<:HKLData}) = IndexLinear()
 
 Base.keys(g::HKLData) = CartesianIndices(g)
 
-Base.eachindex(s::IndexStyle, g::HKLData) = eachindex(s, grid(g))
+Base.eachindex(s::IndexStyle, g::HKLData) = eachindex(s, g.data)
 Base.eachindex(g::HKLData) = eachindex(IndexStyle(g), g)
 
-Base.abs(hkl::HKLData) = HKLData(basis(hkl), abs.(grid(hkl)))
-Base.abs2(hkl::HKLData) = HKLData(basis(hkl), abs2.(grid(hkl)))
+Base.abs(hkl::HKLData) = HKLData(basis(hkl), abs.(g.data))
+Base.abs2(hkl::HKLData) = HKLData(basis(hkl), abs2.(g.data))
 
 """
     voxelsize(g::HKLData)
@@ -275,8 +276,8 @@ voxelsize(g::HKLData) = volume(RealBasis(basis(g))) / length(g)
 
 function Base.isapprox(g1::HKLData, g2::HKLData; kwargs...)
     @assert basis(g1) === basis(g2) "Grid basis vectors for each grid are not identical."
-    @assert size(grid(g1)) === size(grid(g2)) "Grid sizes are different."
-    return isapprox(grid(g1), grid(g2), kwargs...)
+    @assert size(g.data) === size(g.data) "Grid sizes are different."
+    return isapprox(g.data, g.data, kwargs...)
 end
 
 """
