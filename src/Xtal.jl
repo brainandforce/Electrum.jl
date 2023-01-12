@@ -97,7 +97,7 @@ Computes the dot product of a vector with itself.
 _selfdot(v) = dot(v,v)
 
 # Methods used in vector operations that go beyond what's available in LinearAlgebra
-include("vectors.jl")
+include("math.jl")
 # Abstract types used in type tree
 include("types.jl")
 export AbstractBasis, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData,
