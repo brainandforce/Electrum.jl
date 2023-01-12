@@ -240,7 +240,7 @@ Base.length(g::HKLData) = length(g.data)
 
 # HKLData now supports indexing by Miller index
 Base.getindex(g::HKLData, i...) = getindex(g.data, reinterpret_index(g, i)...)
-Base.setindex!(g::HKLData, x, i...) = setindex!(g.grid, x, reinterpret_index(g, i)...)
+Base.setindex!(g::HKLData, x, i...) = setindex!(g.data, x, reinterpret_index(g, i)...)
 
 # Linear index support
 Base.getindex(g::HKLData, ind) = getindex(g.data, mod(ind, size(g)) + 1)
