@@ -71,18 +71,6 @@ function RealSpaceDataGrid(f::Function, g::RealSpaceDataGrid)
     return RealSpaceDataGrid(basis(g), shift(g), f.(g.grid))
 end
 
-"""
-    Xtal.reinterpret_index(g::RealSpaceDataGrid, inds::Tuple)
-
-Converts indices provided in a call to `getindex()` to valid array indices of the backing field
-that contains the data.
-"""
-function reinterpret_index(g::RealSpaceDataGrid, inds::Tuple)
-    return ntuple(Val{length(inds)}()) do i
-        inds[i] isa Colon ? Colon() : mod.(inds[i], size(g, i)) .+ 1
-    end
-end
-
 # getindex() supports arbitrary integer indices for RealSpaceDataGrid
 # By convention, it's zero based, so data at fractional coordinate [0,0,0] is indexable at [0,0,0]
 Base.getindex(g::RealSpaceDataGrid, i...) = getindex(g.grid, reinterpret_index(g, i)...)
