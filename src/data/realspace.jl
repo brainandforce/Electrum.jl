@@ -33,6 +33,16 @@ function RealSpaceDataGrid(latt::AbstractBasis{D}, grid::Array{T,D}) where {D,T}
 end
 
 """
+    RealSpaceDataGrid(f::Function, g::RealSpaceDataGrid)
+
+Applies a function `f` elementwise to the grid elements of a `RealSpaceDataGrid` and returns a new
+`RealSpaceDataGrid`.
+"""
+function RealSpaceDataGrid(f::Function, g::RealSpaceDataGrid)
+    return RealSpaceDataGrid(g.latt, g.orig, f.(g.grid))
+end
+
+"""
     basis(g::RealSpaceDataGrid{D,T}) -> RealBasis{D}
 
 Gets the basis vectors of a `RealSpaceDataGrid`.
@@ -60,16 +70,6 @@ Base.axes(g::RealSpaceDataGrid) = range.(0, size(g) .- 1)
 Base.axes(g::RealSpaceDataGrid, i::Integer) = 0:size(g, i) - 1
 
 Base.length(g::RealSpaceDataGrid) = length(g.grid)
-
-"""
-    RealSpaceDataGrid(f::Function, g::RealSpaceDataGrid)
-
-Applies a function `f` elementwise to the grid elements of a `RealSpaceDataGrid` and returns a new
-`RealSpaceDataGrid`.
-"""
-function RealSpaceDataGrid(f::Function, g::RealSpaceDataGrid)
-    return RealSpaceDataGrid(basis(g), shift(g), f.(g.grid))
-end
 
 # getindex() supports arbitrary integer indices for RealSpaceDataGrid
 # By convention, it's zero based, so data at fractional coordinate [0,0,0] is indexable at [0,0,0]
