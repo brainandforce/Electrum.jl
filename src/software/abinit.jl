@@ -969,18 +969,13 @@ end
 
 Reads the PHDOS file from ABINIT's anaddb script.
 """
-function read_abinit_anaddb_PHDOS(filename::AbstractString)
-    data = readlines(filename)
+function read_abinit_anaddb_PHDOS(filename::AbstractString) 
     # Skip header (lines 1-8)
-    data = data[9:length(data)]
-    # Initialize matrix to store data
-    # Energy | total PHDOS | int PHDOS | AtomType 1 PHDOS | AtomType 1 intPHDOS | ...
+    data = readlines(filename)[9:end]
     num_col = length(split(data[1]))
-    data_new = Matrix{Float64}(undef,length(data),num_col)
-    # Read in data
-    for i in 1:length(data)
-        data_new[i,:] = parse.(Float64, split(data[i]))
-    end
+    # Parse data to floating point values
+    # Energy | total PHDOS | int PHDOS | AtomType 1 PHDOS | AtomType 1 intPHDOS | ...
+    data_new = [parse(Float64, split(data[i])) for i in eachindex(data), j in 1:num_col]
     # Fermi for phonon density of states defaults to 0
     fermi = 0 
     tdos = DensityOfStates(fermi, data_new[:,1], data_new[:,2], data_new[:,3])
