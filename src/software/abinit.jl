@@ -962,3 +962,29 @@ function write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{F
         end
     end
 end
+
+"""
+    read_abinit_anaddb_PHDOS(filename::AbstractString) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
+Reads the PHDOS file from ABINIT's anaddb script.
+"""
+function read_abinit_anaddb_PHDOS(filename::AbstractString)
+    data = readlines(filename)
+    # Skip header (lines 1-8)
+    data = data[9:length(data)]
+    # Initialize matrix to store data
+    # Energy | total PHDOS | int PHDOS | AtomType 1 PHDOS | AtomType 1 intPHDOS | ...
+    num_col = length(split(data[1]))
+    data_new = Matrix{Float64}(undef,length(data),num_col)
+    # Read in data
+    for i in 1:length(data)
+        data_new[i,:] = parse.(Float64, split(data[i]))
+    end
+    # Fermi for phonon density of states defaults to 0
+    fermi = 0 
+    tdos = DensityOfStates(fermi, data_new[:,1], data_new[:,2], data_new[:,3])
+    pdos = Vector{ProjectedDensityOfStates}(undef, Int((num_col-3)/2)) # number of ions
+    for i in 1:length(pdos)
+        pdos[i] = ProjectedDensityOfStates(fermi, data_new[:,1], reshape(data_new[:,i*2+2],1,size(data_new)[1]))
+    end
+    return (tdos, pdos)
+end
