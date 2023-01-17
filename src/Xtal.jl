@@ -135,7 +135,8 @@ include("filetypes.jl")
 export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
 include("software/abinit.jl")
 export read_abinit_density, read_abinit_potential, read_abinit_wavefunction, read_abinit_DEN,
-       read_abinit_POT, read_abinit_WFK
+       read_abinit_POT, read_abinit_anaddb_out, read_abinit_WFK, read_abinit_anaddb_in,
+       write_abinit_modes, read_abinit_anaddb_PHDOS
 include("software/vasp.jl")
 export readPOSCAR, writePOSCAR4, readWAVECAR, readDOSCAR, readPROCAR, get_fermi, readKPOINTS
 include("software/lammps.jl")
