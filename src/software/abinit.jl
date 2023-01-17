@@ -979,13 +979,12 @@ function read_abinit_anaddb_PHDOS(filename::AbstractString)
     # Fermi for phonon density of states defaults to 0
     fermi = 0 
     tdos = DensityOfStates(fermi, data_new[:,1], data_new[:,2], data_new[:,3])
-    pdos = Vector{ProjectedDensityOfStates}(undef, div((num_col-3), 2)) # number of ions
-    for i in 1:length(pdos)
-        pdos[i] = ProjectedDensityOfStates(
-            fermi,
+    pdos = [
+        ProjectedDensityOfStates(
+            fermi, 
             data_new[:,1],
             reshape(data_new[:,i*2+2], 1, size(data_new)[1])
-        )
-    end
+        ) for i in 1:div((num_col-3), 2)
+    ]
     return (tdos, pdos)
 end
