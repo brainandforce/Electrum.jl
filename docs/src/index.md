@@ -17,7 +17,7 @@ As of this release, Electrum.jl is not in the Julia package registry. You'll nee
 this repo to your Julia environment (which should be at least v1.6):
 
 ```
-(@v1.8 pkg)> add https://github.com/brainandforce/Xtal.jl
+(@v1.8 pkg)> add https://github.com/brainandforce/Electrum.jl
 ```
 
 You can also do this by importing `Pkg` and entering the following command:
@@ -25,20 +25,20 @@ You can also do this by importing `Pkg` and entering the following command:
 ```julia-repl
 julia> import Pkg
 
-julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl")
+julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl")
 ```
 
 ## Tracking different branches
 
-If you'd like to work on developing Xtal.jl, you probably want to work on the project's current 
+If you'd like to work on developing Electrum.jl, you probably want to work on the project's current 
 state, and not the release version. You can do this by specifying the branch you want to track
 (let's assume it's `dev`):
 
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl#dev
+(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl#dev
 ```
 ```julia-repl
-julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl", rev="dev")
+julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="dev")
 ```
 
 # Licensing and attribution

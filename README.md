@@ -19,20 +19,20 @@ and well-maintained scientific software.
 
 Electrum.jl is not in the Julia package registry yet, so you'll need to install it like this:
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl 
+(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl 
 ```
 You can access package mode by typing `]` at the REPL. Alternatively, you can work with the `Pkg`
 module:
 ```julia-repl
-julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl")
+julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl")
 ```
 If you'd like to track a specific branch, you can specify this as well (here, `release` is used as
 an example):
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl#release
+(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl#release
 ```
 ```julia-repl
-julia> Pkg.add(url="https://github.com/brainandforce/Xtal.jl", rev="release")
+julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="release")
 ```
 The current development state is kept in the `main` branch, and the most recent stable version is
 the head of the `release` branch. Specific releases for a minor version may be found by suffixing
@@ -74,12 +74,12 @@ This project is just starting to get off the ground, but here's what we have pla
 [contributing guidelines.](CONTRIBUTING.md)
 
 [docs-stable-img]:  https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]:  https://brainandforce.github.io/Xtal.jl/stable
+[docs-stable-url]:  https://brainandforce.github.io/Electrum.jl/stable
 [docs-dev-img]:     https://img.shields.io/badge/docs-dev-blue.svg
-[docs-dev-url]:     https://brainandforce.github.io/Xtal.jl/dev
-[ci-status-img]:    https://github.com/brainandforce/Xtal.jl/workflows/CI/badge.svg
-[ci-status-url]:    https://github.com/brainandforce/Xtal.jl/actions
+[docs-dev-url]:     https://brainandforce.github.io/Electrum.jl/dev
+[ci-status-img]:    https://github.com/brainandforce/Electrum.jl/workflows/CI/badge.svg
+[ci-status-url]:    https://github.com/brainandforce/Electrum.jl/actions
 [aqua-img]:         https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg
 [aqua-url]:         https://github.com/JuliaTesting/Aqua.jl
-[codecov-img]:      https://codecov.io/gh/brainandforce/Xtal.jl/branch/main/graph/badge.svg
-[codecov-url]:      https://codecov.io/gh/brainandforce/Xtal.jl/
+[codecov-img]:      https://codecov.io/gh/brainandforce/Electrum.jl/branch/main/graph/badge.svg
+[codecov-url]:      https://codecov.io/gh/brainandforce/Electrum.jl/

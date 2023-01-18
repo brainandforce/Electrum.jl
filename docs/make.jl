@@ -22,5 +22,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/brainandforce/Xtal.jl"
+    repo = "github.com/brainandforce/Electrum.jl"
 )

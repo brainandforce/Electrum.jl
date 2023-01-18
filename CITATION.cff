@@ -29,9 +29,9 @@ identifiers:
   - type: other
     value: b7bf5f09-dce4-461b-b741-5180c76f4cfe
     description: Julia package UUID
-repository-code: 'https://github.com/brainandforce/Xtal.jl'
-url: 'https://github.com/brainandforce/Xtal.jl'
-repository: 'https://github.com/brainandforce/Xtal.jl'
+repository-code: 'https://github.com/brainandforce/Electrum.jl'
+url: 'https://github.com/brainandforce/Electrum.jl'
+repository: 'https://github.com/brainandforce/Electrum.jl'
 abstract: >-
   A Julia library for working with crystal structures
   and associated data with the goal of making theory
