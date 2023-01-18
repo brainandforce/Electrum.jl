@@ -144,7 +144,7 @@ function nearest_index(g::RealSpaceDataGrid{D,T}, coord::AbstractVector{<:Real})
 end
 
 """
-    Xtal.grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
+    Electrum.grid_check(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
 
 Performs a check on two `RealSpaceDataGrid`s to ensure that the basis, origin shift, and grid
 dimensions are the same before performing mathematical operations.

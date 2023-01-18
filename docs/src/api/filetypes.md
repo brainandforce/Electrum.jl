@@ -4,17 +4,17 @@
 
 ### Reading
 ```@docs
-Xtal.readXYZ
-Xtal.readXSF
-Xtal.readCPcoeff
-Xtal.readCPgeo
-Xtal.readCPcell
+Electrum.readXYZ
+Electrum.readXSF
+Electrum.readCPcoeff
+Electrum.readCPgeo
+Electrum.readCPcell
 ```
 
 ### Reading
 ```@docs
-Xtal.writeXYZ
-Xtal.writeXSF
+Electrum.writeXYZ
+Electrum.writeXSF
 ```
 
 ## ABINIT files
@@ -22,9 +22,9 @@ Xtal.writeXSF
 ### Reading
 
 ```@docs
-Xtal.read_abinit_density
-Xtal.read_abinit_potential
-Xtal.read_abinit_wavefunction
+Electrum.read_abinit_density
+Electrum.read_abinit_potential
+Electrum.read_abinit_wavefunction
 ```
 
 ## VASP files
@@ -32,17 +32,17 @@ Xtal.read_abinit_wavefunction
 ### Reading
 
 ```@docs
-Xtal.readDOSCAR
-Xtal.readKPOINTS
-Xtal.readPOSCAR
-Xtal.readPROCAR
-Xtal.readWAVECAR
+Electrum.readDOSCAR
+Electrum.readKPOINTS
+Electrum.readPOSCAR
+Electrum.readPROCAR
+Electrum.readWAVECAR
 ```
 
 ### Writing
 
 ```@docs
-Xtal.writePOSCAR4
+Electrum.writePOSCAR4
 ```
 
 ## LAMMPS
@@ -52,5 +52,5 @@ Xtal.writePOSCAR4
 ### Writing
 
 ```@docs
-Xtal.write_lammps_data
+Electrum.write_lammps_data
 ```

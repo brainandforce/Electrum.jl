@@ -1,7 +1,7 @@
 # Crystals
 
 ```@docs
-Xtal.AbstractCrystal
-Xtal.Crystal
-Xtal.CrystalWithDatasets
+Electrum.AbstractCrystal
+Electrum.Crystal
+Electrum.CrystalWithDatasets
 ```

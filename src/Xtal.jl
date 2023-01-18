@@ -1,4 +1,4 @@
-module Xtal
+module Electrum
 
 using LinearAlgebra
 using StaticArrays
@@ -51,14 +51,14 @@ const REDUCTION_MATRIX_3D =
 )
 
 """
-    Xtal.TOL_DEF
+    Electrum.TOL_DEF
 
 Default tolerance for discrepancies in floating point values.
 """
 const TOL_DEF = 1e-8
 
 """
-    Xtal.BOHR2ANG
+    Electrum.BOHR2ANG
 
 Converts lengths in bohr to angstrom
 """
@@ -66,7 +66,7 @@ const BOHR2ANG = 0.52917720859
 
 #= Units of these two constants should be energy^-1 * length^-2
 """
-    Xtal.CABINIT
+    Electrum.CABINIT
 
 The value of 2m_e/ħ^2 as used in abinit (hartree^-1 * angstrom^-2).
 """
@@ -74,7 +74,7 @@ const CABINIT = 7.142129652186264
 =#
 
 """
-    Xtal.CVASP
+    Electrum.CVASP
 
 The value of 2m_e/ħ^2 as used in VASP (eV^-1 * angstrom^-2, but not exactly).
 """
@@ -83,14 +83,14 @@ const CVASP = 0.262465831
 
 # Functionality here has been superseded by allequal() in Julia 1.8.0
 """
-    Xtal._allsame(itr)
+    Electrum._allsame(itr)
 
 Returns `true` if all the elements of an iterator are identical.
 """
 _allsame(itr) = all(x -> x == first(itr), itr)
 
 """
-    Xtal._selfdot(v)
+    Electrum._selfdot(v)
 
 Computes the dot product of a vector with itself.
 """

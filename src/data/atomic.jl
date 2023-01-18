@@ -60,7 +60,7 @@ function LinearAlgebra.dot(sh1::SphericalHarmonic, sh2::SphericalHarmonic)
 end
 
 """
-    Xtal.sc_ind(l::Integer, m::Integer) -> Int
+    Electrum.sc_ind(l::Integer, m::Integer) -> Int
 
 Gets the associated linear index for a pair of (l,m) values used in `SphericalHarmonic`.
 """

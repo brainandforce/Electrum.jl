@@ -1,6 +1,6 @@
 """
-    Xtal._is_linearly_independent(vecs::AbstractMatrix{<:Number}) -> Bool
-    Xtal._is_linearly_independent(vecs::AbstractVector{<:Number}...) -> Bool
+    Electrum._is_linearly_independent(vecs::AbstractMatrix{<:Number}) -> Bool
+    Electrum._is_linearly_independent(vecs::AbstractVector{<:Number}...) -> Bool
 
 Determines whether a set of vectors is linearly independent.
 
@@ -17,8 +17,8 @@ function is_linearly_independent(vecs::AbstractVector{<:Number}...)
 end
 
 """
-    Xtal.reinterpret_index(sz::NTuple{D,<:Integer}, inds::Tuple) -> Tuple
-    Xtal.reinterpret_index(g, inds::Tuple) -> Tuple
+    Electrum.reinterpret_index(sz::NTuple{D,<:Integer}, inds::Tuple) -> Tuple
+    Electrum.reinterpret_index(g, inds::Tuple) -> Tuple
 
 Converts indices provided in a call to `getindex()` to valid array indices of the backing field
 that contains the data. This is intended for use with data structures that use zero-based indexing

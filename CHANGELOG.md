@@ -21,6 +21,8 @@ semantic versioning from 0.2 onwards.)
 
 ## Breaking changes
 
+The package has been renamed to `Electrum.jl`.
+
 ### Basis vectors and lattices
 
 * `AbstractLattice` and its subtypes (`RealLattice` and `ReciprocalLattice`) have been removed.

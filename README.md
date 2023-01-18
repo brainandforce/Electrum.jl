@@ -1,4 +1,4 @@
-# Xtal.jl
+# Electrum.jl
 
 [![Documentation (stable)][docs-stable-img]][docs-stable-url]
 [![Documentation (dev)][docs-dev-img]][docs-dev-url]
@@ -12,12 +12,12 @@ for everyone.
 
 This package is written in pure Julia with minimal dependencies, so instead of pulling operations
 from established packages in other languages (such as scipy) they are implemented in this package.
-We hope that Xtal.jl can serve as a reference for both useful operations on crystal structures and
-well-maintained scientific software.
+We hope that Electrum.jl can serve as a reference for both useful operations on crystal structures
+and well-maintained scientific software.
 
 ## How to install
 
-Xtal.jl is not in the Julia package registry yet, so you'll need to install it like this:
+Electrum.jl is not in the Julia package registry yet, so you'll need to install it like this:
 ```
 (@v1.8) pkg> add https://github.com/brainandforce/Xtal.jl 
 ```

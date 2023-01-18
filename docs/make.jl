@@ -1,12 +1,12 @@
 #! /usr/bin/env julia
 
 using Documenter
-using Xtal
+using Electrum
 
 makedocs(
-    sitename = "Xtal",
+    sitename = "Electrum.jl",
     format = Documenter.HTML(prettyurls = (get(ENV, "CI", nothing) == true)),
-    modules = [Xtal],
+    modules = [Electrum],
     pages = [
         "Home" => "index.md",
         "Types" => "types.md",

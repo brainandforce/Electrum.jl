@@ -12,7 +12,10 @@ for running a molecular dynamics simulation. If provided, `sc` can be used to ge
 This function currently only works correctly for 3D systems.
 """
 function write_lammps_data(io::IO, list::AtomList{D}, dummy::Bool=false) where D
-    println(io, "# LAMMPS data file written by Xtal.jl (https://github.com/brainandforce/Xtal.jl)")
+    println(
+        io, 
+        "# LAMMPS data file written by Electrum.jl (https://github.com/brainandforce/Xtal.jl)"
+    )
     # Get the number of atoms; write the corresponding line
     natoms = length(list)
     println(io, natoms, " atoms")

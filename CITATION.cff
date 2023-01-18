@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: Xtal.jl
+title: Electrum.jl
 message: >-
   This software is MIT licensed, which means that
   citation is not required to use this package in

@@ -1,5 +1,5 @@
 """
-    Xtal.lattice_sanity_check(M::AbstractMatrix)
+    Electrum.lattice_sanity_check(M::AbstractMatrix)
 
 Runs checks on a matrix intended to represent basis vectors of a crystal unit cell. Returns
 nothing, but warns if the cell vectors form a left-handed coordinate system, and throws an 
@@ -182,7 +182,7 @@ Base.:\(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) \ v
 #-------------------------------------------------------------------------------------------------#
 
 """
-    Xtal.cell_lengths(M::AbstractMatrix) -> Vector{Float64}
+    Electrum.cell_lengths(M::AbstractMatrix) -> Vector{Float64}
 
 Returns the lengths of the constituent vectors in a matrix representing cell vectors.
 """
@@ -198,7 +198,7 @@ lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
 lengths(x) = lengths(basis(x))
 
 """
-    Xtal.cell_volume(M::AbstractMatrix) -> Float64
+    Electrum.cell_volume(M::AbstractMatrix) -> Float64
 
 Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
 (negative for cells that do not follow the right hand rule).
@@ -216,7 +216,7 @@ volume(b::AbstractBasis) = cell_volume(matrix(b))
 volume(x) = volume(basis(x))
 
 """
-    Xtal.generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
+    Electrum.generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
 
 Generate pairs of integers up to `D` in ascending order.
 """
@@ -233,7 +233,7 @@ function generate_pairs(D::Integer)
 end
 
 """
-    Xtal.generate_pairs(::Type{Val{D}}) -> SVector{D*(D-1)/2, NTuple{2,Int}}
+    Electrum.generate_pairs(::Type{Val{D}}) -> SVector{D*(D-1)/2, NTuple{2,Int}}
 
 Generate pairs of integers up to `D` in ascending order in an `SVector`.
 """
@@ -243,13 +243,13 @@ function generate_pairs(::Type{Val{D}}) where D
 end
 
 """
-    Xtal.cell_angles_cos(M::AbstractMatrix) -> Vector{Float64}
+    Electrum.cell_angles_cos(M::AbstractMatrix) -> Vector{Float64}
 
 Generates the cosines of the unit cell angles.
 
 The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
-may lead to unexpected results.
+by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+this may lead to unexpected results.
 """
 function cell_angles_cos(M::AbstractMatrix)
     dimpairs = reverse(generate_pairs(size(M,1)))
@@ -262,8 +262,8 @@ end
 Generates the cosines of the unit cell angles.
 
 The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
-may lead to unexpected results.
+by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+this may lead to unexpected results.
 """
 angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
 
@@ -273,8 +273,8 @@ angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
 Returns the angles (in radians) between each pair of basis vectors.
 
 The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
-may lead to unexpected results.
+by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+this may lead to unexpected results.
 """
 angles_rad(b::AbstractBasis) = acos.(angles_cos(b))
 
@@ -284,8 +284,8 @@ angles_rad(b::AbstractBasis) = acos.(angles_cos(b))
 Returns the angles (in degrees) between each pair of basis vectors.
 
 The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Xtal.generate_pairs()`. For crystals with more spatial dimensions, this
-may lead to unexpected results.
+by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+this may lead to unexpected results.
 """
 angles_deg(b::AbstractBasis) = acosd.(angles_cos(b))
 
@@ -345,7 +345,7 @@ function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
 end
 
 """
-    Xtal.maxHKLindex(b::AbstractBasis, ecut::Real; prim=true, c = CVASP)
+    Electrum.maxHKLindex(b::AbstractBasis, ecut::Real; prim=true, c = CVASP)
 
 Determines the maximum integer values of the reciprocal lattice vectors needed to store data out
 to a specific energy cutoff for a 3D lattice.

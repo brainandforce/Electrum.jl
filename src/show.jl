@@ -1,6 +1,6 @@
 #---Helper functions used to print common features (e.g. basis vectors)---------------------------#
 """
-    Xtal.subscript_string(x::Number) -> String
+    Electrum.subscript_string(x::Number) -> String
 
 Produces a string representation of a number in subscript format.
 """
@@ -15,7 +15,7 @@ function subscript_string(x::Number)
 end
 
 """
-    Xtal.vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
+    Electrum.vector_string(v::AbstractVector{<:Real}; brackets=true) -> String
 
 Prints a representation of a vector as a string. The numbers use the standard C float (`%f`)
 formatting.
@@ -27,7 +27,7 @@ function vector_string(v::AbstractVector{<:Real}; brackets=true)
 end
 
 """
-    Xtal.basis_string(
+    Electrum.basis_string(
         M::AbstractMatrix{<:Real};
         pad=2,
         brackets=true,
@@ -52,7 +52,7 @@ julia> M = 3.5 * [0 1 1; 1 0 1; 1 1 0]
  3.5  0.0  3.5
  3.5  3.5  0.0
 
-julia> Xtal.basis_string(M, letters=true, length=true, unit="Å")
+julia> Electrum.basis_string(M, letters=true, length=true, unit="Å")
 3-element Vector{String}:
  "  a: [  0.000000  3.500000  3.500000 ]   (4.949747 Å)"
  "  b: [  3.500000  0.000000  3.500000 ]   (4.949747 Å)"
@@ -85,7 +85,7 @@ basis_string(b::RealBasis, kwargs...) = basis_string(matrix(b), unit="Å", kwar
 basis_string(b::ReciprocalBasis, kwargs...) = basis_string(matrix(b), unit="Å⁻¹", kwargs...)
 
 """
-    Xtal.printbasis([io::IO = stdout], b; kwargs...)
+    Electrum.printbasis([io::IO = stdout], b; kwargs...)
 
 Prints the result of `basis_string()` to `io`.
 
@@ -97,7 +97,7 @@ julia> M = 3.5 * [0 1 1; 1 0 1; 1 1 0]
  3.5  0.0  3.5
  3.5  3.5  0.0
 
-julia> Xtal.printbasis(stdout, M)
+julia> Electrum.printbasis(stdout, M)
   a: [  0.000000  3.500000  3.500000 ]   (4.949747)
   b: [  3.500000  0.000000  3.500000 ]   (4.949747)
   c: [  3.500000  3.500000  0.000000 ]   (4.949747)
@@ -125,8 +125,8 @@ function atom_string(a::AtomPosition; name=true, num=true, entrysz=4)
 end
 
 """
-    Xtal.formula_string(l::AtomList; reduce=true, show_ones=false) -> String
-    Xtal.formula_string(l::AbstractCrystal; kwargs...) -> String
+    Electrum.formula_string(l::AtomList; reduce=true, show_ones=false) -> String
+    Electrum.formula_string(l::AbstractCrystal; kwargs...) -> String
 
 Prints a string which represents the chemical formula of the atoms within an `AtomList` or 
 `AbstractCrystal`.

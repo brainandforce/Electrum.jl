@@ -86,7 +86,7 @@ readCONTCAR() = open(readPOSCAR, "CONTCAR")
     writePOSCAR4(
         io::IO,
         list::AtomList;
-        comment = Written by Xtal.jl,
+        comment = Written by Electrum.jl,
         names = false
     )
     writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...)
@@ -103,7 +103,7 @@ overridden by setting `names` to `true.`
 function writePOSCAR4(
     io::IO,
     list::AtomList;
-    comment = "Written by Xtal.jl",
+    comment = "Written by Electrum.jl",
     names = false
 )
     # Write comment line and scaling factor

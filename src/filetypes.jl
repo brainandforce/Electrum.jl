@@ -40,7 +40,7 @@ function writeXYZ(io::IO, data::AbstractVector{<:AtomPosition})
     # Write the number of atoms
     println(io, length(data))
     # Include the comment line
-    println(io, "File written by Xtal.jl")
+    println(io, "File written by Electrum.jl")
     # Write lines for all atoms
     for atom in data
         println(io, atomname(atom), join([lpad(@sprintf("%f", n), 11) for n in coord(atom)]))
@@ -245,7 +245,7 @@ end
 Writes the crystal component of an XCrysDen XSF file.
 """
 function writeXSF(io::IO, l::AtomList{D}) where D
-    println(io, "# Written by Xtal.jl")
+    println(io, "# Written by Electrum.jl")
     # Dimension information
     println(io, "DIM_GROUP")
     println(io, D, "  1")
@@ -316,7 +316,7 @@ function writeXSF(
     periodic=true
 ) where {K,D,T}
     println(io, "BEGIN_BLOCK_DATAGRID_", D, "D")
-    println(io, "Written by Xtal.jl")
+    println(io, "Written by Electrum.jl")
     for (k,d) in data
         writeXSF(io::IO, k, d, periodic=periodic)
     end

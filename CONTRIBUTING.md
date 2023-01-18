@@ -1,4 +1,4 @@
-# How to contribute to Xtal.jl
+# How to contribute to Electrum.jl
 
 Thanks for taking interest in our package!
 
@@ -11,7 +11,7 @@ current release version is kept at `release`, and older release versions can be 
 prefixing with the minor version number, like so: `0.1/release`.
 
 As mentioned in the [README](README.md), you can track any of these branches with the Julia package
-manager. In the future, you should be able to get Xtal.jl directly from the General registry.
+manager. In the future, you should be able to get Electrum.jl directly from the General registry.
 
 ### How to branch for contributions
 
@@ -48,8 +48,8 @@ formatted.
 
 ### Julia version
 
-Xtal.jl is being written for Julia 1.6, which is an LTS release. This may change in the future, but
-for now, avoid using any features that are present in later releases of Julia.
+Electrum.jl is being written for Julia 1.6, which is an LTS release. This may change in the future,
+but for now, avoid using any features that are present in later releases of Julia.
 
 ### Dependencies and interoperability
 
@@ -62,14 +62,14 @@ pure Julia.
 
 ## Coding style and standards
 
-The following conventions are maintained throughout Xtal.jl.
+The following conventions are maintained throughout Electrum.jl.
 
 When in doubt, follow the Julia style guide, located here:
 https://docs.julialang.org/en/v1/manual/style-guide/
 
 ### Exceptions to the Julia style guide
 
-For `Xtal.ABINITHeader` structs, direct field access may be used to assign and retrieve values.
+For `Electrum.ABINITHeader` structs, direct field access may be used to assign and retrieve values.
 
 Avoid using short-circuit `if` statements - write them out explicitly. There are many instances of 
 short-circuited `if` statements throughout the code at this point, and you are welcome to restore 
@@ -177,13 +177,13 @@ show them, they will not be seen by users. You can enable debug messages in the 
 package by entering the following:
 
 ```julia-repl
-julia> ENV["JULIA_DEBUG"] = Xtal
-Xtal
+julia> ENV["JULIA_DEBUG"] = Electrum
+Electrum
 ```
 
 Try to minimize the use of repeated `@info`, `@warn`, or `@error` statements in loops. Printing to
 the terminal can bottleneck functions. `@debug` statements will normally be skipped unless a logger
-explicitly compiles them or `$JULIA_DEBUG` is set for the module.
+explicitly compiles them or `$JULIA_DEBUG` is set to the module name.
 
 Avoid using `println()` if one of the logging macros better suits the purpose. If `println()` is
 used, consider whether it might be a better idea to print to `stderr` instead of `stdout`. Note 

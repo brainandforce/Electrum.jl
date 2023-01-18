@@ -3,18 +3,18 @@
 # Constructors and types
 
 ```@docs
-Xtal.AtomPosition
-Xtal.AtomList
+Electrum.AtomPosition
+Electrum.AtomList
 ```
 
 # Methods
 
 ```@docs
-Xtal.atomname
-Xtal.atomicno
-Xtal.coord
-Xtal.natom
-Xtal.basis
-Xtal.cartesian
-Xtal.reduce_coords
+Electrum.atomname
+Electrum.atomicno
+Electrum.coord
+Electrum.natom
+Electrum.basis
+Electrum.cartesian
+Electrum.reduce_coords
 ```

@@ -3,51 +3,51 @@
 ## Real space
 
 ```@docs
-Xtal.AbstractRealSpaceData
-Xtal.RealSpaceDataGrid
-Xtal.grid
-Xtal.volume
-Xtal.voxelsize
-Xtal.integrate
-Xtal.fft
+Electrum.AbstractRealSpaceData
+Electrum.RealSpaceDataGrid
+Electrum.grid
+Electrum.volume
+Electrum.voxelsize
+Electrum.integrate
+Electrum.fft
 ```
 
 ## Reciprocal space
 
 ```@docs
-Xtal.AbstractReciprocalSpaceData
-Xtal.AbstractKPoints
-Xtal.AbstractHKL
-Xtal.KPointGrid
-Xtal.KPointList
-Xtal.BandAtKPoint
-Xtal.BandStructure
-Xtal.FatBands
-Xtal.HKLData
-Xtal.HKLDict
-Xtal.ReciprocalWavefunction
-Xtal.nkpt
-Xtal.nband
+Electrum.AbstractReciprocalSpaceData
+Electrum.AbstractKPoints
+Electrum.AbstractHKL
+Electrum.KPointGrid
+Electrum.KPointList
+Electrum.BandAtKPoint
+Electrum.BandStructure
+Electrum.FatBands
+Electrum.HKLData
+Electrum.HKLDict
+Electrum.ReciprocalWavefunction
+Electrum.nkpt
+Electrum.nband
 ```
 
 ## Density of states
 
 ```
-Xtal.AbstractDensityOfStates
-Xtal.DensityOfStates
-Xtal.ProjectedDensityOfStates
-Xtal.nkpt
-Xtal.nband
-Xtal.bounds
-Xtal.fermi
-Xtal.smear
-Xtal.energies
-Xtal.nelectrons
+Electrum.AbstractDensityOfStates
+Electrum.DensityOfStates
+Electrum.ProjectedDensityOfStates
+Electrum.nkpt
+Electrum.nband
+Electrum.bounds
+Electrum.fermi
+Electrum.smear
+Electrum.energies
+Electrum.nelectrons
 ```
 
 ## Atomic data
 
 ```@docs
-Xtal.AtomicData
-Xtal.SphericalComponents
+Electrum.AtomicData
+Electrum.SphericalComponents
 ```
