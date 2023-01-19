@@ -161,7 +161,7 @@ function readWAVECAR(io::IO)
         # Loop through the vector indices, but in most cases we don't need them all
         for n in eachindex(hkl)
             # Increment the current vector component
-            hkl[n] = (hkl[n] in bounds[n] ? hkl[n] + 1 : minimum(bounds[n]))
+            hkl[n] = (hkl[n]+1 in bounds[n] ? hkl[n] + 1 : minimum(bounds[n]))
             # Only increment the next components if the current one is zero
             hkl[n] == 0 || break
         end
