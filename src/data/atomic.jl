@@ -1,13 +1,3 @@
-"""
-    AtomicData{D,T}
-
-Data associated with individual atoms in a structure.
-
-This is a type alias for `Dict{AtomPosition{D},T}`. Keys are `AtomPosition` entries, and the values
-may be of any type.
-"""
-const AtomicData{D,T} = Dict{AtomPosition{D},T} where {D,T}
-
 # Note: @computed structs cannot be documented normally
 # Use an @doc after the struct, like such
 @computed struct SphericalHarmonic{Lmax}
