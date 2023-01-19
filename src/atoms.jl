@@ -1,263 +1,263 @@
 """
-    AtomPosition{D} <: AbstractRealSpaceData{D}
+    NamedAtom
 
-Contains information about an atom in a crystal, including atomic number, the name of an atom,
-and its position. Atomic names may be set arbitrarily, but will default to the atomic symbol if not
-provided explicitly.
+Stores information about an atom, which includes a name which may be up to 8 codepoints long, and
+the atomic number.
 
-An atomic number of 0 indicates a dummy atom - this does not represent a real atom, but a position 
-of note within the structure. If no name is given for a dummy atom, it will be given the empty 
-string.
+Internally, the name is stored as a `NTuple{8,Char}` in the `name` field to guarantee that the type
+is pure bits. However, the `name` property returns a `String`.
 """
-struct AtomPosition{D} <: AbstractRealSpaceData{D}
-    name::String
+struct NamedAtom
+    name::NTuple{8,Char}
     num::Int
-    pos::SVector{D,Float64}
-    function AtomPosition(
-        name::AbstractString,
-        num::Integer,
-        pos::SVector{D,<:Real}
-    ) where D
-        # Don't allow empty names when an atomic number is passed.
-        name = isempty(name) && num > 0 ? ELEMENTS[num] : name
-        return new{D}(name, num, pos)
-    end
-end
-
-function AtomPosition(name::AbstractString, pos::SVector{D,<:Real}) where D
-    return AtomPosition(name, get(ELEMENT_LOOKUP, name, 0), pos)
-end
-
-function AtomPosition(num::Integer, pos::SVector{D,<:Real}) where D
-    return AtomPosition(ELEMENTS[num], num, pos)
-end
-
-# More convenience constructors...
-function AtomPosition(name::AbstractString, num::Integer, pos::Vararg{<:Real,D}) where D
-    return AtomPosition(name, num, SVector{D,Float64}(pos))
-end
-
-function AtomPosition(n, pos::Vararg{<:Real,D}) where D
-    return AtomPosition(n, SVector{D,Float64}(pos))
-end
-
-# The methods below require a type parameter in the constructor
-
-function AtomPosition{D}(name::AbstractString, num::Integer, pos::AbstractVector{<:Real}) where D
-    return AtomPosition(name, num, SVector{D,Float64}(pos))
-end
-
-function AtomPosition{D}(name::AbstractString, pos::AbstractVector{<:Real}) where D
-    return AtomPosition(name, SVector{D,Float64}(pos))
-end
-
-function AtomPosition{D}(num::Integer, pos::AbstractVector{<:Real}) where D
-    return AtomPosition(num, SVector{D,Float64}(pos))
-end
-
-"""
-    atomname(a::AtomPosition) -> String
-
-Returns the name of the atom. Note that this returns the name that was provided during
-construction, which is not guaranteed to be the same as the name of the element that has the given
-atomic number.
-"""
-atomname(a::AtomPosition) = a.name
-
-"""
-    atomicno(a::AtomPosition) -> Int
-
-Gets the atomic number of an atom in an atomic position.
-"""
-atomicno(a::AtomPosition) = a.num
-
-"""
-    coord(a::AtomPosition{D}) -> SVector{D,Float64}
-
-Returns the coordinate associated with an atomic position.
-"""
-coord(a::AtomPosition) = a.pos
-
-Base.getindex(a::AtomPosition, ind) = a.pos[ind]
-
-"""
-    AtomList{D} <: AbstractRealSpaceData{D}
-
-A list of atomic positions with an associated basis. Atomic coordinates are given in terms of the 
-specified basis. If the basis is a zero matrix, the coordinates are assumed to be given in 
-angstroms.
-"""
-struct AtomList{D} <: AbstractRealSpaceData{D}
-    basis::RealBasis{D}
-    coord::Vector{AtomPosition{D}}
-    function AtomList(
-        basis::AbstractBasis{D},
-        atoms::AbstractVector{<:AtomPosition{D}}
-    ) where D
-        # Warn on atomic pairs that are *really* close
-        # Transforming the data to Cartesian coordinates isn't necessary
-        for m in eachindex(atoms)
-            for n in m+1:length(atoms)
-                (a,b) = atoms[[m,n]]
-                dist = norm(coord(a) - coord(b))
-                sametype = atomname(a) == atomname(b) && atomicno(a) == atomicno(b)
-                if isapprox(dist, 0, atol=sqrt(eps(Float64)))
-                    if sametype
-                        @warn string(
-                            "Atoms $m and $n are very close or identical!\n",
-                            "Atom $m: ", repr("text/plain", a),
-                            "Atom $n: ", repr("text/plain", b),
-                            "Distance (in supplied basis): $dist"
-                        )
-                    else
-                        @warn string(
-                            "Atoms $m and $n are very close! Is this a mixed occupancy site?\n",
-                            "Atom $m: ", repr("text/plain", a),
-                            "Atom $n: ", repr("text/plain", b),
-                            "Distance (in supplied basis): $dist"
-                        )
-                    end
-                end
-            end
+    function NamedAtom(name::AbstractString, num::Integer)
+        codepoints = ntuple(Val{8}()) do i
+            i <= length(name) ? name[i] : '\0'
         end
-        # Remove any duplicate atoms if they come up
-        return new{D}(basis, unique(atoms))
+        return new(codepoints, num)
     end
 end
 
-# Do it without adding a lattice
-function AtomList(coord::AbstractVector{AtomPosition{D}}) where D
-    return AtomList(zeros(RealBasis{D}), coord)
-end
-
-Base.:(==)(l1::AtomList, l2::AtomList) = (l1.basis === l2.basis && l1.coord == l2.coord)
-Base.isempty(l::AtomList) = isempty(l.coord)
-Base.firstindex(l::AtomList) = firstindex(l.coord)
-Base.lastindex(l::AtomList) = lastindex(l.coord)
-Base.getindex(l::AtomList, ind) = l.coord[ind]
-Base.length(l::AtomList) = length(l.coord)
-Base.size(l::AtomList) = size(l.coord)
-
-# Iterate through an AtomList
-Base.iterate(l::AtomList) = iterate(l.coord)
-Base.iterate(l::AtomList, n) = iterate(l.coord, n)
-
-Base.filter(f, l::AtomList) = AtomList(basis(l), filter(f, l.coord))
-# More filter definitons that might be useful
-"""
-    Base.filter(name::AbstractString, l::AtomList) -> AtomList
-    Base.filter(no::Integer, l::AtomList) -> AtomList
-
-Filters an `AtomList` by atomic name or number.
-"""
-Base.filter(name::AbstractString, l::AtomList) = filter(a -> atomname(a) == name, l)
-Base.filter(no::Integer, l::AtomList) = filter(a -> atomicno(a) == no, l)
-
-"""
-    sort_atomicno(l::AtomList; rev=false) -> AtomList
-
-Sorts an `AtomList` by atomic number, return a new `AtomList` with the sorted elements.
-
-The `rev` keyword is supported if a reversed order is desired.
-"""
-sort_atomicno(l::AtomList; kwargs...) = AtomList(basis(l), sort(l.coord, by=atomicno; kwargs...))
-
-basis(l::AtomList) = l.basis
-coord(l::AtomList) = l.coord
-"""
-    natom(l::AtomList) -> Int
-
-Gets the number of atoms in an `AtomList`.
-"""
-natom(l::AtomList) = length(coord(l))
-
-"""
-    cartesian(l::AtomList{D}) -> AtomList{D}
-
-Converts an `AtomList` from reduced coordinates (relative to some crystal basis) to Cartesian
-coordinates in space.
-"""
-function cartesian(l::AtomList{D}) where D
-    # If there are no basis vectors specified, just return the original list
-    # If the basis vectors are zero we're assuming Cartesian coordinates
-    basis(l) == zeros(RealBasis{D}) && return l
-    newlist = map(a -> cartesian(l.basis, a), l.coord)
-    return AtomList(zeros(RealBasis{D}), newlist)
-end
-
-# TODO: clean up these method definitions into something that makes more sense
-"""
-    cartesian(b::AbstractMatrix{<:Real}, a::AtomPosition{D}) -> AtomPosition{D}
-
-Converts an `AtomPosition` defined in terms of basis `b` to a new `AtomPosition` defined in 
-Cartesian coordinates.
-"""
-function cartesian(b::AbstractMatrix{<:Real}, a::AtomPosition{D}) where D
-    newpos = b * a.pos
-    return AtomPosition{D}(a.name, a.num, newpos)
-end
-
-cartesian(b::AbstractBasis{D}, a::AtomPosition{D}) where D = cartesian(matrix(b), a)
-
-"""
-    reduce_coords(basis::AbstractMatrix{<:Real}, a::AtomPosition; incell=false)
-
-Convert a coordinate from a Cartesian basis to the crystal basis. If `incell` is true, the position
-vector components will be truncated so they lie within the cell bounds (between 0 and 1).
-"""
-function reduce_coords(
-    basis::AbstractMatrix{<:Real},
-    a::AtomPosition{D};
-    incell::Bool=false
-) where D
-    v = basis\coord(a)
-    # If it needs to be in a cell, truncate the integer portion of the elements 
-    v = v - incell * floor.(v)
-    return AtomPosition{D}(name(a), atomicno(a), v)
-end
-
-"""
-    reduce_coords(basis::AbstractMatrix{<:Real}, a::AbstractVector{AtomPosition}; incell=false)
-
-Convert a vector of atomic coordinates from a Cartesian basis to the crystal basis. If `incell` is
-true, the position vector components will be truncated so they lie within the cell bounds (between
-0 and 1).
-"""
-function reduce_coords(
-    basis::AbstractMatrix{<:Real},
-    va::AbstractVector{AtomPosition{D}};
-    incell::Bool = false
-) where D
-    va_new = map(va) do a
-        reduce_coords(basis, a, incell = incell)
+function Base.getproperty(atom::NamedAtom, p::Symbol)
+    if p == :name
+        l = findfirst(isequal('\0'), getfield(atom, name))
+        return string(getfield(atom, name)[1:l-1])
     end
-    return AtomPosition{D}(basis, va_new)
+    return getfield(atom, p)
+end
+
+NamedAtom(num::Integer) = num in 1:118 ? NamedAtom("dummy", num) : NamedAtom(ELEMENTS[num], num)
+
+Base.show(io::IO, atom::NamedAtom) = println(io, "NamedAtom(", atom.name, ", ", atom.num, ")")
+Base.isless(a1::NamedAtom, a2::NamedAtom) = isless(a1.num, a2.num) || isless(a1.name, a2.name)
+
+name(a::NamedAtom) = a.name
+atomic_number(a::NamedAtom) = a.num
+isdummy(a::NamedAtom) = (a.num == 0)
+
+reset_name(a::NamedAtom) = NamedAtom(atomic_number(a))
+
+#---Atomic position data--------------------------------------------------------------------------#
+"""
+    AbstractAtomPosition{D}
+
+Supertype that describes atomic positions in `D` dimensions, which include name, coordinate, and
+occupancy information.
+"""
+abstract type AbstractAtomPosition{D}
 end
 
 """
-    deduplicate(l::AbstractVector{<:AtomPosition}) -> Vector{<:AtomPosition}
+    FractionalAtomPosition{D}
+
+Describes an atomic position within a crystal or other periodic structure. The coordinate in the
+`pos` field is assumed to be given relative to the basis vectors of the structure.
+
+Occupancy information is provided in the `occ` field. Note that no checking is done to ensure that
+the occupancy is a reasonable value.
+"""
+struct FractionalAtomPosition{D} <: AbstractAtomPosition{D}
+    atom::NamedAtom
+    pos::SVector{D,Float64}
+    occ::Float64
+    function FractionalAtomPosition{D}(
+        atom::NamedAtom,
+        pos::AbstractVector{<:Real},
+        occ::Real
+    ) where D
+        return new(atom, pos, occ)
+    end
+    function FractionalAtomPosition(
+        atom::NamedAtom,
+        pos::StaticVector{D,<:Real},
+        occ::Real
+    ) where D
+        return new{D}(atom, pos, occ)
+    end
+end
+
+"""
+    CartesianAtomPosition{D}
+
+Describes an absolute atomic position. The coordinate in the `pos` field is assumed to be given in
+angstroms.
+
+Occupancy information is provided in the `occ` field. Note that no checking is done to ensure that
+the occupancy is a reasonable value.
+"""
+struct CartesianAtomPosition{D} <: AbstractAtomPosition{D}
+    atom::NamedAtom
+    pos::SVector{D,Float64}
+    occ::Float64
+    function CartesianAtomPosition{D}(
+        atom::NamedAtom,
+        pos::AbstractVector{<:Real},
+        occ::Real
+    ) where D
+        return new(atom, pos, occ)
+    end
+    function CartesianAtomPosition(
+        atom::NamedAtom,
+        pos::StaticVector{D,<:Real},
+        occ::Real
+    ) where D
+        return new{D}(atom, pos, occ)
+    end
+end
+
+"""
+    (T::Type{<:AbstractAtomPosition})(
+        [name::AbstractString],
+        num::Integer,
+        pos::AbstractVector{<:Real},
+        occ::Real = 1
+    ) -> T
+
+Generates an atomic position from name, atomic number, coordinate, and occupancy data. If a name is
+not provided, it's selected automatically from the atomic number.
+"""
+function (::Type{T})(
+    name::AbstractString,
+    num::Integer,
+    pos::AbstractVector{<:Real},
+    occ::Real = 1
+) where {T<:AbstractAtomPosition}
+    return T(NamedAtom(name, num), pos, occ)
+end
+
+function (::Type{T})(
+    num::Integer,
+    pos::AbstractVector{<:Real},
+    occ::Real = 1
+) where {T<:AbstractAtomPosition}
+    return T(NamedAtom(num), pos, occ)
+end
+
+NamedAtom(p::AbstractAtomPosition) = p.atom
+position(p::AbstractAtomPosition) = p.pos
+occupancy(p::AbstractAtomPosition) = p.occ
+
+name(p::AbstractAtomPosition) = name(p.atom)
+atomic_number(p::AbstractAtomPosition) = atomic_number(p.atom)
+isdummy(p::AbstractAtomPosition) = isdummy(p.atom)
+
+"""
+    isapprox(a::AbstractAtomPosition, b::AbstractAtomPosition; atol = sqrt(eps(Float64)))...)
+
+Checks whether two atomic sites are approximately equal to one another. The function returns `true`
+if the atomic numbers of the atoms are the same, and the coordinates of the atoms differ by no more
+than `atol`. 
+"""
+function Base.isapprox(a::T, b::T; kwargs...) where T<:AbstractAtomPosition
+    a.atom.num == b.atom.num || return false
+    return all(isapprox.(a.pos, b.pos; atol=sqrt(eps(Float64)), kwargs...))
+end
+
+"""
+    CartesianAtomPosition(b::RealBasis{D}, p::FractionalAtomPosition{D})
+
+Converts a fractional atom position to a Cartesian atom position using the supplied basis.
+"""
+function CartesianAtomPosition(b::RealBasis{D}, p::FractionalAtomPosition{D}) where D
+    return CartesianAtomPosition(p.atom, b * p.pos, p.occ)
+end
+
+"""
+    FractionalAtomPosition(b::RealBasis{D}, p::FractionalAtomPosition{D})
+
+Converts a Cartesian atom position to a fractional atom position using the supplied basis.
+"""
+function FractionalAtomPosition(b::RealBasis{D}, p::FractionalAtomPosition{D}) where D
+    return FractionalAtomPosition(p.atom, b \ p.pos, p.occ)
+end
+
+#---Lists of atoms--------------------------------------------------------------------------------#
+"""
+    AbstractAtomList{D}
+
+Supertype for lists of atomic positions in `D` dimensions.
+"""
+abstract type AbstractAtomList{D}
+end
+
+"""
+    PeriodicAtomList{D}
+
+Contains a list of `FractionalAtomPosition` objects with an associated basis, corresponding to
+atoms in a system with periodicity.
+"""
+struct PeriodicAtomList{D} <: AbstractAtomList{D}
+    basis::RealBasis{D}
+    atoms::Vector{FractionalAtomPosition{D}}
+    function PeriodicAtomList(
+        b::AbstractBasis{D},
+        l::AbstractVector{FractionalAtomPosition{D}}
+    ) where D
+        return new{D}(b,l)
+    end
+end
+
+basis(fl::PeriodicAtomList) = fl.basis
+
+"""
+    AtomList{D}
+
+Contains a list of `CartesianAtomPosition` objects, corresponding to atoms in free space without
+boundary conditions.
+"""
+struct AtomList{D} <: AbstractAtomList{D}
+    atoms::Vector{CartesianAtomPosition{D}}
+    AtomList(l::AbstractVector{CartesianAtomPosition{D}}) where D = new(b,l)
+end
+
+function Base.:(==)(l1::AbstractAtomList, l2::AbstractAtomList) 
+    return (l1.basis === l2.basis && l1.atoms == l2.atoms)
+end
+
+Base.isempty(l::AbstractAtomList) = isempty(l.atoms)
+Base.length(l::AbstractAtomList) = length(l.atoms)
+Base.size(l::AbstractAtomList) = size(l.atoms)
+
+Base.getindex(l::AbstractAtomList, ind...) = getindex(l.atoms, ind...)
+Base.setindex!(l::AbstractAtomList, x, ind...) = setindex!(l.atoms, x, ind...)
+Base.keys(l::AbstractAtomList) = keys(l.atoms)
+
+Base.iterate(l::AbstractAtomList, i::Integer = 1) = iterate(l.atoms, i)
+
+Base.filter(f, l::AtomList) = AtomList(filter(f, l.atoms))
+Base.filter(f, l::PeriodicAtomList) = PeriodicAtomList(basis(l), filter(f, l.atoms))
+
+Base.sort(l::AtomList; kwargs...) = AtomList(sort(l.atoms); by=NamedAtom, kwargs...)
+
+function Base.sort(l::PeriodicAtomList; kwargs...)
+    return PeriodicAtomList(basis(l), sort(l.atoms); by=NamedAtom, kwargs...)
+end
+
+function AtomList(l::PeriodicAtomList{D}) where D
+    return AtomList(CartesianAtomPosition.(basis(l), l.atoms))
+end
+
+"""
+    deduplicate(l::AbstractVector{T<:AbstractAtomPosition}; atol=sqrt(eps(Float64))) -> Vector{T}
 
 Removes atoms that are duplicates or close to being duplicates. In order to be considered
-duplicates, the atoms must have both the same name and atomic number, and their coordinates must
-be approximately equal (to within a total distance of `sqrt(eps(Float64))`).
+duplicates, the atoms must have both the atomic number, and their coordinates must be approximately
+equal (to within a total distance of `sqrt(eps(Float64))`).
 """
-function deduplicate(l::AbstractVector{<:AtomPosition})
+function deduplicate(l::AbstractVector{<:AbstractAtomPosition}; atol=sqrt(eps(Float64)))
     # Store the indices of the atoms to keep in a vector
     kept_inds = collect(eachindex(l))
     # Loop through each pair of atoms
     for m in eachindex(l)
-        for n in m+1:length(l)
-            (a,b) = l[[m,n]]
-            # Check that atoms are of the same type
-            sametype = atomname(a) == atomname(b) && atomicno(a) == atomicno(b)
-            dist = norm(coord(a) - coord(b))
-            # If they're too close, set the kept_inds entry to zero
-            if sametype && isapprox(dist, 0, atol=sqrt(eps(Float64)))
+        # Only check the remaining atoms if we haven't already excluded this atom
+        iszero(m) || for n in m+1:lastindex(l)
+            if isapprox(l[m], l[n]; atol)
+                # When a duplicate is found, set the value we're checking to zero
                 kept_inds[n] = 0
                 @debug string(
                     "Removing atom $n:\n",
-                    "Atom $m: ", repr("text/plain", a),
-                    "Atom $n: ", repr("text/plain", b)
+                    "Atom $m: ", repr("text/plain", l[m]),
+                    "Atom $n: ", repr("text/plain", l[n])
                 )
             end
         end
@@ -266,14 +266,8 @@ function deduplicate(l::AbstractVector{<:AtomPosition})
     return l[filter(!iszero, kept_inds)]
 end
 
-"""
-    deduplicate(l::AtomList) -> AtomList
-
-Places all atoms inside the cell by truncating the integer portion of the coordinate. Any atoms
-of the same type (meaning same atomic number and name) that are an extremely small distance apart
-will be removed.
-"""
-deduplicate(l::AtomList) = iszero(basis(l)) ? l : AtomList(basis(l), deduplicate(l.coord))
+deduplicate(l::AtomList; kw...) = AtomList(deduplicate(l.atoms; kw...))
+deduplicate(l::PeriodicAtomList; kw...) = PeriodicAtomList(basis(l), deduplicate(l.atoms; kw...))
 
 """
     supercell(l::AtomList, M::AbstractMatrix{<:Integer}) -> AtomList
@@ -281,7 +275,7 @@ deduplicate(l::AtomList) = iszero(basis(l)) ? l : AtomList(basis(l), deduplicate
 Creates a new `AtomList` with the basis vectors of a supercell generated by transforming the basis 
 vectors of the space by `M`. This will also generate new atomic positions to fill the cell.
 """
-function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
+function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
     # Convert the provided basis vectors to the supercell basis
     # Conversion to upper triangular form should make this easier to work with
     scb = triangularize(basis(l), M)
@@ -291,91 +285,74 @@ function supercell(l::AtomList{D}, M::AbstractMatrix{<:Integer}) where D
     newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(diag(S)))])
     # Move all positions into the cell; remove duplicates
     dedup = deduplicate(
-        [AtomPosition(atomname(a), atomicno(a), mod.(coord(a), 1)) for a in l.coord]
+        [FractionalAtomPosition(name(a), atomicno(a), mod.(position(a), 1)) for a in l]
     )
     # Shift everything over for each new point
     sclist = [
         AtomPosition(
-            atomname(atom),
+            name(atom),
             atomicno(atom),
             # Keep the new atoms inside the supercell
             # Multiply the coordinate by U
-            mod.(SMatrix{D,D}(M)\(coord(atom) + U*d), 1)
+            mod.(SMatrix{D,D}(M)\(position(atom) + U*d), 1)
         )
         for atom in dedup, d in newpts
     ]
     return AtomList(scb, vec(sclist))
 end
 
-supercell(l::AtomList, v::AbstractVector{<:Integer}) = supercell(l, diagm(v))
+supercell(l::AbstractAtomList, v::AbstractVector{<:Integer}) = supercell(l, diagm(v))
 
 """
-    remove_dummies(l::AtomList) -> AtomList
+    atomtypes(l::AbstractAtomList; dummy=false) -> Vector{NamedAtom}
 
-Removes dummy atoms from an `AtomList`.
+Returns all unique `NamedAtom` types found in an `AbstractAtomList`. This vector is sorted by
+atomic number.
+
+The `dummy` keyword controls whether dummy atoms are counted as a separate atom type (`false` by
+default).
+
+To obtain a list of all unique atom names or atomic numbers, use `name.(atomtypes(l))` or
+`num.(atomtypes(l))`.
 """
-remove_dummies(l::AtomList) = AtomList(basis(l), filter(x -> !iszero(atomicno(x)), l.coord))
-
- """
-    atomtypes(l::AtomList; dummy=false) -> Vector{Int}
-    atomtypes(xtal::AbstractCrystal; dummy=false) -> Vector{Int}
-
-Returns the atomic numbers of all the atoms in the `AtomList`. The `dummy` keyword controls whether
-dummy atoms are counted as a separate atom type (`false` by default).
-"""
-function atomtypes(l::AtomList; dummy::Bool=false)
-    m = dummy ? remove_dummies(l) : l
-    return unique([atomicno(a) for a in m])
+function atomtypes(l::AbstractAtomList; dummy::Bool=false)
+    return sort!(unique([NamedAtom(a) for a in (dummy ? filter(isdummy, l) : l)]))
 end
 
 """
-    natomtypes(l::AtomList; dummy=false) -> Int
-    natomtypes(xtal::AbstractCrystal; dummy=false) -> Int
+    atomcounts(l::AbstractAtomList; dummy=false, names=false) -> Vector{Pair{NamedAtom,Int}}
 
-Returns the number of types of atoms. The `dummy` keyword controls whether dummy atoms are counted
-as a separate atom type (`false` by default).
-"""
-natomtypes(l::AtomList; dummy::Bool=false) = length(atomtypes(l, dummy=dummy))
+Returns pairs of atoms and the number of atoms in the `AtomList` with that atomic number.
 
-"""
-    atomnames(l::AtomList; dummy=false) -> Vector{String}
+The `dummy` keyword controls whether dummy atoms are counted as a separate atom type (`false` by
+default).
 
-Returns the names of all the atoms in `l`. By default, dummy atoms are not included, but this may
-be changed by setting `dummy=true`.
+The `use_names` keyword determines whether the atoms counted separately based on atom names. By
+default, this is equal to `dummy`, so names are only factored in if dummy atoms are counted.
 """
-atomnames(l::AtomList; dummy::Bool=false) = [ELEMENTS[n] for n in atomtypes(l, dummy=dummy)]
-
-"""
-    atomcounts(l::AtomList; dummy=false) -> Vector{Pair{Int,Int}}
-
-Returns pairs of atomic numbers and the number of atoms in the `AtomList` with that atomic number.
-By default, dummy atoms are not included, but this may be changed by setting `dummy=true`.
-"""
-function atomcount(l::AtomList; dummy=false)
-    return [Pair(n, count(a -> atomicno(a) == n, l)) for n in atomtypes(l, dummy=dummy)]
+function atomcounts(l::AbstractAtomList; dummy::Bool=false, use_names::Bool = dummy)
+    types = atomtypes(l; dummy)
+    types = use_names ? types : unique!(reset_names.(types))
+    return [Pair(n, count(a -> NamedAtom(a) == n, l)) for n in types]
 end
 
 """
-    rotate(l::AtomList, M::AbstractMatrix{<:Real}, ctr::AbstractVector{<:Real}) -> AtomList
+    natomtypes(l::AbstractAtomList; dummy=false) -> Int
 
-Rotates the atoms in an `AtomList` using the rotation matrix `M` applied at the position `ctr`
-(specified in Cartesian coordinates).
+Returns the number of types of atoms in an `AbstractAtomList`.
+
+The `dummy` keyword controls whether dummy atoms are counted as a separate atom type (`false` by
+default).
+
+The `use_names` keyword determines whether the atoms counted separately based on atom names. By
+default, this is equal to `dummy`, so names are only factored in if dummy atoms are counted.
 """
-function rotate(l::AtomList, M::AbstractMatrix{<:Real}, ctr::AbstractVector{<:Real})
-    @assert M' ≈ inv(M) "The supplied matrix is not orthogonal!"
-    va = iszero(basis(l)) ? l.coord : cartesian(l).coord
-    positions = [coord(a) - ctr for a in va]
-    new_positions = [M*v + ctr for v in positions]
-    return AtomList(
-        [AtomPosition(atomname(a), atomicno(a), v) for (a,v) in zip(va, new_positions)]
-    )
+function natomtypes(l::AbstractAtomList; dummy::Bool=false, use_names::Bool = dummy)
+    types = atomtypes(l; dummy)
+    return length(use_names ? types : unique!(reset_names.(types)))
 end
 
-function rotate(l::AtomList, M::AbstractMatrix{<:Real})
-    @assert M' ≈ inv(M) "The supplied matrix is not orthogonal!"
-    va = iszero(basis(l)) ? l.coord : cartesian(l).coord
-    new_positions = [M*v for v in coord.(va)]
-    return AtomList(
-        [AtomPosition(atomname(a), atomicno(a), v) for (a,v) in zip(va, new_positions)]
-    )
-end
+export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
+       AbstractAtomList, AtomList, PeriodicAtomList
+export name, atomic_number, isdummy, position, occupancy, deduplicate, supercell, atomtypes,
+       atomcounts, natomtypes
