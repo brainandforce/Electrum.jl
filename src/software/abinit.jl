@@ -180,10 +180,10 @@ end
 symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 
 function Crystal(h::ABINITHeader)
-    atomlist = AtomList(
+    atomlist = PeriodicAtomList(
         # Convert to angstroms
         RealBasis{3}(BOHR2ANG*h.rprimd),
-        AtomPosition.(
+        FractionalAtomPosition.(
             Int.(h.znucltypat[h.typat]),
             h.xred
         )
