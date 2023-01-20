@@ -239,12 +239,14 @@ function readXSF3D(filename::AbstractString; kwargs...)
     end
 end
 
+const readXSF = readXSF3D
+
 """
-    writeXSF(io, xtal::AtomList{D})
+    writeXSF(io, xtal::PeriodicAtomList{D})
 
 Writes the crystal component of an XCrysDen XSF file.
 """
-function writeXSF(io::IO, l::AtomList{D}) where D
+function writeXSF(io::IO, l::PeriodicAtomList{D}) where D
     println(io, "# Written by Electrum.jl")
     # Dimension information
     println(io, "DIM_GROUP")
@@ -258,20 +260,18 @@ function writeXSF(io::IO, l::AtomList{D}) where D
     # Coordinates of the atoms in the primitive cell
     println(io, "PRIMCOORD")
     # Print the number of atoms in the structure
-    println(io, lpad(string(natom(l)), 6), "    1")
+    println(io, lpad(string(length(l)), 6), "    1")
     # Print all of the atoms
-    for a in cartesian(l)
-        @printf(io, "%6i", atomicno(a))
-        for x in coord(a)
+    for a in AtomList(l)
+        @printf(io, "%6i", atomic_number(a))
+        for x in displacement(a)
             @printf(io, "%20.14f  ", x)
         end
         println(io)
     end
 end
 
-writeXSF(io::IO, xtal::Crystal) = writeXSF(io, AtomList(xtal))
-
-const readXSF = readXSF3D
+writeXSF(io::IO, xtal::Crystal) = writeXSF(io, xtal.atoms)
 
 """
     writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true)
