@@ -30,7 +30,7 @@ structure calculations. In the future, it will be possible to convert a `KPointG
 `KPointList`.
 
 The weights of k-points are used to compensate for their placement on sites with point symmetry. If
-no weights are provided, they are all assumed to be equal. Any explicit input of k-points weights
+no weights are provided, they are all assumed to be equal. Any explicit input of k-point weights
 will be normalized such that their sum is 1, following the convention used by abinit.
 """
 struct KPointList{D} <: AbstractKPoints{D}
@@ -184,34 +184,33 @@ end
 """
     HKLData{D,T} <: AbstractReciprocalSpaceData{D}
 
-Stores information associated with specific sets of reciprocal lattice vectors. Data can be
-accessed and modified using regular indexing, where indices may be negative.
+Stores information associated with a reciprocal space basis. Data can be accessed and modified by
+using the G-vectors as indices. Associated k-point data is also provided; if no k-point is supplied
 
 Internally, the data is stored such that the zero frequency components are at the first indices
-along that dimension. 
+along that dimension. The data at G-vector `[0, 0, 0]` is stored in the backing array's `[1, 1, 1]`
+index, and the rest of the indices correspond to reciprocal space points using the FFT convention.
 """
 struct HKLData{D,T} <: AbstractHKL{D,T}
     basis::ReciprocalBasis{D}
     data::Array{T,D}
+    kpt::SVector{D,Float64}
     function HKLData(
         basis::AbstractBasis{D},
-        data::AbstractArray{T,D}
+        data::AbstractArray{T,D},
+        kpt::AbstractVector{<:Real} = zero(SVector{D,Float64})
     ) where {D,T}
-        return new{D,T}(basis, data)
+        # TODO: Do we want to perform circular shifts of the data?
+        # How does this work with array copying?
+        # Move k-point so the indices are in the range (-0.5, 0.5]
+        return new{D,T}(basis, data, kpt .- round.(kpt, RoundNearest))
     end
-end
-
-function HKLData(
-    data::AbstractArray{T,D},
-    bounds::AbstractVector{<:AbstractRange{<:Integer}}
-) where {D,T}
-    return HKLData(zero(ReciprocalBasis{D}), data, bounds)
 end
 
 function Base.zeros(
     ::Type{HKLData{D,T}},
     basis::AbstractBasis{D},
-    ranges::Vararg{AbstractUnitRange{<:Integer},D}
+    ranges::Vararg{AbstractUnitRange{<:Integer},D},
 ) where {D,T}
     return HKLData(ReciprocalBasis(basis), zeros(T, length.(ranges)))
 end
