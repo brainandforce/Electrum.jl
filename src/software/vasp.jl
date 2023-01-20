@@ -49,18 +49,19 @@ function readPOSCAR(io::IO)
         contains("Direct", readline(io)) && break
     end
     # Generate the list of atoms
-    positions = Vector{AtomPosition{3}}(undef, sum(natomtypes))
+    positions = Vector{FractionalAtomPosition{3}}(undef, sum(natomtypes))
     ctr = 1
     for (n,s) in enumerate(atomnames)
         for x in 1:natomtypes[n]
-            positions[ctr] = AtomPosition{3}(s, parse.(Float64, split(readline(io))))
+            positions[ctr] = FractionalAtomPosition{3}(s, parse.(Float64, split(readline(io))))
             ctr = ctr + 1
         end
     end
     # Velocity data is ignored
-    return Crystal(AtomList(latt, positions))
+    return Crystal(PeriodicAtomList(latt, positions))
 end
 
+# This can't be a simple alias, because `readCONTCAR()` needs to find a file name `CONTCAR`
 readCONTCAR(io::IO) = readPOSCAR(io)
 
 function readPOSCAR(filename::AbstractString)
@@ -102,7 +103,7 @@ overridden by setting `names` to `true.`
 """
 function writePOSCAR4(
     io::IO,
-    list::AtomList;
+    list::PeriodicAtomList;
     comment = "Written by Electrum.jl",
     names = false
 )
@@ -110,26 +111,26 @@ function writePOSCAR4(
     println(io, comment, "\n1")
     # Write the basis vectors
     for v in basis(list)
-        println(io, (@sprintf("% -15.10f", x) for x in v)...)
+        println(io, (@sprintf("% -21.16f", x) for x in v)...)
     end
     # Figure out what types of atoms there are and how many
     atom_types = atomtypes(list)
-    atom_counts = [count(a -> atomicno(a) == n, list) for n in atom_types]
+    atom_counts = [count(a -> atomic_number(a) == n, list) for n in atom_types]
     # If names is true, print the atom names line
     if names
-        println(io, (rpad(s,4) for s in atomnames(list))...)
+        println(io, (rpad(s,4) for s in name.(atom_types))...)
     end
     # Print the number of different types of atoms, and the `Direct` keyword
     println(io, (rpad(x, 4) for x in atom_counts)..., "\nDirect")
     for t in atom_types
         # Loop through the filtered list with one atom type
-        for a in filter(a -> atomicno(a) == t, list.coord)
-            println(io, (@sprintf("% -15.10f", x) for x in coord(a))...)
+        for a in filter(a -> NamedAtom(a) == t, list.atoms)
+            println(io, (@sprintf("% -21.16f", x) for x in displacement(a))...)
         end
     end
 end
 
-writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.gen; kwargs...)
+writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.atoms; kwargs...)
 
 function writePOSCAR4(filename::AbstractString, data; kwargs...) 
     # Append POSCAR if only a directory name is given
