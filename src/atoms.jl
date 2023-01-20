@@ -297,23 +297,23 @@ function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
     newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(diag(S)))])
     # Move all positions into the cell; remove duplicates
     dedup = deduplicate(
-        [FractionalAtomPosition(name(a), atomicno(a), mod.(displacement(a), 1)) for a in l]
+        [FractionalAtomPosition(name(a), atomic_number(a), mod.(displacement(a), 1)) for a in l]
     )
     # Shift everything over for each new point
     sclist = [
-        AtomPosition(
+        FractionalAtomPosition(
             name(atom),
-            atomicno(atom),
+            atomic_number(atom),
             # Keep the new atoms inside the supercell
             # Multiply the coordinate by U
             mod.(SMatrix{D,D}(M)\(displacement(atom) + U*d), 1)
         )
         for atom in dedup, d in newpts
     ]
-    return AtomList(scb, vec(sclist))
+    return PeriodicAtomList(scb, vec(sclist))
 end
 
-supercell(l::AbstractAtomList, v::AbstractVector{<:Integer}) = supercell(l, diagm(v))
+supercell(l::PeriodicAtomList, v::AbstractVector{<:Integer}) = supercell(l, diagm(v))
 
 """
     atomtypes(l::AbstractAtomList; dummy=false) -> Vector{NamedAtom}
