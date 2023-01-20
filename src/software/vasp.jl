@@ -194,10 +194,7 @@ function readWAVECAR(io::IO)
     # containing tuples (containing band energy and occupancy)
     bands = [Vector{NTuple{2,Float64}}(undef, nband) for kp in 1:nkpt]
     # Plane wave coefficients
-    waves = [
-        zeros(HKLData{3,Complex{Float32}}, rlatt, hklbounds...) 
-        for s in 1:nspin, kp in 1:nkpt, b in 1:nband
-    ]
+    waves = Array{HKLData{3,Complex{Float32}},3}(undef, nspin, nkpt, nband)
     # Energy and occupancy data
     energies = zeros(Float64, nspin, nkpt, nband)
     occupancies = zeros(Float64, nspin, nkpt, nband)
@@ -224,6 +221,12 @@ function readWAVECAR(io::IO)
                 "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", klist[kp]...)
             )
             for b in 1:nband
+                # Generate an empty HKLData to be filled later
+                waves[s, kp, b] = HKLData(
+                    rlatt,
+                    zeros(Complex{Float32}, length.(hklbounds)...),
+                    klist[kp]
+                )
                 # Seek to the next entry
                 count +=1; seek(io, count*nrecl)
                 # Reset the HKL indices
