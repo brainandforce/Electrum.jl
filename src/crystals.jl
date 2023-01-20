@@ -19,7 +19,7 @@ transpose (or equivalently, an adjoint) when entered manually.
 """
 mutable struct Crystal{D} <: AbstractCrystal{D}
     # Positions of generating atoms (needed to fill the whole structure given the space group)
-    atoms::AtomList{D}
+    atoms::PeriodicAtomList{D}
     # Space group number - set to 0 if non-periodic/unknown
     sgno::Int
     # Space group origin (location of inversion center, if present - defaults to zeros)
@@ -30,7 +30,7 @@ mutable struct Crystal{D} <: AbstractCrystal{D}
     function Crystal(
         # Always required, even if generating an empty list of atoms
         # (because the included basis is necessary)
-        atoms::AtomList{D},
+        atoms::PeriodicAtomList{D},
         # Assume space group is zero if not provided
         sgno::Integer = 0,
         # Assume the origin is [0, 0, 0] if not provided
@@ -119,24 +119,15 @@ Base.convert(::Type{<:Crystal}, xtaldata::CrystalWithDatasets) = xtaldata.xtal
 Crystal(xtaldata::CrystalWithDatasets) = xtaldata.xtal
 data(xtaldata::CrystalWithDatasets) = xtaldata.data
 
-# TODO: Generate the full atom list when symmetry operations are implemented.
-AtomList(xtal::AbstractCrystal) = xtal.atoms
-basis(xtal::AbstractCrystal) = basis(AtomList(xtal))
+PeriodicAtomList(xtal::AbstractCrystal) = xtal.atoms
 
+# TODO: Generate the full atom list when symmetry operations are implemented.
+Base.length(xtal::AbstractCrystal) = length(PeriodicAtomList(xtal))
+basis(xtal::AbstractCrystal) = basis(PeriodicAtomList(xtal))
 volume(xtal::AbstractCrystal; primitive::Bool=false) = volume(xtal.latt; primitive)
 
-# TODO: fix this so that it gets the right number of atoms regardless of space group
-"""
-    natom(xtal::Crystal) -> Int
+atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(PeriodicAtomList(xtal); kwargs...)
+atomcounts(xtal::AbstractCrystal; kwargs...) = atomcounts(PeriodicAtomList(xtal); kwargs...)
+natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(PeriodicAtomList(xtal); kwargs...)
 
-Returns the number of atoms in a crystal's unit cell.
-
-This function is currently not aware of space groups or settings, so if the generating set does not
-contain all the atoms in the cell, it will return the wrong value.
-"""
-natom(xtal::AbstractCrystal) = natom(AtomList(xtal))
-atomnames(xtal::AbstractCrystal) = atomnames(AtomList(xtal))
-atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(AtomList(xtal); kwargs...)
-natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(AtomList(xtal); kwargs...)
-
-cartesian(xtal::AbstractCrystal) = cartesian(AtomList(xtal))
+AtomList(xtal::AbstractCrystal) = AtomList(PeriodicAtomList(xtal))
