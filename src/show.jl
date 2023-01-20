@@ -142,6 +142,8 @@ setting `reduce=false`. Ones are also eliminated from the formula string; this m
 setting `show_ones=true`.
 """
 function formula_string(l::AbstractAtomList; reduce=true, show_ones=false)
+    # If there are only dummy atoms, 
+    all(isdummy, l) && return "no formula"
     counts = [x.second for x in atomcounts(l)]
     counts = div.(counts, gcd(counts)^reduce)
     return join(
@@ -185,7 +187,7 @@ function Base.show(io::IO, ::MIME"text/plain", l::AbstractAtomList; kwargs...)
     end
     # Print basis vectors
     if l isa PeriodicAtomList
-        println("  defined in terms of basis vectors:")
+        println("\n  defined in terms of basis vectors:")
         printbasis(io, l, pad=2)
     end
 end
