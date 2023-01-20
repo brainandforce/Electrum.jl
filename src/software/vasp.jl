@@ -190,9 +190,6 @@ function readWAVECAR(io::IO)
     hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut))
     # List of k-points
     klist = Vector{SVector{3,Float64}}(undef, nkpt)
-    # Store band info in a vector (of size nkpt) containing vectors (of size nband)
-    # containing tuples (containing band energy and occupancy)
-    bands = [Vector{NTuple{2,Float64}}(undef, nband) for kp in 1:nkpt]
     # Plane wave coefficients
     waves = Array{HKLData{3,Complex{Float32}},3}(undef, nspin, nkpt, nband)
     # Energy and occupancy data
