@@ -20,33 +20,29 @@ end
 
 function Base.getproperty(atom::NamedAtom, p::Symbol)
     if p == :name
-        l = findfirst(isequal('\0'), getfield(atom, name))
-        return string(getfield(atom, name)[1:l-1])
+        l = findfirst(isequal('\0'), getfield(atom, p))
+        return string(getfield(atom, p)[1:l-1]...)
     end
     return getfield(atom, p)
 end
 
-NamedAtom(num::Integer) = num in 1:118 ? NamedAtom("dummy", num) : NamedAtom(ELEMENTS[num], num)
+NamedAtom(num::Integer) = num in 1:118 ? NamedAtom(ELEMENTS[num], num) : NamedAtom("dummy", num)
+NamedAtom(atomname::AbstractString) = NamedAtom(atomname, get(ELEMENT_LOOKUP, atomname, 0))
 
-Base.show(io::IO, atom::NamedAtom) = println(io, "NamedAtom(", atom.name, ", ", atom.num, ")")
+Base.show(io::IO, atom::NamedAtom) = print(io, "NamedAtom(\"", atom.name, "\", ", atom.num, ")")
 Base.isless(a1::NamedAtom, a2::NamedAtom) = isless(a1.num, a2.num) || isless(a1.name, a2.name)
 
 name(a::NamedAtom) = a.name
 atomic_number(a::NamedAtom) = a.num
 isdummy(a::NamedAtom) = (a.num == 0)
+"""
+    Electrum.reset_name(a::NamedAtom)
 
+Creates a new `NamedAtom` with the same atomic number as `a` and the atom's normal symbol.
+"""
 reset_name(a::NamedAtom) = NamedAtom(atomic_number(a))
 
 #---Atomic position data--------------------------------------------------------------------------#
-"""
-    AbstractAtomPosition{D}
-
-Supertype that describes atomic positions in `D` dimensions, which include name, coordinate, and
-occupancy information.
-"""
-abstract type AbstractAtomPosition{D}
-end
-
 """
     FractionalAtomPosition{D}
 
@@ -133,6 +129,14 @@ function (::Type{T})(
     return T(NamedAtom(num), pos, occ)
 end
 
+function (::Type{T})(
+    name::AbstractString,
+    pos::AbstractVector{<:Real},
+    occ::Real = 1
+) where {T<:AbstractAtomPosition}
+    return T(NamedAtom(name), pos, occ)
+end
+
 NamedAtom(p::AbstractAtomPosition) = p.atom
 position(p::AbstractAtomPosition) = p.pos
 occupancy(p::AbstractAtomPosition) = p.occ
@@ -163,23 +167,15 @@ function CartesianAtomPosition(b::RealBasis{D}, p::FractionalAtomPosition{D}) wh
 end
 
 """
-    FractionalAtomPosition(b::RealBasis{D}, p::FractionalAtomPosition{D})
+    FractionalAtomPosition(b::RealBasis{D}, p::CartesianAtomPosition{D})
 
 Converts a Cartesian atom position to a fractional atom position using the supplied basis.
 """
-function FractionalAtomPosition(b::RealBasis{D}, p::FractionalAtomPosition{D}) where D
+function FractionalAtomPosition(b::RealBasis{D}, p::CartesianAtomPosition{D}) where D
     return FractionalAtomPosition(p.atom, b \ p.pos, p.occ)
 end
 
 #---Lists of atoms--------------------------------------------------------------------------------#
-"""
-    AbstractAtomList{D}
-
-Supertype for lists of atomic positions in `D` dimensions.
-"""
-abstract type AbstractAtomList{D}
-end
-
 """
     PeriodicAtomList{D}
 
@@ -207,7 +203,7 @@ boundary conditions.
 """
 struct AtomList{D} <: AbstractAtomList{D}
     atoms::Vector{CartesianAtomPosition{D}}
-    AtomList(l::AbstractVector{CartesianAtomPosition{D}}) where D = new(b,l)
+    AtomList(l::AbstractVector{CartesianAtomPosition{D}}) where D = new{D}(l)
 end
 
 function Base.:(==)(l1::AbstractAtomList, l2::AbstractAtomList) 
@@ -236,6 +232,19 @@ end
 function AtomList(l::PeriodicAtomList{D}) where D
     return AtomList(CartesianAtomPosition.(basis(l), l.atoms))
 end
+
+"""
+    PeriodicAtomList(b::RealBasis{D}, l::AbstractVector{CartesianAtomPosition{D}})
+    PeriodicAtomList(b::RealBasis{D}, l::AtomList{D})
+
+Uses the supplied basis vectors to convert Cartesian atomic positions in an `AtomList` to
+fractional positions with an associated basis.
+"""
+function PeriodicAtomList(b::AbstractBasis{D}, l::AbstractVector{CartesianAtomPosition{D}}) where D
+    return PeriodicAtomList(b, map(x -> FractionalAtomPosition(b,x), l))
+end
+
+PeriodicAtomList(b::AbstractBasis{D}, l::AtomList{D}) where D = PeriodicAtomList(b, l.atoms)
 
 """
     deduplicate(l::AbstractVector{T<:AbstractAtomPosition}; atol=sqrt(eps(Float64))) -> Vector{T}
@@ -316,7 +325,7 @@ To obtain a list of all unique atom names or atomic numbers, use `name.(atomtype
 `num.(atomtypes(l))`.
 """
 function atomtypes(l::AbstractAtomList; dummy::Bool=false)
-    return sort!(unique([NamedAtom(a) for a in (dummy ? filter(isdummy, l) : l)]))
+    return sort!(unique([NamedAtom(a) for a in (dummy ? filter(!isdummy, l) : l)]))
 end
 
 """
@@ -332,7 +341,7 @@ default, this is equal to `dummy`, so names are only factored in if dummy atoms 
 """
 function atomcounts(l::AbstractAtomList; dummy::Bool=false, use_names::Bool = dummy)
     types = atomtypes(l; dummy)
-    types = use_names ? types : unique!(reset_names.(types))
+    types = use_names ? types : unique!(reset_name.(types))
     return [Pair(n, count(a -> NamedAtom(a) == n, l)) for n in types]
 end
 
@@ -349,10 +358,5 @@ default, this is equal to `dummy`, so names are only factored in if dummy atoms 
 """
 function natomtypes(l::AbstractAtomList; dummy::Bool=false, use_names::Bool = dummy)
     types = atomtypes(l; dummy)
-    return length(use_names ? types : unique!(reset_names.(types)))
+    return length(use_names ? types : unique!(reset_name.(types)))
 end
-
-export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
-       AbstractAtomList, AtomList, PeriodicAtomList
-export name, atomic_number, isdummy, position, occupancy, deduplicate, supercell, atomtypes,
-       atomcounts, natomtypes

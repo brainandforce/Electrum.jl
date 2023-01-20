@@ -10,6 +10,23 @@ strictly binding, but make sure that you know why you're breaking the rules if y
 =#
 
 """
+    AbstractAtomList{D}
+
+Supertype for lists of atomic positions in `D` dimensions.
+"""
+abstract type AbstractAtomList{D}
+end
+
+"""
+    AbstractAtomPosition{D}
+
+Supertype that describes atomic positions in `D` dimensions, which include name, coordinate, and
+occupancy information.
+"""
+abstract type AbstractAtomPosition{D}
+end
+
+"""
     AbstractBasis{D}
 
 Supertype for sets of basis vectors in `D` dimensions.

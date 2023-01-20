@@ -22,8 +22,8 @@ formatting.
 """
 function vector_string(v::AbstractVector{<:Real}; brackets=true)
     # Format the numbers within a vector
-    tostr(x, n) = lpad(@sprintf("%f", x), n)
-    return "["^brackets * join(tostr.(v, 10)) *" ]"^brackets
+    tostr(x, n) = lpad(@sprintf("%f ", x), n)
+    return "["^brackets * join(tostr.(v, 11)) * "]"^brackets
 end
 
 """
@@ -75,7 +75,7 @@ function basis_string(
     # Bosonic string theorists, maybe?
     return [
         " "^pad * string(Char(0x60 + n), ':', ' ')^letters *
-        vector_string(M[:,n], brackets=brackets) *
+        vector_string(M[:,n]; brackets) *
         ("   (" * tostr(norm(M[:,n]), 0))^length * " "^!isempty(unit) * unit * ")"
         for n in axes(M,2)
     ]
@@ -104,7 +104,7 @@ julia> Electrum.printbasis(stdout, M)
 ```
 """
 function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pad=0)
-    s = basis_string(M, letters=letters, unit=unit)
+    s = basis_string(M; letters, unit)
     print(io, join(" "^pad .* s, "\n"))
 end
 
@@ -114,14 +114,20 @@ printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
 printbasis(a; kwargs...) = printbasis(stdout, a; kwargs...)
 
 """
-    atom_string(a::AtomPosition; name=true, num=true)
+    atom_string(a::AbstractAtomPosition; name=true, num=true)
 
 Generates a string describing an atom position.
 """
-function atom_string(a::AtomPosition; name=true, num=true, entrysz=4)
+function atom_string(a::AbstractAtomPosition; name=true, num=true)
     # Format the numbers within a vector
     tostr(x) = lpad(@sprintf("%f", x), 10)
-    return rpad(string(a.num), entrysz)^num * rpad(a.name, entrysz)^name * vector_string(a.pos)
+    return string(
+        rpad(string(a.atom.num), 4)^num,
+        rpad(a.atom.name, 6)^name,
+        vector_string(a.pos),
+        "  Å"^(a isa CartesianAtomPosition),
+        "  (occupancy $(a.occ))"^(a.occ != 1)
+    )
 end
 
 """
@@ -135,19 +141,19 @@ By default, the formula is reduced by common factors of the atom counts. This ma
 setting `reduce=false`. Ones are also eliminated from the formula string; this may be disabled by
 setting `show_ones=true`.
 """
-function formula_string(l::AtomList; reduce=true, show_ones=false)
-    counts = [x.second for x in atomcount(l)]
+function formula_string(l::AbstractAtomList; reduce=true, show_ones=false)
+    counts = [x.second for x in atomcounts(l)]
     counts = div.(counts, gcd(counts)^reduce)
     return join(
         [
             # Print only if the count is not 1 and/or show_ones is true
             n * subscript_string(c)^(!isone(c) || show_ones)
-            for (n,c) in zip(atomnames(l), counts)
+            for (n,c) in zip(name.(atomtypes(l)), counts)
         ]
     )
 end
 
-formula_string(l::AbstractCrystal; kwargs...) = formula_string(AtomList(l); kwargs...)
+formula_string(l::AbstractCrystal; kwargs...) = formula_string(PeriodicAtomList(l); kwargs...)
 
 #---Actual show methods---------------------------------------------------------------------------#
 
@@ -164,22 +170,24 @@ end
 
 #---Types from atoms.jl (AtomPosition, AtomList)--------------------------------------------------#
 
-function Base.show(io::IO, ::MIME"text/plain", a::AtomPosition; kwargs...)
+function Base.show(io::IO, ::MIME"text/plain", a::AbstractAtomPosition; kwargs...)
     println(io, typeof(a), ":")
-    println(io, "  ", atom_string(a; kwargs...))
+    print(io, "  ", atom_string(a; kwargs...))
 end
 
-function Base.show(io::IO, ::MIME"text/plain", l::AtomList; kwargs...)
+function Base.show(io::IO, ::MIME"text/plain", l::AbstractAtomList; kwargs...)
     # Print type name
-    println(io, typeof(l), " (", formula_string(l), "):")
+    print(io, typeof(l), " (", formula_string(l), "):\n")
     # Print atomic positions
-    println(io, "  ", natom(l), " atomic positions:")
+    print(io, "  ", length(l), " atomic positions:")
     for atom in l
-        println(io, "    ", atom_string(atom; kwargs...))
+        print(io, "\n    ", atom_string(atom; kwargs...))
     end
     # Print basis vectors
-    println("  defined in terms of basis vectors:")
-    printbasis(io, l, pad=2)
+    if l isa PeriodicAtomList
+        println("  defined in terms of basis vectors:")
+        printbasis(io, l, pad=2)
+    end
 end
 
 #---Types from data/realspace.jl------------------------------------------------------------------#
@@ -264,16 +272,9 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     end
     # TODO: Add in more info about atomic positions, space group
     println(io, "\n\n  ", length(xtal.atoms), " atomic positions:")
-    println(io, "    Num   ", "Name  ", "Position")
+    print(io, "    Num   ", "Name  ", "Position")
     for atom in xtal.atoms
-        println(io, "    ", atom_string(atom, name=true, num=true, entrysz=6))
-    end
-    # Determine what basis the atomic coordinates are given in.
-    # If the basis is zero, assume Cartesian coordinates in Å
-    if basis(xtal.atoms) == zeros(RealBasis{D})
-        print("  in Cartesian coordinates (assumed to be Å)")
-    else
-        print("  in fractional coordinates")
+        print(io, "\n    ", atom_string(atom, name=true, num=true))
     end
 end
 

@@ -1,14 +1,14 @@
 """
-    readXYZ(io::IO) -> Vector{AtomPosition{3}}
+    readXYZ(io::IO) -> AtomList{3}
 
-Reads an XYZ file into a `Vector{AtomPosition{3}}`.
+Reads an XYZ file into an `AtomList{3}`.
 """
 function readXYZ(io::IO)
     # Loop through each line in the file
     itr = eachline(io)
     # Get the number of atoms from the first line
     n_at = parse(Int, iterate(itr)[1])
-    v = Vector{AtomPosition{3}}(undef, n_at)
+    v = Vector{CartesianAtomPosition{3}}(undef, n_at)
     # Skip the second line
     iterate(itr)
     # Loop through the rest
@@ -22,21 +22,21 @@ function readXYZ(io::IO)
         # Get the position (next three entries)
         pos = parse.(Float64, entries[2:4])
         # Add to vector
-        v[n] = AtomPosition{3}(name, pos)
+        v[n] = CartesianAtomPosition{3}(name, pos)
     end
-    return v
+    return AtomList(v)
 end
 
 readXYZ(filename::AbstractString) = open(readXYZ, filename)
 
 """
-    writeXYZ(io::IO, data::AbstractVector{<:AtomPosition})
-    writeXYZ(io::IO, data::AtomList)
+    writeXYZ(io::IO, data::AbstractVector{<:AbstractAtomPosition})
+    writeXYZ(io::IO, data::AbstractAtomList)
     writeXYZ(io::IO, data::AbstractCrystal)
 
 Write an XYZ file based on a set of atomic coordinates.
 """
-function writeXYZ(io::IO, data::AbstractVector{<:AtomPosition})
+function writeXYZ(io::IO, data::AbstractVector{<:AbstractAtomPosition})
     # Write the number of atoms
     println(io, length(data))
     # Include the comment line
@@ -48,7 +48,7 @@ function writeXYZ(io::IO, data::AbstractVector{<:AtomPosition})
     return nothing
 end
 
-writeXYZ(io::IO, data::AtomList) = writeXYZ(io, coord(cartesian(data)))
+writeXYZ(io::IO, data::AbstractAtomList) = writeXYZ(io, coord(cartesian(data)))
 writeXYZ(io::IO, data::AbstractCrystal) = writeXYZ(io, atoms(data))
 
 function writeXYZ(filename::AbstractString, data) 
@@ -88,7 +88,7 @@ function readXSF3D(
     # Function for getting 3D lists of atoms
     function getatoms!(itr, basis, natom)
         # Vector of AtomPositions
-        apos = Vector{AtomPosition{3}}(undef, natom)
+        apos = Vector{CartesianAtomPosition{3}}(undef, natom)
         for n in 1:natom
             # Get next line
             entries = split(iterate(itr)[1])
@@ -96,10 +96,10 @@ function readXSF3D(
             num = parse(Int, entries[1])
             # Get atomic position (next 3)
             pos = SVector{3,Float64}(parse.(Float64, entries[s]) for s in 2:4)
-            # assign atom position struct
-            apos[n] = AtomPosition{3}(num, basis\pos)
+            # Add this to the vector
+            apos[n] = CartesianAtomPosition{3}(num, pos)
         end
-        return AtomList(basis, apos)
+        return PeriodicAtomList(basis, apos)
     end
     # Function to get grid data
     # By default, trim the edges of the grid (repeated points)
@@ -133,7 +133,7 @@ function readXSF3D(
     prim = zeros(RealBasis{3})
     conv = zeros(RealBasis{3})
     # Atomic positions
-    local atom_list::AtomList{3}
+    local atom_list::PeriodicAtomList{3}
     data = Dict{String,RealSpaceDataGrid{3,Float64}}()
     # There is a break statement to get of out of this loop
     while true

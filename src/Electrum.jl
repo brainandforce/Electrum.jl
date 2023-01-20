@@ -108,13 +108,14 @@ export RealBasis, ReciprocalBasis
 export triangularize, lengths, volume, angles_cos, angles_rad, angles_deg, isdiag, qr, maxHKLindex
 # Methods and structs for working with atomic positions
 include("atoms.jl")
-export AtomPosition, AtomList
-export atomname, atomicno, sort_atomicno, coord, natom, basis, cartesian, reduce_coords, supercell,
-       atomnames, atomtypes, natomtypes, atomcount
+export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
+       AbstractAtomList, AtomList, PeriodicAtomList
+export name, atomic_number, isdummy, position, occupancy, deduplicate, supercell, atomtypes,
+       atomcounts, natomtypes
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export Crystal, CrystalWithDatasets
-export data, volume, natom, atomtypes, natomtypes
+export data
 # Methods and structs for working with different types of data associated with crystals
 include("data/realspace.jl")
 export RealSpaceDataGrid
