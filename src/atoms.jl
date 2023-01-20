@@ -229,9 +229,12 @@ function Base.sort(l::PeriodicAtomList; kwargs...)
     return PeriodicAtomList(basis(l), sort(l.atoms); by=NamedAtom, kwargs...)
 end
 
-function AtomList(l::PeriodicAtomList{D}) where D
-    return AtomList(CartesianAtomPosition.(basis(l), l.atoms))
-end
+"""
+    AtomList(l::PeriodicAtomList)
+
+Converts a `PeriodicAtomList` to a list of Cartesian coordinates.
+"""
+AtomList(l::PeriodicAtomList) = AtomList(map(x -> CartesianAtomPosition(basis(l), x), l))
 
 """
     PeriodicAtomList(b::RealBasis{D}, l::AbstractVector{CartesianAtomPosition{D}})
