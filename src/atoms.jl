@@ -175,6 +175,35 @@ function FractionalAtomPosition(b::RealBasis{D}, p::CartesianAtomPosition{D}) wh
     return FractionalAtomPosition(p.atom, b \ p.pos, p.occ)
 end
 
+"""
+    deduplicate(l::AbstractVector{T<:AbstractAtomPosition}; atol=sqrt(eps(Float64))) -> Vector{T}
+
+Removes atoms that are duplicates or close to being duplicates. In order to be considered
+duplicates, the atoms must have both the atomic number, and their coordinates must be approximately
+equal (to within a total distance of `sqrt(eps(Float64))`).
+"""
+function deduplicate(l::AbstractVector{<:AbstractAtomPosition}; atol=sqrt(eps(Float64)))
+    # Store the indices of the atoms to keep in a vector
+    kept_inds = collect(eachindex(l))
+    # Loop through each pair of atoms
+    for m in eachindex(l)
+        # Only check the remaining atoms if we haven't already excluded this atom
+        iszero(m) || for n in m+1:lastindex(l)
+            if isapprox(l[m], l[n]; atol)
+                # When a duplicate is found, set the value we're checking to zero
+                kept_inds[n] = 0
+                @debug string(
+                    "Removing atom $n:\n",
+                    "Atom $m: ", repr("text/plain", l[m]),
+                    "Atom $n: ", repr("text/plain", l[n])
+                )
+            end
+        end
+    end
+    # Filter kept_inds of zeros to get the list of kept atoms
+    return l[filter(!iszero, kept_inds)]
+end
+
 #---Lists of atoms--------------------------------------------------------------------------------#
 """
     PeriodicAtomList{D}
@@ -248,35 +277,6 @@ function PeriodicAtomList(b::AbstractBasis{D}, l::AbstractVector{CartesianAtomPo
 end
 
 PeriodicAtomList(b::AbstractBasis{D}, l::AtomList{D}) where D = PeriodicAtomList(b, l.atoms)
-
-"""
-    deduplicate(l::AbstractVector{T<:AbstractAtomPosition}; atol=sqrt(eps(Float64))) -> Vector{T}
-
-Removes atoms that are duplicates or close to being duplicates. In order to be considered
-duplicates, the atoms must have both the atomic number, and their coordinates must be approximately
-equal (to within a total distance of `sqrt(eps(Float64))`).
-"""
-function deduplicate(l::AbstractVector{<:AbstractAtomPosition}; atol=sqrt(eps(Float64)))
-    # Store the indices of the atoms to keep in a vector
-    kept_inds = collect(eachindex(l))
-    # Loop through each pair of atoms
-    for m in eachindex(l)
-        # Only check the remaining atoms if we haven't already excluded this atom
-        iszero(m) || for n in m+1:lastindex(l)
-            if isapprox(l[m], l[n]; atol)
-                # When a duplicate is found, set the value we're checking to zero
-                kept_inds[n] = 0
-                @debug string(
-                    "Removing atom $n:\n",
-                    "Atom $m: ", repr("text/plain", l[m]),
-                    "Atom $n: ", repr("text/plain", l[n])
-                )
-            end
-        end
-    end
-    # Filter kept_inds of zeros to get the list of kept atoms
-    return l[filter(!iszero, kept_inds)]
-end
 
 deduplicate(l::AtomList; kw...) = AtomList(deduplicate(l.atoms; kw...))
 deduplicate(l::PeriodicAtomList; kw...) = PeriodicAtomList(basis(l), deduplicate(l.atoms; kw...))
