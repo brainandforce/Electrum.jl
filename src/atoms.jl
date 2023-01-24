@@ -314,6 +314,8 @@ function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
 end
 
 supercell(l::PeriodicAtomList, v::AbstractVector{<:Integer}) = supercell(l, diagm(v))
+supercell(l::PeriodicAtomList{D}, n::Integer) where D = supercell(l, fill(n, SVector{D}))
+supercell(l::PeriodicAtomList{D}, u::UniformScaling{<:Integer}) where D = supercell(l, u(D))
 
 """
     atomtypes(l::AbstractAtomList; dummy=false) -> Vector{NamedAtom}
