@@ -31,3 +31,20 @@ function reinterpret_index(sz::NTuple{D,<:Integer}, inds::Tuple) where D
 end
 
 reinterpret_index(g, inds::Tuple) = reinterpret_index(size(g), inds)
+
+"""
+    Xtal.convert_to_transform(M, [dimensions]) -> AbstractMatrix{Int}
+
+Converts a scalar, vector, or matrix that is intended to be used as a lattice transformation into
+a transformation matrix.
+"""
+convert_to_transform(M::AbstractMatrix) = Int.(M)
+convert_to_transform(v::AbstractVector) = diagm(Int.(v))
+# Drop provided dimensionality for matrices/vectors, since it's already known from the input
+convert_to_transform(x::AbstractVecOrMat, dimensions) = convert_to_transform(x)
+# When dimensions are provided as integers, return a Matrix
+# When provided as Val types, return an SMatrix, since we can dispatch on dimension
+convert_to_transform(n::Real, dimensions::Integer) = diagm(fill(Int(n), dimensions))
+convert_to_transform(n::Real, ::Val{D}) where D = diagm(fill(Int(n), SVector{D}))
+convert_to_transform(U::UniformScaling, dimensions::Integer) = Int.(U(dimensions))
+convert_to_transform(U::UniformScaling, ::Val{D}) where D = SMatrix{D,D,Int}(U)
