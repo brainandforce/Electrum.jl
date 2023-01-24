@@ -119,7 +119,32 @@ Base.convert(::Type{<:Crystal}, xtaldata::CrystalWithDatasets) = xtaldata.xtal
 Crystal(xtaldata::CrystalWithDatasets) = xtaldata.xtal
 data(xtaldata::CrystalWithDatasets) = xtaldata.data
 
-PeriodicAtomList(xtal::AbstractCrystal) = xtal.atoms
+"""
+    generators(xtal::AbstractCrystal{D}) -> PeriodicAtomList{D}
+
+Returns the list of generating atomic positions associated with a `Crystal` or
+`CrystalWithDatasets`.
+
+Note that this does not convert the input to a `PeriodicAtomList` with all atomic positions; only
+the minimal set that's needed to generate the atoms given the space group symmetry. To enumerate
+all of the atoms, use `convert(PeriodicAtomList, xtal)` or `PeriodicAtomList(xtal)`.
+"""
+generators(xtal::AbstractCrystal) = xtal.atoms
+
+function Base.convert(::Type{<:PeriodicAtomList}, xtal::AbstractCrystal)
+    # TODO: when space groups are implemented, explicitly generate those positions
+    return supercell(xtal.atoms, xtal.transform)
+end
+
+"""
+    PeriodicAtomList(xtal::AbstractCrystal{D}) -> PeriodicAtomList{D}
+
+Converts a `Crystal` or `CrystalWithDatasets` to a list of all generated atomic positions given
+the space group and the associated transformation matrix.
+
+To recover only the generating set of atoms, use `generators(xtal)`.
+"""
+PeriodicAtomList(xtal::AbstractCrystal) = convert(PeriodicAtomList, xtal)
 
 # TODO: Generate the full atom list when symmetry operations are implemented.
 Base.length(xtal::AbstractCrystal) = length(PeriodicAtomList(xtal))
