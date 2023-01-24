@@ -26,7 +26,7 @@ mutable struct Crystal{D} <: AbstractCrystal{D}
     sgorig::SVector{D,Float64}
     # Transform to generate the conventional or primitive lattice
     # It might be easier to write this as a transpose
-    transform::SMatrix{D,D,Float64}
+    transform::SMatrix{D,D,Int}
     function Crystal(
         # Always required, even if generating an empty list of atoms
         # (because the included basis is necessary)
