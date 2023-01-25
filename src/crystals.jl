@@ -145,6 +145,7 @@ the space group and the associated transformation matrix.
 To recover only the generating set of atoms, use `generators(xtal)`.
 """
 PeriodicAtomList(xtal::AbstractCrystal) = convert(PeriodicAtomList, xtal)
+AtomList(xtal::AbstractCrystal) = AtomList(PeriodicAtomList(xtal))
 
 # TODO: Generate the full atom list when symmetry operations are implemented.
 Base.length(xtal::AbstractCrystal) = length(PeriodicAtomList(xtal))
@@ -155,4 +156,15 @@ atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(PeriodicAtomList(xtal); 
 atomcounts(xtal::AbstractCrystal; kwargs...) = atomcounts(PeriodicAtomList(xtal); kwargs...)
 natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(PeriodicAtomList(xtal); kwargs...)
 
-AtomList(xtal::AbstractCrystal) = AtomList(PeriodicAtomList(xtal))
+"""
+    set_transform!(xtal::AbstractCrystal, M) -> AbstractCrystal
+
+Sets the transform supplied with an `AbstractCrystal`. The transform can be an integer matrix,
+vector, scalar, or `UniformScaling`, which is converted to an `SMatrix{D,D,Int}` when stored.
+
+The function returns the modified input for convenience.
+"""
+function set_transform!(xtal::AbstractCrystal, M)
+    setproperty!(xtal, :transform, convert_to_transform(M))
+    return xtal
+end
