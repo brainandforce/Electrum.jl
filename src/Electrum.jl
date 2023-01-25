@@ -115,7 +115,7 @@ export name, atomic_number, isdummy, displacement, occupancy, deduplicate, super
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export Crystal, CrystalWithDatasets
-export data, generators
+export data, generators, set_transform!
 # Methods and structs for working with different types of data associated with crystals
 include("data/realspace.jl")
 export RealSpaceDataGrid
