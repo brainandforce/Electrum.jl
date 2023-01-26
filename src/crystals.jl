@@ -38,21 +38,7 @@ mutable struct Crystal{D} <: AbstractCrystal{D}
         # Assume there is no conversion unless otherwise specified
         transform = LinearAlgebra.I
     ) where D
-        # Check that the space group specification matches the basis vectors
-        # TODO: long term: add more checks for specific space groups/crystal families
-        if iszero(sgno)
-            # Check if there actually is periodicity (nonzero basis vectors)
-            # If so, change the space group number to 1 (trivial space group)
-            if basis(atoms) != zeros(RealBasis{D})
-                sgno = 1
-            end
-        else
-            # If a nonzero basis is supplied and there is a nonzero space group number, error
-            if basis(atoms) == zeros(RealBasis{D})
-                error("Basis vectors must be specified if a nonzero space group number is given.")
-            end
-        end
-        return new{D}(atoms, sgno, sgorig, convert_to_transform(transform))
+        return new{D}(atoms, sgno, sgorig, convert_to_transform(transform, Val{D}()))
     end
 end
 
