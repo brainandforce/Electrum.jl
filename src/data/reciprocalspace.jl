@@ -73,9 +73,9 @@ Base.firstindex(k::KPointList) = firstindex(k.points)
 Base.lastindex(k::KPointList) = lastindex(k.points)
 
 """
-    nkpt(k::KPointList{D}) -> Int
+    nkpt(k::AbstractKPoints{D}) -> Int
 
-Gets the number of k-points in a `KPointList`.
+Gets the number of k-points in a `KPointList` or a `KPointGrid`.
 """
 nkpt(k::KPointList) = length(k.points)
 Base.length(k::KPointList) = length(k.points)

@@ -195,6 +195,14 @@ Returns the lengths of the basis vectors.
 """
 lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
 # Get the vector lengths for anything that has a defined basis
+
+"""
+    lengths(x) -> Float64
+
+Calculate the lengths of the basis vectors associated with `x`. These will be real space lengths
+(assumed to be in angstroms) for real space data, and reciprocal space lengths for reciprocal space
+data.
+"""
 lengths(x) = lengths(basis(x))
 
 """
@@ -212,7 +220,13 @@ Returns the volume of a unit cell defined by a matrix. This volume does not carr
 (negative for cells that do not follow the right hand rule).
 """
 volume(b::AbstractBasis) = cell_volume(matrix(b))
-# Get the cell volume for anything that has a defined basis
+
+"""
+    volume(x) -> Float64
+
+Calculate the volume of the basis associated with `x`. This will be a real space volume (assumed to
+be in cubic angstroms) for real space data, and reciprocal space lengths for reciprocal space data.
+"""
 volume(x) = volume(basis(x))
 
 """
