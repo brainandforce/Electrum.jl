@@ -36,7 +36,7 @@ mutable struct Crystal{D} <: AbstractCrystal{D}
         # Assume the origin is [0, 0, 0] if not provided
         sgorig::AbstractVector{<:Real} = zeros(SVector{D,Float64}),
         # Assume there is no conversion unless otherwise specified
-        transform::AbstractMatrix{<:Real} = SMatrix{D,D,Float64}(LinearAlgebra.I)
+        transform = LinearAlgebra.I
     ) where D
         # Check that the space group specification matches the basis vectors
         # TODO: long term: add more checks for specific space groups/crystal families
@@ -52,7 +52,7 @@ mutable struct Crystal{D} <: AbstractCrystal{D}
                 error("Basis vectors must be specified if a nonzero space group number is given.")
             end
         end
-        return new{D}(atoms, sgno, sgorig, transform)
+        return new{D}(atoms, sgno, sgorig, convert_to_transform(transform))
     end
 end
 
