@@ -16,7 +16,7 @@ end
 
 @testset "VASP outputs" begin
     @test length(poscar) == 4
-    @test names.(atomtypes(poscar)) == ["Ir", "Si"]
-    @test atomic_number(atomtypes(poscar)) == [77, 14]
+    @test name.(atomtypes(poscar)) == ["Si", "Ir"]
+    @test atomic_number.(atomtypes(poscar)) == [14, 77]
     @test natomtypes(poscar) == 2
 end
