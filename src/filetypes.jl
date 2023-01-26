@@ -214,9 +214,9 @@ function readXSF3D(
     end
     # Generate the transform between primitive and conventional lattices, if needed
     transform = if iszero(conv) 
-        SMatrix{3,3,Float64}(LinearAlgebra.I)
+        SMatrix{3,3,Int}(LinearAlgebra.I)
     else
-        matrix(prim) / matrix(conv)
+        round.(Int, matrix(conv) / matrix(prim))
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}(
         Crystal(atom_list, spgrp, origin, transform), data
