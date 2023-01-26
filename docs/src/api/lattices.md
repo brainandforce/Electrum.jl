@@ -1,20 +1,16 @@
 # Lattices
 
 ## Constructors and types
-
 ```@docs
 Electrum.AbstractBasis
 Electrum.RealBasis
 Electrum.ReciprocalBasis
-Electrum.lattice2D
-Electrum.lattice3D
 ```
 
 ## Methods
-
 ```@docs
-Electrum.lengths
-Electrum.volume
+Electrum.lengths(::AbstractBasis)
+Electrum.volume(::AbstractBasis)
 Electrum.angles_cos
 Electrum.angles_rad
 Electrum.angles_deg

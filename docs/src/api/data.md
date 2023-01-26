@@ -1,19 +1,22 @@
 # Crystal data
 
-## Real space
+## General
+```@docs
+Electrum.lengths(::Any)
+Electrum.volume(::Any)
+```
 
+## Real space
 ```@docs
 Electrum.AbstractRealSpaceData
 Electrum.RealSpaceDataGrid
 Electrum.grid
-Electrum.volume
 Electrum.voxelsize
 Electrum.integrate
 Electrum.fft
 ```
 
 ## Reciprocal space
-
 ```@docs
 Electrum.AbstractReciprocalSpaceData
 Electrum.AbstractKPoints
@@ -28,11 +31,11 @@ Electrum.HKLDict
 Electrum.ReciprocalWavefunction
 Electrum.nkpt
 Electrum.nband
+Electrum.ifft
 ```
 
 ## Density of states
-
-```
+```@docs
 Electrum.AbstractDensityOfStates
 Electrum.DensityOfStates
 Electrum.ProjectedDensityOfStates
@@ -46,8 +49,6 @@ Electrum.nelectrons
 ```
 
 ## Atomic data
-
 ```@docs
-Electrum.AtomicData
-Electrum.SphericalComponents
+Electrum.SphericalHarmonic
 ```
