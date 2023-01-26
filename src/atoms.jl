@@ -233,7 +233,7 @@ struct PeriodicAtomList{D} <: AbstractAtomList{D}
         b::AbstractBasis{D},
         l::AbstractVector{FractionalAtomPosition{D}}
     ) where D
-        return new{D}(b,l)
+        return new{D}(b, deduplicate(l))
     end
 end
 
@@ -247,7 +247,7 @@ boundary conditions.
 """
 struct AtomList{D} <: AbstractAtomList{D}
     atoms::Vector{CartesianAtomPosition{D}}
-    AtomList(l::AbstractVector{CartesianAtomPosition{D}}) where D = new{D}(l)
+    AtomList(l::AbstractVector{CartesianAtomPosition{D}}) where D = new{D}(deduplicate(l))
 end
 
 function Base.:(==)(l1::AbstractAtomList, l2::AbstractAtomList) 
