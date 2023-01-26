@@ -300,19 +300,17 @@ function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
     # Get the Smith normal form of the transformation matrix
     (S,U) = snf(M)
     # Generate all the sites in the supercell where new atoms have to be placed
-    newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(diag(S)))])
+    newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(1:s for s in diag(S)))])
     # Move all positions into the cell; remove duplicates
     dedup = deduplicate(
-        [FractionalAtomPosition(name(a), atomic_number(a), mod.(displacement(a), 1)) for a in l]
+        [FractionalAtomPosition(NamedAtom(a), mod.(displacement(a), 1), occupancy(a)) for a in l]
     )
     # Shift everything over for each new point
     sclist = [
         FractionalAtomPosition(
-            name(atom),
-            atomic_number(atom),
-            # Keep the new atoms inside the supercell
-            # Multiply the coordinate by U
-            mod.(SMatrix{D,D}(M)\(displacement(atom) + U*d), 1)
+            NamedAtom(atom),
+            mod.(SMatrix{D,D}(M)\(displacement(atom) + U\d), 1),
+            occupancy(atom)
         )
         for atom in dedup, d in newpts
     ]
