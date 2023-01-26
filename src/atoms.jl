@@ -177,6 +177,7 @@ end
 
 """
     deduplicate(l::AbstractVector{T<:AbstractAtomPosition}; atol=sqrt(eps(Float64))) -> Vector{T}
+    deduplicate(l::AbstractAtomList; atol=sqrt(eps(Float64))) -> <:AbstractAtomList
 
 Removes atoms that are duplicates or close to being duplicates. In order to be considered
 duplicates, the atoms must have both the atomic number, and their coordinates must be approximately
@@ -202,6 +203,20 @@ function deduplicate(l::AbstractVector{<:AbstractAtomPosition}; atol=sqrt(eps(Fl
     end
     # Filter kept_inds of zeros to get the list of kept atoms
     return l[filter(!iszero, kept_inds)]
+end
+
+"""
+    move_into_cell(l::AbstractVector{T<:FractionalAtomPosition}; atol=sqrt(eps(Float64)))
+        -> Vector{T}
+    move_into_cell(l::PeriodicAtomList; atol=sqrt(eps(Float64))) -> PeriodicAtomList
+
+Moves atoms that may exist outside of the bounds of a unit cell (meaning that their fractional
+coordinates are not between 0 and 1) into the unit cell.
+"""
+function move_into_cell(l::AbstractVector{<:FractionalAtomPosition}; atol=sqrt(eps(Float64)))
+    return deduplicate(
+        [FractionalAtomPosition(NamedAtom(a), mod.(displacement(a), 1), occupancy(a)) for a in l]
+    )
 end
 
 #---Lists of atoms--------------------------------------------------------------------------------#
@@ -281,6 +296,10 @@ PeriodicAtomList(b::AbstractBasis{D}, l::AtomList{D}) where D = PeriodicAtomList
 deduplicate(l::AtomList; kw...) = AtomList(deduplicate(l.atoms; kw...))
 deduplicate(l::PeriodicAtomList; kw...) = PeriodicAtomList(basis(l), deduplicate(l.atoms; kw...))
 
+function move_into_cell(l::PeriodicAtomList; kw...)
+    return PeriodicAtomList(basis(l), move_into_cell(l.atoms; kw...))
+end
+
 """
     supercell(l::PeriodicAtomList, M) -> PeriodicAtomList
 
@@ -301,10 +320,6 @@ function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
     (S,U) = snf(M)
     # Generate all the sites in the supercell where new atoms have to be placed
     newpts = vec([SVector(v.I .- 1) for v in CartesianIndices(Tuple(1:s for s in diag(S)))])
-    # Move all positions into the cell; remove duplicates
-    dedup = deduplicate(
-        [FractionalAtomPosition(NamedAtom(a), mod.(displacement(a), 1), occupancy(a)) for a in l]
-    )
     # Shift everything over for each new point
     sclist = [
         FractionalAtomPosition(
@@ -312,7 +327,7 @@ function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
             mod.(SMatrix{D,D}(M)\(displacement(atom) + U\d), 1),
             occupancy(atom)
         )
-        for atom in dedup, d in newpts
+        for atom in move_into_cell(l), d in newpts
     ]
     return PeriodicAtomList(scb, vec(sclist))
 end
