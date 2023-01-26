@@ -1,20 +1,19 @@
 """
-    write_lammps_data(
-        io::IO,
-        list::AtomList{D}
-        sc::AbstractVecOrMat{<:Integer} = ones(Int,D);
-        dummy::Bool = false
-    )
+    write_lammps_data(io::IO, list::PeriodicAtomList, [transform]; dummy::Bool = false)
 
 Writes crystal information to a LAMMPS data format that can be used to define a simulation box
-for running a molecular dynamics simulation. If provided, `sc` can be used to generate a supercell
+for running a molecular dynamics simulation. 
+    
+If `transform` is supplied, the list of atoms will be converted to a supercell with the associated
+transformation (either a matrix, vector, or scalar). The `dummy` keyword determines whether dummy
+atoms are included in the output (`false` by default).
 
-This function currently only works correctly for 3D systems.
+This function currently only works for 3D systems.
 """
-function write_lammps_data(io::IO, list::AtomList{D}, dummy::Bool=false) where D
+function write_lammps_data(io::IO, list::PeriodicAtomList, dummy::Bool=false) 
     println(
         io, 
-        "# LAMMPS data file written by Electrum.jl (https://github.com/brainandforce/Electrum.jl)"
+        "# Written by Electrum.jl (https://github.com/brainandforce/Electrum.jl)"
     )
     # Get the number of atoms; write the corresponding line
     natoms = length(list)
@@ -32,9 +31,9 @@ function write_lammps_data(io::IO, list::AtomList{D}, dummy::Bool=false) where D
         @printf(io, "%f %f %f xy xz yz\n", basis(list)[1,2], basis(list)[1,3], basis(list)[2,3])
     end
     # Get the different atom types; strip dummy atoms if needed
-    atl = (dummy ? list : remove_dummies(list))
+    atl = (dummy ? list : filter(!isdummy, list))
     # Enumerate the atoms - by name, not atomic number
-    names = atomnames(atl)
+    names = name.(atomtypes(atl))
     # Print the atoms section
     println(io, "\nAtoms  # atomic\n")
     # Loop through the atoms
@@ -42,60 +41,43 @@ function write_lammps_data(io::IO, list::AtomList{D}, dummy::Bool=false) where D
         @printf(
             io, "%i  %i  %f  %f  %f\n",
             # Atom number, enumerated atom type, coordinates (currently only 3D)...
-            n, findfirst(isequal(atomname(atom)), names), (basis(atl) * atom.pos)...
+            n, findfirst(isequal(name(atom)), names), (basis(atl) * atom.pos)...
         )
     end
 end
 
+function write_lammps_data(io::IO, list::PeriodicAtomList, transform; kwargs...)
+    write_lammps_data(io, supercell(list, transform); kwargs...)
+end
+
 """
-    write_lammps_data(
-        io::IO,
-        xtal::AbstractCrystal{D};
-        sc = diagm(ones(Int, D))::AbstractVector{<:Integer};
-        dummy::Bool = false 
-    )
+    write_lammps_data(io::IO, xtal::AbstractCrystal, [transform]; dummy::Bool = false)
 
 Writes crystal information to a LAMMPS data format that can be used to define a simulation box
-for running a molecular dynamics simulation.
+for running a molecular dynamics simulation. 
+    
+The list of atoms that is written is given by converting `xtal` to a `PeriodicAtomList`, which uses
+the supplied transformation matrix to generate all atomic positions. If `transform` is supplied,
+the transformation will be applied to the `PeriodicAtomList` - it does not replace the transform
+provided with `xtal`.
 
 This function currently only works for 3D systems.
 """
-function write_lammps_data(
-    io::IO,
-    list::AtomList{D},
-    sc::AbstractVecOrMat{<:Integer};
-    kwargs...
-) where D
-    write_lammps_data(io, supercell(list, sc); kwargs...)
+function write_lammps_data(io::IO, xtal::AbstractCrystal;  kwargs...)
+    write_lammps_data(io, PeriodicAtomList(xtal); kwargs...)
 end
 
-# Same thing, but with an AbstractCrystal
-write_lammps_data(
-    io::IO, 
-    xtal::AbstractCrystal{D},
-    supercell;
-    kwargs...
-) where D = write_lammps_data(io, xtal.gen, supercell; kwargs...)
-
-# Write to a filename
-function write_lammps_data(
-    filename::AbstractString,
-    xtal::Union{AbstractCrystal{D},AtomList{D}}, # this is weird...
-    supercell::AbstractVecOrMat{<:Integer};
-    kwargs...
-) where D
-    open(filename, write=true) do io
-        write_lammps_data(io, xtal, supercell; kwargs...)
-    end
+function write_lammps_data(io::IO, xtal::AbstractCrystal, transform; kwargs...)
+    write_lammps_data(io, PeriodicAtomList(xtal), transform; kwargs...)
 end
 
-# Write to a filename
-function write_lammps_data(
-    filename::AbstractString,
-    xtal::Union{AbstractCrystal{D},AtomList{D}}, # this is weird...
-    kwargs...
-) where D
+"""
+    write_lammps_data(filename::AbstractString, data, [transform]; dummy::Bool = false)
+
+Writes a LAMMPS data file to the path given by `filename`.
+"""
+function write_lammps_data(filename::AbstractString, args...; kwargs...)
     open(filename, write=true) do io
-        write_lammps_data(io, xtal; kwargs...)
+        write_lammps_data(io, args...; kwargs...)
     end
 end
