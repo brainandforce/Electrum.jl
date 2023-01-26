@@ -33,7 +33,7 @@ end
 reinterpret_index(g, inds::Tuple) = reinterpret_index(size(g), inds)
 
 """
-    Xtal.convert_to_transform(M, [dimensions]) -> AbstractMatrix{Int}
+    Electrum.convert_to_transform(M, [dimensions]) -> AbstractMatrix{Int}
 
 Converts a scalar, vector, or matrix that is intended to be used as a lattice transformation into
 a transformation matrix.
