@@ -51,41 +51,12 @@ abstract type AbstractCrystal{D}
 end
 
 """
-    AbstractCrystalData{D}
+    AbstractDataGrid{D,T}
 
-Supertype for all datasets that may be associated with a crystal.
+Supertype for crystal data associated with a grid of entries of type `T` in real or reciprocal
+space of dimension `D`.
 """
-abstract type AbstractCrystalData{D}
-end
-
-"""
-    AbstractRealSpaceData{D}
-
-Supertype for crystal data that is defined in real space. This includes atomic coordinates.
-
-Any basis that is stored with a subtype of this type will be a `RealBasis`, and calling `basis()`
-on that subtype will always return a `RealBasis.`
-"""
-abstract type AbstractRealSpaceData{D} <: AbstractCrystalData{D}
-end
-
-"""
-    AbstractReciprocalSpaceData{D}
-
-Supertype for crystal data that is defined in reciprocal space.
-
-Any basis that is stored with a subtype of this type will be a `ReciprocalBasis`, and calling
-`basis()` on that subtype will always return a `ReciprocalBasis.`
-"""
-abstract type AbstractReciprocalSpaceData{D} <: AbstractCrystalData{D}
-end
-
-"""
-    AbstractHKL{D}
-
-Supertype for crystal data stored by HKL index.
-"""
-abstract type AbstractHKL{D,T} <: AbstractReciprocalSpaceData{D}
+abstract type AbstractDataGrid{D,T}
 end
 
 """
@@ -97,9 +68,10 @@ abstract type AbstractDensityOfStates
 end
 
 """
-    AbstractKPoints{D}
+    AbstractKPointSet{D}
 
-Supertype for sets of k-points.
+Supertype for sets of k-points in `D` dimensions, either provided as explicit lists or as a
+generator (such as a matrix defining a mesh).
 """
-abstract type AbstractKPoints{D} <: AbstractReciprocalSpaceData{D}
+abstract type AbstractKPointSet{D}
 end

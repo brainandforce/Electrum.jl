@@ -9,7 +9,7 @@ supercell.
 
 The shift of the k-point mesh off Γ is given as an `SVector{D,Float64}`.
 """
-struct KPointGrid{D} <: AbstractKPoints{D}
+struct KPointGrid{D} <: AbstractKPointSet{D}
     grid::SMatrix{D,D,Int}
     orig::SVector{D,Float64}
     function KPointGrid{D}(grid::AbstractMatrix{<:Integer}, orig::AbstractVector{<:Real}) where D
@@ -33,7 +33,7 @@ The weights of k-points are used to compensate for their placement on sites with
 no weights are provided, they are all assumed to be equal. Any explicit input of k-point weights
 will be normalized such that their sum is 1, following the convention used by abinit.
 """
-struct KPointList{D} <: AbstractKPoints{D}
+struct KPointList{D} <: AbstractKPointSet{D}
     points::Vector{SVector{D,Float64}}
     weights::Vector{Float64}
     function KPointList(
@@ -136,7 +136,7 @@ Stores information about an electronic band structure, including the list of k-p
 generate the data (as a `KPointList{D}`)and the band information at every k-point (as a
 `Vector{BandAtKPoint}`).
 """
-struct BandStructure{D} <: AbstractReciprocalSpaceData{D}
+struct BandStructure{D}
     # k-points for which band data is defined
     kpts::KPointList{D}
     # Set of energy and occupancy data
@@ -154,7 +154,7 @@ end
 Generates a new band structure from k-point information and a vector containing band information at
 each k-point.
 """
-function BandStructure{D}(kpts::AbstractKPoints{D}, bands::AbstractVector{<:BandAtKPoint}) where D
+function BandStructure{D}(kpts::AbstractKPointSet{D}, bands::AbstractVector{<:BandAtKPoint}) where D
     return BandStructure{D}(kpts, bands)
 end
 
@@ -167,7 +167,7 @@ nkpt(b::BandStructure{D}) where D = nkpt(b.kpts)
 nband(b::BandStructure{D}) where D = nband(b.bands[1])
 
 """
-    FatBands{D} <: AbstractReciprocalSpaceData{D}
+    FatBands{D}
 
 Stores information relevant to plotting fatbands.
 
@@ -175,14 +175,14 @@ Stores information relevant to plotting fatbands.
 - FatBands.projband: array of lm-decomposed band structure. [orbital, ion, band, kpt].
 - FatBands.cband: array of complex-valued contributions to band structure.
 """
-struct FatBands{D} <: AbstractReciprocalSpaceData{D}
+struct FatBands{D}
     bands::Matrix{Float64}
     projband::Array{Float64,4}
     cband::Array{Complex{Float64},4}
 end
 
 """
-    HKLData{D,T} <: AbstractReciprocalSpaceData{D}
+    HKLData{D,T} <: AbstractDataGrid{D,T}
 
 Stores information associated with a reciprocal space basis. Data can be accessed and modified by
 using the G-vectors as indices. Associated k-point data is also provided; if no k-point is supplied
@@ -191,7 +191,7 @@ Internally, the data is stored such that the zero frequency components are at th
 along that dimension. The data at G-vector `[0, 0, 0]` is stored in the backing array's `[1, 1, 1]`
 index, and the rest of the indices correspond to reciprocal space points using the FFT convention.
 """
-struct HKLData{D,T} <: AbstractHKL{D,T}
+struct HKLData{D,T} <: AbstractDataGrid{D,T}
     basis::ReciprocalBasis{D}
     data::Array{T,D}
     kpt::SVector{D,Float64}
@@ -289,7 +289,7 @@ large number of zero components. For wavefunction data, which is often specified
 cutoff that corresponds to a distance in reciprocal space, there are many zero valued elements to
 the array. Unspecified elements in an `HKLDict` are assumed to be zero.
 """
-struct HKLDict{D,T} <: AbstractHKL{D,T}
+struct HKLDict{D,T} <: AbstractDataGrid{D,T}
     dict::Dict{SVector{D,Int},T}
 end
 
@@ -349,7 +349,7 @@ function HKLData(hkl::HKLDict{D,T}) where {D,T<:Union{<:Number,<:AbstractArray{N
 end
 
 """
-    ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
+    ReciprocalWavefunction{D,T<:Real}
 
 Contains a wavefunction stored by k-points and bands in a planewave basis. Used to store data in
 VASP WAVECAR files. Each k-point is expected to have the same number of bands.
@@ -363,7 +363,7 @@ storage would waste space.
 The energies and occupancies are also stored in fields with the corresponding names, and can be
 accessed by spins, k-points, and bands, with indices in that order.
 """
-struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
+struct ReciprocalWavefunction{D,T<:Real}
     # Reciprocal lattice on which the k-points are defined
     rlatt::ReciprocalBasis{D}
     # k-points used to construct the wavefunction
@@ -375,7 +375,7 @@ struct ReciprocalWavefunction{D,T<:Real} <: AbstractReciprocalSpaceData{D}
     occupancies::Array{Float64,3}
     function ReciprocalWavefunction(
         rlatt::AbstractBasis{D},
-        kpts::AbstractKPoints{D},
+        kpts::AbstractKPointSet{D},
         waves::AbstractArray{HKLData{D,Complex{T}},3},
         energies::AbstractArray{<:Real,3},
         occupancies::AbstractArray{<:Real,3},
@@ -390,7 +390,7 @@ end
 # When eneregies and occupancies are not specified
 function ReciprocalWavefunction(   
     rlatt::AbstractBasis{D},
-    kpts::AbstractKPoints{D},
+    kpts::AbstractKPointSet{D},
     waves::AbstractArray{HKLData{D,Complex{T}},3}
 ) where {D,T<:Real}
     # Construct zero matrix
