@@ -75,3 +75,46 @@ generator (such as a matrix defining a mesh).
 """
 abstract type AbstractKPointSet{D}
 end
+
+#---Traits----------------------------------------------------------------------------------------#
+
+"""
+    CrystalDataTraits
+
+Subtypes of this type are traits that may be used for dispatch.
+"""
+abstract type CrystalDataTrait
+end
+
+"""
+    RealSpaceData{D}
+
+Trait for real space data in `D` dimensions.
+"""
+struct RealSpaceData{D} <: CrystalDataTrait
+end
+
+"""
+    ReciprocalSpaceData{D}
+
+Trait for reciprocal space data in `D` dimensions.
+"""
+struct ReciprocalSpaceData{D} <: CrystalDataTrait
+end
+
+"""
+    AtomPositionData{D}
+
+Trait for data associated with atomic positions in a crystal.
+"""
+struct AtomPositionData{D} <: CrystalDataTrait
+end
+
+"""
+    Electrum.data_space(x) -> CrystalDataTrait
+
+Returns a trait that determines whether a data set associated with a crystal is defined in real
+space (`RealSpaceData{D}()`), reciprocal space (`ReciprocalSpaceData{D}()`), or by atomic positions
+(`AtomPositionData{D}`), where `D` is the number of dimensions.
+"""
+function data_space end
