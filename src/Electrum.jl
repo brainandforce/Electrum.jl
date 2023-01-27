@@ -101,7 +101,7 @@ include("math.jl")
 # Abstract types used in type tree
 include("types.jl")
 export AbstractBasis, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData,
-       AbstractReciprocalSpaceData, AbstractHKL, AbstractKPoints, AbstractDensityOfStates
+       AbstractReciprocalSpaceData, AbstractHKL, AbstractKPointSet, AbstractDensityOfStates
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export RealBasis, ReciprocalBasis
