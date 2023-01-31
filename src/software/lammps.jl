@@ -10,7 +10,7 @@ atoms are included in the output (`false` by default).
 
 This function currently only works for 3D systems.
 """
-function write_lammps_data(io::IO, list::PeriodicAtomList, dummy::Bool=false) 
+function write_lammps_data(io::IO, list::PeriodicAtomList; dummy::Bool=false) 
     println(
         io, 
         "# Written by Electrum.jl (https://github.com/brainandforce/Electrum.jl)"
@@ -19,7 +19,7 @@ function write_lammps_data(io::IO, list::PeriodicAtomList, dummy::Bool=false)
     natoms = length(list)
     println(io, natoms, " atoms")
     # Get the number of atom types
-    println(io, natomtypes(list), " atom types")
+    println(io, natomtypes(list; dummy), " atom types")
     # Now print the new basis vectors
     println(io, "# Basis vector lengths:")
     println(io, @sprintf("0.000000    %f", basis(list)[1,1]), "     xlo xhi")
@@ -33,7 +33,7 @@ function write_lammps_data(io::IO, list::PeriodicAtomList, dummy::Bool=false)
     # Get the different atom types; strip dummy atoms if needed
     atl = (dummy ? list : filter(!isdummy, list))
     # Enumerate the atoms - by name, not atomic number
-    names = name.(atomtypes(atl))
+    names = name.(atomtypes(atl; dummy))
     # Print the atoms section
     println(io, "\nAtoms  # atomic\n")
     # Loop through the atoms
