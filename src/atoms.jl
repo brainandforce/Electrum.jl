@@ -347,7 +347,7 @@ To obtain a list of all unique atom names or atomic numbers, use `name.(atomtype
 `num.(atomtypes(l))`.
 """
 function atomtypes(l::AbstractAtomList; dummy::Bool=false)
-    return sort!(unique([NamedAtom(a) for a in (dummy ? filter(!isdummy, l) : l)]))
+    return sort!(unique([NamedAtom(a) for a in (dummy ? l : filter(!isdummy, l))]))
 end
 
 """
