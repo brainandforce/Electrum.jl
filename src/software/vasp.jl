@@ -88,44 +88,47 @@ readCONTCAR() = open(readPOSCAR, "CONTCAR")
         io::IO,
         list::AtomList;
         comment = Written by Electrum.jl,
-        names = false
+        names::Bool = false,
+        dummy::Bool = false,
     )
     writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...)
     writePOSCAR4(filename::AbstractString, data; kwargs...)
 
-Writes crystal data to a VASP 4.6 POSCAR output. Dummy atoms are not written.
+Writes crystal data to a VASP 4.6 POSCAR output.
+
+By default, atom names are not written (since this seems to break VASP 4.6) but this may be
+overridden by setting `names` to `true` (which prevents VESTA from crashing). Dummy atoms are not
+are not written by default, but they may be written by setting `dummy=true`.
 
 The first line, normally used to describe the system, may be altered by passing a printable object
 to `comment`.
-
-By default, atom names are not written (since this seems to break VASP 4.6) but this may be
-overridden by setting `names` to `true.`
 """
 function writePOSCAR4(
     io::IO,
     list::PeriodicAtomList;
-    comment = "Written by Electrum.jl",
-    names = false
+    names::Bool = false,
+    dummy::Bool = false,
+    comment = "Written by Electrum.jl"
 )
     # Write comment line and scaling factor
     println(io, comment, "\n1")
     # Write the basis vectors
     for v in basis(list)
-        println(io, (@sprintf("% -21.16f", x) for x in v)...)
+        println(io, (@sprintf("   % -21.16f", x) for x in v)...)
     end
     # Figure out what types of atoms there are and how many
-    atom_types = atomtypes(list)
-    atom_counts = [count(a -> atomic_number(a) == n, list) for n in atom_types]
+    atom_types = atomtypes(list; dummy)
+    atom_counts = [p[2] for p in atomcounts(list; dummy)]
     # If names is true, print the atom names line
     if names
-        println(io, (rpad(s,4) for s in name.(atom_types))...)
+        println(io, (rpad(s, 10) for s in name.(atom_types))...)
     end
     # Print the number of different types of atoms, and the `Direct` keyword
-    println(io, (rpad(x, 4) for x in atom_counts)..., "\nDirect")
+    println(io, (rpad(x, 10) for x in atom_counts)..., "\nDirect")
     for t in atom_types
         # Loop through the filtered list with one atom type
         for a in filter(a -> NamedAtom(a) == t, list.atoms)
-            println(io, (@sprintf("% -21.16f", x) for x in displacement(a))...)
+            println(io, (@sprintf("   % -21.16f", x) for x in displacement(a))...)
         end
     end
 end
