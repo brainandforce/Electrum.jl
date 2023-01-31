@@ -16,7 +16,7 @@ function write_lammps_data(io::IO, list::PeriodicAtomList; dummy::Bool=false)
         "# Written by Electrum.jl (https://github.com/brainandforce/Electrum.jl)"
     )
     # Get the number of atoms; write the corresponding line
-    natoms = length(list)
+    natoms = length(list) - length(filter(isdummy, list)) * !dummy
     println(io, natoms, " atoms")
     # Get the number of atom types
     println(io, natomtypes(list; dummy), " atom types")
