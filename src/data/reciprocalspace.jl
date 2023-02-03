@@ -37,7 +37,7 @@ struct KPointList{D} <: AbstractKPoints{D}
     points::Vector{SVector{D,Float64}}
     weights::Vector{Float64}
     function KPointList(
-        points::AbstractVector{<:SVector{D,<:Real}},
+        points::AbstractVector{<:StaticVector{D,<:Real}},
         weights::AbstractVector{<:Real}
     ) where D
         @assert length(points) == length(weights) "Number of k-points and weights do not match."
@@ -58,7 +58,7 @@ function KPointList{D}(points::AbstractVector{<:AbstractVector{<:Real}}) where D
     return KPointList{D}(points, ones(length(points)))
 end
 
-function KPointList(points::AbstractVector{<:SVector{D,<:Real}}) where D
+function KPointList(points::AbstractVector{<:StaticVector{D,<:Real}}) where D
     return KPointList(points, ones(length(points)))
 end
 
