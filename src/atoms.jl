@@ -264,6 +264,23 @@ Base.keys(l::AbstractAtomList) = keys(l.atoms)
 
 Base.iterate(l::AbstractAtomList, i::Integer = 1) = iterate(l.atoms, i)
 
+function Base.push!(l::AtomList{D}, a::CartesianAtomPosition{D}) where D
+    push!(l.atoms, a)
+    return l
+end
+
+function Base.push!(l::PeriodicAtomList{D}, a::FractionalAtomPosition{D}) where D
+    push!(l.atoms, a)
+    return l
+end
+
+function Base.push!(l::PeriodicAtomList{D}, a::CartesianAtomPosition{D}) where D
+    push!(l.atoms, FractionalAtomPosition(basis(l), a))
+    return l
+end
+
+Base.pop!(l::AbstractAtomList) = pop!(l.atoms)
+
 Base.filter(f, l::AtomList) = AtomList(filter(f, l.atoms))
 Base.filter(f, l::PeriodicAtomList) = PeriodicAtomList(basis(l), filter(f, l.atoms))
 
