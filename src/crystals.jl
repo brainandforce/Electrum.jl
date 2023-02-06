@@ -5,10 +5,7 @@ A crystal structure in `D` dimensions. Contains information about the lattice, s
 atoms. This is a mutable data structure.
 
 At minimum, a list of atomic positions (as an `AtomList`) is needed to generate a `Crystal`.
-Optionally, space group number and the origin of the space group may be provided. If `sgno` is set
-to 0, it will be assumed that coordinates are given in Cartesian coordinates in angstroms.
-Otherwise, it will be assumed that coordinates are fractional, given in terms of the unit cell
-basis.
+Optionally, space group number and the origin of the space group may be provided.
 
 A transform may also be specified that converts the basis vectors of the `AtomList` to a favored
 representation, most often the conventional lattice. If it is not specified, it is filled with an
