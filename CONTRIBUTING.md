@@ -187,4 +187,5 @@ explicitly compiles them or `$JULIA_DEBUG` is set to the module name.
 
 Avoid using `println()` if one of the logging macros better suits the purpose. If `println()` is
 used, consider whether it might be a better idea to print to `stderr` instead of `stdout`. Note
-that `@warn` and `@error` will print to `stderr` by default.
+that `@warn` and `@error` will print to `stderr` by default. (This means that if you try to pipe the
+output to `less` or some other utility, it will not show up unless you perform output redirection.)
