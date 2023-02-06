@@ -167,9 +167,17 @@ Julia currently does not allow field types to be computed. The problem with this
 must have a fourth type parameter that corresponds to the total length of the `NTuple` that is used
 to construct it, even though that length can be inferred from the array dimensionality.
 
+This poses a significant problem with the inclusion of matrices in struct defintions. If the type
+assertion is `SMatrix{D1,D2,T}`, *the compiler will not be able to treat it as a concrete type.*
+This means that small structs that could have otherwise been stack allocated end up pointing to data
+on the heap, and this can reduce performance, especially in tight loops.
+
 If you need to use an `SMatrix{D1,D2,T,L}` in a struct, be sure that you can define `L` as well as
 `D1` and `D2`. Otherwise, it might be a better idea to store the data internally as an
-`SVector{D,SVector{D,T}}`, and define `convert()` for it to turn it into a matrix.
+`SVector{D2,SVector{D1,T}}`, and define `convert()` for it to turn it into a matrix. If you're
+working with a mutable struct, this is not an issue: see `Electrum.Crystal` for an example of this.
+(`const` declarations in `mutable struct` cannot be used: they were introduced in Julia 1.8, and we
+target backwards compatibility with Julia 1.6 LTS.)
 
 ### Logging and printing
 
