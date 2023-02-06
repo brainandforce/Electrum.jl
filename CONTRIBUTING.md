@@ -158,7 +158,8 @@ since atomic positions are not expected to vary in dimensionality.
 
 The `StaticArrays` package provides the `SArray` type, which is immutable (cannot be altered after
 creation), as well as the mutable `MArray` type. In general, it's better to stick to immutable 
-types (though dynamic vectors are always mutable).
+types (though dynamic vectors are always mutable). For functions that should take only static array
+arguments, use `::StaticArray{...}` in the type signature.
 
 ### Use of `BasisVectors{D}` and other reimplemented multidimensional array types
 
