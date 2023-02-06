@@ -62,8 +62,7 @@ end
 """
     smear(dos::DensityOfStates, sigma::Real)
 
-Smears the DOS function by convoluting it with a gaussian, sigma will determine how
-much the DOS is smeared. 
+Smears the DOS function by convoluting it with a normalized Gaussian function with width `sigma`.
 """
 function smear(
     dos::DensityOfStates,

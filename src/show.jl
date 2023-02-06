@@ -1,4 +1,4 @@
-#---Helper functions used to print common features (e.g. basis vectors)---------------------------#
+#---Helper functions used to print common features (e.g. basis vectors)----------------------------#
 """
     Electrum.subscript_string(x::Number) -> String
 
@@ -157,20 +157,20 @@ end
 
 formula_string(l::AbstractCrystal; kwargs...) = formula_string(PeriodicAtomList(l); kwargs...)
 
-#---Actual show methods---------------------------------------------------------------------------#
+#---Actual show methods----------------------------------------------------------------------------#
 
 # These are what you see when something is returned in the REPL.
 # To define these methods for a type, just overload show(::IO, ::MIME"text/plain", ::T)
 # To get the result as a string, just use repr("text/plain", x)
 
-#---Types from lattices.jl (RealBasis, ReciprocalBasis)-------------------------------------------#
+#---Types from lattices.jl (RealBasis, ReciprocalBasis)--------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", b::AbstractBasis)
     println(io, typeof(b), ":")
     printbasis(io, b, pad=2)
 end
 
-#---Types from atoms.jl (AtomPosition, AtomList)--------------------------------------------------#
+#---Types from atoms.jl (AtomPosition, AtomList)---------------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", a::AbstractAtomPosition; kwargs...)
     println(io, typeof(a), ":")
@@ -192,7 +192,7 @@ function Base.show(io::IO, ::MIME"text/plain", l::AbstractAtomList; kwargs...)
     end
 end
 
-#---Types from data/realspace.jl------------------------------------------------------------------#
+#---Types from data/realspace.jl-------------------------------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid)
     dimstring = join(string.(size(g)), "×") * " "
@@ -202,7 +202,7 @@ function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid)
     @printf(io, "\nVoxel size:  %16.10f Å", voxelsize(g))
 end
 
-#---Types from data/reciprocalspace.jl------------------------------------------------------------#
+#---Types from data/reciprocalspace.jl-------------------------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", g::HKLData)
     dimstring = join(string.(size(g)), "×") * " "
@@ -231,7 +231,7 @@ function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction)
     print(io, join(basis_string(basis(wf)), "\n"))
 end
 
-#---Types from data/atomic.jl---------------------------------------------------------------------#
+#---Types from data/atomic.jl----------------------------------------------------------------------#
 
 function Base.show(
     io::IO,
@@ -261,7 +261,7 @@ function Base.show(
     end
 end
 
-#---Types from crystals.jl------------------------------------------------------------------------#
+#---Types from crystals.jl-------------------------------------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     println(io, typeof(xtal), " (", formula_string(xtal), ", space group ", xtal.sgno, "): ")
@@ -287,7 +287,7 @@ function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets)
     show(io, MIME("text/plain"), x.data)
 end
 
-#---Other internal types--------------------------------------------------------------------------#
+#---Other internal types---------------------------------------------------------------------------#
 
 function Base.show(io::IO, ::MIME"text/plain", h::ABINITHeader)  
     println(io, "abinit ", repr(h.codvsn)[3:end-1], " header (version ", h.headform, "):")

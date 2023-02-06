@@ -35,10 +35,10 @@ when you create a new branch, make commits, or push to a remote repo.
 ## Continuous integration
 
 Currently, we have automatically building documentation courtesy of Documenter.jl and its
-integration with GitHub Actions. GitHub Actions are also used to automatically test the package
-for every pull request and every merge into `main`. These tests should run automatically when you
-create a pull request, and you should see the status of the tests after a few minutes. Pull
-requests that do not pass tests generally will not be merged.
+integration with GitHub Actions. GitHub Actions are also used to automatically test the package for
+every pull request and every merge into `main`. These tests should run automatically when you create
+a pull request, and you should see the status of the tests after a few minutes. Pull requests that
+do not pass tests generally will not be merged.
 
 We use Aqua.jl to perform automatic package testing that covers some basic needs: method
 ambiguities, stale dependencies, etc. Note that Aqua.jl is a bit picky about how `Project.toml` is
@@ -53,11 +53,11 @@ but for now, avoid using any features that are present in later releases of Juli
 
 ### Dependencies and interoperability
 
-Avoid adding dependencies to Julia libraries that are not actively developed or maintained, or 
+Avoid adding dependencies to Julia libraries that are not actively developed or maintained, or
 contain functionality which would be simple to integrate into the package.
 
 Try to minimize dependencies to code from different languages. Many other libraries pull functions
-from scipy or other external libraries, but we intend to implement all core functionality here in 
+from scipy or other external libraries, but we intend to implement all core functionality here in
 pure Julia.
 
 ## Coding style and standards
@@ -71,8 +71,8 @@ https://docs.julialang.org/en/v1/manual/style-guide/
 
 For `Electrum.ABINITHeader` structs, direct field access may be used to assign and retrieve values.
 
-Avoid using short-circuit `if` statements - write them out explicitly. There are many instances of 
-short-circuited `if` statements throughout the code at this point, and you are welcome to restore 
+Avoid using short-circuit `if` statements - write them out explicitly. There are many instances of
+short-circuited `if` statements throughout the code at this point, and you are welcome to restore
 them to full `if` statements.
 
 ### Line length
@@ -92,8 +92,8 @@ Stick to PascalCase for the names of types and modules, and snake_case for the n
 and functions.
 
 Functions for reading VASP inputs and outputs are usually given names like `readWAVECAR()`,
-`writePOSCAR4()`,etc. with no spaces, and a version number afterwards for function writing. For 
-files which have the same format but a different name, for instance, `CONTCAR` files, you are 
+`writePOSCAR4()`,etc. with no spaces, and a version number afterwards for function writing. For
+files which have the same format but a different name, for instance, `CONTCAR` files, you are
 encouraged to add corresponding methods that contain the name of that particular file (for
 instance, `readCONTCAR()`).
 
@@ -103,21 +103,21 @@ All functions and structs must have an associated docstring explaining the purpo
 *even if the struct or method is not exported.* For internal methods and structs, please prefix
 them with the module name in the docstring.
 
-It's better to be verbose about what's going on with your code. Even if a remark seems obvious, 
-feel free to leave it in. Perhaps the best assumption to make is that whoever is looking at the
-code may not have any experience writing Julia code (or any code, for that matter).
+It's better to be verbose about what's going on with your code. Even if a remark seems obvious, feel
+free to leave it in. Perhaps the best assumption to make is that whoever is looking at the code may
+not have any experience writing Julia code (or any code, for that matter).
 
 Comments are generally placed above the lines that they refer to. Inline comments are fine; this is
 just the pattern that's been used consistently in the code.
 
 ### Type parameters of newly defined types
 
-All of the parametric types that contain dimensionality as a type parameter should have the 
+All of the parametric types that contain dimensionality as a type parameter should have the
 dimensionality parameters come first. So if you want to create `MyType` that has dimension `D` and
 type `T`, the type should be created as `MyType{D,T}`. Dimension parameters are given as `D` in all
 type definitions.
 
-This is the opposite of the format used for Julia's built-in `AbstractArray` but matches the 
+This is the opposite of the format used for Julia's built-in `AbstractArray` but matches the
 convention used for `NTuple`.
 
 ### `Tuple` and `NamedTuple`
@@ -142,7 +142,7 @@ julia> nt[:b]
 ```
 ### Use of static vs. dynamic arrays
 
-The `StaticArrays.jl` package provides support for static (fixed dimension) vectors, matrices, and 
+The `StaticArrays.jl` package provides support for static (fixed dimension) vectors, matrices, and
 arrays. While dynamic arrays are convenient and don't require prior knowledge of array dimensions,
 static arrays allow for higher performance.
 
@@ -150,9 +150,9 @@ The use of static arrays is encouraged whenever the array dimensionality is unli
 (and in principle could be used as a type parameter). This universally applies to real space and
 reciprocal space vectors, since their dimensionality is fixed (and usually 3).
 
-The type `AtomList{D}` provides a great example of static vs. dynamic vector usage. The type 
-contains a `Vector{AtomPosition{D}}`, which is dynamic because the number of atoms in a crystal
-(either the generating set or the visual template) may vary greatly. However, the type 
+The type `AtomList{D}` provides a great example of static vs. dynamic vector usage. The type
+contains a `Vector{CartesianAtomPosition{D}}`, which is dynamic because the number of atoms in a
+crystal (either the generating set or the visual template) may vary greatly. However, the type 
 `AtomPosition{D}` contains a field for the atomic position vector, which is an `SVector{D,Float64}`
 since atomic positions are not expected to vary in dimensionality.
 
@@ -166,13 +166,13 @@ Julia currently does not allow field types to be computed. The problem with this
 must have a fourth type parameter that corresponds to the total length of the `NTuple` that is used
 to construct it, even though that length can be inferred from the array dimensionality.
 
-If you need to use an `SMatrix{D1,D2,T,L}` in a struct, be sure that you can define `L` as well as 
+If you need to use an `SMatrix{D1,D2,T,L}` in a struct, be sure that you can define `L` as well as
 `D1` and `D2`. Otherwise, it might be a better idea to store the data internally as an
 `SVector{D,SVector{D,T}}`, and define `convert()` for it to turn it into a matrix.
 
 ### Logging and printing
 
-Feel free to leave `@debug` statements in any code you include. Unless the logging level is set to 
+Feel free to leave `@debug` statements in any code you include. Unless the logging level is set to
 show them, they will not be seen by users. You can enable debug messages in the REPL for this
 package by entering the following:
 
@@ -186,5 +186,5 @@ the terminal can bottleneck functions. `@debug` statements will normally be skip
 explicitly compiles them or `$JULIA_DEBUG` is set to the module name.
 
 Avoid using `println()` if one of the logging macros better suits the purpose. If `println()` is
-used, consider whether it might be a better idea to print to `stderr` instead of `stdout`. Note 
+used, consider whether it might be a better idea to print to `stderr` instead of `stdout`. Note
 that `@warn` and `@error` will print to `stderr` by default.

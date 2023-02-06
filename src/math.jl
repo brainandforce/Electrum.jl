@@ -20,9 +20,9 @@ end
     Electrum.reinterpret_index(sz::NTuple{D,<:Integer}, inds::Tuple) -> Tuple
     Electrum.reinterpret_index(g, inds::Tuple) -> Tuple
 
-Converts indices provided in a call to `getindex()` to valid array indices of the backing field
-that contains the data. This is intended for use with data structures that use zero-based indexing
-so that data at the zero index corresponds to data at the origin.
+Converts indices provided in a call to `getindex()` to valid array indices of the backing field that
+contains the data. This is intended for use with data structures that use zero-based indexing so
+that data at the zero index corresponds to data at the origin.
 """
 function reinterpret_index(sz::NTuple{D,<:Integer}, inds::Tuple) where D
     return ntuple(Val{length(inds)}()) do i

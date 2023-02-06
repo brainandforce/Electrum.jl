@@ -27,9 +27,7 @@ end
 """
     Electrum.ABINITHeader
 
-Header information from an abinit FORTRAN binary output file.
-
-This data structure is mutable.
+Header information from an abinit FORTRAN binary output file. This data structure is mutable.
 """
 Base.@kwdef mutable struct ABINITHeader
     # abinit version
@@ -204,7 +202,8 @@ function triang_index(n)
 end
 
 """
-    Electrum.get_abinit_version(io::IO) -> NamedTuple{}
+    Electrum.get_abinit_version(io::IO)
+        -> NamedTuple{(:codvsn, :headform, :fform), Tuple{VersionNumber, Int32, Int32}}
 
 Gets the ABINIT version information from a calculation output header.
 """
@@ -574,8 +573,8 @@ end
 """
     Electrum.read_abinit_header(io::IO)
 
-Reads the header of an ABINIT output file, automatically determining the format of the header
-from the first few digits.
+Reads the header of an ABINIT output file, automatically determining the format of the header from
+the first few digits.
 """
 function read_abinit_header(io::IO)
     # Select which function to use based on the headform value
@@ -606,7 +605,7 @@ end
 """
     Electrum.read_abinit_datagrids(T, io, nspden, ngfft) -> Vector{Matrix{T}}
 
-Reads the datagrid portion of an abinit density output, following the header. 
+Reads the datagrid portion of an abinit density output, following the header.
 
 Electron density values are given in electrons/Bohr³ in the abinit output files.
 
@@ -711,7 +710,7 @@ end
     read_abinit_potential(filename::AbstractString)
         -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}} where T<:Union{Float64,ComplexF64}
 
-Reads a FORTRAN binary formatted abinit potential file. 
+Reads a FORTRAN binary formatted abinit potential file.
 
 By default, abinit potential files will end in `POT` for the external potential, `VHA` for the 
 Hartree potential, `VXC` for the exchange-correlation potential, and `VHXC` for the sum of both the
@@ -720,8 +719,8 @@ Hartree and exchange-correlation potentials.
 The header is used to automatically determine the file format, so this should read in any abinit
 density output (provided a function exists to parse that header).
 
-The number of datasets returned depends on the value of `nsppol` in the header, as calculations
-with explicit treatment of spin will return spin-dependent potentials.
+The number of datasets returned depends on the value of `nsppol` in the header, as calculations with
+explicit treatment of spin will return spin-dependent potentials.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
@@ -814,8 +813,8 @@ Hartree and exchange-correlation potentials.
 The header is used to automatically determine the file format, so this should read in any abinit
 density output (provided a function exists to parse that header).
 
-The number of datasets returned depends on the value of `nsppol` in the header, as calculations
-with explicit treatment of spin will return spin-dependent potentials.
+The number of datasets returned depends on the value of `nsppol` in the header, as calculations with
+explicit treatment of spin will return spin-dependent potentials.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
@@ -899,18 +898,23 @@ function read_abinit_anaddb_out(filename::AbstractString)
         return (
             #kptlist,
             kptmesh,
-            FatBands{3}(frequencies, zeros(Float64, 9 , num_atom, num_atom*3, num_wavevect), zeros(Complex{Float64}, 9, num_atom, num_atom*3, num_wavevect)),
+            FatBands{3}(
+                frequencies,
+                zeros(Float64, 9, num_atom, num_atom*3, num_wavevect),
+                zeros(Complex{Float64},9, num_atom, num_atom*3, num_wavevect)
+            ),
             modes,
-            energies)
+            energies
+        )
     end
 end
 
 """
     read_abinit_anaddb_in(filename::AbstractString) -> Vector{String}
 
-Reads an input file for anaddb to determine the string of the path through reciprocal
-space (Vector{String}) to plot the phonon dispersion curves. Also returns the fineness
-of the kpoint path.
+Reads an input file for anaddb to determine the string of the path through reciprocal space
+(`Vector{String}``) to plot the phonon dispersion curves. Also returns the fineness of the k-point
+path.
 
 Note that the strings we return gathered here are user-input. Example section of The
 input file:
@@ -949,9 +953,9 @@ end
 """
     write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{Float64})
 
-Writes the real and imaginary vectors into a .dat file for each mode. Each line in the
-.dat file corresponds to the real x, y, z then imaginary x, y, z vectors of the
-corresponding atom. The vectors are given in Cartesian.
+Writes the real and imaginary vectors into a .dat file for each mode. Each line in the .dat file
+corresponds to the real x, y, z then imaginary x, y, z vectors of the corresponding atom. The
+The vectors are Cartesian coordinates.
 """
 function write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{Float64})
     for i in 1:length(energies)
@@ -970,11 +974,10 @@ end
     read_abinit_anaddb_PHDOS(filename::AbstractString) 
         -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
 
-Reads the PHDOS file from ABINIT's anaddb script and returns the
-total phonon density of states and atomic contributions to the
-phonon density of states as a tuple. The PHDOS file is an output
-from the anaddb program in ABINIT that contains information about
-the phonon density of states, with frequencies in units of Ha.
+Reads the PHDOS file from ABINIT's anaddb script and returns the total phonon density of states and
+atomic contributions to the phonon density of states as a tuple. The PHDOS file is an output from
+the anaddb program in ABINIT that contains information about the phonon density of states, with
+frequencies in units of Hartree.
 """
 function read_abinit_anaddb_PHDOS(filename::AbstractString) 
     # Skip header (lines 1-8)

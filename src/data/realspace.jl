@@ -4,9 +4,9 @@
 A data grid defined in real space, containing data of type T.
 
 By convention, indexing of `RealSpaceDataGrid` is zero-based. This convention is used so that
-datasets where the first entry corresponds to data at the origin can be indexed with zeros.
-However, `getindex()` is implemented such that the dataset may be indexed by any integer, with
-modulo math used to convert to an index within the grid.
+datasets where the first entry corresponds to data at the origin can be indexed with zeros. However,
+`getindex()` is implemented such that the dataset may be indexed by any integer, with modulo math
+used to convert to an index within the grid.
 """
 struct RealSpaceDataGrid{D,T} <: AbstractRealSpaceData{D}
     # Basis vectors defining the lattice

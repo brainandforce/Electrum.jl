@@ -3,8 +3,8 @@
 
 Contains a grid used to generate k-points during a calculation.
 
-The grid itself is given as an `SMatrix{D,D,Int}`, and can be interpreted as a set of `D` vectors 
-given in terms of the primitive basis. These vectors can alternatively be used to construct a 
+The grid itself is given as an `SMatrix{D,D,Int}`, and can be interpreted as a set of `D` vectors
+given in terms of the primitive basis. These vectors can alternatively be used to construct a
 supercell.
 
 The shift of the k-point mesh off Γ is given as an `SVector{D,Float64}`.
@@ -25,7 +25,7 @@ end
     KPointList{D} <: AbstractKPoints{D}
 
 Contains a list of k-points and their associated weights. This is useful when describing an ordered
-list of k-points that are not associated with a grid - for instance, the k-points used in band 
+list of k-points that are not associated with a grid - for instance, the k-points used in band
 structure calculations. In the future, it will be possible to convert a `KPointGrid` to a
 `KPointList`.
 
@@ -110,8 +110,8 @@ end
 """
     BandAtKPoint(eocc::AbstractVector{NTuple{2,<:Real}})
 
-Constructs a new `BandAtKPoint` from a vector containing tuples of energy and occupancy data
-(in that order).
+Constructs a new `BandAtKPoint` from a vector containing tuples of energy and occupancy data (in 
+that order).
 """
 function BandAtKPoint(eocc::AbstractVector{<:NTuple{2,<:Real}})
     return BandAtKPoint([x[1] for x in eocc], [x[2] for x in eocc])
@@ -133,7 +133,7 @@ nband(b::BandAtKPoint) = length(b.e)
     BandStructure{D}
 
 Stores information about an electronic band structure, including the list of k-points used to
-generate the data (as a `KPointList{D}`)and the band information at every k-point (as a 
+generate the data (as a `KPointList{D}`)and the band information at every k-point (as a
 `Vector{BandAtKPoint}`).
 """
 struct BandStructure{D} <: AbstractReciprocalSpaceData{D}
@@ -151,8 +151,8 @@ end
 """
     BandStructure{D}(kpts::AbstractKPoints{D}, bands::AbstractVector{<:BandAtKPoint}) where D
 
-Generates a new band structure from k-point information and a vector containing band information
-at each k-point.
+Generates a new band structure from k-point information and a vector containing band information at
+each k-point.
 """
 function BandStructure{D}(kpts::AbstractKPoints{D}, bands::AbstractVector{<:BandAtKPoint}) where D
     return BandStructure{D}(kpts, bands)
@@ -284,8 +284,8 @@ end
 
 An alternative to `HKLData` uses a dictionary instead of an array as a backing field.
 
-This is a more space-efficient alternative to `HKLData` in the case of reciprocal space data with
-a large number of zero components. For wavefunction data, which is often specified to some energy
+This is a more space-efficient alternative to `HKLData` in the case of reciprocal space data with a
+large number of zero components. For wavefunction data, which is often specified to some energy
 cutoff that corresponds to a distance in reciprocal space, there are many zero valued elements to
 the array. Unspecified elements in an `HKLDict` are assumed to be zero.
 """
@@ -354,9 +354,9 @@ end
 Contains a wavefunction stored by k-points and bands in a planewave basis. Used to store data in
 VASP WAVECAR files. Each k-point is expected to have the same number of bands.
 
-Every band has associated data containing coefficients of the constituent planewaves stored in a 
-`HKLData{D,Complex{T}}`. Unlike most data structures provided by this package, the type of
-complex number used does not default to `Float64`: wavefunction data is often supplied as a 
+Every band has associated data containing coefficients of the constituent planewaves stored in a
+`HKLData{D,Complex{T}}`. Unlike most data structures provided by this package, the type of complex
+number used does not default to `Float64`: wavefunction data is often supplied as a 
 `Complex{Float32}` since wavefunctions usually only converge to single precision, and `Float64`
 storage would waste space.
 
@@ -450,7 +450,7 @@ nkpt(wf::ReciprocalWavefunction) = size(wf.waves, 2)
 """
     nband(wf::ReciprocalWavefunction) -> Int
 
-Returns the number of bands associated with a `ReciprocalWavefunction`. It is assumed that the 
+Returns the number of bands associated with a `ReciprocalWavefunction`. It is assumed that the
 number of bands is the same for each k-point and spin.
 """
 nband(wf::ReciprocalWavefunction) = size(wf.waves, 3)

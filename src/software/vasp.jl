@@ -4,8 +4,8 @@
 
 Reads a VASP POSCAR or CONTCAR file.
 
-A POSCAR contains the basis vectors of the system (potentially given with a scaling factor), the 
-positions of all atoms as either Cartesian or reduced coordinates, and potentially information 
+A POSCAR contains the basis vectors of the system (potentially given with a scaling factor), the
+positions of all atoms as either Cartesian or reduced coordinates, and potentially information
 needed to perform an ab initio MD run.
 
 A CONTCAR file is written at the end of a VASP run and contains the atomic coordinates after the
@@ -151,7 +151,7 @@ end
 
 Reads a WAVECAR file output from a VASP 4.6 calcuation.
 
-Information about VASP WAVECAR files and much of the code was pulled from the WaveTrans website 
+Information about VASP WAVECAR files and much of the code was pulled from the WaveTrans website
 (originally written in FORTRAN): https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 
 This function is limited to WAVECAR files which have an RTAG value of 45200 (meaning the data is
@@ -334,7 +334,7 @@ readDOSCAR() = open(readDOSCAR, "DOSCAR")
 """
     readPROCAR(io::IO) -> FatBands{3}
 
-Reads an lm-decomposed PROCAR file from VASP and returns its data as a FatBands struct.
+Reads an lm-decomposed PROCAR file from VASP and returns its data as a `FatBands{3}`.
 """
 function readPROCAR(io::IO)
     ln = readline(io)
@@ -351,7 +351,8 @@ function readPROCAR(io::IO)
     # Read header for number of kpoints, number of bands, number of ions
     (nkpt, nband, nion) = parse.(Int, split(readline(io))[[4, 8, 12]])
     
-    # Initializes containers. Some are unused for now, with potentially useful information is commented out.
+    # Initializes containers. 
+    # Some are unused for now, with potentially useful information is commented out.
     # kptlist = KPointList{3}(Vector{SVector{3,Float64}}(undef, nkpt))
     # kptwt = Vector{Float64}(undef,nkpt)
     # occupancies = Matrix{Float64}(undef, nkpt, nband)
@@ -425,7 +426,7 @@ get_fermi() = open(get_fermi, "OUTCAR")
 """
     readKPOINTS(io::IO) -> KPointGrid{3}
 
-Reads a KPOINTS file to get the k-point mesh. So far only supports regular mesh.
+Reads a KPOINTS file to get the k-point mesh. Currently, it only supports grid-generated meshes.
 """
 function readKPOINTS(io::IO)
     ln = readlines(io)

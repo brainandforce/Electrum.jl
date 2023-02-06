@@ -70,8 +70,8 @@ end
 Reads in an XCrysDen XSF file from an input stream and returns a `CrystalWithDatasets{3}` with all
 datasets that have been included within the file.
 
-Space group and origin information are not supplied in XSF files, but they can be supplied using 
-the `spgrp` and `origin` keyword arguments. Centering information can be provided using the `ctr` 
+Space group and origin information are not supplied in XSF files, but they can be supplied using the
+`spgrp` and `origin` keyword arguments. Centering information can be provided using the `ctr` 
 argument, but is overridden by a space group assignment.
 """
 function readXSF3D(
@@ -276,8 +276,8 @@ writeXSF(io::IO, xtal::Crystal) = writeXSF(io, xtal.atoms)
 """
     writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true)
 
-Writes the crystal component of an XCrysDen XSF file. By default, automatic wrapping of the 
-datagrid occurs (values are repeated at the end of each dimension).
+Writes the crystal component of an XCrysDen XSF file. By default, automatic wrapping of the datagrid
+occurs (values are repeated at the end of each dimension).
 """
 function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) where {D,T}
     println(io, "    DATAGRID_", D, "D_", key)

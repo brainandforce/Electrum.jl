@@ -1,8 +1,8 @@
 """
     write_lammps_data(io::IO, list::PeriodicAtomList, [transform]; dummy::Bool = false)
 
-Writes crystal information to a LAMMPS data format that can be used to define a simulation box
-for running a molecular dynamics simulation. 
+Writes crystal information to a LAMMPS data format that can be used to define a simulation box for
+running a molecular dynamics simulation. 
     
 If `transform` is supplied, the list of atoms will be converted to a supercell with the associated
 transformation (either a matrix, vector, or scalar). The `dummy` keyword determines whether dummy
@@ -53,12 +53,12 @@ end
 """
     write_lammps_data(io::IO, xtal::AbstractCrystal, [transform]; dummy::Bool = false)
 
-Writes crystal information to a LAMMPS data format that can be used to define a simulation box
+Writes crystal information to a LAMMPS data format that can be used to define a simulation box for
 for running a molecular dynamics simulation. 
     
 The list of atoms that is written is given by converting `xtal` to a `PeriodicAtomList`, which uses
-the supplied transformation matrix to generate all atomic positions. If `transform` is supplied,
-the transformation will be applied to the `PeriodicAtomList` - it does not replace the transform
+the supplied transformation matrix to generate all atomic positions. If `transform` is supplied, the
+transformation will be applied to the `PeriodicAtomList` - it does not replace the transform
 provided with `xtal`.
 
 This function currently only works for 3D systems.

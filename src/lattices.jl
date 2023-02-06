@@ -1,9 +1,9 @@
 """
     Electrum.lattice_sanity_check(M::AbstractMatrix)
 
-Runs checks on a matrix intended to represent basis vectors of a crystal unit cell. Returns
-nothing, but warns if the cell vectors form a left-handed coordinate system, and throws an 
-`AssertionError` if the cell vectors are not linearly independent.
+Runs checks on a matrix intended to represent basis vectors of a crystal unit cell. Returns nothing,
+but warns if the cell vectors form a left-handed coordinate system, and throws an `AssertionError`
+if the cell vectors are not linearly independent.
 """
 @inline function lattice_sanity_check(M::AbstractMatrix{<:Real})
     # Skip this check for lattices that are zero (meaning unspecified basis)
@@ -23,7 +23,7 @@ function lattice_sanity_check(vs::AbstractVector{<:AbstractVector{<:Real}})
     return lattice_sanity_check(hcat(vs...))
 end
 
-#---New RealBasis and ReciprocalBasis types-------------------------------------------------------#
+#---New RealBasis and ReciprocalBasis types--------------------------------------------------------#
 """
     RealBasis{D} <: AbstractBasis{D}
 
@@ -83,8 +83,8 @@ Base.convert(::Type{T}, b::AbstractBasis) where T<:AbstractMatrix = convert(T, m
     convert(::Type{<:RealBasis}, b::ReciprocalBasis) -> RealBasis
     convert(::Type{<:ReciprocalBasis}, b::RealBasis) -> ReciprocalBasis
 
-Converts between real space and reciprocal space representations of bases. Note that this includes
-a factor of 2π that is used conventionally in crystallography: conversion from `RealBasis` to
+Converts between real space and reciprocal space representations of bases. Note that this includes a
+factor of 2π that is used conventionally in crystallography: conversion from `RealBasis` to
 `ReciprocalBasis` multiplies by 2π, and vice versa. This ensures that the dot products between
 corresponding real and reciprocal space basis vectors are always 2π.
 """
@@ -119,12 +119,12 @@ end
 """
     lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> RealBasis{3}
 
-Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the
-same length and angle parameters (in degrees).
+Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the same
+length and angle parameters (in degrees).
 
 By default, the b-vector is oriented along y, and the a-vector is chosen to be perpendicular to
-z, leaving the c-vector to freely vary. This selection allows for the most convenient orientation
-of symmetry operations.
+z, leaving the c-vector to freely vary. This selection allows for the most convenient orientation of
+symmetry operations.
 """
 function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
     c1 = c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ)
@@ -208,16 +208,16 @@ lengths(x) = lengths(basis(x))
 """
     Electrum.cell_volume(M::AbstractMatrix) -> Float64
 
-Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
-(negative for cells that do not follow the right hand rule).
+Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign (negative
+for cells that do not follow the right hand rule).
 """
 cell_volume(M::AbstractMatrix) = abs(det(M))
 
 """
     volume(b::AbstractBasis) -> Float64
 
-Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign
-(negative for cells that do not follow the right hand rule).
+Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign (negative
+for cells that do not follow the right hand rule).
 """
 volume(b::AbstractBasis) = cell_volume(matrix(b))
 
@@ -261,8 +261,8 @@ end
 
 Generates the cosines of the unit cell angles.
 
-The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved by
+reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
 this may lead to unexpected results.
 """
 function cell_angles_cos(M::AbstractMatrix)
@@ -275,8 +275,8 @@ end
 
 Generates the cosines of the unit cell angles.
 
-The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved by
+reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
 this may lead to unexpected results.
 """
 angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
@@ -286,8 +286,8 @@ angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
 
 Returns the angles (in radians) between each pair of basis vectors.
 
-The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved by
+reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
 this may lead to unexpected results.
 """
 angles_rad(b::AbstractBasis) = acos.(angles_cos(b))
@@ -297,8 +297,8 @@ angles_rad(b::AbstractBasis) = acos.(angles_cos(b))
 
 Returns the angles (in degrees) between each pair of basis vectors.
 
-The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved
-by reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
+The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved by
+reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
 this may lead to unexpected results.
 """
 angles_deg(b::AbstractBasis) = acosd.(angles_cos(b))
@@ -322,10 +322,10 @@ end
 """
     triangularize(l::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBasis -> T
 
-Converts a set of basis vectors to an upper triangular form using QR decomposition, with an 
-included conversion to a larger supercell. The resulting matrix that describes the basis vectors
-will have only positive values along the diagonal, and therefore, is always right-handed
-(regardless of the transformation matrix used).
+Converts a set of basis vectors to an upper triangular form using QR decomposition, with an included
+conversion to a larger supercell. The resulting matrix that describes the basis vectors will have
+only positive values along the diagonal, and therefore, is always right-handed (regardless of the
+transformation matrix used).
 
 LAMMPS expects that basis vectors are given in this format.
 """
@@ -348,12 +348,12 @@ end
 # I think this was pulled directly from the WaveTrans source code
 function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
     # I think the parts below convert a set of basis vectors into their reciprocals
-    #--------------------------------------------------------------------------#
+    #----------------------------------------------------------------------------------------------#
     cosines = cell_angles_cos(M)
     crosses = [cross(M[:,a], M[:,b]) for (a,b) in zip([2,3,1], [3,1,2])]
     triples = [dot(M[:,n], crosses[n])/(norm(crosses[n])*norm(M[:,n])) for n in 1:3]
     sines = hcat([[sqrt(1-c^2), sqrt(1-c^2) ,t] for (c,t) in zip(cosines, triples)]...)
-    #--------------------------------------------------------------------------#
+    #----------------------------------------------------------------------------------------------#
     nbmax = sqrt(c*ecut) ./ [norm(M[:,a])*sines[a,b] for a in 1:3, b in 1:3] .+ 1
     return floor.(Int, vec(maximum(nbmax, dims=1)))
 end
@@ -361,11 +361,11 @@ end
 """
     Electrum.maxHKLindex(b::AbstractBasis, ecut::Real; prim=true, c = CVASP)
 
-Determines the maximum integer values of the reciprocal lattice vectors needed to store data out
-to a specific energy cutoff for a 3D lattice.
+Determines the maximum integer values of the reciprocal lattice vectors needed to store data out to
+a specific energy cutoff for a 3D lattice.
 
-By default, the energy cutoff is assumed to be in units of eV, the reciprocal lattice vector
-lengths are assumed to be in angstroms, and the value of c (2m/ħ^2) is taken from VASP's default
+By default, the energy cutoff is assumed to be in units of eV, the reciprocal lattice vector lengths
+are assumed to be in angstroms, and the value of c (2m/ħ^2) is taken from VASP's default
 value (which is incorrect!). Different values of c may be used for different units.
 
 The functionality implemented here was taken from WaveTrans:
@@ -377,7 +377,7 @@ maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b),
 """
     d_spacing(b::AbstractBasis, miller::AbstractVector{<:Integer}, real=true) -> Float64
 
-Measures the real space distance between planes in a lattice given by a Miller index. By default, 
+Measures the real space distance between planes in a lattice given by a Miller index. By default,
 the basis vectors are assumed to be real space basis vectors.
 """
 function d_spacing(b::RealBasis, miller::AbstractVector{<:Integer})

@@ -42,7 +42,7 @@ Creates a new `NamedAtom` with the same atomic number as `a` and the atom's norm
 """
 reset_name(a::NamedAtom) = NamedAtom(atomic_number(a))
 
-#---Atomic position data--------------------------------------------------------------------------#
+#---Atomic position data---------------------------------------------------------------------------#
 """
     FractionalAtomPosition{D}
 
@@ -223,8 +223,8 @@ end
 """
     PeriodicAtomList{D}
 
-Contains a list of `FractionalAtomPosition` objects with an associated basis, corresponding to
-atoms in a system with periodicity.
+Contains a list of `FractionalAtomPosition` objects with an associated basis, corresponding to atoms
+in a system with periodicity.
 """
 struct PeriodicAtomList{D} <: AbstractAtomList{D}
     basis::RealBasis{D}
@@ -301,8 +301,8 @@ AtomList(l::PeriodicAtomList) = AtomList(map(x -> CartesianAtomPosition(basis(l)
     PeriodicAtomList(b::RealBasis{D}, l::AbstractVector{CartesianAtomPosition{D}})
     PeriodicAtomList(b::RealBasis{D}, l::AtomList{D})
 
-Uses the supplied basis vectors to convert Cartesian atomic positions in an `AtomList` to
-fractional positions with an associated basis.
+Uses the supplied basis vectors to convert Cartesian atomic positions in an `AtomList` to fractional
+positions with an associated basis.
 """
 function PeriodicAtomList(b::AbstractBasis{D}, l::AbstractVector{CartesianAtomPosition{D}}) where D
     return PeriodicAtomList(b, map(x -> FractionalAtomPosition(b,x), l))
@@ -325,9 +325,9 @@ vectors of the space by `M`, which may be an integer matrix, an integer vector w
 a diagonal matrix, or a plain integer, which performs a uniform scaling. This function will also
 generate new atomic positions to fill the cell.
 
-The function performs this transformation by calculating the Smith normal form of the
-transformation matrix. This matrix provides the integer scaling factors needed to stretch the
-supercell, and the left unimodular factor is then used to perform the final transformation.
+The function performs this transformation by calculating the Smith normal form of the transformation
+matrix. This matrix provides the integer scaling factors needed to stretch the supercell, and the
+left unimodular factor is then used to perform the final transformation.
 """
 function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
     # Convert the provided basis vectors to the supercell basis
@@ -354,8 +354,8 @@ supercell(l::PeriodicAtomList{D}, x) where D = supercell(l, convert_to_transform
 """
     atomtypes(l::AbstractAtomList; dummy=false) -> Vector{NamedAtom}
 
-Returns all unique `NamedAtom` types found in an `AbstractAtomList`. This vector is sorted by
-atomic number.
+Returns all unique `NamedAtom` types found in an `AbstractAtomList`. This vector is sorted by atomic
+number.
 
 The `dummy` keyword controls whether dummy atoms are counted as a separate atom type (`false` by
 default).
