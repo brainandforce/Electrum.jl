@@ -110,8 +110,8 @@ export triangularize, lengths, volume, angles_cos, angles_rad, angles_deg, isdia
 include("atoms.jl")
 export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
        AbstractAtomList, AtomList, PeriodicAtomList
-export name, atomic_number, isdummy, displacement, occupancy, deduplicate, supercell, atomtypes,
-       atomcounts, natomtypes
+export name, atomic_number, isdummy, displacement, occupancy, distance, deduplicate, supercell,
+       atomtypes, atomcounts, natomtypes
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export Crystal, CrystalWithDatasets

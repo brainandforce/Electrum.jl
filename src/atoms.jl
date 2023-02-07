@@ -176,6 +176,20 @@ function FractionalAtomPosition(b::RealBasis{D}, p::CartesianAtomPosition{D}) wh
 end
 
 """
+    distance(a1::CartesianAtomPosition, a2::CartesianAtomPosition) -> Float64    
+    distance(b::AbstractBasis, a1::FractionalAtomPosition, a2::FractionalAtomPosition) -> Float64
+
+Calculates the distance between two `FractionalAtomPosition` objects in the same basis `b`.
+"""
+function distance(a1::CartesianAtomPosition, a2::CartesianAtomPosition)
+    return norm(displacment(a1) - displacement(a2))
+end
+
+function distance(b::AbstractBasis, a1::FractionalAtomPosition, a2::FractionalAtomPosition)
+    return norm(RealBasis(b) * (displacement(a1) - displacement(a2)))
+end
+
+"""
     deduplicate(l::AbstractVector{T<:AbstractAtomPosition}; atol=sqrt(eps(Float64))) -> Vector{T}
     deduplicate(l::AbstractAtomList; atol=sqrt(eps(Float64))) -> <:AbstractAtomList
 
