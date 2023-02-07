@@ -298,11 +298,12 @@ Base.pop!(l::AbstractAtomList) = pop!(l.atoms)
 Base.filter(f, l::AtomList) = AtomList(filter(f, l.atoms))
 Base.filter(f, l::PeriodicAtomList) = PeriodicAtomList(basis(l), filter(f, l.atoms))
 
-Base.sort(l::AtomList; kwargs...) = AtomList(sort(l.atoms; by=NamedAtom, kwargs...))
-
-function Base.sort(l::PeriodicAtomList; kwargs...)
-    return PeriodicAtomList(basis(l), sort(l.atoms; by=NamedAtom, kwargs...))
+function Base.sort!(l::AbstractAtomList; kwargs...)
+    sort!(l.atoms; by=NamedAtom, kwargs...)
+    return l
 end
+
+Base.sort(l::AbstractAtomList; kwargs...) = sort!(deepcopy(l); kwargs...)
 
 """
     AtomList(l::PeriodicAtomList)
