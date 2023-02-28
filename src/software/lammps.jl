@@ -10,7 +10,7 @@ atoms are included in the output (`false` by default).
 
 This function currently only works for 3D systems.
 """
-function write_lammps_data(io::IO, list::PeriodicAtomList; dummy::Bool=false) 
+function write_lammps_data(io::IO, list::PeriodicAtomList{D}; dummy::Bool=false) where D
     println(
         io, 
         "# Written by Electrum.jl (https://github.com/brainandforce/Electrum.jl)"
@@ -36,13 +36,17 @@ function write_lammps_data(io::IO, list::PeriodicAtomList; dummy::Bool=false)
     names = name.(atomtypes(atl; dummy))
     # Print the atoms section
     println(io, "\nAtoms  # atomic\n")
+    # Determine the correct padding amounts for the leftmost digits
+    atomno_pad = length(digits(length(list))) + 2
+    atomtype_pad = length(digits(natomtypes(list)))
     # Loop through the atoms
     for (n,atom) in enumerate(atl)
-        @printf(
-            io, "%i  %i  %f  %f  %f\n",
-            # Atom number, enumerated atom type, coordinates (currently only 3D)...
-            n, findfirst(isequal(name(atom)), names), (basis(atl) * atom.pos)...
-        )
+        print(io, rpad(n, atomno_pad))
+        print(io, rpad(findfirst(isequal(name(atom)), names), atomtype_pad))
+        for m in 1:D
+            @printf(io, "% 16.10f", (basis(atl) * displacement(atom))[m])
+        end
+        print(io, "\n")
     end
 end
 
