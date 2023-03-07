@@ -959,17 +959,16 @@ function write_abinit_modes(
 end
 
 """
-    read_abinit_anaddb_PHDOS(filename::AbstractString) 
-        -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
+    read_abinit_anaddb_PHDOS(file) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
 
 Reads the PHDOS file from ABINIT's anaddb script and returns the total phonon density of states and
 atomic contributions to the phonon density of states as a tuple. The PHDOS file is an output from
 the anaddb program in ABINIT that contains information about the phonon density of states, with
 frequencies in units of Hartree.
 """
-function read_abinit_anaddb_PHDOS(filename::AbstractString) 
+function read_abinit_anaddb_PHDOS(file) 
     # Skip header (lines 1-8)
-    data = readlines(filename)[9:end]
+    data = readlines(file)[9:end]
     num_col = length(split(data[1]))
     # Parse data to floating point values
     # Energy | total PHDOS | int PHDOS | AtomType 1 PHDOS | AtomType 1 intPHDOS | ...
