@@ -926,22 +926,28 @@ function read_abinit_anaddb_in(filename::AbstractString)
     end
 end
 
-    
+# TODO: refactor this function into multiple methods
 """
-    write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{Float64})
+    write_abinit_modes(
+        modes::AbstractArray{<:StaticVector{6,<:Real}},
+        energies::AbstractVector{<:Real}
+    )
 
 Writes the real and imaginary vectors into a .dat file for each mode. Each line in the .dat file
 corresponds to the real x, y, z then imaginary x, y, z vectors of the corresponding atom. The
 The vectors are Cartesian coordinates.
 """
-function write_abinit_modes(modes::Array{SVector{6,Float64}}, energies::Vector{Float64})
-    for i in 1:length(energies)
+function write_abinit_modes(
+    modes::AbstractArray{<:StaticVector{6,<:Real}},
+    energies::AbstractVector{<:Real}
+)
+    for i in axes(energies, 1)
         filename = string("mode_",i,"_energy_",energies[i],".dat")
-        open(filename,"w") do io
-            for n in 1:size(modes)[2]
+        open(filename, "w") do io
+            for n in axes(modes, 2)
                 # prints real vector then imag vector
                 # cartesian coordinates
-                println(io,strip(string(modes[i,n]),['[',']']))
+                println(io, strip(string(modes[i,n]), ['[',']']))
             end
         end
     end
