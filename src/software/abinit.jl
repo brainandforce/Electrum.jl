@@ -886,7 +886,26 @@ function read_abinit_anaddb_out(filename::AbstractString)
     end
 end
 
+function read_abinit_anaddb_in(io::IO)
+    readuntil(io, "nph1l")  # number of phonons in list 1
+    num_phonons = parse(Int, split(readline(io))[1])
+    # num_phonons / kptmesh is used often, perhaps a variable binding is useful
+    # Also where does kptmesh come from?
+    kpath = Vector{String}(undef, ceil(num_phonons/kptmesh))
+    readuntil(io, "qph1l")  # number of q-points in list 1
+    for i in 1:floor(num_phonons/kptmesh)
+        kpath[i] = filter(!isequal('!'), split(readline(io))[5])
+        for j in 1:(kptmesh - 1)
+            readline(io)
+        end
+    end
+    # TODO: note why we need the 5th element
+    kpath[ceil(num_phonons/kptmesh)] = filter(!isequal('!'), split(readline(io))[5])
+    return kpath
+end
+
 """
+    read_abinit_anaddb_in(io::IO) -> Vector{String}    
     read_abinit_anaddb_in(filename::AbstractString) -> Vector{String}
 
 Reads an input file for anaddb to determine the string of the path through reciprocal space
@@ -909,22 +928,7 @@ qph1l       0.00   0.00   0.00   1   !GAMMA
 
 Here, the "GAMMA" and "X" are returned in the Vector{String}.
 """
-function read_abinit_anaddb_in(filename::AbstractString)
-    open(filename,"r") do io
-        readuntil(io, "nph1l")
-        num_phonons = parse(Int64,split(readline(io))[1])
-        kpath = Vector{String}(undef,ceil(Int,num_phonons/kptmesh))
-        readuntil(io, "qph1l")
-        for i in 1:floor(Int,num_phonons/kptmesh)
-            kpath[i] = filter(e->e≠'!',split(readline(io))[5])
-            for j in 1:kptmesh-1
-                readline(io)
-            end
-        end
-        kpath[ceil(Int,num_phonons/kptmesh)] = filter(e->e≠'!',split(readline(io))[5])
-        return kpath
-    end
-end
+read_abinit_anaddb_in(filename::AbstractString) = open(read_abinit_anaddb_in, filename)
 
 # TODO: refactor this function into multiple methods
 """
