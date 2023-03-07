@@ -801,9 +801,70 @@ end
 
 read_abinit_WFK(filename; quiet = false) = open(f -> read_abinit_WFK(f; quiet), filename)
 
+function read_abinit_anaddb_out(io::IO)
+    # number of atoms
+    readuntil(io, "natifc")
+    num_atom = parse(Int64, readline(io))
+    # fineness of grid
+    # TODO: rename this variable: this doesn't seem to be a k-point mesh
+    # But I'm not sure how to reconcile this with abinit ng2qpt
+    readuntil(io, "ng2qpt")
+    kptmesh = parse(Int64,split(readline(io))[1])
+    # number of points along kpath
+    readuntil(io,"nph1l")
+    num_wavevect = parse(Int64,readline(io))
+    # kpath - not used so commented out right now
+    # kptlist = Vector{SVector{3,Float64}}(undef,num_wavevect)
+    readuntil(io, "qph1l")
+    readline(io)
+    #==for wv in 1:num_wavevect
+        kptlist[wv] = parse.(Float64,split(readline(io)))[1:3]
+    ==#
+    frequencies = zeros(Float64, num_wavevect, num_atom*3)
+    # See later lines, but I think this should be a Matrix{SVector{3,Complex{Float64}}}
+    modes = Matrix{SVector{6,Float64}}(undef, num_atom*3, num_atom)
+    energies = Vector{Float64}(undef, num_atom*3)
+    for wv in 1:num_wavevect
+        readuntil(io, "in Thz")
+        temp = split(readuntil(io, "Phonon energies"), ['\n',':',' '], keepempty=false)
+        filter!(e->e≠"-",temp)
+        frequencies[wv,:] = parse.(Float64, temp)
+        # for now, only grab phonon modes at gamma, assumed to be the first point
+        wv == 1 && for m in 1:num_atom*3
+            readuntil(io, "Mode number")
+            energies[m] = parse(Float64,split(readline(io))[3])
+            for n in 1:num_atom
+                temp = readline(io)
+                # Skip lines if it warns about low frequency mode
+                if startswith(strip(temp),"Attention")
+                    temp = (readline(io); readline(io))
+                end
+                real = parse.(Float64,split(temp)[3:5])
+                imag = parse.(Float64,split(readline(io))[2:4])
+                # TODO: why not return an SVector{3,<:Complex}?
+                # Perhaps the phonon modes could be their own type...
+                modes[m,n] = SVector{6}(vcat(real, imag))
+            end
+        end
+    end
+    # TODO: can this use its own struct?
+    return (
+        #kptlist,
+        kptmesh,
+        FatBands{3}(
+            frequencies,
+            zeros(Float64, 9, num_atom, num_atom*3, num_wavevect),
+            zeros(Complex{Float64},9, num_atom, num_atom*3, num_wavevect)
+        ),
+        modes,
+        energies
+    )
+end
+
 """
+    read_abinit_anaddb_out(io::IO)
     read_abinit_anaddb_out(filename::AbstractString)
-        -> ( Int64, FatBands{3}, Array{SVector{6,Float64}}, Vector{Float64})
+        -> Tuple{Int64, FatBands{3}, Array{SVector{6,Float64}}, Vector{Float64}}
 
 Reads an output file from anaddb and returns the fineness of the kpoint path,
 phonon dispersion bands (FatBands{3}), real and imaginary vectors for each atom
@@ -824,67 +885,7 @@ to be the first k-point entered in the anaddb analysis.
 
 Energies: Energies are given in a Vector{Float64} with a length matching the number of modes.
 """
-function read_abinit_anaddb_out(filename::AbstractString)
-    open(filename,"r") do io
-        # number of atoms
-        readuntil(io, "natifc")
-        num_atom = parse(Int64, readline(io))
-        # fineness of grid
-        readuntil(io, "ng2qpt")
-        kptmesh = parse(Int64,split(readline(io))[1])
-        # number of points along kpath
-        readuntil(io,"nph1l")
-        num_wavevect = parse(Int64,readline(io))
-        # kpath - not used so commented out right now
-        # kptlist = Vector{SVector{3,Float64}}(undef,num_wavevect)
-        readuntil(io, "qph1l")
-        readline(io)
-        #==for wv in 1:num_wavevect
-            kptlist[wv] = parse.(Float64,split(readline(io)))[1:3]
-        ==#
-        frequencies = zeros(Float64, num_wavevect, num_atom*3)
-        modes = Array{SVector{6,Float64}}(undef,num_atom*3,num_atom)
-        energies = Vector{Float64}(undef,num_atom*3)
-        for wv in 1:num_wavevect
-            readuntil(io,"in Thz")
-            temp = split(readuntil(io, "Phonon energies"), ['\n',':',' '], keepempty=false)
-            filter!(e->e≠"-",temp)
-            frequencies[wv,:] = parse.(Float64,temp)
-
-            # for now, only grab phonon modes at gamma, assumed to be the first point
-            if wv == 1
-                for m in 1:num_atom*3
-                    readuntil(io, "Mode number")
-                    energies[m] = parse(Float64,split(readline(io))[3])
-                    for n in 1:num_atom
-                        temp = readline(io)
-                        # Skip lines if it warns about low frequency mode
-                        if startswith(strip(temp),"Attention")
-                            readline(io)
-                            real = parse.(Float64,split(readline(io))[3:5])
-                        else
-                            real = parse.(Float64,split(temp)[3:5])
-                        end
-                        imag = parse.(Float64,split(readline(io))[2:4])
-                        temp = vcat(real,imag)
-                        modes[m,n] = SVector{6}(temp)
-                    end
-                end
-            end
-        end
-        return (
-            #kptlist,
-            kptmesh,
-            FatBands{3}(
-                frequencies,
-                zeros(Float64, 9, num_atom, num_atom*3, num_wavevect),
-                zeros(Complex{Float64},9, num_atom, num_atom*3, num_wavevect)
-            ),
-            modes,
-            energies
-        )
-    end
-end
+read_abinit_anaddb_out(filename::AbstractString) = open(read_abinit_anaddb_out, filename)
 
 function read_abinit_anaddb_in(io::IO)
     readuntil(io, "nph1l")  # number of phonons in list 1
