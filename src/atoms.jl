@@ -1,29 +1,13 @@
 """
     NamedAtom
 
-Stores information about an atom, which includes a name which may be up to 8 codepoints long, and
+Stores information about an atom, which includes a name which may be up to 15 codepoints long, and
 the atomic number.
-
-Internally, the name is stored as a `NTuple{8,Char}` in the `name` field to guarantee that the type
-is pure bits. However, the `name` property returns a `String`.
 """
 struct NamedAtom
-    name::NTuple{8,Char}
+    name::InlineString15
     num::Int
-    function NamedAtom(name::AbstractString, num::Integer)
-        codepoints = ntuple(Val{8}()) do i
-            i <= length(name) ? name[i] : '\0'
-        end
-        return new(codepoints, num)
-    end
-end
-
-function Base.getproperty(atom::NamedAtom, p::Symbol)
-    if p == :name
-        l = findfirst(isequal('\0'), getfield(atom, p))
-        return string(getfield(atom, p)[1:l-1]...)
-    end
-    return getfield(atom, p)
+    NamedAtom(name::AbstractString, num::Integer) = new(name, num)
 end
 
 """
