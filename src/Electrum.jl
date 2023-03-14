@@ -4,8 +4,11 @@ using LinearAlgebra
 using StaticArrays
 using FFTW
 using Printf
+using InlineStrings
 using ComputedFieldTypes
 using NormalForms
+
+import InlineStrings.InlineString15
 
 const ELEMENTS = 
 ( 
