@@ -22,7 +22,7 @@ isdummy(a::NamedAtom) = (a.num == 0)
 
 Base.convert(T::Type{<:AbstractString}, a::NamedAtom) = convert(T, name(a))
 Base.convert(T::Type{<:Number}, a::NamedAtom) = convert(T, atomic_number(a))
-Base.convert(::Type{NamedAtom}, x) = NamedAtom(x)
+Base.convert(::Type{NamedAtom}, x::Union{AbstractString,Number}) = NamedAtom(x)
 
 """
     Electrum.reset_name(a::NamedAtom)
