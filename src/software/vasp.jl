@@ -1,6 +1,6 @@
 """
-    readPOSCAR(io::IO) -> Crystal{3}
-    readCONTCAR(io::IO) -> Crystal{3}
+    readPOSCAR(io::IO) -> PeriodicAtomList{3}
+    readCONTCAR(io::IO) -> PeriodicAtomList{3}
 
 Reads a VASP POSCAR or CONTCAR file.
 
@@ -58,7 +58,7 @@ function readPOSCAR(io::IO)
         end
     end
     # Velocity data is ignored
-    return Crystal(PeriodicAtomList(latt, positions))
+    return PeriodicAtomList(latt, positions)
 end
 
 # This can't be a simple alias, because `readCONTCAR()` needs to find a file name `CONTCAR`
