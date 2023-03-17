@@ -131,8 +131,8 @@ PeriodicAtomList(xtal::AbstractCrystal) = convert(PeriodicAtomList, xtal)
 AtomList(xtal::AbstractCrystal) = AtomList(PeriodicAtomList(xtal))
 
 # TODO: Generate the full atom list when symmetry operations are implemented.
-Base.length(xtal::AbstractCrystal) = length(PeriodicAtomList(xtal))
-basis(xtal::AbstractCrystal) = basis(PeriodicAtomList(xtal))
+Base.length(xtal::AbstractCrystal) = length(xtal.atoms)
+basis(xtal::AbstractCrystal) = basis(xtal.atoms)
 volume(xtal::AbstractCrystal; primitive::Bool=false) = volume(xtal.latt; primitive)
 
 atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(PeriodicAtomList(xtal); kwargs...)
