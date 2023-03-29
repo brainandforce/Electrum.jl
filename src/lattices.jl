@@ -58,6 +58,9 @@ struct ReciprocalBasis{D} <: AbstractBasis{D}
     end
 end
 
+data_space(::Type{RealBasis{D}}) = ByRealSpace{D}()
+data_space(::Type{ReciprocalBasis{D}}) = ByReciprocalSpace{D}()
+
 # Convert matrix input to a vector of vectors
 function (T::Type{<:AbstractBasis{D}})(M::AbstractMatrix{<:Real}) where D
     @assert size(M) === (D,D) "Matrix dimensions are incorrect."
