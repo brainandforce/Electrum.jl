@@ -1,11 +1,6 @@
 Base.has_offset_axes(g::AbstractDataGrid) = true
 
-"""
-    grid(g::AbstractDataGrid{D,T}) -> AbstractArray{D,T}
-
-Returns an independent copy of the data in `g` as a plain `AbstractArray` type.
-"""
-grid(g::AbstractDataGrid) = deepcopy(g.data)
+Base.convert(T::Type{<:AbstractArray}, g::AbstractDataGrid) = convert(T, g.grid)
 
 """
     basis(g::AbstractDataGrid{D}) -> AbstractBasis{D}
