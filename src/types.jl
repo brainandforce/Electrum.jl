@@ -117,4 +117,4 @@ Returns a trait that determines whether a data set associated with a crystal is 
 space (`RealSpaceData{D}()`), reciprocal space (`ReciprocalSpaceData{D}()`), or by atomic positions
 (`AtomPositionData{D}`), where `D` is the number of dimensions.
 """
-function data_space end
+data_space(x) = data_space(typeof(x))
