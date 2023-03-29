@@ -225,7 +225,7 @@ end
 
 """
     readXSF3D(
-        filename;
+        file;
         spgrp::Integer = 0,
         origin::AbstractVector{<:Real} = [0, 0, 0]
         ctr::Symbol = :P
@@ -344,7 +344,7 @@ function writeXSF(filename, data...; kwargs...)
 end
 
 """
-    readCPcoeff(filename, Lmax::Val{L}=Val{6}()) -> SphericalComponents{L}
+    readCPcoeff(file, Lmax::Val{L}=Val{6}()) -> SphericalComponents{L}
 
 Reads in the spherical harmonic projection coefficients from a CPpackage2 calculation.
 
@@ -364,7 +364,7 @@ end
 readCPcoeff(filename) = open(readCPcoeff, filename)
 
 """
-    readCPgeo(filename) -> Vector{AtomPosition{3}}
+    readCPgeo(file) -> Vector{AtomPosition{3}}
 
 Reads the atomic positions used for a CPpackage2 calculation.
 """
@@ -378,7 +378,7 @@ end
 readCPgeo(filename) = open(readCPgeo, filename)
 
 """
-    readCPcell(filename) -> RealBasis{3}
+    readCPcell(file) -> RealBasis{3}
 
 Reads the basis vectors of the unit cell used for a CPpackage2 calculation.
 """

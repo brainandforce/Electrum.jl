@@ -76,7 +76,7 @@ function write_lammps_data(io::IO, xtal::AbstractCrystal, transform; kwargs...)
 end
 
 """
-    write_lammps_data(filename, data, [transform]; dummy::Bool = false)
+    write_lammps_data(file, data, [transform]; dummy::Bool = false)
 
 Writes a LAMMPS data file to the path given by `filename`.
 """

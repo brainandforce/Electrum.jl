@@ -667,7 +667,7 @@ function read_abinit_density(io::IO)
 end
 
 """
-    read_abinit_density(filename)
+    read_abinit_density(file)
         -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}
 
 Reads a FORTRAN binary formatted abinit density file. By default, abinit density files will have
@@ -707,7 +707,7 @@ function read_abinit_potential(io::IO)
 end
 
 """
-    read_abinit_potential(filename)
+    read_abinit_potential(file)
         -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}} where T<:Union{Float64,ComplexF64}
 
 Reads a FORTRAN binary formatted abinit potential file.
@@ -801,7 +801,7 @@ function read_abinit_wavefunction(io::IO)
 end
 
 """
-    read_abinit_wavefunction(filename)
+    read_abinit_wavefunction(file)
         -> CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}
 
 Reads a FORTRAN binary formatted abinit potential file. 

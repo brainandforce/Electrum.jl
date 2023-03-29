@@ -1,6 +1,6 @@
 """
-    readPOSCAR(filename) -> PeriodicAtomList{3}
-    readCONTCAR(filename) -> PeriodicAtomList{3}
+    readPOSCAR(file) -> PeriodicAtomList{3}
+    readCONTCAR(file) -> PeriodicAtomList{3}
 
 Reads a VASP POSCAR or CONTCAR file.
 
@@ -84,7 +84,7 @@ readPOSCAR() = open(readPOSCAR, "POSCAR")
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
 
 """
-    writePOSCAR4(filename, data; kwargs...)
+    writePOSCAR4(file, data; kwargs...)
 
 Writes crystal data to a VASP 4.6 POSCAR output. The `data` can be a `PeriodicAtomList` or an
 `AbstractCrystal`.
@@ -140,7 +140,7 @@ end
 
 # Kendall got everything done before 6 PM (2022-02-01)
 """
-    readWAVECAR(filename) -> ReciprocalWavefunction{3,Float32}
+    readWAVECAR(file) -> ReciprocalWavefunction{3,Float32}
 
 Reads a WAVECAR file output from a VASP 4.6 calcuation.
 
@@ -261,7 +261,7 @@ end
 readWAVECAR() = readWAVECAR("WAVECAR")
 
 """
-    readDOSCAR(filename) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
+    readDOSCAR(file) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
 
 Reads a DOSCAR file from VASP and returns its data as a tuple containing the total and projected
 density of states (if present).
@@ -325,7 +325,7 @@ end
 readDOSCAR() = open(readDOSCAR, "DOSCAR")
 
 """
-    readPROCAR(filename) -> FatBands{3}
+    readPROCAR(file) -> FatBands{3}
 
 Reads an lm-decomposed PROCAR file from VASP and returns its data as a `FatBands{3}`.
 """
@@ -400,7 +400,7 @@ end
 readPROCAR() = open(readPROCAR, "PROCAR")
 
 """
-    get_fermi(filename) -> NamedTuple{(:fermi, :alphabeta), NTuple{2,Float64}}
+    get_fermi(file) -> NamedTuple{(:fermi, :alphabeta), NTuple{2,Float64}}
 
 Reads an OUTCAR file and returns the Fermi Energy and alpha+beta value.
 """
@@ -417,7 +417,7 @@ get_fermi(filename) = open(get_fermi, filename)
 get_fermi() = open(get_fermi, "OUTCAR")
 
 """
-    readKPOINTS(filename) -> KPointGrid{3}
+    readKPOINTS(file) -> KPointGrid{3}
 
 Reads a KPOINTS file to get the k-point mesh. Currently, it only supports grid-generated meshes.
 """
