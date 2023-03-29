@@ -1,6 +1,6 @@
 """
-    readPOSCAR(io::IO) -> PeriodicAtomList{3}
-    readCONTCAR(io::IO) -> PeriodicAtomList{3}
+    readPOSCAR(filename) -> PeriodicAtomList{3}
+    readCONTCAR(filename) -> PeriodicAtomList{3}
 
 Reads a VASP POSCAR or CONTCAR file.
 
@@ -64,7 +64,7 @@ end
 # This can't be a simple alias, because `readCONTCAR()` needs to find a file name `CONTCAR`
 readCONTCAR(io::IO) = readPOSCAR(io)
 
-function readPOSCAR(filename::AbstractString)
+function readPOSCAR(filename)
     # Append POSCAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "POSCAR"
@@ -72,7 +72,7 @@ function readPOSCAR(filename::AbstractString)
     open(readPOSCAR, filename)
 end
 
-function readCONTCAR(filename::AbstractString)
+function readCONTCAR(filename)
     # Append POSCAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "CONTCAR"
@@ -84,17 +84,10 @@ readPOSCAR() = open(readPOSCAR, "POSCAR")
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
 
 """
-    writePOSCAR4(
-        io::IO,
-        list::AtomList;
-        comment = Written by Electrum.jl,
-        names::Bool = false,
-        dummy::Bool = false,
-    )
-    writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...)
-    writePOSCAR4(filename::AbstractString, data; kwargs...)
+    writePOSCAR4(filename, data; kwargs...)
 
-Writes crystal data to a VASP 4.6 POSCAR output.
+Writes crystal data to a VASP 4.6 POSCAR output. The `data` can be a `PeriodicAtomList` or an
+`AbstractCrystal`.
 
 By default, atom names are not written (since this seems to break VASP 4.6) but this may be
 overridden by setting `names` to `true` (which prevents VESTA from crashing). Dummy atoms are not
@@ -135,7 +128,7 @@ end
 
 writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.atoms; kwargs...)
 
-function writePOSCAR4(filename::AbstractString, data; kwargs...) 
+function writePOSCAR4(filename, data; kwargs...) 
     # Append POSCAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "POSCAR"
@@ -147,7 +140,7 @@ end
 
 # Kendall got everything done before 6 PM (2022-02-01)
 """
-    readWAVECAR(io::IO) -> ReciprocalWavefunction{3,Float32}
+    readWAVECAR(filename) -> ReciprocalWavefunction{3,Float32}
 
 Reads a WAVECAR file output from a VASP 4.6 calcuation.
 
@@ -257,7 +250,7 @@ function readWAVECAR(io::IO)
     return ReciprocalWavefunction(rlatt, KPointList(klist), waves, energies, occupancies)
 end
 
-function readWAVECAR(filename::AbstractString)
+function readWAVECAR(filename)
     # Append WAVECAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "WAVECAR"
@@ -268,7 +261,7 @@ end
 readWAVECAR() = readWAVECAR("WAVECAR")
 
 """
-    readDOSCAR(io::IO) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
+    readDOSCAR(filename) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
 
 Reads a DOSCAR file from VASP and returns its data as a tuple containing the total and projected
 density of states (if present).
@@ -321,7 +314,7 @@ function readDOSCAR(io::IO)
     return (tdos, pdos)
 end
 
-function readDOSCAR(filename::AbstractString; kwargs...)
+function readDOSCAR(filename; kwargs...)
     # Append DOSCAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "DOSCAR"
@@ -332,7 +325,7 @@ end
 readDOSCAR() = open(readDOSCAR, "DOSCAR")
 
 """
-    readPROCAR(io::IO) -> FatBands{3}
+    readPROCAR(filename) -> FatBands{3}
 
 Reads an lm-decomposed PROCAR file from VASP and returns its data as a `FatBands{3}`.
 """
@@ -396,7 +389,7 @@ function readPROCAR(io::IO)
     )
 end
 
-function readPROCAR(filename::AbstractString)
+function readPROCAR(filename)
     # Append PROCAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "PROCAR"
@@ -407,7 +400,7 @@ end
 readPROCAR() = open(readPROCAR, "PROCAR")
 
 """
-    get_fermi(io::IO) -> NamedTuple{(:fermi, :alphabeta), NTuple{2,Float64}}
+    get_fermi(filename) -> NamedTuple{(:fermi, :alphabeta), NTuple{2,Float64}}
 
 Reads an OUTCAR file and returns the Fermi Energy and alpha+beta value.
 """
@@ -419,12 +412,12 @@ function get_fermi(io::IO)
     return (fermi = fermi, alphabeta = alphabeta)
 end
 
-get_fermi(filename::AbstractString) = open(get_fermi, filename)
+get_fermi(filename) = open(get_fermi, filename)
 
 get_fermi() = open(get_fermi, "OUTCAR")
 
 """
-    readKPOINTS(io::IO) -> KPointGrid{3}
+    readKPOINTS(filename) -> KPointGrid{3}
 
 Reads a KPOINTS file to get the k-point mesh. Currently, it only supports grid-generated meshes.
 """
@@ -441,7 +434,7 @@ function readKPOINTS(io::IO)
     return kptgrid
 end    
 
-function readKPOINTS(filename::AbstractString)
+function readKPOINTS(filename)
     # Append KPOINTS if only a directory name is given
     if last(filename) == '/'
         filename = filename * "KPOINTS"

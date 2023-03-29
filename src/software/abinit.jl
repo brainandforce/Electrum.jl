@@ -571,7 +571,7 @@ function read_abinit_header_80(io::IO)
 end
 
 """
-    Electrum.read_abinit_header(io::IO)
+    Electrum.read_abinit_header(io::IO) -> Electrum.ABINITHeader
 
 Reads the header of an ABINIT output file, automatically determining the format of the header from
 the first few digits.
@@ -667,7 +667,7 @@ function read_abinit_density(io::IO)
 end
 
 """
-    read_abinit_density(filename::AbstractString)
+    read_abinit_density(filename)
         -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}
 
 Reads a FORTRAN binary formatted abinit density file. By default, abinit density files will have
@@ -681,7 +681,7 @@ with explicit treatment of spin will return spin densities.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
-read_abinit_density(filename::AbstractString) = open(read_abinit_density, filename)
+read_abinit_density(filename) = open(read_abinit_density, filename)
 
 function read_abinit_potential(io::IO)
     # Get the header from the file
@@ -707,7 +707,7 @@ function read_abinit_potential(io::IO)
 end
 
 """
-    read_abinit_potential(filename::AbstractString)
+    read_abinit_potential(filename)
         -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}} where T<:Union{Float64,ComplexF64}
 
 Reads a FORTRAN binary formatted abinit potential file.
@@ -724,7 +724,7 @@ explicit treatment of spin will return spin-dependent potentials.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
-read_abinit_potential(filename::AbstractString) = open(read_abinit_potential, filename)
+read_abinit_potential(filename) = open(read_abinit_potential, filename)
 
 function read_abinit_wavefunction(io::IO)
     # Get the header from the file
@@ -801,7 +801,7 @@ function read_abinit_wavefunction(io::IO)
 end
 
 """
-    read_abinit_wavefunction(filename::AbstractString)
+    read_abinit_wavefunction(filename)
         -> CrystalWithDatasets{3,String,ReciprocalWavefunction{3,Float64}}
 
 Reads a FORTRAN binary formatted abinit potential file. 
@@ -818,7 +818,7 @@ explicit treatment of spin will return spin-dependent potentials.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
-read_abinit_wavefunction(filename::AbstractString) = open(read_abinit_wavefunction, filename)
+read_abinit_wavefunction(filename) = open(read_abinit_wavefunction, filename)
 
 const read_abinit_DEN = read_abinit_density
 const read_abinit_POT = read_abinit_potential

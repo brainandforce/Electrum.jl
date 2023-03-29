@@ -27,7 +27,7 @@ function readXYZ(io::IO)
     return AtomList(v)
 end
 
-readXYZ(filename::AbstractString) = open(readXYZ, filename)
+readXYZ(filename) = open(readXYZ, filename)
 
 """
     writeXYZ(io::IO, data::AbstractVector{<:AbstractAtomPosition})
@@ -51,7 +51,7 @@ end
 writeXYZ(io::IO, data::AbstractAtomList) = writeXYZ(io, coord(cartesian(data)))
 writeXYZ(io::IO, data::AbstractCrystal) = writeXYZ(io, atoms(data))
 
-function writeXYZ(filename::AbstractString, data) 
+function writeXYZ(filename, data) 
     open(filename; write=true) do io
         writeXYZ(io, data)
     end
@@ -225,7 +225,7 @@ end
 
 """
     readXSF3D(
-        filename::AbstractString;
+        filename;
         spgrp::Integer = 0,
         origin::AbstractVector{<:Real} = [0, 0, 0]
         ctr::Symbol = :P
@@ -233,8 +233,8 @@ end
 
 Reads an XSF file at path `filename`.
 """
-function readXSF3D(filename::AbstractString; kwargs...)
-    return open(filename) do io
+function readXSF3D(filename; kwargs...)
+    open(filename) do io
         readXSF3D(io; kwargs...)
     end
 end
@@ -337,20 +337,20 @@ function writeXSF(
     writeXSF(io, data(xtaldata), periodic=periodic)
 end
 
-function writeXSF(filename::AbstractString, data...; kwargs...)
+function writeXSF(filename, data...; kwargs...)
     open(filename, write=true) do io
         writeXSF(io, data...; kwargs...)
     end
 end
 
 """
-    readCPcoeff(io::IO, Lmax::Val{L}) -> SphericalComponents{L}
+    readCPcoeff(filename, Lmax::Val{L}=Val{6}()) -> SphericalComponents{L}
 
 Reads in the spherical harmonic projection coefficients from a CPpackage2 calculation.
 
 By default, CPpackage2 gives the coefficients for spherical harmonics up to a maximum l value of 6.
 """
-function readCPcoeff(io::IO, Lmax::Val{L}=Val(6)) where L
+function readCPcoeff(io::IO, Lmax::Val{L}=Val{6}()) where L
     # All the data should be in a Vector{Float64} with this one line
     data = parse.(Float64, [v[2] for v in split.(readlines(io))])
     @debug "$(length(data)) lines in file"
@@ -361,10 +361,10 @@ function readCPcoeff(io::IO, Lmax::Val{L}=Val(6)) where L
     return [SphericalHarmonic{L}(data[(n - 1)*ncoeff .+ (1:ncoeff)]) for n in 1:natom]
 end
 
-readCPcoeff(filename::AbstractString) = open(readCPcoeff, filename)
+readCPcoeff(filename) = open(readCPcoeff, filename)
 
 """
-    readCPgeo(io::IO) -> Vector{AtomPosition{3}}
+    readCPgeo(filename) -> Vector{AtomPosition{3}}
 
 Reads the atomic positions used for a CPpackage2 calculation.
 """
@@ -375,10 +375,10 @@ function readCPgeo(io::IO)
     return AtomPosition{3}.(atomnames, positions)
 end
 
-readCPgeo(filename::AbstractString) = open(readCPgeo, filename)
+readCPgeo(filename) = open(readCPgeo, filename)
 
 """
-    readCPcell(io::IO) -> RealBasis{3}
+    readCPcell(filename) -> RealBasis{3}
 
 Reads the basis vectors of the unit cell used for a CPpackage2 calculation.
 """
@@ -387,4 +387,4 @@ function readCPcell(io::IO)
     return RealBasis{3}(matrix)
 end
 
-readCPcell(filename::AbstractString) = open(readCPcell, filename)
+readCPcell(filename) = open(readCPcell, filename)
