@@ -56,7 +56,7 @@ end
 Supertype for crystal data associated with a grid of entries of type `T` in real or reciprocal
 space of dimension `D`.
 """
-abstract type AbstractDataGrid{D,T}
+abstract type AbstractDataGrid{D,T} <: AbstractArray{T,D}
 end
 
 """
