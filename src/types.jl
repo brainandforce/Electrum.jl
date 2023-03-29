@@ -87,19 +87,19 @@ abstract type CrystalDataTrait
 end
 
 """
-    RealSpaceData{D}
+    ByRealSpace{D}
 
 Trait for real space data in `D` dimensions.
 """
-struct RealSpaceData{D} <: CrystalDataTrait
+struct ByRealSpace{D} <: CrystalDataTrait
 end
 
 """
-    ReciprocalSpaceData{D}
+    ByReciprocalSpace{D}
 
 Trait for reciprocal space data in `D` dimensions.
 """
-struct ReciprocalSpaceData{D} <: CrystalDataTrait
+struct ByReciprocalSpace{D} <: CrystalDataTrait
 end
 
 """
@@ -107,7 +107,7 @@ end
 
 Trait for data associated with atomic positions in a crystal.
 """
-struct AtomPositionData{D} <: CrystalDataTrait
+struct ByAtom{D} <: CrystalDataTrait
 end
 
 """
