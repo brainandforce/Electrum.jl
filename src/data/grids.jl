@@ -15,7 +15,7 @@ basis(g::AbstractDataGrid) = g.basis
 
 # Automatically define the data space if possible
 # If there's no basis, it'll need to be defined manually
-data_space(T::Type{<:AbstractDataGrid{D}}) = data_space(fieldtype(T, basis))
+data_space(T::Type{<:AbstractDataGrid}) = data_space(fieldtype(T, basis))
 
 Base.size(g::AbstractDataGrid) = size(g.data)
 Base.size(g::AbstractDataGrid, i) = size(g.data, i)
@@ -42,7 +42,7 @@ end
 Checks that the basis vectors associated with a set of `AbstractDataGrid` objects are identical. It
 also performs any checks specific to the data type by calling `Electrum.grid_specific_check(g...)`.
 """
-function grid_check(g::AbstractDataGrid{D}...)
+function grid_check(g::AbstractDataGrid{D}...) where D
     grid_specific_check(g...)
     any(!isapprox(first(g)), g) && error("Basis vectors do not match.")
     return nothing
@@ -57,4 +57,4 @@ subtype `AbstractDataGrid` and require extra checks, this method should be defin
 
 By default, it performs no checks. It should always return `nothing`.
 """
-grid_specific_check(g::AbstractDataGrid{D}...) = nothing
+grid_specific_check(g::AbstractDataGrid{D}...) where D = nothing

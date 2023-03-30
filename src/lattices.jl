@@ -58,8 +58,8 @@ struct ReciprocalBasis{D} <: AbstractBasis{D}
     end
 end
 
-data_space(::Type{RealBasis{D}}) = ByRealSpace{D}()
-data_space(::Type{ReciprocalBasis{D}}) = ByReciprocalSpace{D}()
+data_space(::Type{RealBasis{D}}) where D = ByRealSpace{D}()
+data_space(::Type{ReciprocalBasis{D}}) where D = ByReciprocalSpace{D}()
 
 # Convert matrix input to a vector of vectors
 function (T::Type{<:AbstractBasis{D}})(M::AbstractMatrix{<:Real}) where D
