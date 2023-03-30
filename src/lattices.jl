@@ -58,21 +58,15 @@ struct ReciprocalBasis{D} <: AbstractBasis{D}
     end
 end
 
-function (::Type{T})(M::StaticMatrix{D,D,<:Real}) where {T<:AbstractBasis,D}
-    # Convert the matrix to a vector of vectors
-    vs = SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D)
-    # Call the inner constructor
-    return T(vs)
+# Convert matrix input to a vector of vectors
+function (T::Type{<:AbstractBasis{D}})(M::AbstractMatrix{<:Real}) where D
+    @assert size(M) === (D,D) "Matrix dimensions are incorrect."
+    return T(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
 end
 
-function (::Type{T})(M::AbstractMatrix{<:Real}) where {T<:AbstractBasis}
-    # Only allow square matrices
-    @assert _allsame(size(M)) "Matrix is not square."
-    # Convert the matrix to a vector of vectors
-    D = size(M)[1]
-    vs = SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D)
-    # Call the inner constructor
-    return T(vs)
+# For statically typed arrays
+function (T::Union{Type{RealBasis},Type{ReciprocalBasis}})(M::StaticMatrix{D,D,<:Real}) where D
+    return T(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
 end
 
 vectors(b::AbstractBasis) = b.vs
