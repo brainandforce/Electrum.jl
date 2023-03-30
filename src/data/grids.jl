@@ -34,3 +34,27 @@ function CartesianIndices(g::AbstractDataGrid)
     end
     return CartesianIndices(axes(g))
 end
+
+#---Grid similarity checks-------------------------------------------------------------------------#
+"""
+    Electrum.grid_check(g::AbstractDataGrid{D}...) -> nothing
+
+Checks that the basis vectors associated with a set of `AbstractDataGrid` objects are identical. It
+also performs any checks specific to the data type by calling `Electrum.grid_specific_check(g...)`.
+"""
+function grid_check(g::AbstractDataGrid{D}...)
+    grid_specific_check(g...)
+    any(!isapprox(first(g)), g) && error("Basis vectors do not match.")
+    return nothing
+end
+
+"""
+    Electrum.grid_specific_check(g::AbstractDataGrid{D}...) -> Nothing
+
+Performs extra checks that might be needed for a specific type of data grid. For any new types that
+subtype `AbstractDataGrid` and require extra checks, this method should be defined. As an example,
+`HKLData` has a check to ensure that the k-points associated with the data grids are identical.
+
+By default, it performs no checks. It should always return `nothing`.
+"""
+grid_specific_check(g::AbstractDataGrid{D}...) = nothing
