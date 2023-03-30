@@ -345,7 +345,9 @@ The functionality implemented here was taken from WaveTrans:
 https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 """
 # Assume that the basis vectors are defined in reciprocal space (??)
-maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = CVASP) = maxHKLindex(matrix(b), ecut, c = c)
+function maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = CVASP)
+    return maxHKLindex(matrix(ReciprocalBasis(b)), ecut, c = c)
+end
 
 """
     d_spacing(b::AbstractBasis, miller::AbstractVector{<:Integer}, real=true) -> Float64
