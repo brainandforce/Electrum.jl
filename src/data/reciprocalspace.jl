@@ -186,6 +186,7 @@ end
 
 Stores information associated with a reciprocal space basis. Data can be accessed and modified by
 using the G-vectors as indices. Associated k-point data is also provided; if no k-point is supplied
+it is assumed to be the gamma point (`zero(SVector{D,Float64})`)
 
 Internally, the data is stored such that the zero frequency components are at the first indices
 along that dimension. The data at G-vector `[0, 0, 0]` is stored in the backing array's `[1, 1, 1]`
