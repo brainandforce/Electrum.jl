@@ -28,7 +28,7 @@ Base.getindex(g::AbstractDataGrid, i...) = getindex(g.data, reinterpret_index(g,
 Base.setindex!(g::AbstractDataGrid, x, i...) = setindex!(g.data, x, reinterpret_index(g, i)...)
 
 # Indexing depends on the data space trait
-function CartesianIndices(g::AbstractDataGrid)
+function Base.CartesianIndices(g::AbstractDataGrid)
     if data_space(g) isa ReciprocalSpaceData
         return CartesianIndices(Tuple((1:n) .- (div(n, 2) + 1) for n in size(g)))
     end
