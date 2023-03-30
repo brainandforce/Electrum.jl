@@ -655,13 +655,13 @@ function read_abinit_density(io::IO)
     # Convert the basis
     basis = RealBasis(BOHR2ANG * header.rprimd)
     # Fill the dictionary
-    data["density_total"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
+    data["density_total"] = RealSpaceDataGrid(basis, rho[1])
     if header.nspden == 2
-        data["density_spinup"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
+        data["density_spinup"] = RealSpaceDataGrid(basis, rho[1])
     elseif header.nspden == 4
-        data["density_spinup_x"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
-        data["density_spinup_y"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
-        data["density_spinup_z"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
+        data["density_spinup_x"] = RealSpaceDataGrid(basis, rho[1])
+        data["density_spinup_y"] = RealSpaceDataGrid(basis, rho[1])
+        data["density_spinup_z"] = RealSpaceDataGrid(basis, rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
 end
@@ -693,15 +693,15 @@ function read_abinit_potential(io::IO)
     data = Dict{String, RealSpaceDataGrid{3,T}}()
     basis = RealBasis{3}(BOHR2ANG * header.rprimd)
     if header.nspden == 1
-        data["potential_total"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
+        data["potential_total"] = RealSpaceDataGrid(basis, rho[1])
     elseif header.nspden == 2
-        data["potential_spinup"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
-        data["potential_spindown"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
+        data["potential_spinup"] = RealSpaceDataGrid(basis, rho[1])
+        data["potential_spindown"] = RealSpaceDataGrid(basis, rho[1])
     elseif header.nspden == 4
-        data["potential_up_up"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
-        data["potential_down_down"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
-        data["potential_up_down_real"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
-        data["potential_up_down_imag"] = RealSpaceDataGrid(basis, [0, 0, 0], rho[1])
+        data["potential_up_up"] = RealSpaceDataGrid(basis, rho[1])
+        data["potential_down_down"] = RealSpaceDataGrid(basis, rho[1])
+        data["potential_up_down_real"] = RealSpaceDataGrid(basis, rho[1])
+        data["potential_up_down_imag"] = RealSpaceDataGrid(basis, rho[1])
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
 end
