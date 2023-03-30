@@ -69,17 +69,9 @@ voxelsize(g::RealSpaceDataGrid) = volume(g) / length(g)
 
 Returns the Cartesian coordinate associated with a grid datum at a given index.
 """
-function coord(g::RealSpaceDataGrid{D,T}, ind::AbstractVector{<:Integer}) where {D,T}
-    return basis(g) * (ind ./ size(g))
-end
-
-function coord(g::RealSpaceDataGrid{D,T}, ind::Vararg{<:Integer,D}) where {D,T}
-    return coord(g, SVector{D,Int}(ind))
-end
-
-function coord(g::RealSpaceDataGrid{D,T}, ind::CartesianIndex{D}) where {D,T}
-    return coord(g, SVector(ind.I))
-end
+coord(g::RealSpaceDataGrid, ind::AbstractVector{<:Integer}) = basis(g) * (ind ./ size(g))
+coord(g::RealSpaceDataGrid{D}, ind::Vararg{<:Integer,D}) where D = coord(g, SVector{D,Int}(ind))
+coord(g::RealSpaceDataGrid{D}, ind::CartesianIndex{D}) where D = coord(g, SVector(ind.I))
 
 """
     nearest_index(g::RealSpaceDataGrid{D,T}, coord::AbstractVector{<:Real}) -> NTuple{D,Int}
@@ -90,7 +82,7 @@ The value returned by this function provides an index that may lie outside of th
 of the backing array. However, due to the definition of `getindex()` for `RealSpaceDataGrid`, which
 takes advantage of crystal periodicity, the index is guaranteed to return a value.
 """
-function nearest_index(g::RealSpaceDataGrid{D,T}, coord::AbstractVector{<:Real}) where {D,T}
+function nearest_index(g::RealSpaceDataGrid, coord::AbstractVector{<:Real})
     return Tuple(round.(Int, (basis(g) \ coord) .* size(g)))
 end
 
@@ -99,26 +91,17 @@ function Base.isapprox(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid; kwargs...)
     return isapprox(g1.data, g2.data, kwargs...)
 end
 
-function Base.:+(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
-    # Check that the grids are identical
+function Base.:+(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
     grid_check(g1, g2)
-    # Add the two datagrids elementwise
-    newgrid = g1.data .+ g2.data
-    return RealSpaceDataGrid(basis(g1), newgrid, shift(g1))
+    return RealSpaceDataGrid(basis(g1), g1.data .+ g2.data, shift(g1))
 end
 
-function Base.:*(g1::RealSpaceDataGrid{D,T1}, g2::RealSpaceDataGrid{D,T2}) where {D,T1,T2}
-    # Check that the grids are identical
+function Base.:*(g1::RealSpaceDataGrid, g2::RealSpaceDataGrid)
     grid_check(g1, g2)
-    # Add the two datagrids elementwise
-    newgrid = g1.data .* g2.data
-    return RealSpaceDataGrid(basis(g1), newgrid, shift(g1))
+    return RealSpaceDataGrid(basis(g1), g1.data .* g2.data, shift(g1))
 end
 
-function Base.:*(s::Number, g::RealSpaceDataGrid{D,T}) where {D,T}
-    newgrid = s * g.data
-    return RealSpaceDataGrid(basis(g), newgrid, shift(g))
-end
+Base.:*(s::Number, g::RealSpaceDataGrid) = RealSpaceDataGrid(basis(g), s * g.data, shift(g))
 
 Base.:*(g::RealSpaceDataGrid, s::Number) = s * g
 # Multiply everything in the datagrid by -1
@@ -143,9 +126,7 @@ Base.conj(g::RealSpaceDataGrid) = RealSpaceDataGrid(conj, g)
 
 Performs an integration across all voxels, returning a scalar value.
 """
-function integrate(g::RealSpaceDataGrid)
-    return sum(g.data) * voxelsize(g)
-end
+integrate(g::RealSpaceDataGrid) = sum(g.data) * voxelsize(g)
 
 """
     integrate(f::Function, g::RealSpaceDataGrid{D,T}) -> T
@@ -153,13 +134,9 @@ end
 Applies the function `f` pointwise to the elements of a datagrid, then integrates the grid across
 all voxels.
 """
-function integrate(f::Function, g::RealSpaceDataGrid)
-    return sum(f.(g.data)) * voxelsize(g)
-end
+integrate(f::Function, g::RealSpaceDataGrid) = sum(f.(g.data)) * voxelsize(g)
 
-function d_spacing(g::RealSpaceDataGrid, miller::AbstractVector{<:Integer})
-    return d_spacing(basis(g), miller)
-end
+d_spacing(g::RealSpaceDataGrid, miller::AbstractVector{<:Integer}) = d_spacing(basis(g), miller)
 
 #=
 """
