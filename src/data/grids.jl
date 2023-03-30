@@ -1,6 +1,6 @@
 Base.has_offset_axes(g::AbstractDataGrid) = true
 
-Base.convert(T::Type{<:AbstractArray}, g::AbstractDataGrid) = convert(T, g.grid)
+Base.convert(T::Type{<:Array}, g::AbstractDataGrid) = convert(T, g.grid)
 
 """
     basis(g::AbstractDataGrid{D}) -> AbstractBasis{D}
@@ -42,14 +42,14 @@ end
 Checks that the basis vectors associated with a set of `AbstractDataGrid` objects are identical. It
 also performs any checks specific to the data type by calling `Electrum.grid_specific_check(g...)`.
 """
-function grid_check(g::AbstractDataGrid{D}...) where D
+function grid_check(g::AbstractDataGrid...)
     grid_specific_check(g...)
-    any(!isapprox(first(g)), g) && error("Basis vectors do not match.")
+    any(h -> !isapprox(basis(first(g)), basis(h)), g) && error("Basis vectors do not match.")
     return nothing
 end
 
 """
-    Electrum.grid_specific_check(g::AbstractDataGrid{D}...) -> Nothing
+    Electrum.grid_specific_check(g::AbstractDataGrid...) -> Nothing
 
 Performs extra checks that might be needed for a specific type of data grid. For any new types that
 subtype `AbstractDataGrid` and require extra checks, this method should be defined. As an example,
@@ -57,4 +57,6 @@ subtype `AbstractDataGrid` and require extra checks, this method should be defin
 
 By default, it performs no checks. It should always return `nothing`.
 """
-grid_specific_check(g::AbstractDataGrid{D}...) where D = nothing
+grid_specific_check(g...) = nothing
+# Needed to resolve method ambiguities
+grid_specific_check() = nothing
