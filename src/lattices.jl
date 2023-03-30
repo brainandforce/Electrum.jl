@@ -19,9 +19,7 @@ if the cell vectors are not linearly independent.
 end
 
 # TODO: can we use views on vectors of vectors to get a matrix?
-function lattice_sanity_check(vs::AbstractVector{<:AbstractVector{<:Real}}) 
-    return lattice_sanity_check(hcat(vs...))
-end
+lattice_sanity_check(v::AbstractVector{<:AbstractVector{<:Real}}) = lattice_sanity_check(hcat(v...))
 
 #---New RealBasis and ReciprocalBasis types--------------------------------------------------------#
 """
@@ -89,7 +87,6 @@ Base.convert(T::Type{<:ReciprocalBasis}, b::RealBasis) = T(transpose(2π * inv(m
 (T::Union{Type{RealBasis},Type{ReciprocalBasis}})(b::AbstractBasis) = convert(T, b)
  
 #---Tools to generate 2D and 3D lattices with given angles-----------------------------------------#
-
 """
     lattice2D(a::Real, b::Real, γ::Real) -> RealBasis{2}
 
@@ -99,9 +96,7 @@ same length and angle parameters (in degrees).
 By default, the b-vector is oriented along y. This selection corresponds to the default orientation
 chosen by `lattice3D()`.
 """
-function lattice2D(a::Real, b::Real, γ::Real)
-    return RealBasis(SMatrix{2,2,Float64}(a*sind(γ), a*cosd(γ), 0, b))
-end
+lattice2D(a::Real, b::Real, γ::Real) = RealBasis(SMatrix{2,2}(a*sind(γ), a*cosd(γ), 0, b))
 
 # TODO: can we leverage QR or LU decomposition to do this generally?
 """
