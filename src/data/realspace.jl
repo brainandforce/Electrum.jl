@@ -42,7 +42,7 @@ Gets the shift of the datagrid off of the origin of the basis vectors.
 shift(g::RealSpaceDataGrid) = g.orig
 
 function grid_specific_check(g::RealSpaceDataGrid...)
-    any(h -> !isapprox(first(g).shift, h.shift), g) && error("Grids have incommensurate shifts")
+    any(h -> !isapprox(first(g).orig, h.orig), g) && error("Grids have incommensurate shifts")
     return nothing
 end
 
