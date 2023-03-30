@@ -70,6 +70,18 @@ function (T::Union{Type{RealBasis},Type{ReciprocalBasis}})(M::StaticMatrix{D,D,<
     return T(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
 end
 
+"""
+    basis(x) -> AbstractBasis
+
+Returns the basis associated with some data in `x`. By default, it's assumed to be accessible via
+the property `:basis`.
+
+The return value might be a `RealBasis` or a `ReciprocalBasis`, depending on the space in which data
+is represented. Use `RealBasis(g)` or `ReciprocalBasis(g)` if a specific type is needed.
+"""
+basis(x) = x.basis
+data_space(T::Type) = data_space(fieldtype(T, basis))
+
 vectors(b::AbstractBasis) = b.vs
 matrix(b::AbstractBasis{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
 Base.convert(::Type{T}, b::AbstractBasis) where T<:AbstractMatrix = convert(T, matrix(b))
