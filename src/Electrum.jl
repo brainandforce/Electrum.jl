@@ -100,8 +100,7 @@ _selfdot(v) = dot(v,v)
 include("math.jl")
 # Abstract types used in type tree
 include("types.jl")
-export AbstractBasis, AbstractCrystal, AbstractCrystalData, AbstractRealSpaceData,
-       AbstractReciprocalSpaceData, AbstractHKL, AbstractKPointSet, AbstractDensityOfStates
+export AbstractBasis, AbstractCrystal, AbstractDataGrid, AbstractKPointSet, AbstractDensityOfStates
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export RealBasis, ReciprocalBasis
@@ -117,9 +116,11 @@ include("crystals.jl")
 export Crystal, CrystalWithDatasets
 export data, generators, set_transform!
 # Methods and structs for working with different types of data associated with crystals
+include("data/grids.jl")
+export basis
 include("data/realspace.jl")
 export RealSpaceDataGrid
-export basis, shift, grid, volume, voxelsize, coord, nearest_index, integrate
+export shift, volume, voxelsize, coord, nearest_index, integrate
 include("data/reciprocalspace.jl")
 export KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData, HKLDict,
        ReciprocalWavefunction

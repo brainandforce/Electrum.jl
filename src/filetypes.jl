@@ -174,7 +174,7 @@ function readXSF3D(
                     # Periodic structures should get trimmed
                     grid = getgrid!(iter, dims, trim=true)
                     # Export the data in a RealSpaceDataGrid
-                    data[name] = RealSpaceDataGrid(latt, orig, grid)
+                    data[name] = RealSpaceDataGrid(latt, grid, orig)
                 end
                 ln = iterate(iter)[1]
             end
@@ -296,7 +296,7 @@ function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) wher
     end
     # This should generate a view that wraps around for a "general grid"
     if periodic
-        g = view(data.grid, (1 .+ (0:n) .% n for n in size(data))...)
+        g = view(data.data, (1 .+ (0:n) .% n for n in size(data))...)
     else
         g = view(M, (1:n for n in size(M))...)
     end
