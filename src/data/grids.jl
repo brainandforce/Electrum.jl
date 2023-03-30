@@ -11,7 +11,7 @@ The return value might be a `RealBasis` or a `ReciprocalBasis`, depending on the
 is represented. Use `RealBasis(g)` or `ReciprocalBasis(g)` if a specific type is needed.
 """
 basis(g::AbstractDataGrid) = g.basis
-(T::AbstractBasis)(g::AbstractDataGrid) = convert(T, basis(g))
+(T::Type{<:AbstractBasis})(g::AbstractDataGrid) = convert(T, basis(g))
 
 # Automatically define the data space if possible
 # If there's no basis, it'll need to be defined manually
