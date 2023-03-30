@@ -2,21 +2,8 @@ Base.has_offset_axes(g::AbstractDataGrid) = true
 
 Base.convert(T::Type{<:Array}, g::AbstractDataGrid) = convert(T, g.grid)
 
-"""
-    basis(g::AbstractDataGrid{D}) -> AbstractBasis{D}
-
-Returns the basis associated with an `AbstractDataGrid`.
-
-The return value might be a `RealBasis` or a `ReciprocalBasis`, depending on the space in which data
-is represented. Use `RealBasis(g)` or `ReciprocalBasis(g)` if a specific type is needed.
-"""
-basis(g::AbstractDataGrid) = g.basis
 # Structured this way to resolve method ambiguities
 (T::Union{Type{RealBasis},Type{ReciprocalBasis}})(g::AbstractDataGrid) = convert(T, basis(g))
-
-# Automatically define the data space if possible
-# If there's no basis, it'll need to be defined manually
-data_space(T::Type{<:AbstractDataGrid}) = data_space(fieldtype(T, basis))
 
 Base.size(g::AbstractDataGrid) = size(g.data)
 Base.size(g::AbstractDataGrid, i) = size(g.data, i)
