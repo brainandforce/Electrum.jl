@@ -80,27 +80,19 @@ matrix(b::AbstractBasis{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, 
 Base.convert(::Type{T}, b::AbstractBasis) where T<:AbstractMatrix = convert(T, matrix(b))
 
 """
-    convert(::Type{<:RealBasis}, b::ReciprocalBasis) -> RealBasis
-    convert(::Type{<:ReciprocalBasis}, b::RealBasis) -> ReciprocalBasis
+    convert(::Type{<:AbstractBasis}, b::AbstractBasis) -> T
 
 Converts between real space and reciprocal space representations of bases. Note that this includes a
 factor of 2π that is used conventionally in crystallography: conversion from `RealBasis` to
 `ReciprocalBasis` multiplies by 2π, and vice versa. This ensures that the dot products between
 corresponding real and reciprocal space basis vectors are always 2π.
 """
-function Base.convert(::Type{<:RealBasis}, b::ReciprocalBasis)
-    return RealBasis(2π * inv(transpose(matrix(b))) )
-end
-
-function Base.convert(::Type{<:ReciprocalBasis}, b::RealBasis)
-    return ReciprocalBasis(transpose(2π * inv(matrix(b))))
-end
-
-RealBasis(b::AbstractBasis) = convert(RealBasis, b)
-ReciprocalBasis(b::AbstractBasis) = convert(ReciprocalBasis, b)
+Base.convert(T::Type{<:RealBasis}, b::ReciprocalBasis) = T(2π * inv(transpose(matrix(b))))
+Base.convert(T::Type{<:ReciprocalBasis}, b::RealBasis) = T(transpose(2π * inv(matrix(b))))
+(T::Union{Type{RealBasis},Type{ReciprocalBasis}})(b::AbstractBasis) = convert(T, b)
 
 # Tools to generate 2D and 3D lattices with given angles
-#-------------------------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 """
     lattice2D(a::Real, b::Real, γ::Real) -> RealBasis{2}
@@ -136,7 +128,7 @@ function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
 end
 
 # Fundamental methods for working with basis vectors
-#-------------------------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # This should get a vector
 Base.getindex(b::AbstractBasis, ind) = b.vs[ind]
@@ -161,7 +153,7 @@ Base.zero(::T) where {T<:AbstractBasis} = zero(T)
 Base.zeros(::Type{T}) where T<:AbstractBasis = zero(T)
 
 # Mathematical function definitions for basis vectors
-#-------------------------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 # Approximate equality
 function Base.isapprox(b1::AbstractBasis, b2::AbstractBasis; kwargs...) 
@@ -179,7 +171,7 @@ Base.:*(v::AbstractVecOrMat, b::AbstractBasis) = v * matrix(b)
 Base.:\(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) \ v
 
 # Unit cell metrics
-#-------------------------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 """
     Electrum.cell_lengths(M::AbstractMatrix) -> Vector{Float64}
@@ -304,7 +296,7 @@ this may lead to unexpected results.
 angles_deg(b::AbstractBasis) = acosd.(angles_cos(b))
 
 # Linear algebraic manipulation of basis vector specification
-#-------------------------------------------------------------------------------------------------#
+#--------------------------------------------------------------------------------------------------#
 
 LinearAlgebra.isdiag(b::AbstractBasis) = isdiag(matrix(b))
 LinearAlgebra.qr(b::AbstractBasis) = qr(matrix(b))
