@@ -243,6 +243,22 @@ function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction)
     print(io, join(basis_string(basis(wf)), "\n"))
 end
 
+function Base.summary(io::IO, wf::PlanewaveWavefunction)
+    print(
+        io, typeof(wf),
+        " with ", nspin(wf), " spin" * "s"^!isone(nspin(wf)),
+        ", ", nkpt(wf), " k-point" * "s"^!isone(nkpt(wf)),
+        ", and ", nband(wf), " band" * "s"^!isone(nband(wf)),
+        " (G-vector range: ", wf.grange, ")"
+    )
+end
+
+function Base.show(io::IO, ::MIME"text/plain", wf::PlanewaveWavefunction)
+    summary(io, wf)
+    println(io, "\nReciprocal space basis vectors:")
+    print(io, join(basis_string(basis(wf)), "\n"))
+end
+
 #---Types from data/atomic.jl----------------------------------------------------------------------#
 
 function Base.show(

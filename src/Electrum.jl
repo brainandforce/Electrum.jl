@@ -125,6 +125,8 @@ export shift, volume, voxelsize, coord, nearest_index, integrate
 include("data/reciprocalspace.jl")
 export KPoint, KPointMesh, BandAtKPoint, BandStructure, HKLData, HKLDict, ReciprocalWavefunction
 export weight, nkpt, nband, bounds
+include("data/wavefunctions.jl")
+export PlanewaveIndex, PlanewaveIndices, PlanewaveWavefunction
 include("data/dos.jl")
 export DensityOfStates, ProjectedDensityOfStates, FatBands
 export fermi, smear, energies, nelectrons
