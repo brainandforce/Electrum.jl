@@ -4,13 +4,13 @@
 ```@docs
 Electrum.lengths(::Any)
 Electrum.volume(::Any)
+Electrum.basis(::Any)
+Electrum.AbstractDataGrid
 ```
 
 ## Real space
 ```@docs
-Electrum.AbstractRealSpaceData
 Electrum.RealSpaceDataGrid
-Electrum.grid
 Electrum.voxelsize
 Electrum.integrate
 Electrum.fft
@@ -19,8 +19,7 @@ Electrum.fft
 ## Reciprocal space
 ```@docs
 Electrum.AbstractReciprocalSpaceData
-Electrum.AbstractKPoints
-Electrum.AbstractHKL
+Electrum.AbstractKPointSet
 Electrum.KPointGrid
 Electrum.KPointList
 Electrum.BandAtKPoint
