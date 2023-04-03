@@ -87,10 +87,10 @@ function write_lammps_data(io::IO, list::PeriodicAtomList{D}; dummy::Bool=false)
     println(io, @sprintf("0.000000    %f", basis(list)[2,2]), "     ylo yhi")
     println(io, @sprintf("0.000000    %f", basis(list)[3,3]), "     zlo zhi")
     # Add in tilt factors if needed
-    if !isdiag(basis(list))
-        println(io, "# Tilt factors:")
-        @printf(io, "%f %f %f xy xz yz\n", basis(list)[1,2], basis(list)[1,3], basis(list)[2,3])
-    end
+    isdiag(basis(list)) || @printf(
+        io, "# Tilt factors:\n%f %f %f xy xz yz\n",
+        basis(list)[1,2], basis(list)[1,3], basis(list)[2,3]
+    )
     # Get the different atom types; strip dummy atoms if needed
     atl = (dummy ? list : filter(!isdummy, list))
     # Enumerate the atoms - by name, not atomic number
