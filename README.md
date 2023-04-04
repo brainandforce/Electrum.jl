@@ -44,15 +44,16 @@ in the 0.1 series (currently 0.1.26).
 * Reading of common file formats:
      + abinit potential, density, and wavefunction outputs from versions 7.10.5 and 8.10.4
      + abinit HGH pseudopotentials
+     + LAMMPS atomic position data
      + VASP POSCAR, WAVECAR, DOSCAR, and PROCAR
      + XCrysDen XSF
      + XYZ files
      + CPpackage2 outputs
 * Writing of common file formats:
+     + LAMMPS atomic position data
      + XCrysDen XSF
      + XYZ files
      + VASP POSCAR
-     + LAMMPS atomic position data
 * Operations on datagrids:
      + Addition, subtraction, multiplication
      + FFTs and inverse FFTs on real and reciprocal space data
