@@ -3,6 +3,10 @@
 
 Reads a LAMMPS data file containing atomic coordinates. Currently, this function only supports 3D
 crystal data.
+
+If set, the `atom_types` keyword can be used to define the types of atoms being read in. This can be
+and `AbstractVector{NamedAtom}`, `AbstractVector{<:AbstractString}`, or `AbstractVector{<:Integer}`.
+If it is not set or empty, then all atoms will be read in as dummy atoms.
 """
 function read_lammps_data(io::IO; atom_types::AbstractVector = NamedAtom[]) 
     natom = 0
