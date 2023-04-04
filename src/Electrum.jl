@@ -143,7 +143,7 @@ include("software/vasp.jl")
 export readPOSCAR, readCONTCAR, writePOSCAR4, readWAVECAR, readDOSCAR, readPROCAR, get_fermi,
        readKPOINTS
 include("software/lammps.jl")
-export write_lammps_data
+export read_lammps_data, write_lammps_data
 # Show methods for pretty printing this module's structs
 include("show.jl")
 # Precompilation directives
