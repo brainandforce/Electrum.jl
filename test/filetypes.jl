@@ -20,3 +20,9 @@ end
     @test atomic_number.(atomtypes(poscar)) == [14, 77]
     @test natomtypes(poscar) == 2
 end
+
+@testset "LAMMPS position data" begin
+    # This is going to suffer from floating point errors/parsing differences
+    @test all(isapprox.(displacement.(lammps.atoms), displacement.(poscar.atoms), atol=1e-6))
+    @test isapprox(basis(lammps), basis(poscar), atol=1e-6)
+end
