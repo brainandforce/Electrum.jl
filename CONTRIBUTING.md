@@ -97,6 +97,11 @@ files which have the same format but a different name, for instance, `CONTCAR` f
 encouraged to add corresponding methods that contain the name of that particular file (for
 instance, `readCONTCAR()`).
 
+### File I/O functions
+
+The [README.md](src/software/README.md) for the `src/software` directory provides notes on how to
+write functions that perform file I/O.
+
 ### Comments and documentation
 
 All functions and structs must have an associated docstring explaining the purpose of the code, 
