@@ -54,6 +54,8 @@ function KPointList{D}(
     return KPointList(svpoints, weights)
 end
 
+Base.:(==)(k1::KPointList, k2::KPointList) = k1.points == k2.points && k1.weights == k2.weights
+
 Base.axes(k::KPointList) = axes(k.points)
 Base.keys(k::KPointList) = keys(k.points)
 Base.size(k::KPointList) = size(k.points)
