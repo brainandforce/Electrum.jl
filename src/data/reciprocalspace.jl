@@ -49,7 +49,7 @@ function KPointList{D}(
     points::AbstractVector{<:AbstractVector{<:Real}},
     weights::AbstractVector{<:Real} = ones(length(points))
 ) where D
-    @assert length.(points) == D "k-points have the wrong dimensionality"
+    @assert all(isequal(D), length.(points)) "k-points have the wrong dimensionality"
     svpoints = [SVector{D,Float64}(v) for v in points]
     return KPointList(svpoints, weights)
 end
