@@ -21,6 +21,7 @@ lammps = read_lammps_data("files/lammps.data", atom_types = [14, 77])
     end
     include("datagrids.jl")
     include("supercell.jl")
+    include("crystals.jl")
     include("filetypes.jl")
     include("kpoints.jl")
 end
