@@ -347,7 +347,8 @@ left unimodular factor is then used to perform the final transformation.
 function supercell(l::PeriodicAtomList{D}, M::AbstractMatrix{<:Integer}) where D
     # Convert the provided basis vectors to the supercell basis
     # Conversion to upper triangular form should make this easier to work with
-    scb = triangularize(basis(l), M)
+    # Only do this if the transform is not diagonal
+    scb = isdiag(M) ? RealBasis{D}(basis(l) * M) : triangularize(basis(l), M)
     # Get the Smith normal form of the transformation matrix
     (S,U) = snf(M)
     # Generate all the sites in the supercell where new atoms have to be placed
