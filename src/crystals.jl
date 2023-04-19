@@ -92,9 +92,7 @@ end
 # TODO: figure out how autocompletion works and how to enable it here
 # UPDATE: seems like it's hard-coded into the REPL for `AbstractDict`
 # So adding in that functionality doesn't seem to be feasible
-function Base.getindex(xtaldata::CrystalWithDatasets{D,K,V}, key::K) where {D,K,V}
-    return xtaldata.data[key]
-end
+Base.getindex(xtaldata::CrystalWithDatasets, key) = xtaldata.data[key]
 
 # Easy way of pulling just the crystal from a `CrystalWithDatasets{D}`
 Base.convert(T::Type{<:Crystal}, xtaldata::CrystalWithDatasets) = xtaldata.xtal::T
