@@ -97,7 +97,7 @@ function Base.getindex(xtaldata::CrystalWithDatasets{D,K,V}, key::K) where {D,K,
 end
 
 # Easy way of pulling just the crystal from a `CrystalWithDatasets{D}`
-Base.convert(::Type{<:Crystal}, xtaldata::CrystalWithDatasets) = xtaldata.xtal
+Base.convert(T::Type{<:Crystal}, xtaldata::CrystalWithDatasets) = xtaldata.xtal::T
 
 Crystal(xtaldata::CrystalWithDatasets) = xtaldata.xtal
 data(xtaldata::CrystalWithDatasets) = xtaldata.data
