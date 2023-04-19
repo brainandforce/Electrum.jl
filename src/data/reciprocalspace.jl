@@ -61,6 +61,7 @@ Base.length(k::KPointList) = length(k.points)
 
 # Get the k-point and its associated weight as a NamedTuple
 Base.getindex(k::KPointList, i::Integer) = (kpt=k.points[i], weight=k.weights[i])
+Base.getindex(k::KPointList, i) = KPointList(k.points[i], k.weights[i])
 
 function Base.setindex!(k::KPointList, v::AbstractVector, i)
     k.points[i] = v
