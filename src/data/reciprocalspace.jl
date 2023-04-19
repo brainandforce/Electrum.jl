@@ -38,7 +38,7 @@ struct KPointList{D} <: AbstractKPointSet{D}
     weights::Vector{Float64}
     function KPointList(
         points::AbstractVector{<:StaticVector{D,<:Real}},
-        weights::AbstractVector{<:Real}
+        weights::AbstractVector{<:Real} = ones(length(points))
     ) where D
         @assert length(points) == length(weights) "Number of k-points and weights do not match."
         return new{D}(points, weights / sum(weights))
@@ -47,19 +47,11 @@ end
 
 function KPointList{D}(
     points::AbstractVector{<:AbstractVector{<:Real}},
-    weights::AbstractVector{<:Real}
+    weights::AbstractVector{<:Real} = ones(length(points))
 ) where D
     @assert length.(points) == D "k-points have the wrong dimensionality"
     svpoints = [SVector{D,Float64}(v) for v in points]
     return KPointList(svpoints, weights)
-end
-
-function KPointList{D}(points::AbstractVector{<:AbstractVector{<:Real}}) where D
-    return KPointList{D}(points, ones(length(points)))
-end
-
-function KPointList(points::AbstractVector{<:StaticVector{D,<:Real}}) where D
-    return KPointList(points, ones(length(points)))
 end
 
 # Get the k-point and its associated weight as a NamedTuple
