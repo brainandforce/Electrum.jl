@@ -114,9 +114,9 @@ all of the atoms, use `convert(PeriodicAtomList, xtal)` or `PeriodicAtomList(xta
 """
 generators(xtal::AbstractCrystal) = xtal.atoms
 
-function Base.convert(::Type{<:PeriodicAtomList}, xtal::AbstractCrystal)
+function Base.convert(T::Type{<:PeriodicAtomList}, xtal::AbstractCrystal)
     # TODO: when space groups are implemented, explicitly generate those positions
-    return supercell(xtal.atoms, xtal.transform)
+    return supercell(xtal.atoms, xtal.transform)::T
 end
 
 """
