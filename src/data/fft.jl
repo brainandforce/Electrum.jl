@@ -13,16 +13,12 @@ For reciprocal space data, the frequencies are binned with the assumption that t
 are given in angular wavenumbers, and they represent real space coordinates. The Nyquist frequency
 convention is *not* used, so all elements will have positive indices.
 """
-function FFTW.fftfreq(g::AbstractDataGrid{D}, ::ByRealSpace) where D
-    return SVector{D}.(
-        Iterators.product(
-            (fftfreq(size(g)[d], 2π .* size(g)[d] / lengths(basis(g))[d]) for d in 1:D)...
-        )
-    )
+function FFTW.fftfreq(g::AbstractDataGrid, ::ByRealSpace)
+    return map(i -> SVector(2π .* Tuple(i) ./ size(g)), FFTBins(g))
 end
 
-function FFTW.fftfreq(g::AbstractDataGrid{D}, ::ByReciprocalSpace) where D
-    return SVector{D}.(Iterators.product((axes(g) .* lengths(basis(g)) ./ 2π)...))
+function FFTW.fftfreq(g::AbstractDataGrid, ::ByReciprocalSpace)
+    return map(i -> SVector(Tuple(i) .* size(g) ./ 2π), CartesianIndices(g))
 end
 
 FFTW.fftfreq(g::AbstractDataGrid) = fftfreq(g::AbstractDataGrid, data_space(g))
