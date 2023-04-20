@@ -18,6 +18,11 @@ lammps = read_lammps_data("files/lammps.data", atom_types = [14, 77])
         @test ReciprocalBasis(b) == ReciprocalBasis{3}(diagm([2π,2π,2π]))
         # Check that conversion between real and reciprocal bases is invertible
         @test b ≈ RealBasis(ReciprocalBasis(b))
+        # Dimensionality should be inferred when static matrices are used
+        @test RealBasis(SMatrix{2,2}(1, 0, 0, 1)) isa RealBasis{2}
+        # Wrong dimensionality should throw an exception
+        @test_throws DimensionMismatch RealBasis{3}([1 0; 0 1])
+        @test_throws DimensionMismatch convert(ReciprocalBasis{2}, b)
     end
     include("datagrids.jl")
     include("supercell.jl")
