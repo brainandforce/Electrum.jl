@@ -4,12 +4,14 @@
 """
     fftfreq(g::RealSpaceDataGrid{D,<:Any}) -> Array{NTuple{D,Float64},D}
 
-Returns the discrete Fourier transform frequency bins for a `RealSpaceDataGrid`.
+Returns the discrete Fourier transform frequency bins for a `RealSpaceDataGrid`. The frequency units
+are angular wavenumbers, matching the 2π factors that are introduced when transforming between a
+`RealBasis` and a `ReciprocalBasis`.
 """
-function FFTW.fftfreq(g::RealSpaceDataGrid{D,<:Any}) where D
+function FFTW.fftfreq(g::RealSpaceDataGrid{D}) where D
     return collect(
         Iterators.product(
-            (fftfreq(size(g)[d], size(g)[d] / lengths(basis(g))[d]) for d in 1:D)...
+            (fftfreq(size(g)[d], 2π * size(g)[d] / lengths(basis(g))[d]) for d in 1:D)...
         )
     )
 end
