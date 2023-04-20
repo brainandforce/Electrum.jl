@@ -33,7 +33,7 @@ a transformation matrix.
 """
 convert_to_transform(M::AbstractMatrix) = Int.(M)
 convert_to_transform(v::AbstractVector) = diagm(Int.(v))
-convert_to_transform(v::AbstractVector, ::Val{D}) = diagm(SVector{D,Int}(v))
+convert_to_transform(v::AbstractVector, ::Val{D}) where D = diagm(SVector{D,Int}(v))
 # Drop provided dimensionality for matrices/vectors, since it's already known from the input
 convert_to_transform(x::AbstractVecOrMat, dimensions) = convert_to_transform(x)
 # When dimensions are provided as integers, return a Matrix
