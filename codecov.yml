@@ -4,3 +4,6 @@ coverage:
       default:
         target: 30%    # the required coverage value
         threshold: 5%  # the leniency in hitting the target
+ignore:
+  - src/metrics.jl      # No include() statement for this file
+  - src/show.jl
