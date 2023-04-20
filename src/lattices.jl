@@ -61,7 +61,9 @@ data_space(::Type{ReciprocalBasis{D}}) where D = ByReciprocalSpace{D}()
 
 # Convert matrix input to a vector of vectors
 function (T::Type{<:AbstractBasis{D}})(M::AbstractMatrix{<:Real}) where D
-    @assert size(M) === (D,D) "Matrix dimensions are incorrect."
+    size(M) === (D,D) || throw(
+        DimensionMismatch("Cannot construct a $T from a matrix with dimensions " * string(size(M)))
+    )
     return T(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
 end
 
