@@ -80,7 +80,7 @@ The return value might be a `RealBasis` or a `ReciprocalBasis`, depending on the
 is represented. Use `RealBasis(g)` or `ReciprocalBasis(g)` if a specific type is needed.
 """
 basis(x) = x.basis
-data_space(T::Type) = data_space(fieldtype(T, basis))
+data_space(T::Type) = data_space(fieldtype(T, :basis))
 
 vectors(b::AbstractBasis) = b.vs
 matrix(b::AbstractBasis{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
