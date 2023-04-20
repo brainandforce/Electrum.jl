@@ -96,8 +96,9 @@ Computes the dot product of a vector with itself.
 """
 _selfdot(v) = dot(v,v)
 
-# Methods used in vector operations that go beyond what's available in LinearAlgebra
+# Methods used in array operations that go beyond what's available in LinearAlgebra
 include("math.jl")
+export FFTBins, FFTLength
 # Abstract types used in type tree
 include("types.jl")
 export AbstractBasis, AbstractCrystal, AbstractDataGrid, AbstractKPointSet, AbstractDensityOfStates
