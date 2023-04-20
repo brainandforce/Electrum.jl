@@ -1,20 +1,31 @@
 # Fast Fourier transforms and related methods
 # for `RealSpaceDataGrid`, `HKLData`, and `ReciprocalWavefunction`
-
 """
-    fftfreq(g::RealSpaceDataGrid{D}) -> Array{SVector{D,Float64},D}
+    fftfreq(g::AbstractDataGrid{D}) -> Array{SVector{D,Float64},D}
 
-Returns the discrete Fourier transform frequency bins for a `RealSpaceDataGrid`. The frequency units
-are angular wavenumbers, matching the 2π factors that are introduced when transforming between a
-`RealBasis` and a `ReciprocalBasis`.
+Returns the Fourier transform frequency bins for an `AbstractDataGrid`.
+
+For real space data, the frequency bins will be angular wavenumbers, matching the 2π factors that
+are introduced when transforming between a `RealBasis` and a `ReciprocalBasis`. The convention used
+by `FFTW.fftfreq()` is also used: frequency bins at or above the Nyquist frequency will be negative.
+
+For reciprocal space data, the frequencies are binned with the assumption that the lattice vectors
+are given in angular wavenumbers, and they represent real space coordinates. The Nyquist frequency
+convention is *not* used, so all elements will have positive indices.
 """
-function FFTW.fftfreq(g::RealSpaceDataGrid{D}) where D
-    return collect(
+function FFTW.fftfreq(g::AbstractDataGrid{D}, ::ByRealSpace) where D
+    return SVector{D}.(
         Iterators.product(
             (fftfreq(size(g)[d], 2π .* size(g)[d] / lengths(basis(g))[d]) for d in 1:D)...
         )
     )
 end
+
+function FFTW.fftfreq(g::AbstractDataGrid{D}, ::ByReciprocalSpace) where D
+    return SVector{D}.(Iterators.product((axes(g) .* lengths(basis(g)) ./ 2π)...))
+end
+
+FFTW.fftfreq(g::AbstractDataGrid) = fftfreq(g::AbstractDataGrid, data_space(g))
 
 """
     fft(g::RealSpaceDataGrid) -> HKLData
