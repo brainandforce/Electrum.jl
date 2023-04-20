@@ -272,15 +272,6 @@ Base.keys(hkl::HKLDict) = keys(hkl.dict)
 Base.iterate(hkl::HKLDict) = iterate(hkl.dict)
 Base.iterate(hkl::HKLDict, i) = iterate(hkl.dict, i)
 
-"""
-    vectors(hkl::HKLDict)
-
-Returns the set of vectors in an `HKLDict` for which values have been defined.
-"""
-function vectors(hkl::HKLDict)
-    return keys(hkl.dict)
-end
-
 function HKLDict(hkl::HKLData{D,T}) where {D,T<:Union{<:Number,<:AbstractArray{Number}}}
     dict = Dict{SVector{D,Int},T}()
     # Get the offset for the indices
