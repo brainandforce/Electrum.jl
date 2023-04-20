@@ -24,4 +24,9 @@ lammps = read_lammps_data("files/lammps.data", atom_types = [14, 77])
     include("crystals.jl")
     include("filetypes.jl")
     include("kpoints.jl")
+    @testset "Miscellaneous" begin
+        # Data space traits
+        @test Electrum.data_space(xsf["this_is_3Dgrid#1"]) === Electrum.ByRealSpace{3}()
+        @test Electrum.data_space(v80_wfk["wavefunction"]) === Electrum.ByReciprocalSpace{3}()
+    end
 end
