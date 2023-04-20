@@ -42,3 +42,87 @@ convert_to_transform(n::Real, dimensions::Integer) = diagm(fill(Int(n), dimensio
 convert_to_transform(n::Real, ::Val{D}) where D = diagm(fill(Int(n), SVector{D}))
 convert_to_transform(U::UniformScaling, dimensions::Integer) = Int.(U(dimensions))
 convert_to_transform(U::UniformScaling, ::Val{D}) where D = SMatrix{D,D,Int}(U)
+
+#---FFT ranges-------------------------------------------------------------------------------------#
+"""
+    FFTBins{D} <: AbstractArray{CartesianIndex{D},D}
+
+An iterable object defining a range of integer FFT bins. This can be used to convert a Cartesian
+array index to an FFT bin index, or vice versa.
+
+The outputs use the convention where frequencies at or above the Nyquist frequency for that
+dimension are negative, matching the output of `FFTW.fftfreq`.
+
+```jldoctest
+julia> FFTBins(4)
+4-element FFTIndices{1}:
+ CartesianIndex(0,)
+ CartesianIndex(1,)
+ CartesianIndex(-2,)
+ CartesianIndex(-1,)
+
+julia> FFTBins(3, 3)
+3×3 FFTIndices{2}:
+ CartesianIndex(0, 0)   CartesianIndex(0, 1)   CartesianIndex(0, -1)
+ CartesianIndex(1, 0)   CartesianIndex(1, 1)   CartesianIndex(1, -1)
+ CartesianIndex(-1, 0)  CartesianIndex(-1, 1)  CartesianIndex(-1, -1)
+```
+"""
+struct FFTBins{D} <: AbstractArray{CartesianIndex{D},D}
+    size::NTuple{D,Int}
+    FFTBins(x::NTuple{D}) where D = new{D}(Int.(x))
+end
+
+FFTBins(x::Number...) = FFTBins(x)
+FFTBins(a::AbstractArray) = FFTBins(size(a))
+
+Base.axes(r::FFTBins) = Base.OneTo.(r.size)
+Base.size(r::FFTBins) = r.size
+Base.IndexStyle(::Type{<:FFTBins}) = IndexLinear()
+
+function Base.getindex(r::FFTBins{D}, i::CartesianIndex{D}) where D
+    return CartesianIndex(mod.(Tuple(i) .+ div.(size(r), 2) .- 1, size(r)) .- div.(size(r), 2))
+end
+
+Base.getindex(r::FFTBins, i::Integer...) = r[CartesianIndex(i)]
+Base.getindex(r::FFTBins, i::Integer) = r[CartesianIndices(r)[i]]
+
+Base.iterate(r::FFTBins, i = 1) = i in eachindex(r) ? (r[i], i+1) : nothing
+
+"""
+    FFTLength <: AbstractVector{Int}
+
+The one-dimensional counterpart to `FFTBins`, supporting only a single dimension. Its elements are
+plain `Int` types rather than the `CartesianIndex` of `FFTBins`.
+
+In essence, it serves as a counterpart to `Base.OneTo` for FFT bins.
+
+```jldoctest
+julia> Electrum.FFTLength(4)
+4-element FFTLength:
+ 0
+ 1
+ -2
+ -1
+```
+"""
+struct FFTLength <: AbstractVector{Int}
+    size::Int
+    FFTLength(x::Number) = new(Int(x))
+end
+
+FFTLength(v::AbstractVector) = FFTLength(length(v))
+
+Base.axes(r::FFTLength) = (Base.OneTo(r.size),)
+Base.size(r::FFTLength) = (r.size,)
+Base.IndexStyle(::Type{<:FFTLength}) = IndexLinear()
+
+function Base.getindex(r::FFTLength, i::Integer)
+    return mod(i + div(length(r), 2) - 1, length(r)) - div(length(r), 2)
+end
+
+Base.getindex(r::FFTLength, i::CartesianIndex{1}) = r[only(i.I)]
+
+Base.iterate(r::FFTLength, i = 1) = i in eachindex(r) ? (r[i], i+1) : nothing
+
+Base.sort(r::FFTLength) = range(extrema(r)...)
