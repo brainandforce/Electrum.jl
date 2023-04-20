@@ -29,7 +29,7 @@ lammps = read_lammps_data("files/lammps.data", atom_types = [14, 77])
     include("crystals.jl")
     include("filetypes.jl")
     include("kpoints.jl")
-    @testset "Miscellaneous" begin
+    @testset "Internals" begin
         # Linear independence
         @test Electrum.is_linearly_independent([1, 1], [2, 2]) === false
         # Conversion of scalars/vectors to transformation matrices
