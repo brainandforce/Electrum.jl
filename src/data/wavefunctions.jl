@@ -140,40 +140,33 @@ struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
 end
 
 """
-    PlanewaveWavefunction(
-        [T::Type{<:Number} = Complex{Float32}],
-        b::AbstractBasis{D},
-        spins::AbstractVector{<:StaticVector{D,<:Real}},
-        kpoints::AbstractKPointSet{D},
-        bands::Integer
-        grange::NTuple{D,<:AbstractUnitRange{<:Integer}},
-    ) -> PlanewaveWavefunction{D,T}
+    PlanewaveWavefunction{D,T}(
+        basis::AbstractBasis{D},
+        nspin::Integer,
+        nkpt::Integer,
+        nband::Integer,
+        grange::AbstractUnitRange{<:Integer}...
+    )
 
-Creates a new empty wavefunction with basis `b`, spin directions `spins`, a k-point list `kpoints`,
-a number of bands `bands`, and a range of allowed G-vectors `grange`.
+Constructs an empty `PlanewaveWavefunction` with `nspin` spins, `nkpt` k-points, `nband` bands, and
+G-vectors in the ranges given by `grange`.
 """
-function PlanewaveWavefunction(
-    T::Type,
-    basis::AbstractBasis{D},
-    spins::AbstractVector{<:StaticVector{D,<:Real}},
-    kpoints::AbstractKPointSet{D},
-    bands::Integer,
-    grange::NTuple{D,<:AbstractUnitRange{<:Integer}},
-) where D
-    energies = zeros(Float64, bands, length(kpoints), length(spins))
-    occupancies = deepcopy(energies)
-    data = zeros(T, prod(length.(grange)), bands, length(kpoints), length(spins))
-    return PlanewaveWavefunction(basis, spins, kpoints, energies, occupancies, grange, data)
-end
-
-function PlanewaveWavefunction(
-    basis::AbstractBasis{D},
-    spins::AbstractVector{<:StaticVector{D,<:Real}},
-    kpoints::AbstractKPointSet{D},
-    bands::Integer,
-    grange::NTuple{D,<:AbstractUnitRange{<:Integer}},
-) where D
-    return PlanewaveWavefunction(Complex{Float32}, basis, spins, kpoints, bands, grange)
+function PlanewaveWavefunction{D,T}(
+    basis::AbstractBasis,
+    nspin::Integer,
+    nkpt::Integer,
+    nband::Integer,
+    grange::Vararg{AbstractUnitRange{<:Integer},D}
+) where {D,T}
+    return PlanewaveWavefunction(
+        basis,
+        zeros(SVector{D,Float64}, nspin),
+        KPointList(zeros(SVector{D,Float64}, nkpt)),
+        zeros(Float64, nband, nkpt, nspin),
+        zeros(Float64, nband, nkpt, nspin),
+        grange,
+        zeros(T, prod(length.(grange)), nband, nkpt, nspin)
+    )
 end
 
 Base.size(wf::PlanewaveWavefunction) = (reverse(size(wf.energies))..., length.(wf.grange)...)
