@@ -102,7 +102,7 @@ end
 
 #---The meat and potatoes--------------------------------------------------------------------------#
 """
-    PlanewaveWavefunction{D,T<:Number}
+    PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
 
 Stores the components of a wavefunction constructed from a planewave basis. Usually, the coefficient
 data type `T` will be a `ComplexF32`, as in DFT calculations, double precision convergence of the
@@ -111,7 +111,7 @@ density will correspond to single-precision converegnce of the wavefunction.
 Internally, coefficients are stored in an `Array{4,T}`. Indexing is then manually implemented, with
 a `D`-dimensional `CartesianIndex` used for accessing each coefficient associated with a G-vector.
 """
-struct PlanewaveWavefunction{D,T<:Number} <: AbstractDataGrid{D,T}
+struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
     basis::ReciprocalBasis{D}
     spins::Vector{SVector{D,Float64}}
     kpoints::KPointList{D}
@@ -151,7 +151,7 @@ Creates a new empty wavefunction with basis `b`, spin directions `spins`, a k-po
 a number of bands `bands`, and a range of allowed G-vectors `grange`.
 """
 function PlanewaveWavefunction(
-    T::Type{<:Number},
+    T::Type,
     basis::AbstractBasis{D},
     spins::AbstractVector{<:StaticVector{D,<:Real}},
     kpoints::AbstractKPointSet{D},
