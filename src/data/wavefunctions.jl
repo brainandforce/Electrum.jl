@@ -110,6 +110,8 @@ density will correspond to single-precision converegnce of the wavefunction.
 
 Internally, coefficients are stored in an `Array{4,T}`. Indexing is then manually implemented, with
 a `D`-dimensional `CartesianIndex` used for accessing each coefficient associated with a G-vector.
+`PlanewaveWavefunction` instances are mutable, with `getindex()` and `setindex!()` defined for them,
+but they are not resizable, and the backing array should not be resized.
 """
 struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
     basis::ReciprocalBasis{D}
