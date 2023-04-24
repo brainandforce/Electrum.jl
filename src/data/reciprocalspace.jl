@@ -20,6 +20,8 @@ Base.iterate(k::KPoint, i::Integer = 1) = iterate(k.point, i)
 Base.convert(::Type{SVector{D,Float64}}, k::KPoint{D}) where D = k.point
 Base.convert(T::Type{<:AbstractVector}, k::KPoint) = convert(T, k.point)::T
 
+#---Generated lists of k-points--------------------------------------------------------------------#
+
 """
     KPointMesh{D} <: AbstractVector{KPoint{D}}
 
@@ -58,12 +60,19 @@ function KPointMesh{D}(
     return KPointMesh(points, SMatrix{D,D,Int}(grid), SVector{D,Float64}(shift))
 end
 
+function Base.:(==)(k1::KPointMesh, k2::KPointMesh)
+    return k1.points == k2.points && k1.grid == k2.grid && k1.shift == k2.shift
+end
+
 Base.size(k::KPointMesh) = size(k.points)
 Base.axes(k::KPointMesh) = axes(k.points)
 Base.IndexStyle(::Type{<:KPointMesh}) = IndexLinear()
 Base.getindex(k::KPointMesh, i) = k.points[i]
 Base.iterate(k::KPointMesh, i::Integer = 1) = iterate(k.points, i)
+Base.convert(::Type{Vector{KPoint{D}}}, k::KPointMesh{D}) where D = k.points
+Base.convert(T::Type{<:AbstractVector{<:KPoint}}, k::KPointMesh) = convert(T, k.points)::T
 
+#---Deprecated k-point list structures-------------------------------------------------------------#
 """
     KPointGrid{D} <: AbstractKPoints{D}
 
