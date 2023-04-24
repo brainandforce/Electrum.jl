@@ -1,10 +1,10 @@
 """
-    KPoint{D} <: StaticVector{D,Float64}
+    KPoint{D} <: DenseVector{D,Float64}
 
 Stores a k-point with an associated weight that corresponds to the number of symmetry-equivalent
 k-points, stored as an integer.
 """
-struct KPoint{D} <: StaticVector{D,Float64}
+struct KPoint{D} <: DenseVector{Float64}
     point::SVector{D,Float64}
     weight::Int
     KPoint(pt::StaticVector{D,<:Real}, wt::Integer = 1) where D = new{D}(pt .- round.(pt), wt)
@@ -15,10 +15,10 @@ KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) where D = KPoint(SVector{
 Base.size(k::KPoint) = size(k.point)
 Base.axes(k::KPoint) = axes(k.point)
 Base.IndexStyle(::Type{<:KPoint}) = IndexLinear()
-Base.getindex(k::KPoint, i) = k.point[i]
+Base.getindex(k::KPoint, i::Any) = k.point[i]
 Base.iterate(k::KPoint, i::Integer = 1) = iterate(k.point, i)
-Base.convert(::Type{SVector{D,Float64}}, k::KPoint{D}) where D = k.point
-Base.convert(T::Type{<:AbstractVector}, k::KPoint) = convert(T, k.point)::T
+Base.convert(T::Type{<:StaticVector}, k::KPoint) = convert(T, k.point)::T
+Base.convert(T::Type{<:Vector}, k::KPoint) = convert(T, k.point)::T
 
 #---Generated lists of k-points--------------------------------------------------------------------#
 
@@ -69,8 +69,7 @@ Base.axes(k::KPointMesh) = axes(k.points)
 Base.IndexStyle(::Type{<:KPointMesh}) = IndexLinear()
 Base.getindex(k::KPointMesh, i) = k.points[i]
 Base.iterate(k::KPointMesh, i::Integer = 1) = iterate(k.points, i)
-Base.convert(::Type{Vector{KPoint{D}}}, k::KPointMesh{D}) where D = k.points
-Base.convert(T::Type{<:AbstractVector{<:KPoint}}, k::KPointMesh) = convert(T, k.points)::T
+Base.convert(T::Type{Vector{<:KPoint}}, k::KPointMesh) = k.points::T
 
 #---Deprecated k-point list structures-------------------------------------------------------------#
 """
