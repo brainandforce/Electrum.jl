@@ -40,7 +40,7 @@ struct KPointMesh{D} <: AbstractVector{KPoint{D}}
         grid::StaticMatrix{D,D,<:Integer} = zeros(SMatrix{D,D,Int}),
         shift::StaticVector{D,<:Real} = zeros(SVector{D,Float64})
     ) where D
-        return new{D}(unique(points), grid, shift)
+        return new{D}(points, grid, shift)
     end
 end
 
