@@ -10,6 +10,7 @@ struct KPoint{D} <: DenseVector{Float64}
     KPoint(pt::StaticVector{D,<:Real}, wt::Integer = 1) where D = new{D}(pt .- round.(pt), wt)
 end
 
+KPoint(x::Real...; weight::Integer = 1) = KPoint(SVector(x), weight)
 KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) where D = KPoint(SVector{D,Float64}(pt), wt)
 
 Base.size(k::KPoint) = size(k.point)
