@@ -179,6 +179,10 @@ Base.axes(wf::PlanewaveWavefunction) = (reverse(axes(wf.energies))..., wf.grange
 
 PlanewaveIndices(wf::PlanewaveWavefunction) = PlanewaveIndices(axes(wf)...)
 
+function Base.LinearIndices(wf::PlanewaveWavefunction)
+    return LinearIndices((wf.grange..., wf.bands, wf.kpoints, wf.spins))
+end
+
 nspin(wf::PlanewaveWavefunction) = length(wf.spins)
 nkpt(wf::PlanewaveWavefunction) = length(wf.kpoints)
 nband(wf::PlanewaveWavefunction) = size(wf.energies, 1)
