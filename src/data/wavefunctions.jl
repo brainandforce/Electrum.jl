@@ -228,7 +228,7 @@ end
 
 #---New WAVECAR reading function-------------------------------------------------------------------#
 """
-    readWAVECAR_new(file) -> PlanewaveWavefunction{3,Float32}
+    readWAVECAR_new(file; quiet = false) -> PlanewaveWavefunction{3,Float32}
 
 Reads a WAVECAR file output from a VASP 4.6 calcuation to the new `PlanewaveWavefunction` type.
 
@@ -239,14 +239,18 @@ This function is limited to WAVECAR files which have an RTAG value of 45200 (mea
 given as a `Complex{Float32}`) and have only a collinear magnetic field applied, like WaveTrans. It
 should also be noted that the weights of the k-points are not present in the WAVECAR file, and are
 set to 1 by default.
+
+By default, the function is verbose, with output printed for every k-point parsed, due to the large
+size of the wavefunction files. If this behavior is undesirable, the `quiet` keyword argument may be
+set to `true`.
 """
-function readWAVECAR_new(io::IO)
+function readWAVECAR_new(io::IO; quiet = false)
     # Function to increment HKL values in place 
     function incrementHKL!(hkl::AbstractVector{<:Integer}, bounds::AbstractVector{<:AbstractRange})
         # Loop through the vector indices, but in most cases we don't need them all
         for n in eachindex(hkl)
             # Increment the current vector component
-            hkl[n] = (hkl[n]+1 in bounds[n] ? hkl[n] + 1 : minimum(bounds[n]))
+            hkl[n] = (hkl[n] + 1 in bounds[n] ? hkl[n] + 1 : minimum(bounds[n]))
             # Only increment the next components if the current one is zero
             hkl[n] == 0 || break
         end
@@ -294,7 +298,7 @@ function readWAVECAR_new(io::IO)
                 skip(io, 8)
                 wf.occupancies[b, kp, s] = read(io, Float64)
             end
-            @info string(
+            quiet || @info string(
                 "Read in data for k-point ", kp, "/", nkpt, " (", npw, " planewaves/band)\n",
                 "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", wf.kpoints[kp].kpt...)
             )
@@ -327,4 +331,4 @@ function readWAVECAR_new(io::IO)
     return wf
 end
 
-readWAVECAR_new(filename) = open(readWAVECAR_new, filename)
+readWAVECAR_new(filename; quiet) = open(io -> readWAVECAR_new(io; quiet), filename)
