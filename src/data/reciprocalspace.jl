@@ -10,6 +10,8 @@ struct KPoint{D}
     KPoint(pt::StaticVector{D,<:Real}, wt::Integer = 1) where D = new{D}(pt .- round.(pt), wt)
 end
 
+KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) where D = KPoint(SVector{D,Float64}(pt), wt)
+
 """
     KPointMesh{D} <: AbstractVector{KPoint{D}}
 
