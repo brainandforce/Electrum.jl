@@ -204,6 +204,19 @@ end
 
 #---Types from data/reciprocalspace.jl-------------------------------------------------------------#
 
+Base.summary(io::IO, k::KPoint) = print(io, typeof(k), " with weight ", k.weight)
+
+function Base.show(io::IO, k::KPoint)
+    print(io, KPoint, '(')
+    join(io, k.point, ", ")
+    print(io, ", weight = ", weight(k), ')')
+end
+
+function Base.summary(io::IO, k::KPointMesh)
+    print(io, length(k), "-element ", typeof(k)) 
+    iszero(k.grid) && print(io, " (total weight ", sum(weight.(k)), ')')
+end
+
 function Base.summary(io::IO, k::KPointList)
     print(io, length(k), "-element ", typeof(k), ":")
 end
