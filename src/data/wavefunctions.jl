@@ -91,7 +91,18 @@ function Base.getindex(p::PlanewaveIndices{D}, i::PlanewaveIndex{D}) where D
     return PlanewaveIndex(i.spin, i.kpoint, i.band, c)
 end
 
-Base.getindex(p::PlanewaveIndices, spin, kpt, band) = CartesianIndices(p.grange)
+Base.getindex(p::PlanewaveIndices, ::Integer, ::Integer, ::Integer) = CartesianIndices(p.grange)
+
+function Base.getindex(
+    p::PlanewaveIndices{D},
+    spin::Integer,
+    kpt::Integer,
+    band::Integer,
+    i::Vararg{<:Integer,D}    
+) where D
+    return p[PlanewaveIndex(spin, kpt, band, i...)]
+end
+
 Base.LinearIndices(p::PlanewaveIndices) = LinearIndices((p.grange..., p.bands, p.kpoints, p.spins))
 
 #---The meat and potatoes--------------------------------------------------------------------------#
