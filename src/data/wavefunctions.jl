@@ -94,12 +94,6 @@ end
 Base.getindex(p::PlanewaveIndices, spin, kpt, band) = CartesianIndices(p.grange)
 Base.LinearIndices(p::PlanewaveIndices) = LinearIndices((p.grange..., p.bands, p.kpoints, p.spins))
 
-function Base.iterate(p::PlanewaveIndices, i = 1)
-    (i in 1:length(p)) || return nothing
-    # Get the spin, k-point, and band
-    band = (i % prod(length.(p.grange))) + 1
-end
-
 #---The meat and potatoes--------------------------------------------------------------------------#
 """
     PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
