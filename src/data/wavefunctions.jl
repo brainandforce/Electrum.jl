@@ -194,6 +194,7 @@ Base.getindex(wf::PlanewaveWavefunction, i...) = throw(MethodError(getindex, (wf
 Base.setindex!(wf::PlanewaveWavefunction, i...) = throw(MethodError(setindex!, (wf, i...)))
 
 function Base.getindex(wf::PlanewaveWavefunction{D}, i::PlanewaveIndex{D}) where D
+    all(in.((i.spin, i.kpoint, i.band), axes(wf)[1:3])) || throw(BoundsError(wf, Tuple(i)))
     l = LinearIndices(wf.grange)[CartesianIndex(mod.(Tuple(i.g), length.(wf.grange)) .+ 1)]
     return wf.data[l, i.band, i.kpoint, i.spin]
 end
