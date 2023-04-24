@@ -10,7 +10,49 @@ struct KPoint{D}
     KPoint(pt::StaticVector{D,<:Real}, wt::Integer = 1) where D = new{D}(pt .- round.(pt), wt)
 end
 
-KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) = KPoint(SVector{D}(pt), wt)
+"""
+    KPointMesh{D} <: AbstractVector{KPoint{D}}
+
+Contains a list of k-points associated with a matrix describing the mesh that was used to generate
+the points, and its shift off the Γ point (origin). If the mesh used to generate the points is
+unknown, it will be set to the zero matrix of dimension `D`.
+
+A `KPointMesh` can be indexed as if it were an ordinary `Vector{KPoint{D}}`.
+"""
+struct KPointMesh{D} <: AbstractVector{KPoint{D}}
+    points::Vector{KPoint{D}}
+    grid::SMatrix{D,D,Int}
+    shift::SVector{D,Float64}
+    function KPointMesh(
+        points::AbstractVector{KPoint{D}}, 
+        grid::StaticMatrix{D,D,<:Integer} = zeros(SMatrix{D,D,Int}),
+        shift::StaticVector{D,<:Real} = zeros(SVector{D,Float64})
+    ) where D
+        return new{D}(unique(points), grid, shift)
+    end
+end
+
+function KPointMesh(
+    points::AbstractVector,
+    grid::StaticMatrix{D,D,<:Integer} = zeros(SMatrix{D,D,Int}),
+    shift::StaticVector{D,<:Real} = zeros(SVector{D,Float64})
+) where D
+    return KPointMesh(KPoint{D}.(points), grid, shift)
+end
+
+function KPointMesh{D}(
+    points::AbstractVector,
+    grid::AbstractMatrix{<:Integer} = zeros(SMatrix{D,D,Int}),
+    shift::AbstractVector{<:Real} = zeros(SVector{D,Float64})
+) where D
+    return KPointMesh(points, SMatrix{D,D,Int}(grid), SVector{D,Float64}(shift))
+end
+
+Base.size(k::KPointMesh) = size(k.points)
+Base.axes(k::KPointMesh) = axes(k.points)
+Base.IndexStyle(::Type{<:KPointMesh}) = IndexLinear()
+Base.getindex(k::KPointMesh, i) = k.points[i]
+Base.iterate(k::KPointMesh, i::Integer = 1) = iterate(k.points, i)
 
 """
     KPointGrid{D} <: AbstractKPoints{D}
