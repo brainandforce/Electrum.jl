@@ -1,4 +1,18 @@
 """
+    KPoint{D}
+
+Stores a k-point with an associated weight that corresponds to the number of symmetry-equivalent
+k-points, stored as an integer.
+"""
+struct KPoint{D}
+    point::SVector{D,Float64}
+    weight::Int
+    KPoint(pt::StaticVector{D,<:Real}, wt::Integer = 1) where D = new{D}(pt .- round.(pt), wt)
+end
+
+KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) = KPoint(SVector{D}(pt), wt)
+
+"""
     KPointGrid{D} <: AbstractKPoints{D}
 
 Contains a grid used to generate k-points during a calculation.
@@ -16,7 +30,7 @@ struct KPointGrid{D} <: AbstractKPointSet{D}
         # only allow positive values in the grid matrix
         @assert all(x -> x >= 0, grid) "negative values are disallowed in the grid matrix"
         # Keep shift inside the Brillouin zone
-        orig = orig -  round.(orig)
+        orig = orig .- round.(orig)
         return new(grid, orig)
     end
 end
