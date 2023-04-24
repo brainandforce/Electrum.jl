@@ -1,16 +1,24 @@
 """
-    KPoint{D}
+    KPoint{D} <: StaticVector{D,Float64}
 
 Stores a k-point with an associated weight that corresponds to the number of symmetry-equivalent
 k-points, stored as an integer.
 """
-struct KPoint{D}
+struct KPoint{D} <: StaticVector{D,Float64}
     point::SVector{D,Float64}
     weight::Int
     KPoint(pt::StaticVector{D,<:Real}, wt::Integer = 1) where D = new{D}(pt .- round.(pt), wt)
 end
 
 KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) where D = KPoint(SVector{D,Float64}(pt), wt)
+
+Base.size(k::KPoint) = size(k.point)
+Base.axes(k::KPoint) = axes(k.point)
+Base.IndexStyle(::Type{<:KPoint}) = IndexLinear()
+Base.getindex(k::KPoint, i) = k.point[i]
+Base.iterate(k::KPoint, i::Integer = 1) = iterate(k.point, i)
+Base.convert(::Type{SVector{D,Float64}}, k::KPoint{D}) where D = k.point
+Base.convert(T::Type{<:AbstractVector}, k::KPoint) = convert(T, k.point)::T
 
 """
     KPointMesh{D} <: AbstractVector{KPoint{D}}
