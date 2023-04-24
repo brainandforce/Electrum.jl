@@ -34,6 +34,8 @@ end
 
 Base.show(io::IO, i::PlanewaveIndex) = print(io, PlanewaveIndex, (i.spin, i.kpoint, i.band, i.g))
 
+Tuple(i::PlanewaveIndex) = (i.spin, i.kpoint, i.band, Tuple(i.g)...)
+
 """
     Electrum.PlanewaveIndices{D} <: AbstractArray{PlanewaveIndex{D},D}
 
