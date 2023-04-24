@@ -213,8 +213,7 @@ function Base.show(io::IO, k::KPoint)
 end
 
 function Base.summary(io::IO, k::KPointMesh)
-    print(io, length(k), "-element ", typeof(k)) 
-    iszero(k.grid) && print(io, " (total weight ", sum(weight.(k)), ')')
+    print(io, length(k), "-element ", typeof(k), " (total weight ", sum(weight.(k)), ')')
 end
 
 function Base.summary(io::IO, k::KPointList)
