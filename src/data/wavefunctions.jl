@@ -336,4 +336,4 @@ function readWAVECAR_new(io::IO; quiet = false)
     return wf
 end
 
-readWAVECAR_new(filename; quiet) = open(io -> readWAVECAR_new(io; quiet), filename)
+readWAVECAR_new(filename; quiet = false) = open(io -> readWAVECAR_new(io; quiet), filename)
