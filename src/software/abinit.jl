@@ -194,6 +194,14 @@ function KPointList(h::ABINITHeader)
     return KPointList(h.kpt, h.wtk)
 end
 
+function KPointMesh(h::ABINITHeader)
+    (grid, shift) = (h.kptrlatt, h.shiftk)
+    # abinit stores k-point weights normalized to 1 - convert this back to integers
+    rweights = rationalize.(h.wtk / minimum(h.wtk); tol = sqrt(eps(Float64)))
+    points = KPoint.(h.kpt, Int.(rweights .* maximum(x.den for x in rweights)))
+    return KPointMesh(points, grid, shift)
+end
+
 # This function gets indices for the rhoij entries in a PAW calculation
 function triang_index(n)
     row = floor(Int,(1 + sqrt(8*n - 7))/2)
