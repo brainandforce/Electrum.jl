@@ -20,6 +20,7 @@ Base.getindex(k::KPoint, i::Any) = k.point[i]
 Base.iterate(k::KPoint, i::Integer = 1) = iterate(k.point, i)
 Base.convert(T::Type{<:StaticVector}, k::KPoint) = convert(T, k.point)::T
 Base.convert(T::Type{<:Vector}, k::KPoint) = convert(T, k.point)::T
+Base.zero(::Type{KPoint{D}}) where D = KPoint(zero(SVector{D,Float64}))
 
 """
     weight(k::KPoint) -> Int
