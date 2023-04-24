@@ -21,6 +21,13 @@ Base.iterate(k::KPoint, i::Integer = 1) = iterate(k.point, i)
 Base.convert(T::Type{<:StaticVector}, k::KPoint) = convert(T, k.point)::T
 Base.convert(T::Type{<:Vector}, k::KPoint) = convert(T, k.point)::T
 
+"""
+    weight(k::KPoint) -> Int
+
+Returns the weight associated with a k-point.
+"""
+weight(k::KPoint) = k.weight
+
 #---Generated lists of k-points--------------------------------------------------------------------#
 
 """
