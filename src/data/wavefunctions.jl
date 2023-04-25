@@ -36,6 +36,7 @@ Base.show(io::IO, i::PlanewaveIndex) = print(io, PlanewaveIndex, (i.spin, i.kpoi
 
 Tuple(i::PlanewaveIndex) = (i.spin, i.kpoint, i.band, Tuple(i.g)...)
 
+#=
 """
     Electrum.PlanewaveIndices{D} <: AbstractArray{PlanewaveIndex{D},D}
 
@@ -106,8 +107,8 @@ function Base.getindex(
 end
 
 Base.LinearIndices(p::PlanewaveIndices) = LinearIndices((p.grange..., p.bands, p.kpoints, p.spins))
+=#
 
-#---The meat and potatoes--------------------------------------------------------------------------#
 """
     PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
 
@@ -179,7 +180,7 @@ end
 Base.size(wf::PlanewaveWavefunction) = (reverse(size(wf.energies))..., length.(wf.grange)...)
 Base.axes(wf::PlanewaveWavefunction) = (reverse(axes(wf.energies))..., wf.grange...)
 
-PlanewaveIndices(wf::PlanewaveWavefunction) = PlanewaveIndices(axes(wf)...)
+# PlanewaveIndices(wf::PlanewaveWavefunction) = PlanewaveIndices(axes(wf)...)
 
 function Base.LinearIndices(wf::PlanewaveWavefunction)
     return LinearIndices((wf.grange..., wf.bands, wf.kpoints, wf.spins))
