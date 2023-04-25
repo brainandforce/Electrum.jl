@@ -37,13 +37,12 @@ julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="release"
 The current development state is kept in the `main` branch, and the most recent stable version is
 the head of the `release` branch. Specific releases for a minor version may be found by suffixing
 the minor version with `/release`: for instance, `0.1/release` contains the latest release version
-in the 0.1 series (currently 0.1.26).
+in the 0.1 series (there are no current releases).
 
 ## Current features
 
 * Reading of common file formats:
      + abinit potential, density, and wavefunction outputs from versions 7.10.5 and 8.10.4
-     + abinit HGH pseudopotentials
      + LAMMPS atomic position data
      + VASP POSCAR, WAVECAR, DOSCAR, and PROCAR
      + XCrysDen XSF
