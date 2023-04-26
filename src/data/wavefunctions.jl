@@ -365,7 +365,7 @@ end
 
 readWAVECAR_new(filename; quiet = false) = open(io -> readWAVECAR_new(io; quiet), filename)
 
-function read_abinit_wavefunction_new(io::IO)
+function read_abinit_wavefunction_new(io::IO; quiet = false)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the reciprocal lattice
@@ -411,7 +411,7 @@ function read_abinit_wavefunction_new(io::IO)
                 # Skip marker
                 read(io, Int32)
             end
-            @info string(
+            quiet || @info string(
                 "Read in data for k-point $kpt/", header.nkpt, " ($npw planewaves/band)\n",
                 "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", header.kpt[kpt]...)
             )
@@ -435,4 +435,6 @@ maintained in the return type.
 The header is used to automatically determine the file format, so this should read in any abinit
 density output (provided a function exists to parse that header).
 """
-read_abinit_wavefunction_new(filename) = open(read_abinit_wavefunction_new, filename)
+function read_abinit_wavefunction_new(filename; quiet = false)
+    open(io -> read_abinit_wavefunction_new(io; quiet), filename)
+end
