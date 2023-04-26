@@ -27,6 +27,7 @@ end
 PlanewaveIndex(spin, kpt, band, g...) = PlanewaveIndex(spin, kpt, band, CartesianIndex(g))
 PlanewaveIndex(spin, kpt, band, g::NTuple) = PlanewaveIndex(spin, kpt, band, CartesianIndex(g))
 PlanewaveIndex(spin, kpt, band, g::StaticVector) = PlanewaveIndex(spin, kpt, band, Tuple(g))
+PlanewaveIndex(i::CartesianIndex) = PlanewaveIndex(Tuple(i)...)
 
 function PlanewaveIndex{D}(spin, kpt, band, gvec::AbstractVector) where D
     return PlanewaveIndex(spin, kpt, band, ntuple(i -> gvec[i], Val{D}()))
@@ -35,6 +36,11 @@ end
 Base.show(io::IO, i::PlanewaveIndex) = print(io, PlanewaveIndex, (i.spin, i.kpoint, i.band, i.g))
 
 Tuple(i::PlanewaveIndex) = (i.spin, i.kpoint, i.band, Tuple(i.g)...)
+CartesianIndex(i::PlanewaveIndex) = CartesianIndex(Tuple(i))
+
+Base.convert(T::Type{<:Tuple}, i::PlanewaveIndex) = Tuple(i)::T
+Base.convert(T::Type{<:CartesianIndex}, i::PlanewaveIndex) = CartesianIndex(i)::T
+Base.convert(T::Type{<:PlanewaveIndex}, i::CartesianIndex) = PlanewaveIndex(i)::T
 
 #=
 """
@@ -199,6 +205,8 @@ function Base.getindex(wf::PlanewaveWavefunction{D}, i::PlanewaveIndex{D}) where
     l = LinearIndices(wf.grange)[CartesianIndex(mod.(Tuple(i.g), length.(wf.grange)) .+ 1)]
     @inbounds return wf.data[l, i.band, i.kpoint, i.spin]
 end
+
+Base.getindex(wf::PlanewaveWavefunction, i::CartesianIndex) = wf[PlanewaveIndex(i)]
 
 function Base.getindex(wf::PlanewaveWavefunction, spin, kpt, band)
     # Convert integers to ranges so that arrays are sliced into smaller arrays
