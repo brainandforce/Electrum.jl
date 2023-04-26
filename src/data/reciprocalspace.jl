@@ -399,7 +399,7 @@ struct ReciprocalWavefunction{D,T<:Real}
     # Reciprocal lattice on which the k-points are defined
     rlatt::ReciprocalBasis{D}
     # k-points used to construct the wavefunction
-    kpts::KPointList{D}
+    kpts::KPointMesh{D}
     # Planewave coefficients: an Array{HKLData,3} (size nspin*nkpt*maxnband)
     waves::Array{HKLData{D,Complex{T}},3}
     # Energies and occupancies, Array{Float64,3} with the same size as above
@@ -407,7 +407,7 @@ struct ReciprocalWavefunction{D,T<:Real}
     occupancies::Array{Float64,3}
     function ReciprocalWavefunction(
         rlatt::AbstractBasis{D},
-        kpts::AbstractKPointSet{D},
+        kpts::AbstractVector{KPoint{D}},
         waves::AbstractArray{HKLData{D,Complex{T}},3},
         energies::AbstractArray{<:Real,3},
         occupancies::AbstractArray{<:Real,3},
@@ -422,7 +422,7 @@ end
 # When eneregies and occupancies are not specified
 function ReciprocalWavefunction(   
     rlatt::AbstractBasis{D},
-    kpts::AbstractKPointSet{D},
+    kpts::AbstractVector{KPoint{D}},
     waves::AbstractArray{HKLData{D,Complex{T}},3}
 ) where {D,T<:Real}
     # Construct zero matrix
