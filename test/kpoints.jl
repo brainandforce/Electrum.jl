@@ -29,4 +29,6 @@ end
     @test kptmesh[end] == KPoint(0.4, 0.2, 1/3, weight = 12)
     @test allunique(kptmesh)
     @test kptmesh[1:10] == kptmesh
+    kptmesh[6] = [0.6, 0.9, 1/3]
+    @test kptmesh[6] == KPoint{3}([0.6, 0.9, 1/3], 1)
 end

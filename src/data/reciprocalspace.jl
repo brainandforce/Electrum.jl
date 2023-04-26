@@ -27,7 +27,7 @@ Base.getindex(k::KPoint, i) = k.point[i]
 
 Base.convert(T::Type{<:StaticVector}, k::KPoint) = convert(T, k.point)::T
 Base.convert(T::Type{<:Vector}, k::KPoint) = convert(T, k.point)::T
-Base.convert(T::Type{<:KPoint}, v::AbstractVector{<:Real}) = T(v, weight = 1)
+Base.convert(T::Type{<:KPoint}, v::AbstractVector{<:Real}) = T(v, 1)
 Base.convert(T::Type{<:KPoint}, k::KPoint) = k::T
 
 Base.zero(::Type{KPoint{D}}) where D = KPoint(zero(SVector{D,Float64}))
@@ -87,6 +87,7 @@ Base.size(k::KPointMesh) = size(k.points)
 Base.axes(k::KPointMesh) = axes(k.points)
 Base.IndexStyle(::Type{<:KPointMesh}) = IndexLinear()
 Base.getindex(k::KPointMesh, i) = k.points[i]
+Base.setindex!(k::KPointMesh, x, i) = setindex!(k.points, x, i)
 Base.iterate(k::KPointMesh, i::Integer = 1) = iterate(k.points, i)
 Base.convert(T::Type{Vector{<:KPoint}}, k::KPointMesh) = k.points::T
 
