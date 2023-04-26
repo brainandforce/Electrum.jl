@@ -126,10 +126,10 @@ include("data/reciprocalspace.jl")
 export KPoint, KPointMesh, BandAtKPoint, BandStructure, HKLData, HKLDict
 export weight, nkpt, nband
 include("data/wavefunctions.jl")
-export PlanewaveIndex, PlanewaveWavefunction
+export PlanewaveIndex, PlanewaveWavefunction, fermi
 include("data/dos.jl")
 export DensityOfStates, ProjectedDensityOfStates, FatBands
-export fermi, smear, energies, nelectrons
+export smear, energies, nelectrons
 include("data/atomic.jl")
 export SphericalHarmonic
 include("data/fft.jl")
