@@ -1,7 +1,9 @@
 @testset "k-points" begin
     @test KPoint(0, 0, 0, weight = 1) != KPoint(0, 0, 0, weight = 2)
     @test hash(KPoint(0, 0, 0, weight = 1)) != hash(KPoint(0, 0, 0, weight = 2))
-    @test KPoint(1, 2, 3) = KPoint(0, 0, 0)
+    @test KPoint(1, 2, 3) == KPoint(0, 0, 0)
+    @test length(KPoint(1, 2, 3, 4, 5)) == 5
+    @test length(KPoint{2}) == 2
 end
 
 @testset "k-point mesh" begin
