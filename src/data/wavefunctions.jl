@@ -124,7 +124,7 @@ but they are not resizable, and the backing array should not be resized.
 struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
     basis::ReciprocalBasis{D}
     spins::Vector{SVector{D,Float64}}
-    kpoints::KPointList{D}
+    kpoints::KPointMesh{D}
     energies::Array{Float64,3}
     occupancies::Array{Float64,3}
     grange::NTuple{D,UnitRange{Int}}
@@ -132,7 +132,7 @@ struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
     function PlanewaveWavefunction(
         basis::AbstractBasis{D},
         spins::AbstractVector{<:StaticVector{D,<:Real}},
-        kpoints::AbstractKPointSet{D},
+        kpoints::AbstractVector{KPoint{D}},
         energies::AbstractArray{<:Real,3},
         occupancies::AbstractArray{<:Real,3},
         grange::NTuple{D,<:AbstractUnitRange{<:Integer}},
@@ -169,7 +169,7 @@ function PlanewaveWavefunction{D,T}(
     return PlanewaveWavefunction(
         basis,
         zeros(SVector{D,Float64}, nspin),
-        KPointList(zeros(SVector{D,Float64}, nkpt)),
+        KPointMesh(zeros(KPoint{D}, nkpt)),
         zeros(Float64, nband, nkpt, nspin),
         zeros(Float64, nband, nkpt, nspin),
         grange,
@@ -313,7 +313,7 @@ function readWAVECAR_new(io::IO; quiet = false)
             end
             quiet || @info string(
                 "Read in data for k-point ", kp, "/", nkpt, " (", npw, " planewaves/band)\n",
-                "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", wf.kpoints[kp].kpt...)
+                "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", wf.kpoints[kp]...)
             )
             for b in 1:nband
                 # Seek to the next entry
@@ -326,7 +326,7 @@ function readWAVECAR_new(io::IO; quiet = false)
                     # Increment the HKL indices
                     while true
                         # Get the energy of the vector
-                        sumkg = [dot(wf.kpoints[kp].kpt + hkl, rlatt[:,n]) for n in 1:3]
+                        sumkg = [dot(wf.kpoints[kp] + hkl, rlatt[:,n]) for n in 1:3]
                         etot = _selfdot(sumkg)/CVASP
                         # Break when the G-vector energy is below ecut
                         # This may occur immediately if the k-vector already meets the criteria
