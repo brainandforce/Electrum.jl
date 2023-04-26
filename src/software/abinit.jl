@@ -190,10 +190,6 @@ function Crystal(h::ABINITHeader)
     return Crystal(atomlist)
 end
 
-function KPointList(h::ABINITHeader)
-    return KPointList(h.kpt, h.wtk)
-end
-
 function KPointMesh(h::ABINITHeader)
     (grid, shift) = (h.kptrlatt, h.shiftk)
     # abinit stores k-point weights normalized to 1 - convert this back to integers
@@ -781,7 +777,7 @@ function read_abinit_wavefunction(io::IO)
                 waves[sppol, kpt, band] = HKLData(
                     rlatt / BOHR2ANG,
                     zeros(Complex{Float64}, length.(hklbounds)...),
-                    KPointList(header)[kpt][:kpt]
+                    KPointMesh(header)[kpt]
                 )
                 cg = [read(io, Complex{Float64}) for m in 1:npw, n in 1:nspinor]
                 # Now iterate through the supplied indices and set them

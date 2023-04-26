@@ -123,8 +123,7 @@ include("data/realspace.jl")
 export RealSpaceDataGrid
 export shift, volume, voxelsize, coord, nearest_index, integrate
 include("data/reciprocalspace.jl")
-export KPoint, KPointMesh, KPointGrid, KPointList, BandAtKPoint, BandStructure, HKLData, HKLDict,
-       ReciprocalWavefunction
+export KPoint, KPointMesh, BandAtKPoint, BandStructure, HKLData, HKLDict, ReciprocalWavefunction
 export weight, nkpt, nband, bounds
 include("data/dos.jl")
 export DensityOfStates, ProjectedDensityOfStates, FatBands
