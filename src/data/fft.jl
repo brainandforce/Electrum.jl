@@ -1,5 +1,4 @@
-# Fast Fourier transforms and related methods
-# for `RealSpaceDataGrid`, `HKLData`, and `ReciprocalWavefunction`
+# Fast Fourier transforms and related methods for `AbstractDataGrid`
 """
     fftfreq(g::AbstractDataGrid{D}) -> Array{SVector{D,Float64},D}
 

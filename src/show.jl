@@ -232,17 +232,6 @@ function Base.show(io::IO, ::MIME"text/plain", g::HKLData)
     end
 end
 
-function Base.show(io::IO, ::MIME"text/plain", wf::ReciprocalWavefunction)
-    println(io,
-        typeof(wf), " with ",
-        string(nspin(wf)), " spin", "s"^(nspin(wf) != 1), ", ",
-        string(nkpt(wf)), " k-point", "s"^(nkpt(wf) != 1), ", and ",
-        string(nband(wf)), " band", "s"^(nband(wf) != 1)
-    )
-    println(io, "Reciprocal space basis vectors:")
-    print(io, join(basis_string(basis(wf)), "\n"))
-end
-
 function Base.summary(io::IO, wf::PlanewaveWavefunction)
     print(
         io, typeof(wf),
