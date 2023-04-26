@@ -258,7 +258,7 @@ function Base.setindex!(
     wf[PlanewaveIndex(spin, kpt, band, g)] = x
 end
 
-#---New WAVECAR reading function-------------------------------------------------------------------#
+#---New WAVECAR and WFK reading functions----------------------------------------------------------#
 """
     readWAVECAR_new(file; quiet = false) -> PlanewaveWavefunction{3,Float32}
 
@@ -364,3 +364,75 @@ function readWAVECAR_new(io::IO; quiet = false)
 end
 
 readWAVECAR_new(filename; quiet = false) = open(io -> readWAVECAR_new(io; quiet), filename)
+
+function read_abinit_wavefunction_new(io::IO)
+    # Get the header from the file
+    header = read_abinit_header(io)
+    # Get the reciprocal lattice
+    rlatt = convert(ReciprocalBasis, RealBasis(header.rprimd))
+    # Get the minimum and maximum HKL values needed
+    # Units for c (2*m_e/ħ^2) are hartree^-1 bohr^-2
+    # this should affect only the size of the preallocated arrays
+    bounds = SVector{3,UnitRange{Int}}(
+        -g:g for g in maxHKLindex(rlatt, header.ecut, c=2)
+    )
+    @debug string(
+        "hklbounds: ", bounds, "\n",
+        "Calculated from ecut = ", header.ecut, " Hartree"
+    )
+    nb = maximum(header.nband)
+    wf = PlanewaveWavefunction{3,Complex{Float64}}(rlatt, header.nsppol, header.nkpt, nb, bounds...)
+    # Loop over all the spin polarizations
+    for sppol in 1:header.nsppol
+        # Loop over all the k-points
+        for kpt in 1:header.nkpt
+            # Skip over record length
+            read(io, Int32)
+            # Write the number of plane waves, spinors, and bands
+            (npw, nspinor, nband) = [read(io, Int32) for n in 1:3]
+            # Skip over another pair of record lengths
+            read(io, Int32); read(io, Int32)
+            # HKL indices of the band components
+            hklinds = [read(io, SVector{3,Int32}) for n in 1:npw]
+            # Skip over another pair of record lengths
+            read(io, Int32); read(io, Int32)
+            # Eigenvalues and band occupancy at the current k-point
+            wf.energies[:, kpt, sppol] = [read(io, Float64) for n in (1:nband)]
+            wf.occupancies[:, kpt, sppol] = [read(io, Float64) for n in (1:nband)]
+            read(io, Int32)
+            # Loop over all the bands (given in previous entry, not from header)
+            for band in 1:nband
+                read(io, Int32)
+                cg = [read(io, Complex{Float64}) for m in 1:npw, n in 1:nspinor]
+                # Now iterate through the supplied indices and set them
+                for (ind, coeff) in zip(hklinds, cg)
+                    wf[sppol, kpt, band, ind...] = coeff
+                end
+                # Skip marker
+                read(io, Int32)
+            end
+            @info string(
+                "Read in data for k-point $kpt/", header.nkpt, " ($npw planewaves/band)\n",
+                "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", header.kpt[kpt]...)
+            )
+        end
+    end
+    return CrystalWithDatasets{3,String,PlanewaveWavefunction{3,Complex{Float64}}}(
+        Crystal(header), 
+        Dict{String,PlanewaveWavefunction}("wavefunction" => wf)
+    )
+end
+
+"""
+    read_abinit_wavefunction_new(file)
+        -> CrystalWithDatasets{3,String,PlanewaveWavefunction{3,Complex{Float64}}}
+
+Reads a FORTRAN binary formatted abinit wavefunction file.
+
+By default, abinit returns wavefunction data in `Complex{Float64}` entries, and this formatting is
+maintained in the return type.
+
+The header is used to automatically determine the file format, so this should read in any abinit
+density output (provided a function exists to parse that header).
+"""
+read_abinit_wavefunction_new(filename) = open(read_abinit_wavefunction_new, filename)
