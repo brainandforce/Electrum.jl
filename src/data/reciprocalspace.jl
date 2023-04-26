@@ -15,7 +15,9 @@ KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) where D = KPoint(SVector{
 
 Base.hash(k::KPoint, h::UInt) = hash(hash(k.point, hash(k.weight)), h)
 Base.:(==)(k1::KPoint, k2::KPoint) = k1.point == k2.point && k1.weight == k2.weight
+Base.size(::Type{KPoint{D}}) where D = (D,)
 Base.size(k::KPoint) = size(k.point)
+Base.axes(::Type{KPoint{D}}) where D = (Base.OneTo(D),)
 Base.axes(k::KPoint) = axes(k.point)
 Base.IndexStyle(::Type{<:KPoint}) = IndexLinear()
 Base.getindex(k::KPoint, i) = k.point[i]
