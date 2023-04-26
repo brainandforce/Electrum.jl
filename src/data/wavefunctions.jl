@@ -257,3 +257,24 @@ function Base.setindex!(
 ) where D
     wf[PlanewaveIndex(spin, kpt, band, g)] = x
 end
+
+"""
+    fermi(wf::PlanewaveWavefunction) -> Float64
+
+Estimates the Fermi energy associated with a reciprocal space wavefunction using the energy and
+occupancy data in the `PlanewaveWavefunction`.
+"""
+function fermi(wf::PlanewaveWavefunction)
+    # Generate a matrix of energies, occupancies, and indices
+    eo = collect(zip(wf.energies, wf.occupancies))
+    # Get the maximum occupancy
+    maxocc = round(Int, maximum(x -> x[2], eo))
+    @assert maxocc in 1:2 "The calculated maximum occupancy was $maxocc."
+    # Convert it to a vector sorted by energies
+    eo_sorted = sort!(vec(eo), by=(x -> x[1]))
+    # Find the index of the last occupancy that's greater than half of maxocc
+    ind = findlast(x -> x[2] > maxocc/2, eo_sorted)
+    # Perform a linear interpolation between O[ind] and O[ind+1] 
+    approx = (maxocc/2 - eo_sorted[ind][2]) / (eo_sorted[ind+1][2] - eo_sorted[ind][2])
+    return eo_sorted[ind][1] * approx + eo_sorted[ind+1][1] * (1 - approx)
+end
