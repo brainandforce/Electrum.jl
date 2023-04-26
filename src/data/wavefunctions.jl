@@ -213,6 +213,14 @@ function Base.getindex(wf::PlanewaveWavefunction, spin, kpt=:, band=:)
     )
 end
 
+function Base.getindex(wf::PlanewaveWavefunction, spin::Integer, kpt::Integer, band::Integer)
+    return HKLData(
+        basis(wf),
+        reshape(wf.data[:, band, kpt, spin], length.(wf.grange)),
+        wf.kpoints[kpt]
+    )
+end
+
 function Base.getindex(
     wf::PlanewaveWavefunction{D},
     spin::Integer,
