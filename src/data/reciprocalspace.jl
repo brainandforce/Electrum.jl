@@ -13,6 +13,7 @@ end
 KPoint(x::Real...; weight::Integer = 1) = KPoint(SVector(x), weight)
 KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) where D = KPoint(SVector{D,Float64}(pt), wt)
 
+Base.hash(k::KPoint, h::UInt) = hash(hash(k.point, hash(k.weight)), h)
 Base.:(==)(k1::KPoint, k2::KPoint) = k1.point == k2.point && k1.weight == k2.weight
 Base.size(k::KPoint) = size(k.point)
 Base.axes(k::KPoint) = axes(k.point)
