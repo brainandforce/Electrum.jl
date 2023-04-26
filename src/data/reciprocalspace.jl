@@ -185,7 +185,7 @@ index, and the rest of the indices correspond to reciprocal space points using t
 struct HKLData{D,T} <: AbstractDataGrid{D,T}
     basis::ReciprocalBasis{D}
     data::Array{T,D}
-    kpt::SVector{D,Float64}
+    kpt::KPoint{D}
     function HKLData(
         basis::AbstractBasis{D},
         data::AbstractArray{T,D},
@@ -194,7 +194,7 @@ struct HKLData{D,T} <: AbstractDataGrid{D,T}
         # TODO: Do we want to perform circular shifts of the data?
         # How does this work with array copying?
         # Move k-point so the indices are in the range (-0.5, 0.5]
-        return new{D,T}(basis, data, kpt .- round.(kpt, RoundNearest))
+        return new{D,T}(basis, data, kpt)
     end
 end
 
