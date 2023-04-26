@@ -140,25 +140,29 @@ end
 
 # Kendall got everything done before 6 PM (2022-02-01)
 """
-    readWAVECAR(file) -> ReciprocalWavefunction{3,Float32}
+    readWAVECAR(file) -> PlanewaveWavefunction{3,Complex{Float32}}
 
-Reads a WAVECAR file output from a VASP 4.6 calcuation.
+Reads a WAVECAR file output from a VASP 4.6 calcuation to a `PlanewaveWavefunction`.
 
-Information about VASP WAVECAR files and much of the code was pulled from the WaveTrans website
-(originally written in FORTRAN): https://www.andrew.cmu.edu/user/feenstra/wavetrans/
+Information about VASP WAVECAR files and much of the code was adapted from WaveTrans (originally
+written in FORTRAN): https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 
 This function is limited to WAVECAR files which have an RTAG value of 45200 (meaning the data is
 given as a `Complex{Float32}`) and have only a collinear magnetic field applied, like WaveTrans. It
 should also be noted that the weights of the k-points are not present in the WAVECAR file, and are
 set to 1 by default.
+
+By default, the function is verbose, with output printed for every k-point parsed, due to the large
+size of the wavefunction files. If this behavior is undesirable, the `quiet` keyword argument may be
+set to `true`.
 """
-function readWAVECAR(io::IO)
+function readWAVECAR(io::IO; quiet = false)
     # Function to increment HKL values in place 
     function incrementHKL!(hkl::AbstractVector{<:Integer}, bounds::AbstractVector{<:AbstractRange})
         # Loop through the vector indices, but in most cases we don't need them all
         for n in eachindex(hkl)
             # Increment the current vector component
-            hkl[n] = (hkl[n]+1 in bounds[n] ? hkl[n] + 1 : minimum(bounds[n]))
+            hkl[n] = (hkl[n] + 1 in bounds[n] ? hkl[n] + 1 : minimum(bounds[n]))
             # Only increment the next components if the current one is zero
             hkl[n] == 0 || break
         end
@@ -185,13 +189,8 @@ function readWAVECAR(io::IO)
     rlatt = convert(ReciprocalBasis, RealBasis{3}([read(io, Float64) for a = 1:3, b = 1:3]))
     # Get HKL coefficient bounds (as done in WaveTrans)
     hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut))
-    # List of k-points
-    klist = Vector{SVector{3,Float64}}(undef, nkpt)
-    # Plane wave coefficients
-    waves = Array{HKLData{3,Complex{Float32}},3}(undef, nspin, nkpt, nband)
-    # Energy and occupancy data
-    energies = zeros(Float64, nspin, nkpt, nband)
-    occupancies = zeros(Float64, nspin, nkpt, nband)
+    # Bare wavefunction to be filled
+    wf = PlanewaveWavefunction{3,Complex{Float32}}(rlatt, nspin, nkpt, nband, hklbounds...)
     # Loop through the spins
     for s in 1:nspin
         # Loop through the k-points
@@ -203,24 +202,19 @@ function readWAVECAR(io::IO)
             @debug string("File pointer at ", pos, " (", count, " * ", nrecl, ")")
             npw = Int(read(io, Float64))
             # Add the position of the k-point to the list
-            klist[kp] = [read(io, Float64) for n = 1:3]
+            wf.kpoints[kp] = [read(io, Float64) for n in 1:3]
             # Get energies and occupancies
             for b in 1:nband
-                energies[s,kp,b] = read(io, Float64)
+                # Ordering is reversed (see PlanewaveIndex above...)
+                wf.energies[b, kp, s] = read(io, Float64)
                 skip(io, 8)
-                occupancies[s,kp,b] = read(io, Float64)
+                wf.occupancies[b, kp, s] = read(io, Float64)
             end
-            @info string(
+            quiet || @info string(
                 "Read in data for k-point ", kp, "/", nkpt, " (", npw, " planewaves/band)\n",
-                "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", klist[kp]...)
+                "Reciprocal space coordinates: ", @sprintf("[%f %f %f]", wf.kpoints[kp]...)
             )
             for b in 1:nband
-                # Generate an empty HKLData to be filled later
-                waves[s, kp, b] = HKLData(
-                    rlatt,
-                    zeros(Complex{Float32}, length.(hklbounds)...),
-                    klist[kp]
-                )
                 # Seek to the next entry
                 count +=1; seek(io, count*nrecl)
                 # Reset the HKL indices
@@ -231,7 +225,7 @@ function readWAVECAR(io::IO)
                     # Increment the HKL indices
                     while true
                         # Get the energy of the vector
-                        sumkg = [dot(klist[kp] + hkl, rlatt[:,n]) for n in 1:3]
+                        sumkg = [dot(wf.kpoints[kp] + hkl, rlatt[:,n]) for n in 1:3]
                         etot = _selfdot(sumkg)/CVASP
                         # Break when the G-vector energy is below ecut
                         # This may occur immediately if the k-vector already meets the criteria
@@ -239,26 +233,25 @@ function readWAVECAR(io::IO)
                     end
                     # Store the data at the HKL index
                     # Note: data is stored first by k-points, then by bands
-                    waves[s, kp, b][hkl...] = pw
+                    wf[s, kp, b, hkl...] = pw
                     # Increment it for the next iteration
                     incrementHKL!(hkl, hklbounds)
                 end
             end
         end
     end
-    # Now call the constructors
-    return ReciprocalWavefunction(rlatt, KPointMesh(klist), waves, energies, occupancies)
+    return wf
 end
 
-function readWAVECAR(filename)
+function readWAVECAR(filename; quiet = false)
     # Append WAVECAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "WAVECAR"
     end
-    open(readWAVECAR, filename)
+    open(io -> readWAVECAR(io; quiet), filename)
 end
 # Read a WAVECAR in the current directory
-readWAVECAR() = readWAVECAR("WAVECAR")
+readWAVECAR(; quiet = false) = readWAVECAR("WAVECAR"; quiet)
 
 """
     readDOSCAR(file) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
