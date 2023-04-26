@@ -1,3 +1,9 @@
+@testset "k-points" begin
+    @test KPoint(0, 0, 0, weight = 1) != KPoint(0, 0, 0, weight = 2)
+    @test hash(KPoint(0, 0, 0, weight = 1)) != hash(KPoint(0, 0, 0, weight = 2))
+    @test KPoint(1, 2, 3) = KPoint(0, 0, 0)
+end
+
 @testset "k-point mesh" begin
     kptmesh = KPointMesh(
         [
@@ -19,7 +25,6 @@
     @test axes(kptmesh) == (Base.OneTo(10),)
     @test sum(weight.(kptmesh)) == det(kptmesh.grid) == 75
     @test kptmesh[end] == KPoint(0.4, 0.2, 1/3, weight = 12)
-    @test hash(KPoint(0, 0, 0, weight=1)) != hash(KPoint(0, 0, 0, weight=2))
     @test allunique(kptmesh)
     @test kptmesh[1:10] == kptmesh
 end
