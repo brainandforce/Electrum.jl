@@ -800,7 +800,7 @@ function read_abinit_wavefunction(io::IO)
     # Add the reciprocal wavefunction to the dictionary
     data["wavefunction"] = ReciprocalWavefunction(
         rlatt / BOHR2ANG,
-        KPointList(header),
+        KPointMesh(header),
         waves,
         energies,
         occupancies

@@ -247,7 +247,7 @@ function readWAVECAR(io::IO)
         end
     end
     # Now call the constructors
-    return ReciprocalWavefunction(rlatt, KPointList(klist), waves, energies, occupancies)
+    return ReciprocalWavefunction(rlatt, KPointMesh(klist), waves, energies, occupancies)
 end
 
 function readWAVECAR(filename)
