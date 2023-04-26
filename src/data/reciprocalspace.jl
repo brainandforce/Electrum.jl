@@ -21,6 +21,7 @@ Base.IndexStyle(::Type{<:KPoint}) = IndexLinear()
 Base.getindex(k::KPoint, i) = k.point[i]
 Base.convert(T::Type{<:StaticVector}, k::KPoint) = convert(T, k.point)::T
 Base.convert(T::Type{<:Vector}, k::KPoint) = convert(T, k.point)::T
+Base.convert(T::Type{<:KPoint}, v::AbstractVector{<:Real}) = T(v, weight = 1)
 Base.zero(::Type{KPoint{D}}) where D = KPoint(zero(SVector{D,Float64}))
 
 """
@@ -189,7 +190,7 @@ struct HKLData{D,T} <: AbstractDataGrid{D,T}
     function HKLData(
         basis::AbstractBasis{D},
         data::AbstractArray{T,D},
-        kpt::AbstractVector{<:Real} = zero(SVector{D,Float64})
+        kpt::AbstractVector{<:Real} = zero(KPoint{D})
     ) where {D,T}
         # TODO: Do we want to perform circular shifts of the data?
         # How does this work with array copying?
