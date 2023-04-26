@@ -5,6 +5,14 @@ Base.convert(T::Type{<:Array}, g::AbstractDataGrid) = convert(T, g.grid)
 # Structured this way to resolve method ambiguities
 (T::Union{Type{RealBasis},Type{ReciprocalBasis}})(g::AbstractDataGrid) = convert(T, basis(g))
 
+function Base.:(==)(g1::T, g2::T) where T<:AbstractDataGrid
+    return all(getfield(g1, f) == getfield(g2, f) for f in fieldnames(T))
+end
+
+function Base.hash(g::AbstractDataGrid, h::UInt)
+    return reduce(xor, hash(getfield(g, f), h) for f in fieldnames(typeof(g)))
+end
+
 Base.size(g::AbstractDataGrid) = size(g.data)
 Base.size(g::AbstractDataGrid, i) = size(g.data, i)
 

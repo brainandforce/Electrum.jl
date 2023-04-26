@@ -6,6 +6,13 @@
     @test g[0,0,0] === 0.0
     @test g[1,1,1] === 1.732
     @test g[1,2,3] === 3.742
+    # Equality and hashing checks
+    h = deepcopy(g)
+    @test g == h
+    @test hash(g) == hash(h)
+    h[0, 0, 0] = 420
+    @test g != h
+    @test hash(g) != hash(h)
 end
 
 @testset "Fourier transforms" begin
