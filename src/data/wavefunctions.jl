@@ -200,16 +200,19 @@ function Base.getindex(wf::PlanewaveWavefunction{D}, i::PlanewaveIndex{D}) where
     @inbounds return wf.data[l, i.band, i.kpoint, i.spin]
 end
 
-# Broken due to the lack of a k-point data structure
-function Base.getindex(wf::PlanewaveWavefunction, spin, kpt=:, band=:)
+function Base.getindex(wf::PlanewaveWavefunction, spin, kpt, band)
+    # Convert integers to ranges so that arrays are sliced into smaller arrays
+    s = spin isa Integer ? (spin:spin) : spin
+    k = kpt isa Integer ? (kpt:kpt) : kpt
+    b = band isa Integer ? (band:band) : band
     return PlanewaveWavefunction(
         wf.basis,
-        wf.spins[spin],
-        wf.kpoints[kpt],
-        wf.energies[band, kpt, spin],
-        wf.occupancies[band, kpt, spin],
+        wf.spins[s],
+        wf.kpoints[k],
+        wf.energies[b, k, s],
+        wf.occupancies[b, k, s],
         wf.grange,
-        wf.data[:, band, kpt, spin]
+        wf.data[:, b, k, s]
     )
 end
 
