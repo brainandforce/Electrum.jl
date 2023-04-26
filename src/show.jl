@@ -216,17 +216,6 @@ function Base.summary(io::IO, k::KPointMesh)
     print(io, length(k), "-element ", typeof(k), " (total weight ", sum(weight.(k)), ')')
 end
 
-function Base.summary(io::IO, k::KPointList)
-    print(io, length(k), "-element ", typeof(k), ":")
-end
-
-function Base.show(io::IO, ::MIME"text/plain", k::KPointList)
-    summary(io, k)
-    for n in eachindex(k)
-        print(io, "\n ", k.points[n], " (weight ", k.weights[n], ")")
-    end
-end
-
 function Base.show(io::IO, ::MIME"text/plain", g::HKLData)
     dimstring = join(string.(size(g)), "×") * " "
     println(io, dimstring, typeof(g), " with reciprocal space basis vectors:")
