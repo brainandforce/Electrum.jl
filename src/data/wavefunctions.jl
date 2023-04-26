@@ -247,6 +247,8 @@ function Base.setindex!(wf::PlanewaveWavefunction{D}, x, i::PlanewaveIndex{D}) w
     wf.data[l, i.band, i.kpoint, i.spin] = x
 end
 
+Base.setindex!(w::PlanewaveWavefunction, x, i::CartesianIndex) = setindex!(w, x, PlanewaveIndex(i))
+
 function Base.setindex!(
     wf::PlanewaveWavefunction{D},
     x,
