@@ -31,4 +31,6 @@ end
     @test kptmesh[1:10] == kptmesh
     kptmesh[6] = [0.6, 0.9, 1/3]
     @test kptmesh[6] == KPoint{3}([0.6, 0.9, 1/3], 1)
+    @test convert(KPointMesh, kptmesh.points) == KPointMesh(kptmesh.points)
+    @test convert(KPointMesh, kptmesh.points) isa KPointMesh{3}
 end

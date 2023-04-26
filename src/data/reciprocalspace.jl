@@ -92,6 +92,8 @@ Base.setindex!(k::KPointMesh, x, i) = setindex!(k.points, x, i)
 Base.iterate(k::KPointMesh, i::Integer = 1) = iterate(k.points, i)
 
 Base.convert(T::Type{Vector{<:KPoint}}, k::KPointMesh) = k.points::T
+Base.convert(T::Type{<:KPointMesh}, v::AbstractVector{<:KPoint}) = KPointMesh(v)::T
+Base.convert(T::Type{<:KPointMesh}, k::KPointMesh) = k::T
 
 """
     BandAtKPoint
