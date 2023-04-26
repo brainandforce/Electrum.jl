@@ -11,7 +11,7 @@ end
     # Check that the correct FFT grid size is read
     @test size(den) == (24, 24, 36)
     # Check that there's 1 spin, 4 k-points, and 8 bands
-    @test size(wfk) == (1, 4, 8)
+    @test size(wfk)[1:3] == (1, 4, 8)
 end
 
 @testset "VASP outputs" begin
