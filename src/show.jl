@@ -90,7 +90,7 @@ basis_string(b::ReciprocalBasis, kwargs...) = basis_string(matrix(b), unit="Å�
 Prints the result of `basis_string()` to `io`.
 
 # Examples
-```jldoctest
+```julia-repl
 julia> M = 3.5 * [0 1 1; 1 0 1; 1 1 0]
 3×3 Matrix{Float64}:
  0.0  3.5  3.5
