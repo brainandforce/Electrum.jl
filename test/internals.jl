@@ -12,6 +12,6 @@
     # Arguments not convertible to integers should fail
     @test_throws InexactError convert_to_transform(1.5, 2)
     # Data space traits
-    @test Electrum.data_space(xsf["this_is_3Dgrid#1"]) === Electrum.ByRealSpace{3}()
-    @test Electrum.data_space(v80_wfk["wavefunction"]) === Electrum.ByReciprocalSpace{3}()
+    @test Electrum.DataSpace(xsf["this_is_3Dgrid#1"]) === Electrum.ByRealSpace{3}()
+    @test Electrum.DataSpace(v80_wfk["wavefunction"]) === Electrum.ByReciprocalSpace{3}()
 end

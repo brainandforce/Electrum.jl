@@ -21,7 +21,7 @@ function FFTW.fftfreq(g::AbstractDataGrid, ::ByReciprocalSpace)
     return map(i -> SVector(Tuple(i) .* size(g) ./ 2π), CartesianIndices(g))
 end
 
-FFTW.fftfreq(g::AbstractDataGrid) = fftfreq(g::AbstractDataGrid, data_space(g))
+FFTW.fftfreq(g::AbstractDataGrid) = fftfreq(g, DataSpace(g))
 
 """
     fft(g::RealSpaceDataGrid) -> HKLData

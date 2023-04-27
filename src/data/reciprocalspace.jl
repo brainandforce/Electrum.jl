@@ -352,7 +352,7 @@ function ReciprocalWavefunction(
     return ReciprocalWavefunction(rlatt, kpts, waves, z, z)
 end
 
-data_space(::Type{<:ReciprocalWavefunction{D}}) where D = ByReciprocalSpace{D}()
+DataSpace(::Type{<:ReciprocalWavefunction{D}}) where D = ByReciprocalSpace{D}()
 
 """
     bounds(wf::ReciprocalWavefunction)
