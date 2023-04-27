@@ -6,15 +6,16 @@ A Julia package that provides structs and methods for working with crystal struc
 
 Electrum.jl is a package designed to make the development of chemical theory tools easier. Not
 only does it offer a type system that handles data commonly used in theory (such as real and
-reciprocal space data grids), it also offers broad support for filetypes common to chemical theory.
+reciprocal space data grids), it also offers broad support for file types common to chemical theory.
 
 In the future, we aim to support native Julia plotting of data processed by this package with a 
-separate package.
+separate package that provides bindings to commonly used plotting utilities.
 
 # Getting Electrum.jl
 
 As of this release, Electrum.jl is not in the Julia package registry. You'll need to manually add
-this repo to your Julia environment (which should be at least v1.6):
+this repo to your Julia environment (which should be at least v1.6, and ideally the current release
+version):
 
 ```
 (@v1.8 pkg)> add https://github.com/brainandforce/Electrum.jl
@@ -32,13 +33,13 @@ julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl")
 
 If you'd like to work on developing Electrum.jl, you probably want to work on the project's current 
 state, and not the release version. You can do this by specifying the branch you want to track
-(let's assume it's `dev`):
+(let's assume it's `next`):
 
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl#dev
+(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl#next
 ```
 ```julia-repl
-julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="dev")
+julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="next")
 ```
 
 # Licensing and attribution

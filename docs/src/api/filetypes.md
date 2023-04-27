@@ -49,6 +49,10 @@ Electrum.writePOSCAR4
 
 ### Reading
 
+```@docs
+Electrum.read_lammps_data
+```
+
 ### Writing
 
 ```@docs

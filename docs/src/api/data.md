@@ -5,32 +5,34 @@
 Electrum.lengths(::Any)
 Electrum.volume(::Any)
 Electrum.basis(::Any)
-Electrum.AbstractDataGrid
 ```
 
-## Real space
+## Basic data grids
 ```@docs
+Electrum.AbstractDataGrid
 Electrum.RealSpaceDataGrid
 Electrum.voxelsize
 Electrum.integrate
-Electrum.fft
-```
-
-## Reciprocal space
-```@docs
-Electrum.AbstractReciprocalSpaceData
-Electrum.AbstractKPointSet
-Electrum.KPointGrid
-Electrum.KPointList
-Electrum.BandAtKPoint
-Electrum.BandStructure
-Electrum.FatBands
 Electrum.HKLData
 Electrum.HKLDict
+Electrum.fft
+Electrum.ifft
 Electrum.ReciprocalWavefunction
 Electrum.nkpt
 Electrum.nband
-Electrum.ifft
+```
+
+## k-points
+```@docs
+Electrum.KPoint
+Electrum.KPointMesh
+```
+
+## Band structures
+```@docs
+Electrum.BandAtKPoint
+Electrum.BandStructure
+Electrum.FatBands
 ```
 
 ## Density of states
