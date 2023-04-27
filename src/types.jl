@@ -79,7 +79,7 @@ end
 #---Traits----------------------------------------------------------------------------------------#
 
 """
-    CrystalDataTraits
+    CrystalDataTrait
 
 Subtypes of this type are traits that may be used for dispatch.
 """
@@ -103,7 +103,7 @@ struct ByReciprocalSpace{D} <: CrystalDataTrait
 end
 
 """
-    AtomPositionData{D}
+    ByAtom{D}
 
 Trait for data associated with atomic positions in a crystal.
 """
