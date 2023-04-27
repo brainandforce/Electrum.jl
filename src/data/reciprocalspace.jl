@@ -137,7 +137,7 @@ nband(b::BandAtKPoint) = length(b.e)
     BandStructure{D}
 
 Stores information about an electronic band structure, including the list of k-points used to
-generate the data (as a `KPointMesh{D}`)and the band information at every k-point (as a
+generate the data (as am `AbstractVector{KPoint{D}}`)and the band information at every k-point (as a
 `Vector{BandAtKPoint}`).
 """
 struct BandStructure{D}
@@ -145,21 +145,24 @@ struct BandStructure{D}
     kpts::Vector{KPoint{D}}
     # Set of energy and occupancy data
     bands::Vector{BandAtKPoint}
-    function BandStructure{D}(kpts::AbstractVector{KPoint{D}}, bands::Vector{BandAtKPoint}) where D
+    function BandStructure(kpts::AbstractVector{KPoint{D}}, bands::Vector{BandAtKPoint}) where D
         @assert nkpt(kpts) == length(bands) "Incorrect number of k-points or band datasets."
         @assert _allsame(length(bands)) "Number of bands is inconsistent."
-        return new(kpts, bands)
+        return new{D}(kpts, bands)
     end
 end
 
 """
-    BandStructure{D}(kpts::AbstractKPoints{D}, bands::AbstractVector{<:BandAtKPoint}) where D
+    BandStructure(kpts::AbstractVector{KPoint{D}}, bands::AbstractVector{<:BandAtKPoint})
 
 Generates a new band structure from k-point information and a vector containing band information at
 each k-point.
 """
-function BandStructure{D}(kpts::AbstractKPointSet{D}, bands::AbstractVector{<:BandAtKPoint}) where D
-    return BandStructure{D}(kpts, bands)
+function BandStructure(
+    kpts::AbstractVector{KPoint{D}},
+    bands::AbstractVector{<:BandAtKPoint}
+) where D
+    return BandStructure(kpts, bands)
 end
 
 # Get the pair of a k-point and associated band data
