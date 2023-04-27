@@ -67,15 +67,6 @@ Supertype for all density of states data.
 abstract type AbstractDensityOfStates
 end
 
-"""
-    AbstractKPointSet{D}
-
-Supertype for sets of k-points in `D` dimensions, either provided as explicit lists or as a
-generator (such as a matrix defining a mesh).
-"""
-abstract type AbstractKPointSet{D}
-end
-
 #---Traits----------------------------------------------------------------------------------------#
 
 """

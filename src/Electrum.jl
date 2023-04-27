@@ -101,7 +101,7 @@ include("math.jl")
 export FFTBins, FFTLength
 # Abstract types used in type tree
 include("types.jl")
-export AbstractBasis, AbstractCrystal, AbstractDataGrid, AbstractKPointSet, AbstractDensityOfStates
+export AbstractBasis, AbstractCrystal, AbstractDataGrid, AbstractDensityOfStates
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export RealBasis, ReciprocalBasis
