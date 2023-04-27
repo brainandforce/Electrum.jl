@@ -17,9 +17,16 @@ Electrum.HKLData
 Electrum.HKLDict
 Electrum.fft
 Electrum.ifft
-Electrum.ReciprocalWavefunction
-Electrum.nkpt
-Electrum.nband
+```
+
+## More complex data grids
+```@docs
+Electrum.PlanewaveWavefunction
+Electrum.PlanewaveIndex
+Electrum.nspin(::PlanewaveWavefunction)
+Electrum.nkpt(::PlanewaveWavefunction)
+Electrum.nband(::PlanewaveWavefunction)
+Electrum.fermi(::PlanewaveWavefunction)
 ```
 
 ## k-points
@@ -32,6 +39,9 @@ Electrum.KPointMesh
 ```@docs
 Electrum.BandAtKPoint
 Electrum.BandStructure
+Electrum.nkpt(::BandStructure)
+Electrum.nband(::BandStructure)
+Electrum.nband(::BandAtKPoint)
 Electrum.FatBands
 ```
 
@@ -40,10 +50,7 @@ Electrum.FatBands
 Electrum.AbstractDensityOfStates
 Electrum.DensityOfStates
 Electrum.ProjectedDensityOfStates
-Electrum.nkpt
-Electrum.nband
-Electrum.bounds
-Electrum.fermi
+Electrum.fermi(::AbstractDensityOfStates)
 Electrum.smear
 Electrum.energies
 Electrum.nelectrons
