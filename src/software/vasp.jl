@@ -136,6 +136,8 @@ function writePOSCAR(filename, data; kwargs...)
     open(io -> writePOSCAR(io, data; kwargs...), filename * "/POSCAR"^isdir(filename), write=true)
 end
 
+writePOSCAR(data; kwargs...) = writePOSCAR("POSCAR", data; kwargs...)
+
 # Kendall got everything done before 6 PM (2022-02-01)
 """
     readWAVECAR(file) -> PlanewaveWavefunction{3,Complex{Float32}}
