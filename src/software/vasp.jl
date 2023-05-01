@@ -132,12 +132,27 @@ end
 
 writePOSCAR(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.atoms; kwargs...)
 
-function writePOSCAR(filename, data; kwargs...) 
+function writePOSCAR(filename, data; kwargs...)
     # Append POSCAR if only a directory name is given
     open(io -> writePOSCAR(io, data; kwargs...), filename * "/POSCAR"^isdir(filename), write=true)
 end
 
 writePOSCAR(data; kwargs...) = writePOSCAR("POSCAR", data; kwargs...)
+
+"""
+    writeCONTCAR([file = "CONTCAR"], data; names = true, dummy = false, comment)
+
+Writes crystal data to a VASP POSCAR output, but with the default filename being `CONTCAR` instead
+of `POSCAR`. For more detailed help, see `writePOSCAR`.
+"""
+writeCONTCAR(io::IO, data; kwargs...) = writePOSCAR(io, data; kwargs...)
+
+function writeCONTCAR(filename, data; kwargs...)
+    # Append POSCAR if only a directory name is given
+    open(io -> writePOSCAR(io, data; kwargs...), filename * "/CONTCAR"^isdir(filename), write=true)
+end
+
+writeCONTCAR(data; kwargs...) = writePOSCAR("CONTCAR", data; kwargs...)
 
 # Kendall got everything done before 6 PM (2022-02-01)
 """
