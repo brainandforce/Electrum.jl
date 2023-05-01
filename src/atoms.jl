@@ -30,7 +30,10 @@ NamedAtom(num::Integer) = num in 1:118 ? NamedAtom(ELEMENTS[num], num) : NamedAt
 NamedAtom(atomname::AbstractString) = NamedAtom(atomname, get(ELEMENT_LOOKUP, atomname, 0))
 
 Base.show(io::IO, atom::NamedAtom) = print(io, "NamedAtom(\"", atom.name, "\", ", atom.num, ")")
-Base.isless(a1::NamedAtom, a2::NamedAtom) = isless(a1.num, a2.num) || isless(a1.name, a2.name)
+
+function Base.isless(a1::NamedAtom, a2::NamedAtom)
+    return isequal(a1.num, a2.num) ? isless(a1.name, a2.name) : isless(a1.num, a2.num)
+end
 
 name(a::NamedAtom) = a.name
 atomic_number(a::NamedAtom) = a.num
