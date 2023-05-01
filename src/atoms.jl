@@ -251,8 +251,6 @@ struct PeriodicAtomList{D} <: AbstractAtomList{D}
     end
 end
 
-basis(fl::PeriodicAtomList) = fl.basis
-
 """
     AtomList{D}
 
