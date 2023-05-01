@@ -20,7 +20,7 @@ function readPOSCAR(io::IO)
     # Get the basis
     latt = let lns = [readline(io) for n in 1:3]
         # Get the vectors from the next three lines
-        vecs = [parse.(Float64, v) for v in split.(lns)]
+        vecs = sc * [parse.(Float64, v) for v in split.(lns)]
         # Convert to RealBasis and return
         RealBasis{3}(vecs)
     end
