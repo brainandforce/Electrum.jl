@@ -251,6 +251,9 @@ struct PeriodicAtomList{D} <: AbstractAtomList{D}
     end
 end
 
+Base.:(==)(l1::T, l2::T) where T<:PeriodicAtomList = (l1.basis === l2.basis && l1.atoms == l2.atoms)
+Base.hash(l::PeriodicAtomList, h::UInt64) = hash(l.atoms, hash(l.basis, h))
+
 """
     AtomList{D}
 
@@ -260,10 +263,6 @@ boundary conditions.
 struct AtomList{D} <: AbstractAtomList{D}
     atoms::Vector{CartesianAtomPosition{D}}
     AtomList(l::AbstractVector{CartesianAtomPosition{D}}) where D = new{D}(deduplicate(l))
-end
-
-function Base.:(==)(l1::AbstractAtomList, l2::AbstractAtomList) 
-    return (l1.basis === l2.basis && l1.atoms == l2.atoms)
 end
 
 Base.isempty(l::AbstractAtomList) = isempty(l.atoms)
