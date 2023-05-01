@@ -1,15 +1,16 @@
 """
     readPOSCAR(file) -> PeriodicAtomList{3}
-    readCONTCAR(file) -> PeriodicAtomList{3}
 
-Reads a VASP POSCAR or CONTCAR file.
+Reads a VASP POSCAR file. A POSCAR contains the basis vectors of the system (potentially given with
+a scaling factor), the positions of all atoms as either Cartesian or reduced coordinates, and
+potentially information needed to perform an ab initio MD run (currently ignored).
 
-A POSCAR contains the basis vectors of the system (potentially given with a scaling factor), the
-positions of all atoms as either Cartesian or reduced coordinates, and potentially information
-needed to perform an ab initio MD run.
+By default, if the provided file path is a directory, `readPOSCAR()` will read from a file named
+`POSCAR` in that directory. If no path is provided, a file named `POSCAR` in the current working
+directory is read.
 
-A CONTCAR file is written at the end of a VASP run and contains the atomic coordinates after the
-calculation completed. This is relevant for geometry optimizations.
+The similar `readCONTCAR` function does much the same as `readPOSCAR`, but defaults to the file name
+`CONTCAR` instead of `POSCAR`.
 """
 function readPOSCAR(io::IO)
     # Skip the comment line
@@ -61,7 +62,16 @@ function readPOSCAR(io::IO)
     return PeriodicAtomList(latt, positions)
 end
 
-# This can't be a simple alias, because `readCONTCAR()` needs to find a file name `CONTCAR`
+"""
+    readCONTCAR(file) -> PeriodicAtomList{3}
+
+Reads a VASP CONTCAR file.  A CONTCAR file is written at the end of a VASP run and contains the
+atomic coordinates after the calculation completed. This is relevant for geometry optimizations or
+molecular dynamics runs.
+
+The function is broadly similar to `readPOSCAR`, but the default file names for directory arguments
+or no argument is `CONTCAR` instead of `POSCAR`. For more help, see `readPOSCAR`.
+"""
 readCONTCAR(io::IO) = readPOSCAR(io)
 
 # Append POSCAR/CONTCAR if only a directory name is given
