@@ -62,6 +62,9 @@ function readPOSCAR(io::IO)
     return PeriodicAtomList(latt, positions)
 end
 
+readPOSCAR(file) = open(readPOSCAR, isdir(file) ? joinpath(file, "POSCAR") : file)
+readPOSCAR() = open(readPOSCAR, "POSCAR")
+
 """
     readCONTCAR(file) -> PeriodicAtomList{3}
 
@@ -73,12 +76,7 @@ The function is broadly similar to `readPOSCAR`, but the default file names for 
 or no argument is `CONTCAR` instead of `POSCAR`. For more help, see `readPOSCAR`.
 """
 readCONTCAR(io::IO) = readPOSCAR(io)
-
-# Append POSCAR/CONTCAR if only a directory name is given
-readPOSCAR(file) = open(readPOSCAR, isdir(file) ? joinpath(file, "POSCAR") : file)
 readCONTCAR(file) = open(readPOSCAR, isdir(file) ? joinpath(file, "CONTCAR") : file)
-
-readPOSCAR() = open(readPOSCAR, "POSCAR")
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
 
 """
