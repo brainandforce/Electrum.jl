@@ -1,6 +1,8 @@
 using LinearAlgebra, StaticArrays
 using Test, Aqua, Electrum
 
+tmpdir = mktempdir()
+
 Aqua.test_all(Electrum; project_toml_formatting=false)
 
 xsf = readXSF3D("files/test.xsf")

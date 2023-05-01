@@ -19,6 +19,9 @@ end
     @test name.(atomtypes(poscar)) == ["Si", "Ir"]
     @test atomic_number.(atomtypes(poscar)) == [14, 77]
     @test natomtypes(poscar) == 2
+    # Test that file writing works correctly
+    writeCONTCAR(tmpdir, poscar)
+    @test readCONTCAR(tmpdir) == sort(poscar)
 end
 
 @testset "LAMMPS position data" begin
