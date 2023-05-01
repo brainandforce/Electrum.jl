@@ -128,9 +128,9 @@ end
 
 writePOSCAR(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.atoms; kwargs...)
 
-function writePOSCAR(filename, data; kwargs...)
-    # Append POSCAR if only a directory name is given
-    open(io -> writePOSCAR(io, data; kwargs...), filename * "/POSCAR"^isdir(filename), write=true)
+function writePOSCAR(file, data; kwargs...)
+    f = isdir(file) ? joinpath(file, "CONTCAR") : file
+    open(io -> writePOSCAR(io, data; kwargs...), f, write=true)
 end
 
 writePOSCAR(data; kwargs...) = writePOSCAR("POSCAR", data; kwargs...)
@@ -143,9 +143,9 @@ of `POSCAR`. For more detailed help, see `writePOSCAR`.
 """
 writeCONTCAR(io::IO, data; kwargs...) = writePOSCAR(io, data; kwargs...)
 
-function writeCONTCAR(filename, data; kwargs...)
-    # Append POSCAR if only a directory name is given
-    open(io -> writePOSCAR(io, data; kwargs...), filename * "/CONTCAR"^isdir(filename), write=true)
+function writeCONTCAR(file, data; kwargs...)
+    f = isdir(file) ? joinpath(file, "CONTCAR") : file
+    open(io -> writePOSCAR(io, data; kwargs...), f, write=true)
 end
 
 writeCONTCAR(data; kwargs...) = writePOSCAR("CONTCAR", data; kwargs...)
