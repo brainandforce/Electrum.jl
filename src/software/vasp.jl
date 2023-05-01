@@ -84,11 +84,12 @@ readPOSCAR() = open(readPOSCAR, "POSCAR")
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
 
 """
-    writePOSCAR(file, data; kwargs...)
+    writePOSCAR([file = "POSCAR"], data; names = true, dummy = false, comment)
 
 Writes crystal data to a VASP POSCAR output. The `data` can be a `PeriodicAtomList` or an
 `AbstractCrystal`. If a directory names is given instead of a file name, the data will be written to
-a file named `POSCAR` in the provided directory.
+a file named `POSCAR` in the provided directory. If no filename is provided, it is written to
+`POSCAR` in the current directory.
 
 By default, atom names are written, but this is known to break VASP 4.6. This may be overridden by
 setting `names` to `false`, but this is known to cause its own incompatibility issues: it is known
