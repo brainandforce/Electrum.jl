@@ -267,14 +267,10 @@ function readWAVECAR(io::IO; quiet = false)
     return wf
 end
 
-function readWAVECAR(filename; quiet = false)
-    # Append WAVECAR if only a directory name is given
-    if last(filename) == '/'
-        filename = filename * "WAVECAR"
-    end
-    open(io -> readWAVECAR(io; quiet), filename)
+function readWAVECAR(file; quiet = false)
+    open(io -> readWAVECAR(io; quiet), isdir(file) ? joinpath(file, "WAVECAR") : file)
 end
-# Read a WAVECAR in the current directory
+
 readWAVECAR(; quiet = false) = readWAVECAR("WAVECAR"; quiet)
 
 """
@@ -331,14 +327,7 @@ function readDOSCAR(io::IO)
     return (tdos, pdos)
 end
 
-function readDOSCAR(filename; kwargs...)
-    # Append DOSCAR if only a directory name is given
-    if last(filename) == '/'
-        filename = filename * "DOSCAR"
-    end
-    open(readDOSCAR, filename; kwargs...)
-end
-
+readDOSCAR(file) =  open(readDOSCAR, isdir(file) ? joinpath(file, "DOSCAR") : file)
 readDOSCAR() = open(readDOSCAR, "DOSCAR")
 
 """
@@ -406,14 +395,7 @@ function readPROCAR(io::IO)
     )
 end
 
-function readPROCAR(filename)
-    # Append PROCAR if only a directory name is given
-    if last(filename) == '/'
-        filename = filename * "PROCAR"
-    end
-    open(readPROCAR, filename)
-end
-
+readPROCAR(file) = open(readPROCAR, isdir(file) ? joinpath(file, "PROCAR") : file)
 readPROCAR() = open(readPROCAR, "PROCAR")
 
 """
@@ -451,12 +433,5 @@ function readKPOINTS(io::IO)
     return kptgrid
 end    
 
-function readKPOINTS(filename)
-    # Append KPOINTS if only a directory name is given
-    if last(filename) == '/'
-        filename = filename * "KPOINTS"
-    end
-    open(readKPOINTS, filename)
-end
-
+readKPOINTS(file) = open(readKPOINTS, isdir(file) ? joinpath(file, "KPOINTS") : file)
 readKPOINTS() = open(readKPOINTS, "KPOINTS")
