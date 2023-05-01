@@ -142,8 +142,8 @@ export read_abinit_density, read_abinit_potential, read_abinit_wavefunction, rea
     read_abinit_POT, read_abinit_anaddb_out, read_abinit_WFK, read_abinit_anaddb_in,
     write_abinit_modes, read_abinit_anaddb_PHDOS
 include("software/vasp.jl")
-export readPOSCAR, readCONTCAR, writePOSCAR, readWAVECAR, readDOSCAR, readPROCAR, get_fermi,
-    readKPOINTS
+export readPOSCAR, readCONTCAR, writePOSCAR, writeCONTCAR, readWAVECAR, readDOSCAR, readPROCAR,
+    get_fermi, readKPOINTS
 include("software/lammps.jl")
 export read_lammps_data, write_lammps_data
 # Show methods for pretty printing this module's structs
