@@ -299,7 +299,17 @@ Base.filter(f, l::AtomList) = AtomList(filter(f, l.atoms))
 Base.filter(f, l::PeriodicAtomList) = PeriodicAtomList(basis(l), filter(f, l.atoms))
 
 function Base.sort!(l::AbstractAtomList; kwargs...)
-    sort!(l.atoms; by=NamedAtom, kwargs...)
+    function custom_lt(a::T, b::T) where T<:AbstractAtomPosition
+        # 
+        if isequal(NamedAtom(a), NamedAtom(b))
+            for (x, y) in zip(displacement(a), displacement(b))
+                isless(y, x) && return false
+            end
+            return true
+        end
+        return isless(NamedAtom(a), NamedAtom(b))
+    end
+    sort!(l.atoms; lt = custom_lt, kwargs...)
     return l
 end
 
