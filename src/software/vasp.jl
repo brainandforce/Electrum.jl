@@ -64,21 +64,9 @@ end
 # This can't be a simple alias, because `readCONTCAR()` needs to find a file name `CONTCAR`
 readCONTCAR(io::IO) = readPOSCAR(io)
 
-function readPOSCAR(filename)
-    # Append POSCAR if only a directory name is given
-    if last(filename) == '/'
-        filename = filename * "POSCAR"
-    end
-    open(readPOSCAR, filename)
-end
-
-function readCONTCAR(filename)
-    # Append POSCAR if only a directory name is given
-    if last(filename) == '/'
-        filename = filename * "CONTCAR"
-    end
-    open(readPOSCAR, filename)
-end
+# Append POSCAR/CONTCAR if only a directory name is given
+readPOSCAR(file) = open(readPOSCAR, isdir(file) ? joinpath(file, "POSCAR") : file)
+readCONTCAR(file) = open(readPOSCAR, isdir(file) ? joinpath(file, "CONTCAR") : file)
 
 readPOSCAR() = open(readPOSCAR, "POSCAR")
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
