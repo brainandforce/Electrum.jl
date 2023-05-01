@@ -84,22 +84,25 @@ readPOSCAR() = open(readPOSCAR, "POSCAR")
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
 
 """
-    writePOSCAR4(file, data; kwargs...)
+    writePOSCAR(file, data; kwargs...)
 
-Writes crystal data to a VASP 4.6 POSCAR output. The `data` can be a `PeriodicAtomList` or an
-`AbstractCrystal`.
+Writes crystal data to a VASP POSCAR output. The `data` can be a `PeriodicAtomList` or an
+`AbstractCrystal`. If a directory names is given instead of a file name, the data will be written to
+a file named `POSCAR` in the provided directory.
 
-By default, atom names are not written (since this seems to break VASP 4.6) but this may be
-overridden by setting `names` to `true` (which prevents VESTA from crashing). Dummy atoms are not
-are not written by default, but they may be written by setting `dummy=true`.
+By default, atom names are written, but this is known to break VASP 4.6. This may be overridden by
+setting `names` to `false`, but this is known to cause its own incompatibility issues: it is known
+that VESTA will crash if the line containing the atomic names is missing.
+
+Dummy atoms are not are not written by default, but they may be written by setting `dummy=true`.
 
 The first line, normally used to describe the system, may be altered by passing a printable object
 to `comment`.
 """
-function writePOSCAR4(
+function writePOSCAR(
     io::IO,
     list::PeriodicAtomList;
-    names::Bool = false,
+    names::Bool = true,
     dummy::Bool = false,
     comment = "Written by Electrum.jl"
 )
@@ -126,15 +129,15 @@ function writePOSCAR4(
     end
 end
 
-writePOSCAR4(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.atoms; kwargs...)
+writePOSCAR(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.atoms; kwargs...)
 
-function writePOSCAR4(filename, data; kwargs...) 
+function writePOSCAR(filename, data; kwargs...) 
     # Append POSCAR if only a directory name is given
     if last(filename) == '/'
         filename = filename * "POSCAR"
     end
     open(filename, write=true) do io
-        writePOSCAR4(io, data; kwargs...)
+        writePOSCAR(io, data; kwargs...)
     end
 end
 
