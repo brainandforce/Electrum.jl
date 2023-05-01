@@ -109,9 +109,9 @@ export triangularize, lengths, volume, angles_cos, angles_rad, angles_deg, isdia
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
-       AbstractAtomList, AtomList, PeriodicAtomList
+    AbstractAtomList, AtomList, PeriodicAtomList
 export name, atomic_number, isdummy, displacement, occupancy, distance, deduplicate, supercell,
-       atomtypes, atomcounts, natomtypes
+    atomtypes, atomcounts, natomtypes
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export Crystal, CrystalWithDatasets
@@ -139,11 +139,11 @@ include("filetypes.jl")
 export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
 include("software/abinit.jl")
 export read_abinit_density, read_abinit_potential, read_abinit_wavefunction, read_abinit_DEN,
-       read_abinit_POT, read_abinit_anaddb_out, read_abinit_WFK, read_abinit_anaddb_in,
-       write_abinit_modes, read_abinit_anaddb_PHDOS
+    read_abinit_POT, read_abinit_anaddb_out, read_abinit_WFK, read_abinit_anaddb_in,
+    write_abinit_modes, read_abinit_anaddb_PHDOS
 include("software/vasp.jl")
 export readPOSCAR, readCONTCAR, writePOSCAR4, readWAVECAR, readDOSCAR, readPROCAR, get_fermi,
-       readKPOINTS
+    readKPOINTS
 include("software/lammps.jl")
 export read_lammps_data, write_lammps_data
 # Show methods for pretty printing this module's structs
