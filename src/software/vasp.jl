@@ -126,7 +126,7 @@ function writePOSCAR(
     end
 end
 
-writePOSCAR(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR4(io, xtal.atoms; kwargs...)
+writePOSCAR(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR(io, xtal.atoms; kwargs...)
 
 function writePOSCAR(file, data; kwargs...)
     f = isdir(file) ? joinpath(file, "CONTCAR") : file
@@ -149,18 +149,6 @@ function writeCONTCAR(file, data; kwargs...)
 end
 
 writeCONTCAR(data; kwargs...) = writePOSCAR("CONTCAR", data; kwargs...)
-
-"""
-    writePOSCAR4([file = "POSCAR"], data; dummy = false, comment)
-
-Writes a POSCAR file readable by VASP 4 (tested on VASP 4.6). This is equivalent to calling
-`writePOSCAR([file = "POSCAR"], data; names = false, dummy = false, comment)` - in other words, the
-names are never written. This can solve segmentation faults that occur with VASP 4.6, but some
-software that depends on these names will misbehave (notably VESTA).
-
-For more details, see `readPOSCAR` (and `readCONTCAR`).
-"""
-writePOSCAR4(args...; kwargs...) = writePOSCAR(args...; kwargs..., names=false)
 
 # Kendall got everything done before 6 PM (2022-02-01)
 """
