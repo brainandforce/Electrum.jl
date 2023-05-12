@@ -41,7 +41,7 @@ Electrum.readWAVECAR
 ### Writing
 
 ```@docs
-Electrum.writePOSCAR4
+Electrum.writePOSCAR
 ```
 
 ## LAMMPS
