@@ -11,7 +11,7 @@ Electrum.readCPgeo
 Electrum.readCPcell
 ```
 
-### Reading
+### Writing
 ```@docs
 Electrum.writeXYZ
 Electrum.writeXSF
