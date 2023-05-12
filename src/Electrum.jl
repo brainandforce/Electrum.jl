@@ -143,7 +143,7 @@ export read_abinit_density, read_abinit_potential, read_abinit_wavefunction, rea
     write_abinit_modes, read_abinit_anaddb_PHDOS
 include("software/vasp.jl")
 export readPOSCAR, readCONTCAR, writePOSCAR, writeCONTCAR, readWAVECAR, readDOSCAR,readPROCAR,
-    get_fermi, readKPOINTS
+    get_fermi
 @deprecate writePOSCAR4 writePOSCAR
 include("software/lammps.jl")
 export read_lammps_data, write_lammps_data
