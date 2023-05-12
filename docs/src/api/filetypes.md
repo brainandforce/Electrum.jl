@@ -33,7 +33,6 @@ Electrum.read_abinit_wavefunction
 
 ```@docs
 Electrum.readDOSCAR
-Electrum.readKPOINTS
 Electrum.readPOSCAR
 Electrum.readPROCAR
 Electrum.readWAVECAR
