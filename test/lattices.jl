@@ -10,4 +10,6 @@
     # Wrong dimensionality should throw an exception
     @test_throws DimensionMismatch RealBasis{3}([1 0; 0 1])
     @test_throws DimensionMismatch convert(ReciprocalBasis{2}, b)
+    # Gram matrix test
+    @test gram(b) === (M = convert(SMatrix, b); M' * M)
 end

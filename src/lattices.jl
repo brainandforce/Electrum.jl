@@ -289,6 +289,14 @@ this may lead to unexpected results.
 """
 angles_deg(b::AbstractBasis) = acosd.(angles_cos(b))
 
+"""
+    gram(b::AbstractBasis{D}) -> SMatrix{D,D,Float64}
+
+Returns the Gram matrix associated with a set of basis vectors. The entries of this matrix are the
+dot products associated with all possible combinations of basis vectors.
+"""
+gram(b::AbstractBasis) = matrix(b)' * matrix(b)
+
 #---Linear algebraic manipulation of basis vector specification------------------------------------#
 
 LinearAlgebra.isdiag(b::AbstractBasis) = isdiag(matrix(b))
