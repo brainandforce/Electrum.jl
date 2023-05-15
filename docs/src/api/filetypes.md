@@ -22,9 +22,9 @@ Electrum.writeXSF
 ### Reading
 
 ```@docs
-Electrum.read_abinit_density
-Electrum.read_abinit_potential
-Electrum.read_abinit_wavefunction
+Electrum.read_abinit_DEN
+Electrum.read_abinit_POT
+Electrum.read_abinit_WFK
 ```
 
 ## VASP files

@@ -33,17 +33,17 @@ chosen to be written:
   * `_VHXC`: Sum of the Hartree and exchange-correlation potentials.
   * `_VXC`: Exchange-correlation potential. 
 
-Both density and potential files follow the same format. The `read_abinit_density()` and 
-`read_abinit_potential()` functions can be used to load in density and potential files.
+Both density and potential files follow the same format. The `read_abinit_DEN()` and 
+`read_abinit_POT()` functions can be used to load in density and potential files.
 
 ## Wavefunctions
 
-Wavefunctions can be read in by `read_abinit_wavefunction()`. This assumes that the wavefunction is
-stored by k-points (`istwfk` should be equal to `nkpt*1` in the input file).
+Wavefunctions can be read in by `read_abinit_WFK()`. This assumes that the wavefunction is stored by
+k-points (`istwfk` should be equal to `nkpt*1` in the input file).
 
-Because wavefunctions are large files, and reading them can be slow, `read_abinit_wavefunction()`
-will print `@info` messages for every k-point that is read in. This can be disabled by setting the
-keyword argument `quiet = true`.
+Because wavefunctions are large files, and reading them can be slow, `read_abinit_WFK()` will print
+`@info` messages for every k-point that is read in. This can be disabled by setting the keyword
+argument `quiet = true`.
 
 !!! info abinit 7.10.5 (header version 57) does not output the matrix associated with the k-point
 mesh used in the calculation (the kptrlatt field).
