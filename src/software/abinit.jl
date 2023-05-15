@@ -648,7 +648,7 @@ function read_abinit_datagrids(
     return rho
 end
 
-function read_abinit_density(io::IO)
+function read_abinit_DEN(io::IO)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the type of the datagrid (set by cplex in the header)
@@ -685,9 +685,9 @@ with explicit treatment of spin will return spin densities.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
-read_abinit_density(filename) = open(read_abinit_density, filename)
+read_abinit_DEN(filename) = open(read_abinit_DEN, filename)
 
-function read_abinit_potential(io::IO)
+function read_abinit_POT(io::IO)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the type of the datagrid (set by cplex in the header)
@@ -728,9 +728,9 @@ explicit treatment of spin will return spin-dependent potentials.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
-read_abinit_potential(filename) = open(read_abinit_potential, filename)
+read_abinit_POT(filename) = open(read_abinit_POT, filename)
 
-function read_abinit_wavefunction(io::IO; quiet = false)
+function read_abinit_WFK(io::IO; quiet = false)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the reciprocal lattice
@@ -789,7 +789,7 @@ function read_abinit_wavefunction(io::IO; quiet = false)
 end
 
 """
-    read_abinit_wavefunction(file)
+    read_abinit_WFK(file)
         -> CrystalWithDatasets{3,String,PlanewaveWavefunction{3,Complex{Float64}}}
 
 Reads a FORTRAN binary formatted abinit wavefunction file.
@@ -804,11 +804,7 @@ By default, the function is verbose, with output printed for every k-point parse
 size of the wavefunction files. If this behavior is undesirable, the `quiet` keyword argument may be
 set to `true`.
 """
-read_abinit_wavefunction(file; quiet = false) = open(f -> read_abinit_wavefunction(f; quiet), file)
-
-const read_abinit_DEN = read_abinit_density
-const read_abinit_POT = read_abinit_potential
-const read_abinit_WFK = read_abinit_wavefunction
+read_abinit_WFK(filename; quiet = false) = open(f -> read_abinit_WFK(f; quiet), filename)
 
 """
     read_abinit_anaddb_out(filename::AbstractString)
