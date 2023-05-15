@@ -648,6 +648,21 @@ function read_abinit_datagrids(
     return rho
 end
 
+"""
+    read_abinit_density(file)
+        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}
+
+Reads a FORTRAN binary formatted abinit density file. By default, abinit density files will have
+the suffix `DEN`, but no assumptions are made about suffixes.
+
+The header is used to automatically determine the file format, so this should read in any abinit
+density output (provided a function exists to parse that header).
+
+The number of datasets returned depends on the value of `nsppol` in the header, as calculations
+with explicit treatment of spin will return spin densities.
+
+Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
+"""
 function read_abinit_DEN(io::IO)
     # Get the header from the file
     header = read_abinit_header(io)
@@ -670,23 +685,26 @@ function read_abinit_DEN(io::IO)
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
 end
 
-"""
-    read_abinit_density(file)
-        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}
+read_abinit_DEN(filename) = open(read_abinit_DEN, filename)
 
-Reads a FORTRAN binary formatted abinit density file. By default, abinit density files will have
-the suffix `DEN`, but no assumptions are made about suffixes.
+"""
+    read_abinit_potential(file)
+        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T<:Number}}
+
+Reads a FORTRAN binary formatted abinit potential file.
+
+By default, abinit potential files will end in `POT` for the external potential, `VHA` for the 
+Hartree potential, `VXC` for the exchange-correlation potential, and `VHXC` for the sum of both the
+Hartree and exchange-correlation potentials.
 
 The header is used to automatically determine the file format, so this should read in any abinit
 density output (provided a function exists to parse that header).
 
-The number of datasets returned depends on the value of `nsppol` in the header, as calculations
-with explicit treatment of spin will return spin densities.
+The number of datasets returned depends on the value of `nsppol` in the header, as calculations with
+explicit treatment of spin will return spin-dependent potentials.
 
 Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
 """
-read_abinit_DEN(filename) = open(read_abinit_DEN, filename)
-
 function read_abinit_POT(io::IO)
     # Get the header from the file
     header = read_abinit_header(io)
@@ -710,26 +728,24 @@ function read_abinit_POT(io::IO)
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
 end
 
+read_abinit_POT(filename) = open(read_abinit_POT, filename)
+
 """
-    read_abinit_potential(file)
-        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}} where T<:Union{Float64,ComplexF64}
+    read_abinit_WFK(file)
+        -> CrystalWithDatasets{3,String,PlanewaveWavefunction{3,Complex{Float64}}}
 
-Reads a FORTRAN binary formatted abinit potential file.
+Reads a FORTRAN binary formatted abinit wavefunction file.
 
-By default, abinit potential files will end in `POT` for the external potential, `VHA` for the 
-Hartree potential, `VXC` for the exchange-correlation potential, and `VHXC` for the sum of both the
-Hartree and exchange-correlation potentials.
+By default, abinit returns wavefunction data in `Complex{Float64}` entries, and this is maintained
+in the return type.
 
 The header is used to automatically determine the file format, so this should read in any abinit
 density output (provided a function exists to parse that header).
 
-The number of datasets returned depends on the value of `nsppol` in the header, as calculations with
-explicit treatment of spin will return spin-dependent potentials.
-
-Depending on the value of `cplex`, the datagrid(s) returned may be real or complex-valued.
+By default, the function is verbose, with output printed for every k-point parsed, due to the large
+size of the wavefunction files. If this behavior is undesirable, the `quiet` keyword argument may be
+set to `true`.
 """
-read_abinit_POT(filename) = open(read_abinit_POT, filename)
-
 function read_abinit_WFK(io::IO; quiet = false)
     # Get the header from the file
     header = read_abinit_header(io)
@@ -788,22 +804,6 @@ function read_abinit_WFK(io::IO; quiet = false)
     )
 end
 
-"""
-    read_abinit_WFK(file)
-        -> CrystalWithDatasets{3,String,PlanewaveWavefunction{3,Complex{Float64}}}
-
-Reads a FORTRAN binary formatted abinit wavefunction file.
-
-By default, abinit returns wavefunction data in `Complex{Float64}` entries, and this formatting is
-maintained in the return type.
-
-The header is used to automatically determine the file format, so this should read in any abinit
-density output (provided a function exists to parse that header).
-
-By default, the function is verbose, with output printed for every k-point parsed, due to the large
-size of the wavefunction files. If this behavior is undesirable, the `quiet` keyword argument may be
-set to `true`.
-"""
 read_abinit_WFK(filename; quiet = false) = open(f -> read_abinit_WFK(f; quiet), filename)
 
 """
