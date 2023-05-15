@@ -6,9 +6,9 @@ precompile(supercell, (PeriodicAtomList, Any))
 precompile(readXSF, (AbstractString,))
 precompile(writeXSF, (AbstractString, CrystalWithDatasets))
 
-precompile(read_abinit_density, (AbstractString,))
-precompile(read_abinit_potential, (AbstractString,))
-precompile(read_abinit_wavefunction, (AbstractString,))
+precompile(read_abinit_DEN, (AbstractString,))
+precompile(read_abinit_POT, (AbstractString,))
+precompile(read_abinit_WFK, (AbstractString,))
 
 precompile(readPOSCAR, ())
 precompile(readCONTCAR, ())
