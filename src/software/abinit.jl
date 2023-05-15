@@ -750,12 +750,12 @@ function read_abinit_WFK(io::IO; quiet = false)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the reciprocal lattice
-    rlatt = convert(ReciprocalBasis, RealBasis(header.rprimd))
+    rlatt = convert(ReciprocalBasis, RealBasis(header.rprimd)) / BOHR2ANG
     # Get the minimum and maximum HKL values needed
     # Units for c (2*m_e/ħ^2) are hartree^-1 bohr^-2
     # this should affect only the size of the preallocated arrays
     bounds = SVector{3,UnitRange{Int}}(
-        -g:g for g in maxHKLindex(rlatt, header.ecut, c=2)
+        -g:g for g in maxHKLindex(rlatt * BOHR2ANG, header.ecut, c=2)
     )
     @debug string(
         "hklbounds: ", bounds, "\n",
