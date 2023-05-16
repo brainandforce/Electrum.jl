@@ -180,7 +180,7 @@ symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 function Crystal(h::ABINITHeader)
     atomlist = PeriodicAtomList(
         # Convert to angstroms
-        RealBasis{3}(BOHR2ANG*h.rprimd),
+        RealBasis{3}(h.rprimd),
         FractionalAtomPosition.(
             Int.(h.znucltypat[h.typat]),
             h.xred
@@ -750,12 +750,12 @@ function read_abinit_WFK(io::IO; quiet = false)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the reciprocal lattice
-    rlatt = convert(ReciprocalBasis, RealBasis(header.rprimd)) / BOHR2ANG
+    rlatt = convert(ReciprocalBasis, RealBasis(header.rprimd))
     # Get the minimum and maximum HKL values needed
     # Units for c (2*m_e/ħ^2) are hartree^-1 bohr^-2
     # this should affect only the size of the preallocated arrays
     bounds = SVector{3,UnitRange{Int}}(
-        -g:g for g in maxHKLindex(rlatt * BOHR2ANG, header.ecut, c=2)
+        -g:g for g in maxHKLindex(rlatt, header.ecut)
     )
     @debug string(
         "hklbounds: ", bounds, "\n",

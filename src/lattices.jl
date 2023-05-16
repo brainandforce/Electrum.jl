@@ -340,7 +340,7 @@ end
 # TODO: Update and document this function a bit more.
 # It works, but that really isn't enough for me.
 # I think this was pulled directly from the WaveTrans source code
-function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = CVASP)
+function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = 2)
     # I think the parts below convert a set of basis vectors into their reciprocals
     #----------------------------------------------------------------------------------------------#
     cosines = cell_angles_cos(M)
