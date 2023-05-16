@@ -60,18 +60,30 @@ const TOL_DEF = 1e-8
 """
     Electrum.BOHR2ANG
 
-Converts lengths in bohr to angstrom
+Converts lengths in bohr to angstrom.
 """
-const BOHR2ANG = 0.52917720859
+const BOHR2ANG = 0.52917721090380
 
-#= Units of these two constants should be energy^-1 * length^-2
 """
-    Electrum.CABINIT
+    Electrum.ANG2BOHR
 
-The value of 2m_e/ħ^2 as used in abinit (hartree^-1 * angstrom^-2).
+Converts lengths in angstrom to bohr.
 """
-const CABINIT = 7.142129652186264
-=#
+const ANG2BOHR = 1.8897261246229133
+
+"""
+    Electrum.HARTREE2EV
+
+Converts energies in hartree to electron-volts.
+"""
+const HARTREE2EV = 27.21138624598853
+
+"""
+    Electrum.EV2HARTREE
+
+Converts energies in electron-volts to hartree.
+"""
+const EV2HARTREE = 0.03674932217565428
 
 """
     Electrum.CVASP
