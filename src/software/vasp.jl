@@ -200,7 +200,7 @@ function readWAVECAR(io::IO; quiet = false)
     # Reciprocal lattice vectors
     rlatt = convert(ReciprocalBasis, RealBasis{3}([read(io, Float64) for a = 1:3, b = 1:3]))
     # Get HKL coefficient bounds (as done in WaveTrans)
-    hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut))
+    hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut, c = CVASP))
     # Bare wavefunction to be filled
     wf = PlanewaveWavefunction{3,Complex{Float32}}(rlatt, nspin, nkpt, nband, hklbounds...)
     # Loop through the spins
