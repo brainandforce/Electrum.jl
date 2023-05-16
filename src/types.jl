@@ -32,7 +32,7 @@ end
 Supertype for sets of basis vectors in `D` dimensions.
 
 This supertype includes the `RealBasis{D}` and `ReciprocalBasis{D}` types, which explicitly 
-indicate their units (assumed to be either angstroms or inverse angstroms).
+indicate their units (assumed to be either bohr or rad*bohr⁻¹).
 
 Members of `AbstractBasis` must implement the following checks:
   * That the basis vectors are linearly independent and form a right-handed coordinate system, 

@@ -81,8 +81,8 @@ function basis_string(
     ]
 end
 
-basis_string(b::RealBasis, kwargs...) = basis_string(matrix(b), unit="Å", kwargs...)
-basis_string(b::ReciprocalBasis, kwargs...) = basis_string(matrix(b), unit="Å⁻¹", kwargs...)
+basis_string(b::RealBasis, kwargs...) = basis_string(matrix(b), unit="bohr", kwargs...)
+basis_string(b::ReciprocalBasis, kwargs...) = basis_string(matrix(b), unit="rad*bohr⁻¹", kwargs...)
 
 """
     Electrum.printbasis([io::IO = stdout], b; kwargs...)
