@@ -366,7 +366,7 @@ The functionality implemented here was taken from WaveTrans:
 https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 """
 # Assume that the basis vectors are defined in reciprocal space (??)
-function maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = CVASP)
+function maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = 2)
     return maxHKLindex(matrix(ReciprocalBasis(b)), ecut, c = c)
 end
 
