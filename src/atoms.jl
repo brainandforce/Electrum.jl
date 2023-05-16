@@ -79,7 +79,7 @@ end
     CartesianAtomPosition{D}
 
 Describes an absolute atomic position. The coordinate in the `pos` field is assumed to be given in
-angstroms.
+bohr.
 
 Occupancy information is provided in the `occ` field. Note that no checking is done to ensure that
 the occupancy is a reasonable value.

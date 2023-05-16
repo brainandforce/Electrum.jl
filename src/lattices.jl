@@ -25,7 +25,7 @@ lattice_sanity_check(v::AbstractVector{<:AbstractVector{<:Real}}) = lattice_sani
 """
     RealBasis{D} <: AbstractBasis{D}
 
-A set of real space basis vectors, assumed to be in angstroms.
+A set of real space basis vectors, assumed to be in bohr.
 """
 struct RealBasis{D} <: AbstractBasis{D}
     vs::SVector{D,SVector{D,Float64}}
@@ -42,7 +42,7 @@ end
 """
     ReciprocalBasis{D} <: AbstractBasis{D}
 
-A set of reciprocal space basis vectors, assumed to be in inverse angstroms.
+A set of reciprocal space basis vectors, assumed to be in rad*bohr⁻¹.
 """
 struct ReciprocalBasis{D} <: AbstractBasis{D}
     vs::SVector{D,SVector{D,Float64}}
@@ -175,19 +175,19 @@ Returns the lengths of the constituent vectors in a matrix representing cell vec
 cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
 
 """
-    lengths(b::AbstractBasis) -> Vector{Float64}
+    lengths(b::AbstractBasis{D}) -> SVector{D,Float64}
 
-Returns the lengths of the basis vectors.
+Returns the lengths of the basis vectors. The units correspond to the type of the basis vectors: for
+`RealBasis` the units are bohr, and for `ReciprocalBasis` the units are rad*bohr⁻¹.
 """
 lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
-# Get the vector lengths for anything that has a defined basis
 
 """
     lengths(x) -> Float64
 
-Calculate the lengths of the basis vectors associated with `x`. These will be real space lengths
-(assumed to be in angstroms) for real space data, and reciprocal space lengths for reciprocal space
-data.
+Calculate the lengths of the basis vectors associated with `x`. The units correspond to the type of
+the basis vectors: for `RealBasis` the units are bohr, and for `ReciprocalBasis` the units are
+rad*bohr⁻¹.
 """
 lengths(x) = lengths(basis(x))
 
@@ -203,15 +203,16 @@ cell_volume(M::AbstractMatrix) = abs(det(M))
     volume(b::AbstractBasis) -> Float64
 
 Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign (negative
-for cells that do not follow the right hand rule).
+for cells that do not follow the right hand rule). The units correspond to the type of the basis 
+vectors: for `RealBasis` the units are bohr³, and for `ReciprocalBasis` the units are rad³*bohr⁻³.
 """
 volume(b::AbstractBasis) = cell_volume(matrix(b))
 
 """
     volume(x) -> Float64
 
-Calculate the volume of the basis associated with `x`. This will be a real space volume (assumed to
-be in cubic angstroms) for real space data, and reciprocal space lengths for reciprocal space data.
+Calculate the volume of the basis associated with `x`. The units correspond to the type of the basis 
+vectors: for `RealBasis` the units are bohr³, and for `ReciprocalBasis` the units are rad³*bohr⁻³.
 """
 volume(x) = volume(basis(x))
 

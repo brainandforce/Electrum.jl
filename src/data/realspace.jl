@@ -49,18 +49,14 @@ end
 """
     volume(g::RealSpaceDataGrid) -> Float64
 
-Gets the crystal volume associated with a `RealSpaceDataGrid`.
-
-By default, units are assumed to be cubic angstroms.
+Gets the crystal volume associated with a `RealSpaceDataGrid`. Units are assumed to be bohr³.
 """
 volume(g::RealSpaceDataGrid) = volume(basis(g))
 
 """
     voxelsize(g::RealSpaceDataGrid) -> Float64
 
-Gets the size of a single voxel of a `RealSpaceDataGrid`.
-
-By default, units are assumed to be cubic angstroms.
+Gets the size of a single voxel of a `RealSpaceDataGrid`. Units are assumed to be bohr³.
 """
 voxelsize(g::RealSpaceDataGrid) = volume(g) / length(g)
 
