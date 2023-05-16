@@ -58,7 +58,7 @@ function read_lammps_data(io::IO; atom_types::AbstractVector = NamedAtom[])
         end
         ind += 1
     end
-    return PeriodicAtomList(RealBasis(basis_M), atom_vec)
+    return PeriodicAtomList(RealBasis(basis_M * ANG2BOHR), atom_vec)
 end
 
 read_lammps_data(filename; kwargs...) = open(io -> read_lammps_data(io; kwargs...), filename)
@@ -73,7 +73,8 @@ If `transform` is supplied, the list of atoms will be converted to a supercell w
 transformation (either a matrix, vector, or scalar). The `dummy` keyword determines whether dummy
 atoms are included in the output (`false` by default).
 
-This function currently only works for 3D systems.
+This function currently only works for 3D systems, and outputs data for the LAMMPS `metal` unit
+system - most importantly, lengths are in angstrom.
 """
 function write_lammps_data(io::IO, list::PeriodicAtomList{D}; dummy::Bool=false) where D
     println(
@@ -82,19 +83,17 @@ function write_lammps_data(io::IO, list::PeriodicAtomList{D}; dummy::Bool=false)
     )
     # Get the number of atoms; write the corresponding line
     natoms = length(list) - length(filter(isdummy, list)) * !dummy
+    b = basis(list) * BOHR2ANG
     println(io, natoms, " atoms")
     # Get the number of atom types
     println(io, natomtypes(list; dummy), " atom types")
     # Now print the new basis vectors
     println(io, "# Basis vector lengths:")
-    println(io, @sprintf("0.000000    %f", basis(list)[1,1]), "     xlo xhi")
-    println(io, @sprintf("0.000000    %f", basis(list)[2,2]), "     ylo yhi")
-    println(io, @sprintf("0.000000    %f", basis(list)[3,3]), "     zlo zhi")
+    println(io, @sprintf("0.000000    %f", b[1,1]), "     xlo xhi")
+    println(io, @sprintf("0.000000    %f", b[2,2]), "     ylo yhi")
+    println(io, @sprintf("0.000000    %f", b[3,3]), "     zlo zhi")
     # Add in tilt factors if needed
-    isdiag(basis(list)) || @printf(
-        io, "# Tilt factors:\n%f %f %f xy xz yz\n",
-        basis(list)[1,2], basis(list)[1,3], basis(list)[2,3]
-    )
+    isdiag(b) || @printf(io, "# Tilt factors:\n%f %f %f xy xz yz\n", b[1,2], b[1,3], b[2,3])
     # Get the different atom types; strip dummy atoms if needed
     atl = (dummy ? list : filter(!isdummy, list))
     # Enumerate the atoms - by name, not atomic number
@@ -109,7 +108,7 @@ function write_lammps_data(io::IO, list::PeriodicAtomList{D}; dummy::Bool=false)
         print(io, rpad(n, atomno_pad))
         print(io, rpad(findfirst(isequal(name(atom)), names), atomtype_pad))
         for m in 1:D
-            @printf(io, "% 16.10f", (basis(atl) * displacement(atom))[m])
+            @printf(io, "% 16.10f", (b * displacement(atom))[m])
         end
         println(io)
     end
