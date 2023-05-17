@@ -22,7 +22,7 @@ function readPOSCAR(io::IO)
         # Get the vectors from the next three lines
         vecs = sc * [parse.(Float64, v) for v in split.(lns)]
         # Convert to RealBasis and return
-        RealBasis{3}(vecs)
+        RealBasis{3}(vecs * ANG2BOHR)
     end
     # Check the next line for a letter.
     # Newer versions of VASP seem to use the atom type as a line before the
@@ -107,7 +107,7 @@ function writePOSCAR(
     println(io, comment, "\n1")
     # Write the basis vectors
     for v in basis(list)
-        println(io, (@sprintf("   % -21.16f", x) for x in v)...)
+        println(io, (@sprintf("   % -21.16f", x * BOHR2ANG) for x in v)...)
     end
     # Figure out what types of atoms there are and how many
     atom_types = atomtypes(list; dummy)
@@ -197,10 +197,11 @@ function readWAVECAR(io::IO; quiet = false)
     nband = Int(read(io, Float64))
     # Energy cutoff
     ecut = read(io, Float64)
-    # Reciprocal lattice vectors
-    rlatt = convert(ReciprocalBasis, RealBasis{3}([read(io, Float64) for a = 1:3, b = 1:3]))
+    # Real and reciprocal lattice vectors
+    latt = RealBasis{3}([ANG2BOHR * read(io, Float64) for _ in 1:3, _ in 1:3])
+    rlatt = convert(ReciprocalBasis, latt)
     # Get HKL coefficient bounds (as done in WaveTrans)
-    hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut, c = CVASP))
+    hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut * EV2HARTREE))
     # Bare wavefunction to be filled
     wf = PlanewaveWavefunction{3,Complex{Float32}}(rlatt, nspin, nkpt, nband, hklbounds...)
     # Loop through the spins
