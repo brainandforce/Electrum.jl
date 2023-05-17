@@ -52,11 +52,11 @@ julia> M = 3.5 * [0 1 1; 1 0 1; 1 1 0]
  3.5  0.0  3.5
  3.5  3.5  0.0
 
-julia> Electrum.basis_string(M, letters=true, length=true, unit="Å")
+julia> Electrum.basis_string(M, letters=true, length=true, unit="bohr")
 3-element Vector{String}:
- "  a: [  0.000000  3.500000  3.500000 ]   (4.949747 Å)"
- "  b: [  3.500000  0.000000  3.500000 ]   (4.949747 Å)"
- "  c: [  3.500000  3.500000  0.000000 ]   (4.949747 Å)"
+ "  a: [  0.000000  3.500000  3.500000 ]   (4.949747 bohr)"
+ "  b: [  3.500000  0.000000  3.500000 ]   (4.949747 bohr)"
+ "  c: [  3.500000  3.500000  0.000000 ]   (4.949747 bohr)"
 ```
 """
 function basis_string(
@@ -108,8 +108,8 @@ function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pa
     print(io, join(" "^pad .* s, "\n"))
 end
 
-printbasis(io::IO, b::RealBasis; kwargs...) = printbasis(io, matrix(b), unit="Å"; kwargs...)
-printbasis(io::IO, b::ReciprocalBasis; kw...) = printbasis(io, matrix(b), unit="Å⁻¹"; kw...)
+printbasis(io::IO, b::RealBasis; kwargs...) = printbasis(io, matrix(b), unit="bohr"; kwargs...)
+printbasis(io::IO, b::ReciprocalBasis; kw...) = printbasis(io, matrix(b), unit="rad*bohr⁻¹"; kw...)
 printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
 printbasis(a; kwargs...) = printbasis(stdout, a; kwargs...)
 
@@ -125,7 +125,7 @@ function atom_string(a::AbstractAtomPosition; name=true, num=true)
         rpad(string(a.atom.num), 4)^num,
         rpad(a.atom.name, 6)^name,
         vector_string(a.pos),
-        "  Å"^(a isa CartesianAtomPosition),
+        "  bohr"^(a isa CartesianAtomPosition),
         "  (occupancy $(a.occ))"^(a.occ != 1)
     )
 end
@@ -198,8 +198,8 @@ function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid)
     dimstring = join(string.(size(g)), "×") * " "
     println(io, dimstring, typeof(g), " with real space basis vectors:")
     printbasis(io, g)
-    @printf(io, "\nCell volume: %16.10f Å", volume(g))
-    @printf(io, "\nVoxel size:  %16.10f Å", voxelsize(g))
+    @printf(io, "\nCell volume: %16.10f bohr", volume(g))
+    @printf(io, "\nVoxel size:  %16.10f bohr³", voxelsize(g))
 end
 
 #---Types from data/reciprocalspace.jl-------------------------------------------------------------#
@@ -225,7 +225,7 @@ function Base.show(io::IO, ::MIME"text/plain", g::HKLData)
         print(io, "\n  ", '`' + n, ":", )
         sz = size(g)[n]
         @printf(
-            io, "%12.6f Å⁻¹ to %.6f Å⁻¹",
+            io, "%12.6f rad*bohr⁻¹ to %.6f rad*bohr⁻¹",
             -div(sz-1, 2) * lengths(basis(g))[n],
             div(sz, 2) * lengths(basis(g))[n],
         )
@@ -284,10 +284,10 @@ function Base.show(io::IO, ::MIME"text/plain", xtal::Crystal{D}) where D
     println(io, typeof(xtal), " (", formula_string(xtal), ", space group ", xtal.sgno, "): ")
     # Print basis vectors
     println(io, "\n  Primitive basis vectors:")
-    printbasis(io, xtal, pad=2, unit="Å")
+    printbasis(io, xtal, pad=2, unit="bohr")
     if xtal.transform != SMatrix{D,D,Float64}(LinearAlgebra.I)
         println(io, "\n\n  Conventional basis vectors:")
-        printbasis(io, basis(xtal) * xtal.transform, pad=2, unit="Å")
+        printbasis(io, basis(xtal) * xtal.transform, pad=2, unit="bohr")
     end
     # TODO: Add in more info about atomic positions, space group
     println(io, "\n\n  ", length(xtal.atoms), " atomic positions:")
