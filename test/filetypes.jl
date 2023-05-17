@@ -27,5 +27,5 @@ end
 @testset "LAMMPS position data" begin
     # This is going to suffer from floating point errors/parsing differences
     @test all(isapprox.(displacement.(lammps.atoms), displacement.(poscar.atoms), atol=1e-6))
-    @test isapprox(basis(lammps), basis(poscar), atol=1e-6)
+    @test isapprox(basis(lammps), basis(poscar), atol=1e-6 * Electrum.ANG2BOHR)
 end
