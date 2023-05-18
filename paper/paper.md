@@ -36,43 +36,42 @@ bibliography: paper.bib
 Software implementing density functional theory (DFT) in a planewave basis allows for the
 calculation of a large number of material properties - besides simply recovering the ground-state
 wavefunction for the system, packages may implement tools for calculating phonon modes, electron
-localization, and elasticity. However, structural chemists have developed their own theory tools for
-understanding the factors that favor specific atomic arrangements: some examples of these tools are
-crystal orbital Hamilton population (COHP) [@Dronskowski:1993], which resolves chemical bonding by
-interaction energies and atom type, and DFT-Chemical Pressure [@Fredrickson:2012], which projects
-the steric effects in crystals onto atom-centered spherical harmonic representations of pressure.
+localization, and elasticity. However, structural chemists have developed their own tools to
+understand the factors that favor specific atomic arrangements: some examples are crystal orbital
+Hamilton population (COHP) [@Dronskowski:1993], which resolves chemical bonding by interaction
+energies and atom type, and DFT-Chemical Pressure [@Fredrickson:2012], which projects the steric
+effects in crystals onto atom-centered spherical harmonic representations of pressure.
 
 Many tools utilized in structural chemistry are written in C or FORTRAN, which allow for high
 performance - critical for systems with large numbers of degrees of freedom - but the low-level
 nature of those languages serve as a barrier to entry for those who do not have a background in 
-programming. In particular, we consider new chemistry graduate students whose first introduction
-to software development comes with coursework or research. The Julia programming language
-[@Bezanson:2017] can achieve similar speeds to C or FORTRAN implementations while providing a lower
-barrier to entry for novice programmers. With a toolkit that provides structures for a number of 
-commonly used data types and their associated methods, chemical theorists can focus on writing the
-most critical portions of their theory tools without having to reimplement those structures for
-every new tool.
+programming. In particular, we consider new chemistry graduate students who are introduced to
+software development through coursework or research. The Julia programming language [@Bezanson:2017] 
+can achieve similar speeds to C or FORTRAN implementations while providing a lower barrier to entry
+for novice programmers. With a toolkit that provides structures for a number of commonly used data
+types and their associated methods, chemical theorists can write extensible theory tools which can
+easily interface with other Julia packages or computational chemistry software.
 
 # Statement of need
 
-`Electrum.jl` provides a number of data types that can be used to store and manipulate data
-associated with crystal structures. This data may be read from a variety of sources: at the moment,
-we support outputs from abinit [@Gonze:2020; @Romero:2020; @Gonze:2002], the Vienna *ab initio*
-Simulation Package (VASP) [@Kresse:1993; @Kresse:1996A; @Kresse:1996B;], LAMMPS [@Thompson:2022], 
-and the XCrysDen XSF data format [@Kokalj:1999].
+`Electrum.jl` was designed for graduate and undergraduate students who may be introduced to
+programming through computational chemistry. The package provides a number of data types that can be
+used to store data associated with crystal structures, and methods that perform common operations.
+As much as possible, we accomplish this by overloading Julia `Base` methods so that syntax is
+intuitive for new users. Users may import data from a variety of sources: at the moment, we support
+FORTRAN binary outputs from abinit [@Gonze:2020; @Romero:2020; @Gonze:2002] and Vienna *ab initio*
+Simulation Package (VASP) [@Kresse:1993; @Kresse:1996A; @Kresse:1996B], atomic position data from
+LAMMPS [@Thompson:2022], and the XCrysDen XSF data format [@Kokalj:1999]. Atomic position data may
+be exported to the XYZ and VASP POSCAR formats, and more complex scalar data may be exported to the
+XCrysDen XSF format.
 
-`Electrum.jl` was designed for graduate and undergraduate students who are familiar with solid-state
-chemistry but are new to programming. The Julia REPL provides a convenient interactive interface for
-working with the data, and all exported data types have pretty-print methods that provide a summary
-of relevant information in a data structure without polluting the output.
-
-The data types provided by `Electrum.jl` are designed to allow for the storage of crystal data in
-arbitrary dimensions. This functionality may be useful in the study of structural phenomena modeled
-in projective spaces, such as incommensurately modulated structures and quasicrystals.
-
-To maintain performance in a variety of scenarios, we took special care to optimize the layouts of
-commonly used data structures. Static vectors and matrices from the `StaticArrays.jl` package are
-used wherever possible in data structure definitions to match the dimensionality of the structure.
+Although `Electrum.jl` aims for simplicity for new users, the data types provide a great deal of 
+flexibility for the construction of advanced tools. When possible, data structures are defined with
+a dimension parameter that may be set arbitrarily, and methods which operate on them are defined
+generically so that they produce valid results regardless of dimension. This enables the development
+of tools that model crystals with more complex periodicity, such as incommensurately modulated
+crystals and quasicrystals, whose lattices are commonly modeled in a higher-dimensional superspace 
+which is cut at an irrational angle and projected down to 3 dimensions [@deBruijn:1981].
 
 # Examples
 
@@ -93,7 +92,7 @@ constructs an orthogonal supercell.
 using Electrum
 
 MgZn2 = readPOSCAR("POSCAR")  # containing the atomic coordinates
-T = [1 1 0; -1 1 0; 0 0 1] * []
+T = [1 1 0; -1 1 0; 0 0 1] * diagm([5, 5, 3])
 MgZn2_sc = supercell(MgZn2, T)
 writePOSCAR4("POSCAR2", MgZn2_sc)
 ```
@@ -111,23 +110,23 @@ Figure ?. The calculated values were obtained from an abinit calculation {insert
 here}. The phases associated with each reflection are encoded in the color of each spot. This is
 compared to a real diffraction pattern obtained for the same compound using Mo-Kα radiation.
 Discrepancies between calculated and real diffraction patterns may be attributed to the DFT
-calculation being run at zero temperature and the approximations made by choice of the
-exchange-correlation functional.
+calculation being run at zero temperature and the approximations made by choice of pseudopotential
+and exchange-correlation functional.
 
 One may verify that the inverse FFT of the FFT of the density grid returns the same values to within
 floating-point error:
 
 # Development roadmap
 
-`Electrum.jl` will seek to integrate itself with `AtomsBase.jl` to allow for easier interoperability
-with other Julia packages that are used to perform chemical computation, such as `DFTK.jl`. This
-integration will allow other packages to use methods provided by `Electrum.jl` to read files from
-formats that were previously not supported, particularly the FORTRAN binary outputs from abinit and
-VASP.
+`Electrum.jl` seeks to integrate itself with `AtomsBase.jl` to allow for easier interoperability
+with other Julia packages used to perform chemical computation, such as `DFTK.jl`. This integration
+will allow other packages to use methods provided by `Electrum.jl` to read files in formats not 
+supported by those packages, particularly the FORTRAN binary outputs from abinit and VASP.
 
 Data visualization was a primary consideration for the authors, and while visualization is outside
-of the scope of `Electrum.jl`, we aim to provide `Makie.jl` plot recipes in the future, allowing for
-convenient visualization of data structures within Visual Studio Code or other editors.
+of the scope of `Electrum.jl`, we aim to provide `Makie.jl` plot recipes in the future as part of a
+supplemental package, allowing for convenient visualization of data structures in editors that can
+render HTML.
 
 Further testing and development will also be directed at the use of GPUs to massively parallelize
 large computations. This will leverage the data structures provided by packages such as `CUDA.jl`,
