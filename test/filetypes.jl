@@ -13,6 +13,10 @@ end
         getfield(header_den, s) == getfield(header_wfk, s)
         for s in fieldnames(Electrum.ABINITHeader)[4:end]
     )
+    @test header_den != header_wfk
+    @test header_den[:fform] === header_den.fform
+    header_wfk[:fform] = header_den[:fform]
+    @test header_den == header_wfk
     # Check that the correct FFT grid size is read
     @test size(den) == (24, 24, 36)
     # Check that there's 1 spin, 4 k-points, and 8 bands
