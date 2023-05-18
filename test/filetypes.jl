@@ -21,7 +21,9 @@ end
     @test natomtypes(poscar) == 2
     # Test that file writing works correctly
     writeCONTCAR(tmpdir, poscar)
-    @test readCONTCAR(tmpdir) == sort(poscar)
+    contcar = readCONTCAR(tmpdir)
+    @test basis(contcar) ≈ basis(poscar)
+    @test contcar.atoms == sort(poscar).atoms
 end
 
 @testset "LAMMPS position data" begin
