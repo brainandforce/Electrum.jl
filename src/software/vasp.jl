@@ -400,6 +400,6 @@ function get_fermi(io::IO)
     return (fermi = fermi, alphabeta = alphabeta)
 end
 
-get_fermi(filename) = open(get_fermi, filename)
+get_fermi(file) = open(get_fermi, isdir(file) ? joinpath(file, "OUTCAR") : file)
 
 get_fermi() = open(get_fermi, "OUTCAR")
