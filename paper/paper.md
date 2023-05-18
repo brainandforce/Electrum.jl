@@ -25,7 +25,8 @@ affiliations:
  - name: Department of Chemistry, Univesity of Wisconsin-Madison, USA
    index: 1
  - name: School of Computer, Data & Information Sciences, Univesity of Wisconsin-Madison, USA
-date: 10 May 2023
+   index: 2
+date: 18 May 2023
 bibliography: paper.bib
 
 ---
@@ -37,7 +38,7 @@ calculation of a large number of material properties - besides simply recovering
 wavefunction for the system, packages may implement tools for calculating phonon modes, electron
 localization, and elasticity. However, structural chemists have developed their own theory tools for
 understanding the factors that favor specific atomic arrangements: some examples of these tools are
-crystal orbital Hamilton population (COHP) [@Blöchl:1993], which resolves chemical bonding by
+crystal orbital Hamilton population (COHP) [@Dronskowski:1993], which resolves chemical bonding by
 interaction energies and atom type, and DFT-Chemical Pressure [@Fredrickson:2012], which projects
 the steric effects in crystals onto atom-centered spherical harmonic representations of pressure.
 
@@ -45,27 +46,29 @@ Many tools utilized in structural chemistry are written in C or FORTRAN, which a
 performance - critical for systems with large numbers of degrees of freedom - but the low-level
 nature of those languages serve as a barrier to entry for those who do not have a background in 
 programming. In particular, we consider new chemistry graduate students whose first introduction
-to software development comes with coursework or research. The Julia programming language can
-achieve similar speeds to C or FORTRAN implementations while providing a lower barrier to entry for
-novice programmers. With a toolkit that provides structures for a number of commonly used data types
-and their associated methods, chemical theorists can focus on writing the most critical portions of
-their theory tools without having to reimplement those structures for every new tool.
+to software development comes with coursework or research. The Julia programming language
+[@Bezanson:2017] can achieve similar speeds to C or FORTRAN implementations while providing a lower
+barrier to entry for novice programmers. With a toolkit that provides structures for a number of 
+commonly used data types and their associated methods, chemical theorists can focus on writing the
+most critical portions of their theory tools without having to reimplement those structures for
+every new tool.
 
 # Statement of need
 
 `Electrum.jl` provides a number of data types that can be used to store and manipulate data
 associated with crystal structures. This data may be read from a variety of sources: at the moment,
 we support outputs from abinit [@Gonze:2020; @Romero:2020; @Gonze:2002], the Vienna *ab initio*
-Simulation Package (VASP) [], and LAMMPS [], as well as the XCrysDen XSF data format [].
-
-The data types provided by `Electrum.jl` are designed to allow for the storage of crystal data in
-arbitrary dimensions. This functionality may be useful in the study of structural phenomena modeled
-in projective spaces, such as incommensurately modulated structures and quasicrystals. 
+Simulation Package (VASP) [@Kresse:1993; @Kresse:1996A; @Kresse:1996B;], LAMMPS [@Thompson:2022], 
+and the XCrysDen XSF data format [@Kokalj:1999].
 
 `Electrum.jl` was designed for graduate and undergraduate students who are familiar with solid-state
 chemistry but are new to programming. The Julia REPL provides a convenient interactive interface for
 working with the data, and all exported data types have pretty-print methods that provide a summary
 of relevant information in a data structure without polluting the output.
+
+The data types provided by `Electrum.jl` are designed to allow for the storage of crystal data in
+arbitrary dimensions. This functionality may be useful in the study of structural phenomena modeled
+in projective spaces, such as incommensurately modulated structures and quasicrystals.
 
 To maintain performance in a variety of scenarios, we took special care to optimize the layouts of
 commonly used data structures. Static vectors and matrices from the `StaticArrays.jl` package are
@@ -83,7 +86,7 @@ straightforward for diagonal matrices, but significantly more complicated for no
 To facilitate this, the `supercell()` function allows for the conversion of a unit cell stored in a
 `PeriodicAtomList` to a supercell transformed by an integer matrix, integer vector (corresponding to
 a diagonal matrix), or integer scalar. As an example, one may transform data from a VASP POSCAR file
-containing the basis vectors and atomic coordinates for MgZn2, a hexagonal Laves phase, and
+containing the basis vectors and atomic coordinates for MgZn₂, a hexagonal Laves phase, and
 constructs an orthogonal supercell.
 
 ```julia
