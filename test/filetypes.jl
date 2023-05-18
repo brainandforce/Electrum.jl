@@ -15,6 +15,7 @@ end
     )
     @test header_den != header_wfk
     @test header_den[:fform] === header_den.fform
+    @test Crystal(header_den) == Crystal(header_wfk)
     header_wfk[:fform] = header_den[:fform]
     @test header_den == header_wfk
     # Check that the correct FFT grid size is read
