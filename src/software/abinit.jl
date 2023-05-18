@@ -156,7 +156,7 @@ end
 
 # Index notation for this thing, just in case that's easier
 Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
-Base.setindex!(h::ABINITHeader, x, name::Symbol) = setfield!(x, h, name)
+Base.setindex!(h::ABINITHeader, x, name::Symbol) = setfield!(h, name, x)
 
 #=
 """
