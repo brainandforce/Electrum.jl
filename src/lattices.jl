@@ -59,6 +59,8 @@ end
 DataSpace(::Type{RealBasis{D}}) where D = ByRealSpace{D}()
 DataSpace(::Type{ReciprocalBasis{D}}) where D = ByReciprocalSpace{D}()
 
+Base.show(io::IO, b::AbstractBasis) = print(io, typeof(b), '(', matrix(b), ')')
+
 # Convert matrix input to a vector of vectors
 function (T::Type{<:AbstractBasis{D}})(M::AbstractMatrix{<:Real}) where D
     size(M) === (D,D) || throw(
