@@ -1,4 +1,18 @@
 """
+    Electrum.convert_vasp_path(path, filename)
+
+Converts a path string (or perhaps a dedicated path type) to a filename for VASP files. Because
+VASP files have predictable names, this function checks to see if the provided path is a file or
+directory, then appends the expected filename to it.
+
+The empty string is simply converted to provided filename.
+"""
+function convert_vasp_path(path, filename)
+    isempty(path) && return(filename)
+    return isdir(path) ? joinpath(path, filename) : path
+end
+
+"""
     readPOSCAR(file) -> PeriodicAtomList{3}
 
 Reads a VASP POSCAR file. A POSCAR contains the basis vectors of the system (potentially given with
@@ -62,7 +76,7 @@ function readPOSCAR(io::IO)
     return PeriodicAtomList(latt, positions)
 end
 
-readPOSCAR(file) = open(readPOSCAR, isdir(file) ? joinpath(file, "POSCAR") : file)
+readPOSCAR(file) = open(readPOSCAR, convert_vasp_path(file, "POSCAR"))
 readPOSCAR() = open(readPOSCAR, "POSCAR")
 
 """
@@ -76,7 +90,7 @@ The function is broadly similar to `readPOSCAR`, but the default file names for 
 or no argument is `CONTCAR` instead of `POSCAR`. For more help, see `readPOSCAR`.
 """
 readCONTCAR(io::IO) = readPOSCAR(io)
-readCONTCAR(file) = open(readPOSCAR, isdir(file) ? joinpath(file, "CONTCAR") : file)
+readCONTCAR(file) = open(readPOSCAR, convert_vasp_path(file, "CONTCAR"))
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
 
 """
@@ -129,8 +143,7 @@ end
 writePOSCAR(io::IO, xtal::AbstractCrystal; kwargs...) = writePOSCAR(io, xtal.atoms; kwargs...)
 
 function writePOSCAR(file, data; kwargs...)
-    f = isdir(file) ? joinpath(file, "CONTCAR") : file
-    open(io -> writePOSCAR(io, data; kwargs...), f, write=true)
+    open(io -> writePOSCAR(io, data; kwargs...), convert_vasp_path(file, "POSCAR"), write=true)
 end
 
 writePOSCAR(data; kwargs...) = writePOSCAR("POSCAR", data; kwargs...)
@@ -144,8 +157,7 @@ of `POSCAR`. For more detailed help, see `writePOSCAR`.
 writeCONTCAR(io::IO, data; kwargs...) = writePOSCAR(io, data; kwargs...)
 
 function writeCONTCAR(file, data; kwargs...)
-    f = isdir(file) ? joinpath(file, "CONTCAR") : file
-    open(io -> writePOSCAR(io, data; kwargs...), f, write=true)
+    open(io -> writePOSCAR(io, data; kwargs...), convert_vasp_path(file, "CONTCAR"), write=true)
 end
 
 writeCONTCAR(data; kwargs...) = writePOSCAR("CONTCAR", data; kwargs...)
@@ -257,7 +269,7 @@ function readWAVECAR(io::IO; quiet = false)
 end
 
 function readWAVECAR(file; quiet = false)
-    open(io -> readWAVECAR(io; quiet), isdir(file) ? joinpath(file, "WAVECAR") : file)
+    open(io -> readWAVECAR(io; quiet), convert_vasp_path(file, "WAVECAR"))
 end
 
 readWAVECAR(; quiet = false) = readWAVECAR("WAVECAR"; quiet)
@@ -316,7 +328,7 @@ function readDOSCAR(io::IO)
     return (tdos, pdos)
 end
 
-readDOSCAR(file) =  open(readDOSCAR, isdir(file) ? joinpath(file, "DOSCAR") : file)
+readDOSCAR(file) =  open(readDOSCAR, convert_vasp_path(file, "DOSCAR"))
 readDOSCAR() = open(readDOSCAR, "DOSCAR")
 
 """
@@ -384,7 +396,7 @@ function readPROCAR(io::IO)
     )
 end
 
-readPROCAR(file) = open(readPROCAR, isdir(file) ? joinpath(file, "PROCAR") : file)
+readPROCAR(file) = open(readPROCAR, convert_vasp_path(file, "PROCAR"))
 readPROCAR() = open(readPROCAR, "PROCAR")
 
 """
@@ -400,6 +412,6 @@ function get_fermi(io::IO)
     return (fermi = fermi, alphabeta = alphabeta)
 end
 
-get_fermi(file) = open(get_fermi, isdir(file) ? joinpath(file, "OUTCAR") : file)
+get_fermi(file) = open(get_fermi, convert_vasp_path(file, "OUTCAR"))
 
 get_fermi() = open(get_fermi, "OUTCAR")
