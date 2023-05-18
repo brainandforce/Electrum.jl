@@ -13,7 +13,7 @@ The `AbstractBasis` type contains two subtypes, `RealBasis` and `ReciprocalBasis
 used to represent the basis vectors of a crystal.
 
 `AbstractBasis` types use the following conventions:
-  * The units are assumed to be angstroms or inverse angstroms.
+  * The units are assumed to be bohr for lengths or rad bohr⁻¹ for inverse.
   * Conversion between the two involve a factor of 2π (multiplication for the `RealBasis` >  
 `ReciprocalBasis` conversion, and vice versa).
 
@@ -54,9 +54,9 @@ or an atomic number of zero. These are useful for marking important positions in
 ## `CartesianAtomPosition` and `FractionalAtomPosition`
 
 These types are combinations of a `NamedAtom` and an `SVector`. A `CartesianAtomPosition` describes
-an atomic coordinate in the default length units (angstroms), and a `FractionalAtomPosition`
-describes an atomic coordinate with respect to a crystal lattice basis, which is not included with
-the coordinate.
+an atomic coordinate in the default length units (bohr), and a `FractionalAtomPosition` describes
+an atomic coordinate with respect to a crystal lattice basis, which is not included with the
+coordinate.
 
 ## `AtomList` and `PeriodicAtomList`
 
