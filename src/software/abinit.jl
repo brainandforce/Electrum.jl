@@ -580,11 +580,6 @@ Reads the header of an ABINIT output file, automatically determining the format 
 the first few digits.
 """
 function read_abinit_header(io::IO)
-    # Select which function to use based on the headform value
-    fdict = Dict{Int, Function}(
-        57 => read_abinit_header_57,
-        80 => read_abinit_header_80,
-    )
     # Get the info stored in the header
     (codvsn, headform, fform) = get_abinit_version(io)
     # @debug string("abinit version ", codvsn, " (header version ", headform, ")")
