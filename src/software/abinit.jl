@@ -149,6 +149,11 @@ Base.@kwdef mutable struct ABINITHeader
     pawdata::Matrix{Matrix{Float64}} = Matrix{Matrix{Float64}}(undef, 0, 0)    # size nspden*natom
 end
 
+# Equality definition
+function Base.:(==)(h1::T, h2::T) where T<:ABINITHeader
+    return all(getfield(h1, s) == getfield(h2, s) for s in fieldnames(T))
+end
+
 # Index notation for this thing, just in case that's easier
 Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
 Base.setindex!(h::ABINITHeader, x, name::Symbol) = setfield!(x, h, name)
