@@ -260,6 +260,10 @@ function Base.setindex!(
     wf[PlanewaveIndex(spin, kpt, band, g)] = x
 end
 
+function Base.show(io::IO, wf::T) where T<:PlanewaveWavefunction
+    print(io, PlanewaveWavefunction, Tuple(getfield(wf, s) for s in fieldnames(T)))
+end
+
 """
     fermi(wf::PlanewaveWavefunction) -> Float64
 
