@@ -6,6 +6,7 @@ using FFTW
 using Printf
 using ComputedFieldTypes
 using NormalForms
+using Requires
 
 const ELEMENTS = 
 ( 
@@ -166,5 +167,11 @@ export read_lammps_data, write_lammps_data
 include("show.jl")
 # Precompilation directives
 include("precompile.jl")
+
+function __init__()
+    @require TOML="fa267f1f-6049-4f14-aa54-33bafae1ed76" begin
+        include("software/toml.jl")
+    end
+end
 
 end # end of module
