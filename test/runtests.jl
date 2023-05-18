@@ -6,6 +6,8 @@ tmpdir = mktempdir()
 Aqua.test_all(Electrum; project_toml_formatting=false)
 
 xsf = readXSF3D("files/test.xsf")
+header_den = Electrum.read_abinit_header("files/Sc_eq_o_DEN")
+header_wfk = Electrum.read_abinit_header("files/Sc_eq_o_WFK")
 v80_den = read_abinit_DEN("files/Sc_eq_o_DEN")
 v80_wfk = read_abinit_WFK("files/Sc_eq_o_WFK")
 wavecar = readWAVECAR("files/WAVECAR")

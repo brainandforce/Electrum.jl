@@ -8,6 +8,11 @@ end
 @testset "abinit outputs" begin
     den = v80_den["density_total"]
     wfk = v80_wfk["wavefunction"]
+    # fform differs between the two - perhaps this could be useful later
+    @test all(
+        getfield(header_den, s) == getfield(header_wfk, s)
+        for s in fieldnames(Electrum.ABINITHeader)[4:end]
+    )
     # Check that the correct FFT grid size is read
     @test size(den) == (24, 24, 36)
     # Check that there's 1 spin, 4 k-points, and 8 bands
