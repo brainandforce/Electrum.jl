@@ -160,6 +160,7 @@ end
 Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
 Base.setindex!(h::ABINITHeader, x, name::Symbol) = setfield!(x, h, name)
 
+#=
 """
     Electrum.symrel_to_sg(symrel::AbstractVector{<:AbstractMatrix{<:Integer}}) -> Int
 
@@ -174,8 +175,8 @@ function symrel_to_sg(symrel::AbstractVector{<:AbstractMatrix{<:Integer}})
     twofold = [diagm([-1, -1, -1])]
     return 1 # for now
 end
-
 symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
+=#
 
 function Crystal(h::ABINITHeader)
     atomlist = PeriodicAtomList(
