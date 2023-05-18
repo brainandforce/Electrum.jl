@@ -15,13 +15,6 @@ struct ABINITPseudopotentialInfo
     md5_pseudos::String      # Really, not as a UInt?
 end
 
-function Base.show(io::IO, ::MIME"text/plain", pspinfo::ABINITPseudopotentialInfo)
-    println(io, typeof(pspinfo), ":")
-    println(io, "  Title:  \"", pspinfo.title)
-    println(io, "  Atom:    ", pspinfo.znuclpsp, " (", ELEMENTS[Int(pspinfo.znuclpsp)], ")")
-    println(io, "  Charge:  ", pspinfo.zionpsp)
-end
-
 # Making this thing mutable is probably the best idea here
 # That way we can initialize the struct and then update all the data
 """

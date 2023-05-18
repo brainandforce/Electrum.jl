@@ -327,3 +327,10 @@ function Base.show(io::IO, ::MIME"text/plain", h::ABINITHeader)
         end
     end
 end
+
+function Base.show(io::IO, ::MIME"text/plain", pspinfo::ABINITPseudopotentialInfo)
+    println(io, typeof(pspinfo), ":")
+    println(io, "  Title:  \"", pspinfo.title)
+    println(io, "  Atom:    ", pspinfo.znuclpsp, " (", ELEMENTS[Int(pspinfo.znuclpsp)], ")")
+    println(io, "  Charge:  ", pspinfo.zionpsp)
+end
