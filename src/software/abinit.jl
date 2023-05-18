@@ -600,6 +600,8 @@ function read_abinit_header(io::IO)
     return header
 end
 
+read_abinit_header(filename) = open(read_abinit_header, filename)
+
 """
     Electrum.read_abinit_datagrids(T, io, nspden, ngfft) -> Vector{Matrix{T}}
 
