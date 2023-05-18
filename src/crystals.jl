@@ -39,6 +39,10 @@ mutable struct Crystal{D} <: AbstractCrystal{D}
     end
 end
 
+function Base.:(==)(x1::T, x2::T) where T<:Crystal
+    return all(getfield(x1, s) == getfield(x2, s) for s in fieldnames(T))
+end
+
 # The name `CrystalData{D}` was not used to avoid implying that this is a subtype of 
 # `AbstractCrystalData{D}` - which is used only for datasets
 """

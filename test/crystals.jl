@@ -16,6 +16,11 @@ F = [-1 1 1; 1 -1 1; 1 1 -1]
     @test generators(ScAl2) == ScAl2_poscar
     @test length(convert(PeriodicAtomList, ScAl2)) == length(ScAl2_poscar) * det(F)
     @test basis(ScAl2) == RealBasis{3}(basis(ScAl2_poscar) * F)
+    # Test equality
+    ScAl2_cp = deepcopy(ScAl2)
+    @test ScAl2 == ScAl2_cp
+    @test ScAl2 !== ScAl2_cp                # different objects, same field values
+    @test ScAl2 != Crystal(ScAl2_poscar)    # because the transform changed for ScAl2
 end
 
 @testset "Crystals with datasets" begin
