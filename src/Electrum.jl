@@ -111,8 +111,8 @@ _selfdot(v) = dot(v,v)
 # Methods used in array operations that go beyond what's available in LinearAlgebra
 include("math.jl")
 export FFTBins, FFTLength
-# Abstract types used in type tree
-include("types.jl")
+# Dispatch traits for data
+include("traits.jl")
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export AbstractBasis, RealBasis, ReciprocalBasis
