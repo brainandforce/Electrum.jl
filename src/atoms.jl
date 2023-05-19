@@ -47,6 +47,15 @@ reset_name(a::NamedAtom) = NamedAtom(atomic_number(a))
 
 #---Atomic position data---------------------------------------------------------------------------#
 """
+    AbstractAtomPosition{D}
+
+Supertype that describes atomic positions in `D` dimensions, which include name, coordinate, and
+occupancy information.
+"""
+abstract type AbstractAtomPosition{D}
+end
+
+"""
     FractionalAtomPosition{D}
 
 Describes an atomic position within a crystal or other periodic structure. The coordinate in the
@@ -237,6 +246,14 @@ function move_into_cell(l::AbstractVector{<:FractionalAtomPosition}; atol=sqrt(e
 end
 
 #---Lists of atoms--------------------------------------------------------------------------------#
+"""
+    AbstractAtomList{D}
+
+Supertype for lists of atomic positions in `D` dimensions.
+"""
+abstract type AbstractAtomList{D}
+end
+
 """
     PeriodicAtomList{D}
 

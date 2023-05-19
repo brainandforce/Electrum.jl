@@ -113,10 +113,9 @@ include("math.jl")
 export FFTBins, FFTLength
 # Abstract types used in type tree
 include("types.jl")
-export AbstractBasis, AbstractCrystal, AbstractDataGrid, AbstractDensityOfStates
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
-export RealBasis, ReciprocalBasis
+export AbstractBasis, RealBasis, ReciprocalBasis
 export triangularize, lengths, volume, angles_cos, angles_rad, angles_deg, gram, isdiag, qr,
     maxHKLindex
 # Methods and structs for working with atomic positions
@@ -127,11 +126,11 @@ export name, atomic_number, isdummy, displacement, occupancy, distance, deduplic
     atomtypes, atomcounts, natomtypes
 # Methods and structs for working with crystal data
 include("crystals.jl")
-export Crystal, CrystalWithDatasets
+export AbstractCrystal, Crystal, CrystalWithDatasets
 export data, generators, set_transform!
 # Methods and structs for working with different types of data associated with crystals
 include("data/grids.jl")
-export basis
+export AbstractDataGrid, basis
 include("data/realspace.jl")
 export RealSpaceDataGrid
 export shift, volume, voxelsize, coord, nearest_index, integrate
@@ -141,7 +140,7 @@ export weight, nkpt, nband
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction, fermi
 include("data/dos.jl")
-export DensityOfStates, ProjectedDensityOfStates, FatBands
+export  AbstractDensityOfStates, DensityOfStates, ProjectedDensityOfStates, FatBands
 export smear, energies, nelectrons
 include("data/atomic.jl")
 export SphericalHarmonic

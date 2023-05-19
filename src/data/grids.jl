@@ -1,3 +1,12 @@
+"""
+    AbstractDataGrid{D,T}
+
+Supertype for crystal data associated with a grid of entries of type `T` in real or reciprocal
+space of dimension `D`.
+"""
+abstract type AbstractDataGrid{D,T} <: AbstractArray{T,D}
+end
+
 Base.has_offset_axes(g::AbstractDataGrid) = true
 
 Base.convert(T::Type{<:Array}, g::AbstractDataGrid) = convert(T, g.grid)

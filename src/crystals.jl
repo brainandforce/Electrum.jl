@@ -1,4 +1,13 @@
 """
+    AbstractCrystal{D}
+
+A crystal structure in `D` dimensions, containing information about the lattice, space group, and
+atoms contained within the crystal.
+"""
+abstract type AbstractCrystal{D}
+end
+
+"""
     Crystal{D} <: AbstractCrystal{D}
 
 A crystal structure in `D` dimensions. Contains information about the lattice, space group, and

@@ -1,4 +1,12 @@
 """
+    AbstractDensityOfStates
+
+Supertype for all density of states data.
+"""
+abstract type AbstractDensityOfStates
+end
+
+"""
     DensityOfStates
 
 Contains the total density of states information.
