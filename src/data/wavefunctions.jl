@@ -136,7 +136,7 @@ struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
     grange::NTuple{D,UnitRange{Int}}
     data::Array{T,4}
     function PlanewaveWavefunction(
-        basis::AbstractBasis{D},
+        basis::LatticeBasis,
         spins::AbstractVector{<:StaticVector{D,<:Real}},
         kpoints::AbstractVector{KPoint{D}},
         energies::AbstractArray{<:Real,3},
@@ -155,7 +155,7 @@ end
 
 """
     PlanewaveWavefunction{D,T}(
-        basis::AbstractBasis{D},
+        basis::LatticeBasis,
         nspin::Integer,
         nkpt::Integer,
         nband::Integer,
@@ -166,7 +166,7 @@ Constructs an empty `PlanewaveWavefunction` with `nspin` spins, `nkpt` k-points,
 G-vectors in the ranges given by `grange`.
 """
 function PlanewaveWavefunction{D,T}(
-    basis::AbstractBasis,
+    basis::LatticeBasis,
     nspin::Integer,
     nkpt::Integer,
     nband::Integer,

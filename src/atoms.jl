@@ -189,7 +189,7 @@ end
 
 """
     distance(a1::CartesianAtomPosition, a2::CartesianAtomPosition) -> Float64    
-    distance(b::AbstractBasis, a1::FractionalAtomPosition, a2::FractionalAtomPosition) -> Float64
+    distance(b::LatticeBasis, a1::FractionalAtomPosition, a2::FractionalAtomPosition) -> Float64
 
 Calculates the distance between two `FractionalAtomPosition` objects in the same basis `b`.
 """
@@ -197,7 +197,7 @@ function distance(a1::CartesianAtomPosition, a2::CartesianAtomPosition)
     return norm(displacment(a1) - displacement(a2))
 end
 
-function distance(b::AbstractBasis, a1::FractionalAtomPosition, a2::FractionalAtomPosition)
+function distance(b::LatticeBasis, a1::FractionalAtomPosition, a2::FractionalAtomPosition)
     return norm(RealBasis(b) * (displacement(a1) - displacement(a2)))
 end
 
@@ -264,7 +264,7 @@ struct PeriodicAtomList{D} <: AbstractAtomList{D}
     basis::RealBasis{D}
     atoms::Vector{FractionalAtomPosition{D}}
     function PeriodicAtomList(
-        b::AbstractBasis{D},
+        b::LatticeBasis,
         l::AbstractVector{FractionalAtomPosition{D}}
     ) where D
         return new{D}(b, deduplicate(l))
@@ -340,17 +340,17 @@ Converts a `PeriodicAtomList` to a list of Cartesian coordinates.
 AtomList(l::PeriodicAtomList) = AtomList(map(x -> CartesianAtomPosition(basis(l), x), l))
 
 """
-    PeriodicAtomList(b::RealBasis{D}, l::AbstractVector{CartesianAtomPosition{D}})
-    PeriodicAtomList(b::RealBasis{D}, l::AtomList{D})
+    PeriodicAtomList(b::LatticeBasis, l::AbstractVector{CartesianAtomPosition{D}})
+    PeriodicAtomList(b::LatticeBasis, l::AtomList{D})
 
 Uses the supplied basis vectors to convert Cartesian atomic positions in an `AtomList` to fractional
 positions with an associated basis.
 """
-function PeriodicAtomList(b::AbstractBasis{D}, l::AbstractVector{CartesianAtomPosition{D}}) where D
+function PeriodicAtomList(b::LatticeBasis, l::AbstractVector{CartesianAtomPosition{D}}) where D
     return PeriodicAtomList(b, map(x -> FractionalAtomPosition(b,x), l))
 end
 
-PeriodicAtomList(b::AbstractBasis{D}, l::AtomList{D}) where D = PeriodicAtomList(b, l.atoms)
+PeriodicAtomList(b::LatticeBasis, l::AtomList{D}) where D = PeriodicAtomList(b, l.atoms)
 
 deduplicate(l::AtomList; kw...) = AtomList(deduplicate(l.atoms; kw...))
 deduplicate(l::PeriodicAtomList; kw...) = PeriodicAtomList(basis(l), deduplicate(l.atoms; kw...))

@@ -17,7 +17,7 @@ struct RealSpaceDataGrid{D,T} <: AbstractDataGrid{D,T}
     orig::SVector{D,Float64}
     # Inner constructor
     function RealSpaceDataGrid(
-        basis::AbstractBasis{D},
+        basis::LatticeBasis,
         data::Array{T,D},
         orig::AbstractVector{<:Real} = zeros(SVector{D,Float64})
     ) where {D,T}
