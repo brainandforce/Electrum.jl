@@ -192,7 +192,7 @@ function readWAVECAR(io::IO; quiet = false)
         end
     end
     # Data entry counter (for the entries in the WAVECAR)
-    count = 0
+    ct = 0
     # Number of bytes per record
     nrecl = Int(read(io, Float64))
     @debug "Record length: " * string(nrecl)
@@ -202,7 +202,7 @@ function readWAVECAR(io::IO; quiet = false)
     rtag = Int(read(io, Float64))
     rtag == 45200 || error("Unsupported format: format value is " * string(rtag))
     # Jump to the next record
-    count +=1; seek(io, count*nrecl)
+    ct +=1; seek(io, ct*nrecl)
     # Number of k-points
     nkpt = Int(read(io, Float64))
     # Number of bands
@@ -224,9 +224,9 @@ function readWAVECAR(io::IO; quiet = false)
         # Loop through the k-points
         for kp in 1:nkpt
             # Seek to the next data
-            count += 1; seek(io, count*nrecl)
+            ct += 1; seek(io, ct*nrecl)
             # Number of plane waves for this k-point
-            @debug string("File pointer at ", position(io), " (", count, " * ", nrecl, ")")
+            @debug string("File pointer at ", position(io), " (", ct, " * ", nrecl, ")")
             npw = Int(read(io, Float64))
             # Add the position of the k-point to the list
             wf.kpoints[kp] = [read(io, Float64) for n in 1:3]
@@ -243,7 +243,7 @@ function readWAVECAR(io::IO; quiet = false)
             )
             for b in 1:nband
                 # Seek to the next entry
-                count +=1; seek(io, count*nrecl)
+                ct +=1; seek(io, ct*nrecl)
                 # Reset the HKL indices
                 hkl = zeros(MVector{3,Int})
                 for p in 1:npw
