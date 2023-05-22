@@ -10,8 +10,8 @@ is_linearly_independent(M::AbstractMatrix) = !isless(size(M)...) && rank(M) == m
 is_linearly_independent(vecs::AbstractVector...) = is_linearly_independent(hcat(vecs...))
 
 """
-    Electrum.reinterpret_index(sz::NTuple{D,<:Integer}, inds::Tuple) -> Tuple
-    Electrum.reinterpret_index(g, inds::Tuple) -> Tuple
+    Electrum.reinterpret_index(sz::NTuple{D,<:Integer}, i) -> typeof(i)
+    Electrum.reinterpret_index(g, i) -> typeof(i)
 
 Converts indices provided in a call to `getindex()` to valid array indices of the backing field that
 contains the data. This is intended for use with data structures that use zero-based indexing so
@@ -23,7 +23,11 @@ function reinterpret_index(sz::NTuple{D,<:Integer}, inds::Tuple) where D
     end
 end
 
-reinterpret_index(g, inds::Tuple) = reinterpret_index(size(g), inds)
+function reinterpret_index(sz::NTuple{D,<:Integer}, i::CartesianIndex{D}) where D
+    return CartesianIndex(mod.(i.I, sz) .+ 1)
+end
+
+reinterpret_index(g, i) = reinterpret_index(size(g), i)
 
 """
     Electrum.convert_to_transform(M, [dimensions]) -> AbstractMatrix{Int}
