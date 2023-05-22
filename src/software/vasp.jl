@@ -208,7 +208,8 @@ function readWAVECAR(io::IO; quiet = false)
     # Number of bands
     nband = Int(read(io, Float64))
     # Energy cutoff
-    ecut = read(io, Float64)
+    ecut_eV = read(io, Float64)
+    ecut = ecut_eV * EV2HARTREE
     # Real and reciprocal lattice vectors
     # Given in angstroms in the WAVECAR - convert to bohr for the PlanewaveWavefunction constructor
     # But use the raw data for the calculation of the G-vector bounds/array allocation
@@ -216,7 +217,7 @@ function readWAVECAR(io::IO; quiet = false)
     raw_reciprocal_lattice = 2π * inv(transpose(raw_real_lattice))
     rlatt = ReciprocalBasis{3}(raw_real_lattice / ANG2BOHR)
     # Get HKL coefficient bounds (as done in WaveTrans)
-    hklbounds = SVector{3}(-g:g for g in maxHKLindex(raw_reciprocal_lattice, ecut, c = CVASP))
+    hklbounds = SVector{3}(-g:g for g in maxHKLindex(raw_reciprocal_lattice, ecut_eV, c = CVASP))
     # Bare wavefunction to be filled
     wf = PlanewaveWavefunction{3,Complex{Float32}}(rlatt, nspin, nkpt, nband, hklbounds...)
     # Loop through the spins
@@ -252,11 +253,11 @@ function readWAVECAR(io::IO; quiet = false)
                     # Increment the HKL indices
                     while true
                         # Get the energy of the vector
-                        sumkg = [dot(wf.kpoints[kp] + hkl, rlatt[:,n]) for n in 1:3]
-                        etot = dot(sumkg, sumkg) / 2
+                        sumkg = raw_reciprocal_lattice * (wf.kpoints[kp] + hkl)
+                        etot = dot(sumkg, sumkg) / CVASP
                         # Break when the G-vector energy is below ecut
                         # This may occur immediately if the G-vector already meets the criteria
-                        etot < ecut ? break : incrementHKL!(hkl, hklbounds)
+                        etot < ecut_eV ? break : incrementHKL!(hkl, hklbounds)
                     end
                     wf[s, kp, b, hkl...] = pw
                     incrementHKL!(hkl, hklbounds)
