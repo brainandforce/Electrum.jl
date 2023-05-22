@@ -264,6 +264,8 @@ function Base.show(io::IO, wf::T) where T<:PlanewaveWavefunction
     print(io, PlanewaveWavefunction, Tuple(getfield(wf, s) for s in fieldnames(T)))
 end
 
+FFTBins(wf::PlanewaveWavefunction) = FFTBins(length.(wf.grange)...)
+
 """
     fermi(wf::PlanewaveWavefunction) -> Float64
 
