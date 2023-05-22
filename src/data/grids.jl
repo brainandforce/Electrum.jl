@@ -32,6 +32,9 @@ Base.axes(g::AbstractDataGrid, i::Integer) = range(0, size(g, i) - 1)
 Base.getindex(g::AbstractDataGrid, i...) = getindex(g.data, reinterpret_index(g, i)...)
 Base.setindex!(g::AbstractDataGrid, x, i...) = setindex!(g.data, x, reinterpret_index(g, i)...)
 
+Base.getindex(g::AbstractDataGrid, i::CartesianIndex) = getindex(g, i.I...)
+Base.setindex!(g::AbstractDataGrid, x, i::CartesianIndex) = setindex!(g, x, i.I...)
+
 # Indexing depends on the data space trait
 Base.CartesianIndices(g::AbstractDataGrid) = CartesianIndices(axes(g))
 
