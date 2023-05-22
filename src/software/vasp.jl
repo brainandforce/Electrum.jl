@@ -226,15 +226,14 @@ function readWAVECAR(io::IO; quiet = false)
             # Seek to the next data
             count += 1; seek(io, count*nrecl)
             # Number of plane waves for this k-point
-            pos = position(io)
-            @debug string("File pointer at ", pos, " (", count, " * ", nrecl, ")")
+            @debug string("File pointer at ", position(io), " (", count, " * ", nrecl, ")")
             npw = Int(read(io, Float64))
             # Add the position of the k-point to the list
             wf.kpoints[kp] = [read(io, Float64) for n in 1:3]
             # Get energies and occupancies
             for b in 1:nband
                 # Ordering is reversed (see PlanewaveIndex above...)
-                wf.energies[b, kp, s] = read(io, Float64)
+                wf.energies[b, kp, s] = read(io, Float64) * EV2HARTREE
                 skip(io, 8)
                 wf.occupancies[b, kp, s] = read(io, Float64)
             end
@@ -254,15 +253,12 @@ function readWAVECAR(io::IO; quiet = false)
                     while true
                         # Get the energy of the vector
                         sumkg = [dot(wf.kpoints[kp] + hkl, rlatt[:,n]) for n in 1:3]
-                        etot = _selfdot(sumkg)/CVASP
+                        etot = dot(sumkg, sumkg) / 2
                         # Break when the G-vector energy is below ecut
-                        # This may occur immediately if the k-vector already meets the criteria
+                        # This may occur immediately if the G-vector already meets the criteria
                         etot < ecut ? break : incrementHKL!(hkl, hklbounds)
                     end
-                    # Store the data at the HKL index
-                    # Note: data is stored first by k-points, then by bands
                     wf[s, kp, b, hkl...] = pw
-                    # Increment it for the next iteration
                     incrementHKL!(hkl, hklbounds)
                 end
             end
