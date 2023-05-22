@@ -210,10 +210,11 @@ function readWAVECAR(io::IO; quiet = false)
     # Energy cutoff
     ecut = read(io, Float64)
     # Real and reciprocal lattice vectors
-    latt = RealBasis{3}([ANG2BOHR * read(io, Float64) for _ in 1:3, _ in 1:3])
+    raw_lattice = [read(io, Float64) for _ in 1:3, _ in 1:3]
+    latt = RealBasis{3}(ANG2BOHR * raw_lattice)
     rlatt = convert(ReciprocalBasis, latt)
     # Get HKL coefficient bounds (as done in WaveTrans)
-    hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(rlatt, ecut * EV2HARTREE))
+    hklbounds = SVector{3,UnitRange{Int}}(-g:g for g in maxHKLindex(raw_lattice, ecut, c = CVASP))
     # Bare wavefunction to be filled
     wf = PlanewaveWavefunction{3,Complex{Float32}}(rlatt, nspin, nkpt, nband, hklbounds...)
     # Loop through the spins
