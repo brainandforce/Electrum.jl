@@ -81,8 +81,8 @@ function basis_string(
     ]
 end
 
-basis_string(b::RealBasis, kwargs...) = basis_string(matrix(b), unit="bohr", kwargs...)
-basis_string(b::ReciprocalBasis, kwargs...) = basis_string(matrix(b), unit="rad*bohr⁻¹", kwargs...)
+basis_string(b::RealBasis, kwargs...) = basis_string(b.matrix, unit="bohr", kwargs...)
+basis_string(b::ReciprocalBasis, kwargs...) = basis_string(b.matrix, unit="rad*bohr⁻¹", kwargs...)
 
 """
     Electrum.printbasis([io::IO = stdout], b; kwargs...)
@@ -108,8 +108,8 @@ function printbasis(io::IO, M::AbstractMatrix{<:Real}; letters=true, unit="", pa
     print(io, join(" "^pad .* s, "\n"))
 end
 
-printbasis(io::IO, b::RealBasis; kwargs...) = printbasis(io, matrix(b), unit="bohr"; kwargs...)
-printbasis(io::IO, b::ReciprocalBasis; kw...) = printbasis(io, matrix(b), unit="rad*bohr⁻¹"; kw...)
+printbasis(io::IO, b::RealBasis; kw...) = printbasis(io, b.matrix, unit="bohr"; kw...)
+printbasis(io::IO, b::ReciprocalBasis; kw...) = printbasis(io, b.matrix, unit="rad*bohr⁻¹"; kw...)
 printbasis(io::IO, a; kwargs...) = printbasis(io, basis(a); kwargs...)
 printbasis(a; kwargs...) = printbasis(stdout, a; kwargs...)
 
@@ -165,7 +165,7 @@ formula_string(l::AbstractCrystal; kwargs...) = formula_string(PeriodicAtomList(
 
 #---Types from lattices.jl (RealBasis, ReciprocalBasis)--------------------------------------------#
 
-function Base.show(io::IO, ::MIME"text/plain", b::AbstractBasis)
+function Base.show(io::IO, ::MIME"text/plain", b::LatticeBasis)
     println(io, typeof(b), ":")
     printbasis(io, b, pad=2)
 end

@@ -203,7 +203,7 @@ struct HKLData{D,T} <: AbstractDataGrid{D,T}
     data::Array{T,D}
     kpt::KPoint{D}
     function HKLData(
-        basis::AbstractBasis{D},
+        basis::LatticeBasis,
         data::AbstractArray{T,D},
         kpt::AbstractVector{<:Real} = zero(KPoint{D})
     ) where {D,T}
@@ -221,7 +221,7 @@ end
 
 function Base.zeros(
     ::Type{HKLData{D,T}},
-    basis::AbstractBasis{D},
+    basis::LatticeBasis,
     ranges::Vararg{AbstractUnitRange{<:Integer},D},
 ) where {D,T}
     return HKLData(ReciprocalBasis(basis), zeros(T, length.(ranges)))

@@ -1,237 +1,152 @@
 """
-    AbstractBasis{D}
-
-Supertype for sets of basis vectors in `D` dimensions.
-
-This supertype includes the `RealBasis{D}` and `ReciprocalBasis{D}` types, which explicitly 
-indicate their units (assumed to be either bohr or rad*bohr⁻¹).
-
-Members of `AbstractBasis` must implement the following checks:
-  * That the basis vectors are linearly independent and form a right-handed coordinate system, 
-unless an explicit zero basis is constructed (implying no periodicity).
-"""
-abstract type AbstractBasis{D}
-end
-
-"""
     Electrum.lattice_sanity_check(M::AbstractMatrix)
 
 Runs checks on a matrix intended to represent basis vectors of a crystal unit cell. Returns nothing,
 but warns if the cell vectors form a left-handed coordinate system, and throws an `AssertionError`
 if the cell vectors are not linearly independent.
 """
-@inline function lattice_sanity_check(M::AbstractMatrix{<:Real})
+@inline function lattice_sanity_check(M::AbstractMatrix)
     # Skip this check for lattices that are zero (meaning unspecified basis)
-    if iszero(M)
-        return nothing
-    end
-    @assert det(M) != 0 string(
-        "cell vectors are not linearly independent.\n",
-        "Matrix contents: ", M
-    )
+    iszero(M) && return nothing
+    iszero(det(M)) && @warn "matrix determinant is zero."
     det(M) < 0 && @warn "cell vectors form a left-handed coordinate system."
     return nothing
 end
 
-# TODO: can we use views on vectors of vectors to get a matrix?
-lattice_sanity_check(v::AbstractVector{<:AbstractVector{<:Real}}) = lattice_sanity_check(hcat(v...))
-
-#---New RealBasis and ReciprocalBasis types--------------------------------------------------------#
 """
-    RealBasis{D} <: AbstractBasis{D}
+    Electrum.LatticeBasis{S<:Union{ByRealSpace,ByReciprocalSpace},D,T} <: StaticMatrix{D,D,T}
 
-A set of real space basis vectors, assumed to be in bohr.
-"""
-struct RealBasis{D} <: AbstractBasis{D}
-    vs::SVector{D,SVector{D,Float64}}
-    function RealBasis(vs::StaticVector{D,<:StaticVector{D,<:Real}}) where D
-        lattice_sanity_check(vs)
-        return new{D}(vs)
-    end
-    function RealBasis{D}(vs::AbstractVector{<:AbstractVector{<:Real}}) where D
-        lattice_sanity_check(vs)
-        return new(vs)
-    end
-end
+Represents the basis vectors of a `D`-dimensional lattice in real space (when `S === ByRealSpace`)
+or in reciprocal space (when `S === ByReciprocalSpace`). The units of `LatticeBasis{ByRealSpace}`
+are bohr, and those of `LatticeBasis{ByReciprocalSpace}` are rad*bohr⁻¹. File import and export
+methods will take this into account.
 
-"""
-    ReciprocalBasis{D} <: AbstractBasis{D}
+For convenience, the type aliases `RealBasis = LatticeBasis{ByRealSpace}` and 
+`ReciprocalBasis = LatticeBasis{ByReciprocalSpace}` are provided and exported.
 
-A set of reciprocal space basis vectors, assumed to be in rad*bohr⁻¹.
+# Internals
+
+In order to avoid the presence of an extraneous type parameter, the backing `vectors` field of a
+`LatticeBasis` is not an `SMatrix{D,D,T}` (as this is not a concrete type), but an 
+`SVector{D,SVector{D,T}}`. However, the property `matrix` is defined so that it returns an
+`SMatrix{D,D,T}`. The `vectors` property is private, and will not be revealed during REPL tab
+completion.
 """
-struct ReciprocalBasis{D} <: AbstractBasis{D}
-    vs::SVector{D,SVector{D,Float64}}
-    function ReciprocalBasis(vs::StaticVector{D,<:StaticVector{D,<:Real}}) where D
-        lattice_sanity_check(vs)
-        return new{D}(vs)
-    end
-    function ReciprocalBasis{D}(vs::AbstractVector{<:AbstractVector{<:Real}}) where D
-        lattice_sanity_check(vs)
-        return new(vs)
+struct LatticeBasis{S<:Union{ByRealSpace,ByReciprocalSpace},D,T<:Real} <: StaticMatrix{D,D,T}
+    vectors::SVector{D,SVector{D,T}}
+    function LatticeBasis{S,D,T}(M::StaticMatrix) where {S,D,T}
+        lattice_sanity_check(M)
+        return new(SVector{D}(eachcol(M)))
     end
 end
 
-DataSpace(::Type{RealBasis{D}}) where D = ByRealSpace{D}()
-DataSpace(::Type{ReciprocalBasis{D}}) where D = ByReciprocalSpace{D}()
-
-Base.show(io::IO, b::AbstractBasis) = print(io, typeof(b), '(', matrix(b), ')')
-
-# Convert matrix input to a vector of vectors
-function (T::Type{<:AbstractBasis{D}})(M::AbstractMatrix{<:Real}) where D
-    size(M) === (D,D) || throw(
-        DimensionMismatch("Cannot construct a $T from a matrix with dimensions " * string(size(M)))
-    )
-    return T(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
-end
-
-# For statically typed arrays
-function (T::Union{Type{RealBasis},Type{ReciprocalBasis}})(M::StaticMatrix{D,D,<:Real}) where D
-    return T(SVector{D,SVector{D,Float64}}(M[:,n] for n in 1:D))
+# Needed to resolve ambiguity with StaticArrays generic constructor
+function LatticeBasis{S,D,T}(::StaticArray) where {S,D,T} 
+    throw(DimensionMismatch("Input must be a square matrix."))
 end
 
 """
-    basis(x) -> AbstractBasis
+    RealBasis{D,T}
 
-Returns the basis associated with some data in `x`. By default, it's assumed to be accessible via
-the property `:basis`.
+Represents a lattice defined in `D`-dimensional real space, in units of bohr.
 
-The return value might be a `RealBasis` or a `ReciprocalBasis`, depending on the space in which data
-is represented. Use `RealBasis(g)` or `ReciprocalBasis(g)` if a specific type is needed.
+For further information, see `Electrum.LatticeBasis`.
 """
-basis(x) = x.basis
-DataSpace(T::Type) = DataSpace(fieldtype(T, :basis))
-
-vectors(b::AbstractBasis) = b.vs
-matrix(b::AbstractBasis{D}) where D = SMatrix{D,D,Float64}(b[m,n] for m in 1:D, n in 1:D)
-Base.convert(::Type{T}, b::AbstractBasis) where T<:AbstractMatrix = convert(T, matrix(b))
+const RealBasis = LatticeBasis{ByRealSpace}
 
 """
-    convert(::Type{<:AbstractBasis}, b::AbstractBasis) -> T
+    ReciprocalBasis{D,T}
 
-Converts between real space and reciprocal space representations of bases. Note that this includes a
-factor of 2π that is used conventionally in crystallography: conversion from `RealBasis` to
-`ReciprocalBasis` multiplies by 2π, and vice versa. This ensures that the dot products between
-corresponding real and reciprocal space basis vectors are always 2π.
+Represents a lattice defined in `D`-dimensional reciprocal space, in units of rad*bohr⁻¹.
+
+For further information, see `Electrum.LatticeBasis`.
 """
-Base.convert(T::Type{<:RealBasis}, b::ReciprocalBasis) = T(2π * inv(transpose(matrix(b))))
-Base.convert(T::Type{<:ReciprocalBasis}, b::RealBasis) = T(transpose(2π * inv(matrix(b))))
-(T::Union{Type{RealBasis},Type{ReciprocalBasis}})(b::AbstractBasis) = convert(T, b)
- 
-#---Tools to generate 2D and 3D lattices with given angles-----------------------------------------#
-"""
-    lattice2D(a::Real, b::Real, γ::Real) -> RealBasis{2}
+const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
 
-Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 2D with the
-same length and angle parameters (in degrees).
+const AbstractBasis = LatticeBasis{S} where S<:Union{ByRealSpace,ByReciprocalSpace}
 
-By default, the b-vector is oriented along y. This selection corresponds to the default orientation
-chosen by `lattice3D()`.
-"""
-lattice2D(a::Real, b::Real, γ::Real) = RealBasis(SMatrix{2,2}(a*sind(γ), a*cosd(γ), 0, b))
+DataSpace(::Type{<:LatticeBasis{S,D}}) where {S,D} = S{D}()
 
-# TODO: can we leverage QR or LU decomposition to do this generally?
-"""
-    lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real) -> RealBasis{3}
+LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
+LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
+#=
+LatticeBasis{S,D}(M::AbstractMatrix{T}) where {S,D,T} = LatticeBasis{S,D,T}(M)
+=#
+LatticeBasis{S}(M::StaticMatrix{D,D,T}) where {S,D,T} = LatticeBasis{S,D,T}(M)
 
-Constructs a set of basis vectors in an `SMatrix` that correspond to a unit cell in 3D with the same
-length and angle parameters (in degrees).
+#---Matrix property--------------------------------------------------------------------------------#
 
-By default, the b-vector is oriented along y, and the a-vector is chosen to be perpendicular to
-z, leaving the c-vector to freely vary. This selection allows for the most convenient orientation of
-symmetry operations.
-"""
-function lattice3D(a::Real, b::Real, c::Real, α::Real, β::Real, γ::Real)
-    c1 = c*(cosd(β) - cosd(γ)*cosd(α))/sind(γ)
-    c2 = c*cosd(α)
-    M = SMatrix{3,3,Float64}(a*sind(γ), a*cosd(γ), 0,
-                                     0,        b,  0,
-                                c1, c2, sqrt(c^2 - (c1^2 + c2^2)))
-    return RealBasis(M)
+function Base.getproperty(b::LatticeBasis, s::Symbol)
+    s === :matrix && return hcat(getfield(b, :vectors)...)
+    return getfield(b, s)
 end
 
-#---Fundamental methods for working with basis vectors---------------------------------------------#
-# This should get a vector
-Base.getindex(b::AbstractBasis, ind) = b.vs[ind]
-# This should treat a basis like a matrix
-Base.getindex(b::AbstractBasis, i1, i2) = b[i2][i1]
+Base.propertynames(::LatticeBasis; private = false) = private ? (:vectors, :matrix) : (:matrix)
 
-# This is needed for broadcasting
-Base.size(::AbstractBasis{D}) where D = (D,D)
-Base.length(b::AbstractBasis) = length(b.vs)
-Base.iterate(b::AbstractBasis, state) = iterate(b.vs, state) 
-Base.iterate(b::AbstractBasis) = iterate(b.vs)
+#---Custom indexing and iteration------------------------------------------------------------------#
 
-# TODO: does this make sense?
-Base.convert(::Type{SMatrix{D,D,Float64}}, b::AbstractBasis{D}) where D = matrix(b)
+# Really only for resolving method ambiguities
+Base.getindex(b::LatticeBasis, i::Int) = getindex(b.matrix, i)
+Base.getindex(b::LatticeBasis, i::Int...) = getindex(b.matrix, i...)
+# Iterate through the column vectors, not through individual elements
+# Base.iterate(b::LatticeBasis{S,D}, i = 1) where {S,D} = i in 1:D ? (b[i], i+1) : nothing
 
-# Construct zero basis
-Base.zero(T::Type{<:AbstractBasis{D}}) where D = T(zeros(SVector{D,SVector{D,Float64}}))
-Base.zero(::T) where {T<:AbstractBasis} = zero(T)
-Base.zeros(::Type{T}) where T<:AbstractBasis = zero(T)
+#---Conversion semantics---------------------------------------------------------------------------#
 
-#---Mathematical function definitions for basis vectors--------------------------------------------#
-Base.isapprox(b1::T, b2::T; kw...) where T<:AbstractBasis = isapprox(matrix(b1), matrix(b2); kw...)
+# Convert between real and reciprocal space representations
+Base.convert(T::Type{<:ReciprocalBasis}, b::RealBasis) = T(2π * inv(transpose(b.matrix)))
+Base.convert(T::Type{<:RealBasis}, b::ReciprocalBasis) = T(transpose(2π * inv(b.matrix)))
+# Constructors can perform this conversion too
+(T::Type{<:LatticeBasis})(b::LatticeBasis) = convert(T, b)
+# Conversion to Tuple (needed for StaticArrays.jl)
+Tuple(b::LatticeBasis) = Tuple(b.matrix)
 
-# Definitions for multiplication/division by a scalar
-Base.:*(s::Number, b::T) where T<:AbstractBasis = T(matrix(b) * s)
-Base.:*(b::T, s::Number) where T<:AbstractBasis = s * b
-Base.:/(b::T, s::Number) where T<:AbstractBasis = T(matrix(b) / s)
+#---Mathematical operations------------------------------------------------------------------------#
 
-# And multiplication/division by vectors
-Base.:*(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) * v
-Base.:*(v::AbstractVecOrMat, b::AbstractBasis) = v * matrix(b)
-Base.:\(b::AbstractBasis, v::AbstractVecOrMat) = matrix(b) \ v
+Base.:(==)(a::LatticeBasis{S,D}, b::LatticeBasis{S,D}) where {S,D} = a.matrix == b.matrix
+
+Base.inv(b::RealBasis) = convert(ReciprocalBasis, b)
+Base.inv(b::ReciprocalBasis) = convert(RealBasis, b)
+
+#= Scalars
+Base.:*(s::Real, b::LatticeBasis) = typeof(b)(s .* b.vectors)
+Base.:*(b::LatticeBasis, s::Real) = s * b
+Base.:/(b::LatticeBasis, s::Real) = typeof(b)(b.vectors ./ s)
+
+# Vectors
+Base.:*(b::LatticeBasis{S,D}, v::AbstractVector) where {S,D} = b.matrix * SVector{D}(v)
+Base.:*(v::AbstractVector, b::LatticeBasis{S,D}) where {S,D} = b.matrix * SVector{D}(v)
+Base.:/(v::AbstractVector, b::LatticeBasis{S,D}) where {S,D} = SVector{D}(v) / b.matrix
+=#
+Base.:\(b::LatticeBasis{S,D}, v::Vector) where {S,D} = b.matrix \ SVector{D}(v)
+
+# Matrices
+function Base.:*(
+    b::LatticeBasis{S,D},
+    M::Union{StaticMatrix{D,D,T},Matrix{T}}
+) where {S,D,T<:Integer}
+    return LatticeBasis{S,D,promote_type(eltype(b), eltype(M))}(b.matrix * M)
+end
+
+LinearAlgebra.det(b::LatticeBasis) = det(b.matrix)
 
 #---Unit cell metrics------------------------------------------------------------------------------#
-
 """
-    Electrum.cell_lengths(M::AbstractMatrix) -> Vector{Float64}
-
-Returns the lengths of the constituent vectors in a matrix representing cell vectors.
-"""
-cell_lengths(M::AbstractMatrix) = [norm(M[:,n]) for n = 1:size(M,2)]
-
-"""
-    lengths(b::AbstractBasis{D}) -> SVector{D,Float64}
+    lengths(b::LatticeBasis{S,D}) -> SVector{D}
 
 Returns the lengths of the basis vectors. The units correspond to the type of the basis vectors: for
 `RealBasis` the units are bohr, and for `ReciprocalBasis` the units are rad*bohr⁻¹.
 """
-lengths(b::AbstractBasis{D}) where D = SVector{D}(norm(v) for v in b)
+lengths(b::LatticeBasis{S,D}) where {S,D} = SVector{D}(norm(v) for v in b)
 
 """
-    lengths(x) -> Float64
-
-Calculate the lengths of the basis vectors associated with `x`. The units correspond to the type of
-the basis vectors: for `RealBasis` the units are bohr, and for `ReciprocalBasis` the units are
-rad*bohr⁻¹.
-"""
-lengths(x) = lengths(basis(x))
-
-"""
-    Electrum.cell_volume(M::AbstractMatrix) -> Float64
-
-Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign (negative
-for cells that do not follow the right hand rule).
-"""
-cell_volume(M::AbstractMatrix) = abs(det(M))
-
-"""
-    volume(b::AbstractBasis) -> Float64
+    volume(b::LatticeBasis) -> Real
 
 Returns the volume of a unit cell defined by a matrix. This volume does not carry the sign (negative
 for cells that do not follow the right hand rule). The units correspond to the type of the basis 
 vectors: for `RealBasis` the units are bohr³, and for `ReciprocalBasis` the units are rad³*bohr⁻³.
 """
-volume(b::AbstractBasis) = cell_volume(matrix(b))
-
-"""
-    volume(x) -> Float64
-
-Calculate the volume of the basis associated with `x`. The units correspond to the type of the basis 
-vectors: for `RealBasis` the units are bohr³, and for `ReciprocalBasis` the units are rad³*bohr⁻³.
-"""
-volume(x) = volume(basis(x))
+volume(b::LatticeBasis) = abs(det(b))
 
 """
     Electrum.generate_pairs(D::Integer) -> Vector{NTuple{2,Int}}
@@ -261,7 +176,7 @@ function generate_pairs(::Type{Val{D}}) where D
 end
 
 """
-    Electrum.cell_angles_cos(M::AbstractMatrix) -> Vector{Float64}
+    angles_cos(b::LatticeBasis{S,D}) -> SVector{binomial(D,2)}
 
 Generates the cosines of the unit cell angles.
 
@@ -269,24 +184,15 @@ The angles are generated in the correct order [α, β, γ] for 3-dimensional cel
 reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
 this may lead to unexpected results.
 """
-function cell_angles_cos(M::AbstractMatrix)
+function angles_cos(b::LatticeBasis{S,D}) where {S,D}
+    M = b.matrix
+    L = binomial(D,2)
     dimpairs = reverse(generate_pairs(size(M,1)))
-    return [dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs]
+    return SVector{L}([dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b])) for (a,b) in dimpairs])
 end
 
 """
-    angles_cos(b::AbstractBasis) -> Vector{Float64}
-
-Generates the cosines of the unit cell angles.
-
-The angles are generated in the correct order [α, β, γ] for 3-dimensional cells. This is achieved by
-reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
-this may lead to unexpected results.
-"""
-angles_cos(b::AbstractBasis) = cell_angles_cos(matrix(b))
-
-"""
-    angles_rad(b) -> Vector{Float64}
+    angles_rad(b::LatticeBasis{S,D}) -> SVector{binomial(D,2)}
 
 Returns the angles (in radians) between each pair of basis vectors.
 
@@ -294,10 +200,10 @@ The angles are generated in the correct order [α, β, γ] for 3-dimensional cel
 reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
 this may lead to unexpected results.
 """
-angles_rad(b::AbstractBasis) = acos.(angles_cos(b))
+angles_rad(b::LatticeBasis) = acos.(angles_cos(b))
 
 """
-    angles_deg(b) -> Vector{Float64}
+    angles_deg(b::LatticeBasis{S,D}) -> SVector{binomial(D,2)}
 
 Returns the angles (in degrees) between each pair of basis vectors.
 
@@ -305,33 +211,33 @@ The angles are generated in the correct order [α, β, γ] for 3-dimensional cel
 reversing the output of `Electrum.generate_pairs()`. For crystals with more spatial dimensions,
 this may lead to unexpected results.
 """
-angles_deg(b::AbstractBasis) = acosd.(angles_cos(b))
+angles_deg(b::LatticeBasis) = acosd.(angles_cos(b))
+
+#---Advanced linear algebra (such as matrix decompositions)----------------------------------------#
+
+LinearAlgebra.isdiag(b::LatticeBasis) = isdiag(b.matrix)
+LinearAlgebra.qr(b::LatticeBasis) = qr(b.matrix)
 
 """
-    gram(b::AbstractBasis{D}) -> SMatrix{D,D,Float64}
+    gram(b::LatticeBasis{S,D}) -> SMatrix{D,D}
 
 Returns the Gram matrix associated with a set of basis vectors. The entries of this matrix are the
 dot products associated with all possible combinations of basis vectors.
 """
-gram(b::AbstractBasis) = matrix(b)' * matrix(b)
-
-#---Linear algebraic manipulation of basis vector specification------------------------------------#
-
-LinearAlgebra.isdiag(b::AbstractBasis) = isdiag(matrix(b))
-LinearAlgebra.qr(b::AbstractBasis) = qr(matrix(b))
+gram(b::LatticeBasis) = b.matrix' * b.matrix
 
 """
-    triangularize(l::T) where T<:AbstractBasis -> T
+    triangularize(l::T) where T<:LatticeBasis -> T
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition.
 """
-function triangularize(b::T) where T<:AbstractBasis
+function triangularize(b::T) where T<:LatticeBasis
     R = qr(b).R
     return T(R * diagm(sign.(diag(R))))
 end
 
 """
-    triangularize(l::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBasis -> T
+    triangularize(l::T, sc::AbstractMatrix{<:Integer}) where T<:LatticeBasis -> T
 
 Converts a set of basis vectors to an upper triangular form using QR decomposition, with an included
 conversion to a larger supercell. The resulting matrix that describes the basis vectors will have
@@ -340,8 +246,7 @@ transformation matrix used).
 
 LAMMPS expects that basis vectors are given in this format.
 """
-function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBasis
-    # Warnings for 
+function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:LatticeBasis
     det(sc) < 0 && @warn string(
         "The transformation matrix has a negative determinant.\n",
         "However, this function always returns a right-handed basis."
@@ -349,10 +254,12 @@ function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:AbstractBas
     det(sc) == 0 && error("supplied transformation matrix is singular")
     # Convert the matrix to upper triangular form using QR decomposition
     # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
-    R = SMatrix{length(b),length(b),Float64}(qr(matrix(b) * sc).R)
+    R = SMatrix{length(b),length(b),Float64}(qr(b.matrix * sc).R)
     # Ensure the diagonal elements are positive
     return T(R * diagm(sign.(diag(R))))
 end
+
+#---Maximum HKL index determination for wavefunction reading---------------------------------------#
 
 # TODO: Update and document this function a bit more.
 # It works, but that really isn't enough for me.
@@ -370,7 +277,7 @@ function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = 2)
 end
 
 """
-    Electrum.maxHKLindex(b::AbstractBasis, ecut::Real; prim=true, c = CVASP)
+    Electrum.maxHKLindex(b::LatticeBasis, ecut::Real; prim=true, c = CVASP)
 
 Determines the maximum integer values of the reciprocal lattice vectors needed to store data out to
 a specific energy cutoff for a 3D lattice.
@@ -383,22 +290,6 @@ The functionality implemented here was taken from WaveTrans:
 https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 """
 # Assume that the basis vectors are defined in reciprocal space (??)
-function maxHKLindex(b::AbstractBasis{3}, ecut::Real; c = 2)
-    return maxHKLindex(matrix(ReciprocalBasis(b)), ecut, c = c)
-end
+maxHKLindex(b::ReciprocalBasis, ecut::Real; c = 2) = maxHKLindex(b.matrix, ecut; c)
+maxHKLindex(b::RealBasis, ecut::Real; c = 2) = maxHKLindex(ReciprocalBasis(b), ecut; c)
 
-"""
-    d_spacing(b::AbstractBasis, miller::AbstractVector{<:Integer}, real=true) -> Float64
-
-Measures the real space distance between planes in a lattice given by a Miller index. By default,
-the basis vectors are assumed to be real space basis vectors.
-"""
-function d_spacing(b::RealBasis, miller::AbstractVector{<:Integer})
-    return 1 / norm(transpose(inv(matrix(b))) * miller)
-end
-
-function d_spacing(b::ReciprocalBasis, miller::AbstractVector{<:Integer})
-    return 2π / norm(matrix(b) * miller)
-end
-
-d_spacing(x, miller::AbstractVector{<:Integer}) = d_spacing(basis(x), miller)
