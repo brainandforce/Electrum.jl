@@ -132,6 +132,13 @@ atomcounts(xtal::AbstractCrystal; kwargs...) = atomcounts(PeriodicAtomList(xtal)
 natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(PeriodicAtomList(xtal); kwargs...)
 
 """
+    get_transform(xtal::AbstractCrystal{D}) -> SMatrix{D,D,Int}
+
+Returns the transformation matrix associated with an `AbstractCrystal`.
+"""
+get_transform(xtal::AbstractCrystal) = xtal.transform
+
+"""
     set_transform!(xtal::AbstractCrystal, M) -> AbstractCrystal
 
 Sets the transform supplied with an `AbstractCrystal`. The transform can be an integer matrix,
