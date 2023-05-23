@@ -276,32 +276,38 @@ end
 # TODO: Update and document this function a bit more.
 # It works, but that really isn't enough for me.
 # I think this was pulled directly from the WaveTrans source code
-function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = 2)
-    # I think the parts below convert a set of basis vectors into their reciprocals
-    #----------------------------------------------------------------------------------------------#
-    cosines = cell_angles_cos(M)
-    crosses = [cross(M[:,a], M[:,b]) for (a,b) in zip([2,3,1], [3,1,2])]
-    triples = [dot(M[:,n], crosses[n])/(norm(crosses[n])*norm(M[:,n])) for n in 1:3]
-    sines = hcat([[sqrt(1-c^2), sqrt(1-c^2) ,t] for (c,t) in zip(cosines, triples)]...)
-    #----------------------------------------------------------------------------------------------#
-    nbmax = sqrt(c*ecut) ./ [norm(M[:,a])*sines[a,b] for a in 1:3, b in 1:3] .+ 1
-    return floor.(Int, vec(maximum(nbmax, dims=1)))
-end
-
 """
-    Electrum.maxHKLindex(b::LatticeBasis, ecut::Real; prim=true, c = CVASP)
+    Electrum.maxHKLindex(b::LatticeBasis, ecut::Real; prim=true, c = 2)
 
 Determines the maximum integer values of the reciprocal lattice vectors needed to store data out to
 a specific energy cutoff for a 3D lattice.
 
-By default, the energy cutoff is assumed to be in units of eV, the reciprocal lattice vector lengths
-are assumed to be in angstroms, and the value of c (2m/ħ^2) is taken from VASP's default
-value (which is incorrect!). Different values of c may be used for different units.
+By default, the energy cutoff is assumed to be in units of Hartree, the reciprocal lattice vector
+lengths are assumed to be in rad*bohr⁻¹, and the value of c is that of the constant (2mₑ/ħ²). In
+Hartree atomic units, this value is 2 - but for VASP `WAVECAR` outputs, the value is given in 
+eV⁻¹*angstrom⁻² - see `Electrum.CVASP` for more information.
 
 The functionality implemented here was taken from WaveTrans:
 https://www.andrew.cmu.edu/user/feenstra/wavetrans/
 """
+function maxHKLindex(M::AbstractMatrix{<:Real}, ecut::Real; c = 2)
+    cosines = [
+        dot(M[:,a], M[:,b])/(norm(M[:,a])*norm(M[:,b]))
+        for (a,b) in reverse(generate_pairs(size(M,1)))
+    ]
+    crosses = [cross(M[:,a], M[:,b]) for (a,b) in zip([2,3,1], [3,1,2])]
+    #=  The cross products might be unnecessary:
+        It looks like `triples` is equal to the determinant divided by the product of the lengths of
+        all basis vectors times the sines of selected pairs. The sines can be calculated directly
+        from the cosines by leveraging the identity sin(x)^2 = 1 - cos(x)^2.
+    =#
+    triples = [det(M)/(norm(crosses[n])*norm(M[:,n])) for n in 1:3]
+    # Note how the sines come up again here!
+    sines = hcat([[sqrt(1-c^2), sqrt(1-c^2) ,t] for (c,t) in zip(cosines, triples)]...)
+    nbmax = sqrt(c*ecut) ./ [norm(M[:,a])*sines[a,b] for a in 1:3, b in 1:3] .+ 1
+    return floor.(Int, vec(maximum(nbmax, dims=1)))
+end
+
 # Assume that the basis vectors are defined in reciprocal space (??)
 maxHKLindex(b::ReciprocalBasis, ecut::Real; c = 2) = maxHKLindex(b.matrix, ecut; c)
-maxHKLindex(b::RealBasis, ecut::Real; c = 2) = maxHKLindex(ReciprocalBasis(b), ecut; c)
-
+maxHKLindex(b::RealBasis, ecut::Real; c = 2) = maxHKLindex(ReciprocalBasis(b).matrix, ecut; c)
