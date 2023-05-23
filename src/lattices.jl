@@ -101,6 +101,18 @@ Base.convert(T::Type{<:RealBasis}, b::ReciprocalBasis) = T(transpose(2π * inv(b
 # Conversion to Tuple (needed for StaticArrays.jl)
 Tuple(b::LatticeBasis) = Tuple(b.matrix)
 
+#---Get basis vectors from other structures that contain them--------------------------------------#
+"""
+    basis(x)
+
+Returns the lattice basis associated with a data structure. By default, this returns 
+`getproperty(x, :basis)`, but it can be redefined for custom data types.
+
+We recommend overriding the default `getproperty()` definition for your type to include a `basis`
+property.
+"""
+basis(x) = x.basis
+
 #---Mathematical operations------------------------------------------------------------------------#
 
 Base.:(==)(a::LatticeBasis{S,D}, b::LatticeBasis{S,D}) where {S,D} = a.matrix == b.matrix
