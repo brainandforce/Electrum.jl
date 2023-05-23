@@ -31,13 +31,9 @@ function readPOSCAR(io::IO)
     readline(io)
     # Get the scaling factor
     sc = parse(Float64, strip(readline(io)))
-    # Get the basis
-    latt = let lns = [readline(io) for n in 1:3]
-        # Get the vectors from the next three lines
-        vecs = sc * [parse.(Float64, v) for v in split.(lns)]
-        # Convert to RealBasis and return
-        RealBasis{3}(vecs * ANG2BOHR)
-    end
+    # Get the basis vectors from the next three lines and apply the scaling factor
+    ln = split(join(readline(io) for _ in 1:3))
+    latt = RealBasis(sc * ANG2BOHR * SMatrix{3,3}(parse.(Float64, ln)))
     # Check the next line for a letter.
     # Newer versions of VASP seem to use the atom type as a line before the
     # number of each type of atom and coordintes, but version 4.6 (which we 
