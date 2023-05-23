@@ -106,10 +106,11 @@ Tuple(b::LatticeBasis) = Tuple(b.matrix)
     basis(x)
 
 Returns the lattice basis associated with a data structure. By default, this returns 
-`getproperty(x, :basis)`, but it can be redefined for custom data types.
+`getproperty(x, :basis)`. This may be implemented for custom data types by either adding a method to
+`basis()` or by defining custom `getproperty()` and `propertynames()` methods.
 
-We recommend overriding the default `getproperty()` definition for your type to include a `basis`
-property.
+Although basis(x) should always return an `Electrum.LatticeBasis`, the exact return type may vary.
+For predictable results, use `convert(T, basis(x))` where `T` is the desired type.
 """
 basis(x) = x.basis
 
