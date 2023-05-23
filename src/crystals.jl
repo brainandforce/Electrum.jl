@@ -52,6 +52,12 @@ function Base.:(==)(x1::T, x2::T) where T<:Crystal
     return all(getfield(x1, s) == getfield(x2, s) for s in fieldnames(T))
 end
 
+function Base.getproperty(xtal::Crystal, s::Symbol)
+    return s === :basis ? basis(getfield(xtal, :atoms)) : getfield(xtal, s)
+end
+
+Base.propertynames(::Crystal) = (:basis, fieldnames(Crystal)...)
+
 # The name `CrystalData{D}` was not used to avoid implying that this is a subtype of 
 # `AbstractCrystalData{D}` - which is used only for datasets
 """
@@ -65,40 +71,17 @@ struct CrystalWithDatasets{D,K,V} <: AbstractCrystal{D}
 end
 
 # Expose the constituent crystal's fields
-Base.propertynames(::CrystalWithDatasets) = tuple(
-    fieldnames(CrystalWithDatasets)...,
-    fieldnames(Crystal)...,
-    fieldnames(Dict)...
-)
+Base.propertynames(x::CrystalWithDatasets) = (fieldnames(typeof(x))..., propertynames(x.xtal)...)
 
-function Base.getproperty(xtal::CrystalWithDatasets, f::Symbol)
-    # Core fields
-    if f in fieldnames(CrystalWithDatasets)
-        return getfield(xtal, f)
+function Base.getproperty(xtal::CrystalWithDatasets, s::Symbol)
     # Fields in the Crystal{D}
-    elseif f in fieldnames(Crystal)
-        return getproperty(xtal.xtal, f)
-    # Fields in the Dict{K,V}
-    elseif f in fieldnames(Dict)
-        return getproperty(xtal.data, f)
-    else
-        error("type CrystalWithDatasets has no field ", string(f))
-    end
+    s in propertynames(getfield(xtal, :xtal)) && return getproperty(getfield(xtal, :xtal), s)
+    return getfield(xtal, s)
 end
 
-function Base.setproperty!(xtal::CrystalWithDatasets, f::Symbol, x)
-    # Core fields
-    if f in fieldnames(CrystalWithDatasets)
-        return setfield!(xtal, f, x)
-    # Fields in the Crystal{D}
-    elseif f in fieldnames(Crystal)
-        return setproperty!(xtal.xtal, f, x)
-    # Fields in the Dict{K,V}
-    elseif f in fieldnames(Dict)
-        return setproperty!(xtal.data, f, x)
-    else
-        error("type CrystalWithDatasets has no field ", string(f))
-    end
+function Base.setproperty!(xtal::CrystalWithDatasets, s::Symbol, x)
+    s in propertynames(getfield(xtal, :xtal)) && setproperty!(getproperty(xtal, :xtal), s, x)
+    setfield!(xtal, s, x)
 end
 
 # Allow for getting datasets by key; no need to reach into the Dict
@@ -143,7 +126,6 @@ AtomList(xtal::AbstractCrystal) = AtomList(PeriodicAtomList(xtal))
 
 # TODO: Generate the full atom list when symmetry operations are implemented.
 Base.length(xtal::AbstractCrystal) = length(xtal.atoms)
-basis(xtal::AbstractCrystal) = RealBasis(basis(xtal.atoms) * xtal.transform)
 
 atomtypes(xtal::AbstractCrystal; kwargs...) = atomtypes(PeriodicAtomList(xtal); kwargs...)
 atomcounts(xtal::AbstractCrystal; kwargs...) = atomcounts(PeriodicAtomList(xtal); kwargs...)
