@@ -2,7 +2,7 @@
     # Get basis vectors from the XSF file
     b = basis(xsf["this_is_3Dgrid#1"])
     # Inversion should give us 2π along the diagonal
-    @test ReciprocalBasis(b) == ReciprocalBasis{3}(diagm([2π,2π,2π]))
+    @test ReciprocalBasis(b) == ReciprocalBasis{3}(diagm([2π,2π,2π]) * Electrum.ANG2BOHR)
     # Check that conversion between real and reciprocal bases is invertible
     @test b ≈ RealBasis(ReciprocalBasis(b))
     # Dimensionality should be inferred when static matrices are used
