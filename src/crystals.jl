@@ -80,8 +80,11 @@ function Base.getproperty(xtal::CrystalWithDatasets, s::Symbol)
 end
 
 function Base.setproperty!(xtal::CrystalWithDatasets, s::Symbol, x)
-    s in propertynames(getfield(xtal, :xtal)) && setproperty!(getproperty(xtal, :xtal), s, x)
-    setfield!(xtal, s, x)
+    if s in propertynames(getfield(xtal, :xtal))
+        setproperty!(getfield(xtal, :xtal), s, x)
+    else
+        setfield!(xtal, s, x)
+    end
 end
 
 # Allow for getting datasets by key; no need to reach into the Dict
