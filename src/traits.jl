@@ -40,12 +40,3 @@ Trait for data associated with atomic positions in a crystal.
 """
 struct ByAtom{D} <: DataSpace{D}
 end
-
-"""
-    Electrum.DataSpace(x) -> CrystalDataTrait
-
-Returns a trait that determines whether a data set associated with a crystal is defined in real
-space (`RealSpaceData{D}()`), reciprocal space (`ReciprocalSpaceData{D}()`), or by atomic positions
-(`AtomPositionData{D}`), where `D` is the number of dimensions.
-"""
-DataSpace(x) = DataSpace(typeof(x))

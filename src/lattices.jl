@@ -66,8 +66,6 @@ const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
 
 const AbstractBasis = LatticeBasis{S} where S<:Union{ByRealSpace,ByReciprocalSpace}
 
-DataSpace(::Type{<:LatticeBasis{S,D}}) where {S,D} = S{D}()
-
 LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
 LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
 
@@ -114,6 +112,25 @@ We recommend overriding the default `getproperty()` definition for your type to 
 property.
 """
 basis(x) = x.basis
+
+#---Data space traits------------------------------------------------------------------------------#
+
+DataSpace(::Type{<:LatticeBasis{S,D}}) where {S,D} = S{D}()
+DataSpace(b::LatticeBasis) = DataSpace(typeof(b))
+
+"""
+    Electrum.DataSpace(x) -> CrystalDataTrait
+
+Returns a trait that determines whether a data set associated with a crystal is defined in real
+space (`RealSpaceData{D}()`), reciprocal space (`ReciprocalSpaceData{D}()`), or by atomic positions
+(`AtomPositionData{D}`), where `D` is the number of dimensions.
+
+By default, `DataSpace(x)` will infer the appropriate trait from the lattice basis vectors
+included in `x`. The fallback definition is:
+
+    DataSpace(x) = DataSpace(typeof(basis(x))) # basis(x) falls back to x.basis
+"""
+DataSpace(x) = DataSpace(typeof(basis(x)))
 
 #---Mathematical operations------------------------------------------------------------------------#
 
