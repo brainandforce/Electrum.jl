@@ -83,10 +83,10 @@ function readXSF3D(
     function getlattice!(itr)
         latt = SVector{3}((SVector{3}(parse.(Float64, split(iterate(itr)[1]))) for _ in 1:3))
         @debug string("Found vectors:\n", (string(v) * "\n" for v in latt)...)
-        return RealBasis(hcat(latt...) / ANG2BOHR)
+        return RealBasis(hcat(latt...) * BOHR2ANG)
     end
     # Function for getting 3D lists of atoms
-    function getatoms!(itr, basis, natom)
+    function getatoms!(itr, basis::LatticeBasis, natom::Integer)
         # Vector of AtomPositions
         apos = Vector{CartesianAtomPosition{3}}(undef, natom)
         for n in 1:natom
@@ -253,8 +253,8 @@ function writeXSF(io::IO, l::PeriodicAtomList{D}) where D
     println(io, D, "  1")
     # Primitive cell vectors
     println(io, "PRIMVEC")
-    for (n, x) in enumerate(matrix(basis(l)))
-        @printf(io, "%20.14f  ", x)
+    for (n, x) in enumerate(basis(l))
+        @printf(io, "%20.14f  ", x * BOHR2ANG)
         n % D == 0 && println(io)
     end
     # Coordinates of the atoms in the primitive cell
