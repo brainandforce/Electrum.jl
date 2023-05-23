@@ -51,13 +51,6 @@ const REDUCTION_MATRIX_3D =
 )
 
 """
-    Electrum.TOL_DEF
-
-Default tolerance for discrepancies in floating point values.
-"""
-const TOL_DEF = 1e-8
-
-"""
     Electrum.BOHR2ANG
 
 Converts lengths in bohr to angstrom.
