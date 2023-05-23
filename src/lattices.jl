@@ -13,6 +13,8 @@ if the cell vectors are not linearly independent.
     return nothing
 end
 
+_nonsquare_matrix_error() = throw(DimensionMismatch("Input must be a square matrix."))
+
 """
     Electrum.LatticeBasis{S<:Union{ByRealSpace,ByReciprocalSpace},D,T} <: StaticMatrix{D,D,T}
 
@@ -41,9 +43,8 @@ struct LatticeBasis{S<:Union{ByRealSpace,ByReciprocalSpace},D,T<:Real} <: Static
 end
 
 # Needed to resolve ambiguity with StaticArrays generic constructor
-function LatticeBasis{S,D,T}(::StaticArray) where {S,D,T} 
-    throw(DimensionMismatch("Input must be a square matrix."))
-end
+LatticeBasis{S,D,T}(::StaticArray) where {S,D,T} = _nonsquare_matrix_error()
+LatticeBasis{S,D}(::StaticArray) where {S,D} = _nonsquare_matrix_error()
 
 """
     RealBasis{D,T}
@@ -69,9 +70,10 @@ DataSpace(::Type{<:LatticeBasis{S,D}}) where {S,D} = S{D}()
 
 LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
 LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
-#=
-LatticeBasis{S,D}(M::AbstractMatrix{T}) where {S,D,T} = LatticeBasis{S,D,T}(M)
-=#
+
+LatticeBasis{S,D}(M::AbstractMatrix{T}) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
+LatticeBasis{S,D}(M::StaticMatrix{D,D,T}) where {S,D,T} = LatticeBasis{S,D,T}(M)
+
 LatticeBasis{S}(M::StaticMatrix{D,D,T}) where {S,D,T} = LatticeBasis{S,D,T}(M)
 
 #---Matrix property--------------------------------------------------------------------------------#
