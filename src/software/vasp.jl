@@ -116,7 +116,7 @@ function writePOSCAR(
     # Write comment line and scaling factor
     println(io, comment, "\n1")
     # Write the basis vectors
-    for v in basis(list)
+    for v in eachcol(basis(list))
         println(io, (@sprintf("   % -21.16f", x * BOHR2ANG) for x in v)...)
     end
     # Figure out what types of atoms there are and how many
