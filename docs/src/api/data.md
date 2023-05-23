@@ -14,7 +14,6 @@ Electrum.RealSpaceDataGrid
 Electrum.voxelsize
 Electrum.integrate
 Electrum.HKLData
-Electrum.HKLDict
 Electrum.fft
 Electrum.ifft
 ```
