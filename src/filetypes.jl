@@ -81,9 +81,9 @@ function readXSF3D(
 )
     # Function for getting lattice basis vectors
     function getlattice!(itr)
-        vecs = [parse.(Float64, split(iterate(itr)[1])) for n in 1:3]
-        @debug string("Found vectors:\n", vecs)
-        return RealBasis{3}(hcat(vecs...))
+        latt = SVector{3}((SVector{3}(parse.(Float64, split(iterate(itr)[1]))) for _ in 1:3))
+        @debug string("Found vectors:\n", (string(v) * "\n" for v in latt)...)
+        return RealBasis(hcat(latt...) / ANG2BOHR)
     end
     # Function for getting 3D lists of atoms
     function getatoms!(itr, basis, natom)
@@ -216,7 +216,7 @@ function readXSF3D(
     transform = if iszero(conv) 
         SMatrix{3,3,Int}(LinearAlgebra.I)
     else
-        round.(Int, matrix(conv) / matrix(prim))
+        round.(Int, conv.matrix / prim.matrix)
     end
     return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}(
         Crystal(atom_list, spgrp, origin, transform), data

@@ -258,7 +258,7 @@ transformation matrix used).
 
 LAMMPS expects that basis vectors are given in this format.
 """
-function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:LatticeBasis
+function triangularize(b::LatticeBasis{S,D}, sc::AbstractMatrix{<:Integer}) where {S,D}
     det(sc) < 0 && @warn string(
         "The transformation matrix has a negative determinant.\n",
         "However, this function always returns a right-handed basis."
@@ -266,9 +266,9 @@ function triangularize(b::T, sc::AbstractMatrix{<:Integer}) where T<:LatticeBasi
     det(sc) == 0 && error("supplied transformation matrix is singular")
     # Convert the matrix to upper triangular form using QR decomposition
     # Q is the orthogonal matrix, R is the upper triangular matrix (only need R)
-    R = SMatrix{length(b),length(b),Float64}(qr(b.matrix * sc).R)
+    R = qr(b.matrix * SMatrix{D,D}(sc)).R
     # Ensure the diagonal elements are positive
-    return T(R * diagm(sign.(diag(R))))
+    return typeof(b)(R * diagm(sign.(diag(R))))
 end
 
 #---Maximum HKL index determination for wavefunction reading---------------------------------------#
