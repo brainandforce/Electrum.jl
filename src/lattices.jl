@@ -347,3 +347,15 @@ end
 # Assume that the basis vectors are defined in reciprocal space (??)
 maxHKLindex(b::ReciprocalBasis, ecut::Real; c = 2) = maxHKLindex(b.matrix, ecut; c)
 maxHKLindex(b::RealBasis, ecut::Real; c = 2) = maxHKLindex(ReciprocalBasis(b).matrix, ecut; c)
+
+#---Exception for lattice mismatches---------------------------------------------------------------#
+
+"""
+    Electrum.LatticeMismatch([msg])
+
+The objects called have incommensurate lattices - the basis vectors are not identical, or the shift
+parameters associated with them are unequal. Optional argument `msg` is a descriptive error string.
+"""
+struct LatticeMismatch <: Exception
+    msg::String
+end
