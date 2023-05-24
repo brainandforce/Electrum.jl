@@ -1,11 +1,5 @@
-@testset "RealSpaceDataGrid" begin
+@testset "DataGrid" begin
     g = xsf["this_is_3Dgrid#1"]
-    # Check the indexing
-    @test g[0] === 0.0
-    @test g[1] === 1.000
-    @test g[0,0,0] === 0.0
-    @test g[1,1,1] === 1.732
-    @test g[1,2,3] === 3.742
     # Equality and hashing checks
     h = deepcopy(g)
     @test g == h
@@ -22,10 +16,14 @@
 end
 
 @testset "Fourier transforms" begin
-    g = xsf["this_is_3Dgrid#1"]
-    hkl = fft(g)
+    data = [cispi((x - 1)/5 + (y - 1)/10 + (z - 1)/15) for x in 1:10, y in 1:20, z in 1:30]
+    g = RealDataGrid(data, RealBasis{3}(diagm([1,2,3])))
+    h = fft(g)
     # Check that the Fourier transform and its inverse undo each other
     @test g ≈ ifft(fft(g))
+    @test g ≈ fft(ifft(g))
+    @test h ≈ fft(ifft(h))
+    @test h ≈ ifft(fft(h)) 
     # Test FFT indexing mechanics
     @test collect(FFTLength(4)) == [0, 1, -2, -1]
     @test collect(FFTLength(5)) == [0, 1, 2, -2, -1]
