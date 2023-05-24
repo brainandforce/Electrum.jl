@@ -261,7 +261,7 @@ Contains a list of `FractionalAtomPosition` objects with an associated basis, co
 in a system with periodicity.
 """
 struct PeriodicAtomList{D} <: AbstractAtomList{D}
-    basis::RealBasis{D}
+    basis::RealBasis{D,Float64}
     atoms::Vector{FractionalAtomPosition{D}}
     function PeriodicAtomList(
         b::LatticeBasis,

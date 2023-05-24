@@ -10,7 +10,7 @@ used to convert to an index within the grid.
 """
 struct RealSpaceDataGrid{D,T} <: AbstractDataGrid{D,T}
     # Basis vectors defining the lattice
-    basis::RealBasis{D}
+    basis::RealBasis{D,Float64}
     # The actual data grid
     data::Array{T,D}
     # Shift of the origin from the lattice
