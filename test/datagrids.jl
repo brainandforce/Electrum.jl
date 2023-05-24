@@ -13,6 +13,12 @@
     h[0, 0, 0] = 420
     @test g != h
     @test hash(g) != hash(h)
+    # Test broadcasting
+    reference = RealDataGrid(2 * g.data, basis(g), shift(g))
+    @test g + g == reference
+    @test 2 * g == reference
+    @test g .+ g == reference
+    @test 2 .* g == reference
 end
 
 @testset "Fourier transforms" begin

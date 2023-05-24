@@ -134,7 +134,7 @@ function readXSF3D(
     conv = zeros(RealBasis{3})
     # Atomic positions
     local atom_list::PeriodicAtomList{3}
-    data = Dict{String,RealSpaceDataGrid{3,Float64}}()
+    data = Dict{String,RealDataGrid{3,Float64}}()
     # There is a break statement to get of out of this loop
     while true
         # Get the line contents
@@ -173,8 +173,8 @@ function readXSF3D(
                     # TODO: Determine if trimming is needed based on periodicity
                     # Periodic structures should get trimmed
                     grid = getgrid!(iter, dims, trim=true)
-                    # Export the data in a RealSpaceDataGrid
-                    data[name] = RealSpaceDataGrid(latt, grid, orig)
+                    # Export the data in a RealDataGrid
+                    data[name] = RealDataGrid(grid, latt, orig)
                 end
                 ln = iterate(iter)[1]
             end
@@ -218,7 +218,7 @@ function readXSF3D(
     else
         round.(Int, conv.matrix / prim.matrix)
     end
-    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}(
+    return CrystalWithDatasets{3,String,RealDataGrid{3,Float64}}(
         Crystal(atom_list, spgrp, origin, transform), data
     )
 end
@@ -274,12 +274,12 @@ end
 writeXSF(io::IO, xtal::Crystal) = writeXSF(io, xtal.atoms)
 
 """
-    writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true)
+    writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true)
 
 Writes the crystal component of an XCrysDen XSF file. By default, automatic wrapping of the datagrid
 occurs (values are repeated at the end of each dimension).
 """
-function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) where {D,T}
+function writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true) where D
     println(io, "    DATAGRID_", D, "D_", key)
     # Print the grid size (+1)
     println(io, " "^8, join([rpad(string(n + 1), 8) for n in size(data)]))
@@ -310,11 +310,7 @@ function writeXSF(io::IO, key, data::RealSpaceDataGrid{D,T}; periodic=true) wher
     println(io, "    END_DATAGRID_", D, "D")
 end
 
-function writeXSF(
-    io::IO,
-    data::Dict{K, RealSpaceDataGrid{D,T}};
-    periodic=true
-) where {K,D,T}
+function writeXSF(io::IO, data::Dict{K,<:RealDataGrid{D}}; periodic=true) where {K,D}
     println(io, "BEGIN_BLOCK_DATAGRID_", D, "D")
     println(io, "Written by Electrum.jl")
     for (k,d) in data
