@@ -266,12 +266,21 @@ Base.:-(g::DataGrid, h::DataGrid) = DataGrid(g.data - h.data, get_basis_shift((g
 
 #---FFTs-------------------------------------------------------------------------------------------#
 """
+    Electrum.fftvol(g::DataGrid)
+
+Returns the volume needed to normalize the Fourier transform of `g`.
+"""
+fftvol(g::DataGrid{D,<:RealBasis}) where D = det(basis(g).matrix) / length(g)
+fftvol(g::DataGrid{D,<:ReciprocalBasis}) where D = det(basis(g).matrix / 2π)
+
+"""
     fft(g::RealDataGrid) -> ReciprocalDataGrid
     fft(g::ReciprocalDataGrid) -> RealDataGrid
 
 Performs a fast Fourier transform on the data in a `DataGrid`.
 """
-FFTW.fft(g::DataGrid) = DataGrid(fft(g.data) * (det(basis(g)) / length(g)), inv(basis(g)))
+FFTW.fft(g::DataGrid) = DataGrid(fft(g.data) * fftvol(g), inv(basis(g)))
+FFTW.ifft(g::DataGrid) = DataGrid(bfft(g.data) * fftvol(g), inv(basis(g)))
 
 #---Operations specific to `RealDataGrid`----------------------------------------------------------#
 """
