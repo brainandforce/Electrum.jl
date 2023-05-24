@@ -1,8 +1,15 @@
 @testset "XSF files" begin
     # Check that the key name is correct
     @test haskey(xsf.data, "this_is_3Dgrid#1")
+    g = xsf["this_is_3Dgrid#1"]
     # Check that the size of the RealSpaceDataGrid is correct
-    @test size(xsf["this_is_3Dgrid#1"]) == (4, 4, 4)
+    @test size(g) == (4, 4, 4)
+    # Check the indexing
+    @test g[0] === 0.0
+    @test g[1] === 1.000
+    @test g[0,0,0] === 0.0
+    @test g[1,1,1] === 1.732
+    @test g[1,2,3] === 3.742
 end
 
 @testset "abinit outputs" begin
