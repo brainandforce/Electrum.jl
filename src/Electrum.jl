@@ -109,7 +109,7 @@ include("traits.jl")
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export RealBasis, ReciprocalBasis
-export lengths, volume, angles_cos, angles_rad, angles_deg, gram, isdiag, qr, triangularize, 
+export basis, lengths, volume, angles_cos, angles_rad, angles_deg, gram, isdiag, qr, triangularize, 
     maxHKLindex
 # Methods and structs for working with atomic positions
 include("atoms.jl")
@@ -121,27 +121,24 @@ export name, atomic_number, isdummy, displacement, occupancy, distance, deduplic
 include("crystals.jl")
 export AbstractCrystal, Crystal, CrystalWithDatasets
 export data, generators, set_transform!
-# Methods and structs for working with different types of data associated with crystals
-include("data/grids.jl")
-export AbstractDataGrid, basis
-include("data/realspace.jl")
-export RealSpaceDataGrid
-export shift, volume, voxelsize, coord, nearest_index, integrate
+# Methods and structs for working with k-points and band structures
 include("data/reciprocalspace.jl")
-export KPoint, KPointMesh, BandAtKPoint, BandStructure, HKLData
+export KPoint, KPointMesh, BandAtKPoint, BandStructure
 export weight, nkpt, nband
-include("data/grids2.jl")
+# Real and reciprocal space data grids
+include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
-export voxelsize, integrate, remove_shift
+export shift, fft, ifft, fftfreq, voxelsize, integrate, remove_shift
+# Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction, fermi
+# Density of states
 include("data/dos.jl")
 export  AbstractDensityOfStates, DensityOfStates, ProjectedDensityOfStates, FatBands
 export smear, energies, nelectrons
+# Data associated with atoms
 include("data/atomic.jl")
 export SphericalHarmonic
-include("data/fft.jl")
-export fftfreq, fft, ifft
 # Methods and structs for working with different file formats
 include("filetypes.jl")
 export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell

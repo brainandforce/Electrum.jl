@@ -116,7 +116,7 @@ Base.LinearIndices(p::PlanewaveIndices) = LinearIndices((p.grange..., p.bands, p
 =#
 
 """
-    PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
+    PlanewaveWavefunction{D,T} <: AbstractArray{T,D}
 
 Stores the components of a wavefunction constructed from a planewave basis. Usually, the coefficient
 data type `T` will be a `ComplexF32`, as in DFT calculations, double precision convergence of the
@@ -127,7 +127,7 @@ a `D`-dimensional `CartesianIndex` used for accessing each coefficient associate
 `PlanewaveWavefunction` instances are mutable, with `getindex()` and `setindex!()` defined for them,
 but they are not resizable, and the backing array should not be resized.
 """
-struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
+struct PlanewaveWavefunction{D,T} <: AbstractArray{T,D}
     basis::ReciprocalBasis{D,Float64}
     spins::Vector{SVector{D,Float64}}
     kpoints::KPointMesh{D}
@@ -152,6 +152,8 @@ struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
         return new{D,T}(basis, spins, kpoints, energies, occupancies, grange, data)
     end
 end
+
+Base.has_offset_axes(::PlanewaveWavefunction) = true
 
 """
     PlanewaveWavefunction{D,T}(
