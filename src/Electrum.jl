@@ -130,6 +130,9 @@ export shift, volume, voxelsize, coord, nearest_index, integrate
 include("data/reciprocalspace.jl")
 export KPoint, KPointMesh, BandAtKPoint, BandStructure, HKLData
 export weight, nkpt, nband
+include("data/grids2.jl")
+export DataGrid, RealDataGrid, ReciprocalDataGrid
+export voxelsize, integrate, remove_shift
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction, fermi
 include("data/dos.jl")
