@@ -645,7 +645,7 @@ end
 
 """
     read_abinit_density(file)
-        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,Float64}}
+        -> CrystalWithDatasets{3,String,RealDataGrid{3,Float64}}
 
 Reads a FORTRAN binary formatted abinit density file. By default, abinit density files will have
 the suffix `DEN`, but no assumptions are made about suffixes.
@@ -665,26 +665,26 @@ function read_abinit_DEN(io::IO)
     T = (Float64, Complex{Float64})[header.cplex]
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
     # Add each dataset to the dictionary
-    data = Dict{String, RealSpaceDataGrid{3,T}}()
+    data = Dict{String, RealDataGrid{3,T}}()
     # Convert the basis
     basis = RealBasis(BOHR2ANG * header.rprimd)
     # Fill the dictionary
-    data["density_total"] = RealSpaceDataGrid(basis, rho[1])
+    data["density_total"] = RealDataGrid(rho[1], basis)
     if header.nspden == 2
-        data["density_spinup"] = RealSpaceDataGrid(basis, rho[1])
+        data["density_spinup"] = RealDataGrid(rho[2], basis)
     elseif header.nspden == 4
-        data["density_spinup_x"] = RealSpaceDataGrid(basis, rho[1])
-        data["density_spinup_y"] = RealSpaceDataGrid(basis, rho[1])
-        data["density_spinup_z"] = RealSpaceDataGrid(basis, rho[1])
+        data["density_spinup_x"] = RealDataGrid(rho[2], basis)
+        data["density_spinup_y"] = RealDataGrid(rho[3], basis)
+        data["density_spinup_z"] = RealDataGrid(rho[4], basis)
     end
-    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
+    return CrystalWithDatasets{3,String,RealDataGrid{3,T}}(Crystal(header), data)
 end
 
 read_abinit_DEN(filename) = open(read_abinit_DEN, filename)
 
 """
     read_abinit_potential(file)
-        -> CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T<:Number}}
+        -> CrystalWithDatasets{3,String,RealDataGrid{3,T<:Number}}
 
 Reads a FORTRAN binary formatted abinit potential file.
 
@@ -707,20 +707,20 @@ function read_abinit_POT(io::IO)
     T = (Float64, Complex{Float64})[header.cplex]
     # No conversion will occur here: assume units of Hartree
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
-    data = Dict{String, RealSpaceDataGrid{3,T}}()
+    data = Dict{String, RealDataGrid{3,T}}()
     basis = RealBasis{3}(BOHR2ANG * header.rprimd)
     if header.nspden == 1
-        data["potential_total"] = RealSpaceDataGrid(basis, rho[1])
+        data["potential_total"] = RealDataGrid(rho[1], basis)
     elseif header.nspden == 2
-        data["potential_spinup"] = RealSpaceDataGrid(basis, rho[1])
-        data["potential_spindown"] = RealSpaceDataGrid(basis, rho[1])
+        data["potential_spinup"] = RealDataGrid(rho[1], basis)
+        data["potential_spindown"] = RealDataGrid(rho[2], basis)
     elseif header.nspden == 4
-        data["potential_up_up"] = RealSpaceDataGrid(basis, rho[1])
-        data["potential_down_down"] = RealSpaceDataGrid(basis, rho[1])
-        data["potential_up_down_real"] = RealSpaceDataGrid(basis, rho[1])
-        data["potential_up_down_imag"] = RealSpaceDataGrid(basis, rho[1])
+        data["potential_up_up"] = RealDataGrid(rho[1], basis)
+        data["potential_down_down"] = RealDataGrid(rho[2], basis)
+        data["potential_up_down_real"] = RealDataGrid(rho[3], basis)
+        data["potential_up_down_imag"] = RealDataGrid(rho[4], basis)
     end
-    return CrystalWithDatasets{3,String,RealSpaceDataGrid{3,T}}(Crystal(header), data)
+    return CrystalWithDatasets{3,String,RealDataGrid{3,T}}(Crystal(header), data)
 end
 
 read_abinit_POT(filename) = open(read_abinit_POT, filename)
