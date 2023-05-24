@@ -199,7 +199,7 @@ along that dimension. The data at G-vector `[0, 0, 0]` is stored in the backing 
 index, and the rest of the indices correspond to reciprocal space points using the FFT convention.
 """
 struct HKLData{D,T} <: AbstractDataGrid{D,T}
-    basis::ReciprocalBasis{D}
+    basis::ReciprocalBasis{D,Float64}
     data::Array{T,D}
     kpt::KPoint{D}
     function HKLData(

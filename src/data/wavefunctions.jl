@@ -128,7 +128,7 @@ a `D`-dimensional `CartesianIndex` used for accessing each coefficient associate
 but they are not resizable, and the backing array should not be resized.
 """
 struct PlanewaveWavefunction{D,T} <: AbstractDataGrid{D,T}
-    basis::ReciprocalBasis{D}
+    basis::ReciprocalBasis{D,Float64}
     spins::Vector{SVector{D,Float64}}
     kpoints::KPointMesh{D}
     energies::Array{Float64,3}
