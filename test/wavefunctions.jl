@@ -10,6 +10,6 @@
     @test_throws BoundsError wavecar[1, 7, 12, 0, 0, 0]
     @test wavecar[:,:,:] == wavecar[1, 1:6, 1:12] == wavecar
     @test wavecar[i] == wavecar[CartesianIndex(i)]
-    @test wavecar[1, 2, 3] isa HKLData{3}
+    @test wavecar[1, 2, 3] isa ReciprocalDataGrid{3}
     @test vec(wavecar[1, 2, 3].data) == vec(wavecar.data[:, 3, 2, 1])
 end
