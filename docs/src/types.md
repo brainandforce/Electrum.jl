@@ -9,13 +9,14 @@ complicated real-world cases, such as incommensurately modulated crystals.
 
 ## Basis vectors
 
-The `AbstractBasis` type contains two subtypes, `RealBasis` and `ReciprocalBasis`, which can be
-used to represent the basis vectors of a crystal.
-
-`AbstractBasis` types use the following conventions:
+The `RealBasis` and `ReciprocalBasis`can be used to represent the basis vectors of a crystal. The
+types use the following conventions:
   * The units are assumed to be bohr for lengths or rad bohr⁻¹ for inverse.
   * Conversion between the two involve a factor of 2π (multiplication for the `RealBasis` >  
 `ReciprocalBasis` conversion, and vice versa).
+
+They are implemented by using the `Electrum.LatticeBasis{S,D,T}` type, where `S` is a the tag type
+`ByRealSpace` or `ByReciprocalSpace`, `D` is the dimension, and `T` is the element type.
 
 ### Why not use `SMatrix` for basis vectors?
 
@@ -32,7 +33,7 @@ which poses a serious problem in the declaration of structs. Technically, a type
 value of `L` can be inferred from `D1` and `D2`. By declaring a struct to have this type, there
 seems to be a significant performance drop.
 
-The `AbstractBasis{D}` types wrap an `SVector{D,SVector{D,Float64}}`. This only requires a single 
+The `LatticeBasis` types wrap an `SVector{D,SVector{D,Float64}}`. This only requires a single 
 type parameter `D`, and allows for fully concrete struct declarations. Various methods are defined
 on this type to make it work like a normal matrix, such as matrix multiplication.
 
@@ -124,7 +125,7 @@ associated with the type of that field.
 
 An `AbstractDataGrid{D,T}` contains data defined in a crystal lattice of `D` dimensions containing
 elements of type `T`, either in real space (`RealSpaceDataGrid`) or in reciprocal space (`HKLData`).
-At minimum, concrete subtypes must contain an `AbstractBasis{D}` and an `Array{T,D}` which contains
+At minimum, concrete subtypes must contain an `LatticeBasis{D}` and an `Array{T,D}` which contains
 the entries.
 
 `AbstractDataGrid` uses zero-based, periodic indexing: the first index of an `AbstractDataGrid{D}`
