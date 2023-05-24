@@ -133,6 +133,22 @@ included in `x`. The fallback definition is:
 """
 DataSpace(x) = DataSpace(typeof(basis(x)))
 
+#---Type promotion---------------------------------------------------------------------------------#
+
+function Base.promote_rule(
+    ::Type{LatticeBasis{S,D,T1}},
+    ::Type{LatticeBasis{S,D,T2}}
+) where {S,D,T1,T2}
+    return LatticeBasis{S,D,promote_type(T1,T2)}
+end
+
+function Base.promote_rule(
+    ::Type{<:LatticeBasis{<:Any,D,T1}},
+    ::Type{<:LatticeBasis{<:Any,D,T2}}
+) where {D,T1,T2}
+    return SMatrix{D,D,promote_type(T1,T2),D^2}
+end
+
 #---Mathematical operations------------------------------------------------------------------------#
 
 Base.:(==)(a::LatticeBasis{S,D}, b::LatticeBasis{S,D}) where {S,D} = a.matrix == b.matrix

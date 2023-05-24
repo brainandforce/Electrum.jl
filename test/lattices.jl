@@ -12,4 +12,7 @@
     @test_throws DimensionMismatch convert(ReciprocalBasis{2}, b)
     # Gram matrix test
     @test gram(b) === (M = convert(SMatrix, b); M' * M)
+    # Type promotion
+    @test promote_type(RealBasis{3,Int64}, RealBasis{3,Float32}) === RealBasis{3,Float32}
+    @test promote_type(RealBasis{3,Int64}, ReciprocalBasis{3,Float32}) === SMatrix{3,3,Float32,9}
 end
