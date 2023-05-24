@@ -192,16 +192,6 @@ function Base.show(io::IO, ::MIME"text/plain", l::AbstractAtomList; kwargs...)
     end
 end
 
-#---Types from data/realspace.jl-------------------------------------------------------------------#
-
-function Base.show(io::IO, ::MIME"text/plain", g::RealSpaceDataGrid)
-    dimstring = join(string.(size(g)), "×") * " "
-    println(io, dimstring, typeof(g), " with real space basis vectors:")
-    printbasis(io, g)
-    @printf(io, "\nCell volume: %16.10f bohr", volume(g))
-    @printf(io, "\nVoxel size:  %16.10f bohr³", voxelsize(g))
-end
-
 #---Types from data/reciprocalspace.jl-------------------------------------------------------------#
 
 Base.summary(io::IO, k::KPoint) = print(io, typeof(k), " with weight ", k.weight)
@@ -216,21 +206,17 @@ function Base.summary(io::IO, k::KPointMesh)
     print(io, length(k), "-element ", typeof(k), " (total weight ", sum(weight.(k)), ')')
 end
 
-function Base.show(io::IO, ::MIME"text/plain", g::HKLData)
+#---Types from data/grids.jl-----------------------------------------------------------------------#
+
+function Base.summary(io::IO, g::DataGrid)
     dimstring = join(string.(size(g)), "×") * " "
-    println(io, dimstring, typeof(g), " with reciprocal space basis vectors:")
+    println(io, dimstring, typeof(g), " with basis:")
     printbasis(io, g)
-    print(io, "\nSpatial frequency ranges:")
-    for n in 1:length(basis(g))
-        print(io, "\n  ", '`' + n, ":", )
-        sz = size(g)[n]
-        @printf(
-            io, "%12.6f rad*bohr⁻¹ to %.6f rad*bohr⁻¹",
-            -div(sz-1, 2) * lengths(basis(g))[n],
-            div(sz, 2) * lengths(basis(g))[n],
-        )
-    end
+    @printf(io, "\nCell volume: %16.10f bohr", volume(g))
+    @printf(io, "\nVoxel size:  %16.10f bohr³", voxelsize(g))
 end
+
+#---Types from data/wavefunctions.jl---------------------------------------------------------------#
 
 function Base.summary(io::IO, wf::PlanewaveWavefunction)
     print(
