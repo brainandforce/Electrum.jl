@@ -225,9 +225,9 @@ function Base.getindex(wf::PlanewaveWavefunction, spin, kpt, band)
 end
 
 function Base.getindex(wf::PlanewaveWavefunction, spin::Integer, kpt::Integer, band::Integer)
-    return HKLData(
-        basis(wf),
+    return ReciprocalDataGrid(
         reshape(wf.data[:, band, kpt, spin], length.(wf.grange)),
+        basis(wf),
         wf.kpoints[kpt]
     )
 end
