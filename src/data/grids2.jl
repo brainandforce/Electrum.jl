@@ -80,20 +80,29 @@ function DataGrid{D,B}(
     return DataGrid{D,B,S,T}(data, basis, shift)
 end
 
-function DataGrid{D}(data::AbstractArray{T}, basis::B, shift::S = zero_shift(b)) where {D,B,S,T}
+function DataGrid{D}(data::AbstractArray{T}, basis::B, shift::S = zero_shift(B)) where {D,B,S,T}
     return DataGrid{D,B,S,T}(data, basis, shift)
 end
 
-function DataGrid(data::AbstractArray{T,D}, basis::B, shift::S = zero_shift(b)) where {D,B,S,T}
+function DataGrid(data::AbstractArray{T,D}, basis::B, shift::S = zero_shift(B)) where {D,B,S,T}
     return DataGrid{D,B,S,T}(data, basis, shift)
 end
 
-"""
-    DataGrid(f, g::DataGrid{D,B,S}) -> DataGrid{D,B,S}
+function RealDataGrid(
+    data::AbstractArray{T,D},
+    basis::AbstractMatrix{<:Real},
+    shift::AbstractVector{<:Real} = zero(SVector{D,Float64})
+) where {D,T}
+    return DataGrid{D,RealBasis{D,Float64},SVector{D,Float64},T}(data, basis, shift)
+end
 
-Constructs a new `DataGrid` by applying function or functor `f` to each element of `g`.
-"""
-DataGrid(f, g::DataGrid) = DataGrid(f.(g.data), g.basis, g.shift)
+function ReciprocalDataGrid(
+    data::AbstractArray{T,D},
+    basis::AbstractMatrix{<:Real},
+    shift::AbstractVector{<:Real} = zero(KPoint{D})
+) where {D,T}
+    return DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},T}(data, basis, shift)
+end
 
 #---Initialize array with zeros--------------------------------------------------------------------#
 
@@ -101,7 +110,7 @@ function Base.zeros(
     ::Type{DataGrid{D,B,S,T}},
     basis::LatticeBasis,
     shift::AbstractVector{<:Real},
-    dimensions::Vararg{<:Integer,D}
+    dimensions::Vararg{Integer,D}
 ) where {D,B,S,T}
     return T(zeros(T, dimensions), basis, shift)
 end
@@ -109,7 +118,7 @@ end
 function Base.zeros(
     ::Type{DataGrid{D,B,S,T}},
     basis::LatticeBasis,
-    dimensions::Vararg{<:Integer,D}
+    dimensions::Vararg{Integer,D}
 ) where {D,B,S,T}
     return DataGrid{D,B,S,T}(zeros(T, dimensions), basis, zero(S))
 end
@@ -151,7 +160,7 @@ types with a `RealBasis`, and rad³*bohr⁻³ for types with a `ReciprocalBasis`
 volume(g::DataGrid) = volume(basis(g))
 
 """
-    voxelsize(g::RealSpaceDataGrid) -> eltype(basis(g))
+    voxelsize(g::DataGrid) -> eltype(basis(g))
 
 Gets the size of a single real space voxel associated with a data grid. Units are assumed to be
 bohr³.
@@ -162,85 +171,85 @@ voxelsize(g::DataGrid) = volume(RealBasis(g)) / length(RealBasis(g))
 
 Base.:-(g::DataGrid) = DataGrid(-g.data, g.basis, g.shift)
 
-Base.abs(g::DataGrid) = DataGrid(abs(g.data), g.basis, g.shift)
-Base.abs2(g::DataGrid) = DataGrid(abs2(g.data), g.basis, g.shift)
-Base.conj(g::DataGrid) = DataGrid(conj(g.data), g.basis, g.shift)
-Base.angle(g::DataGrid) = DataGrid(angle(g.data) + 2π * (imag(g.data) < 0), g.basis, g.shift)
+Base.abs(g::DataGrid) = DataGrid(abs.(g.data), g.basis, g.shift)
+Base.abs2(g::DataGrid) = DataGrid(abs2.(g.data), g.basis, g.shift)
+Base.conj(g::DataGrid) = DataGrid(conj.(g.data), g.basis, g.shift)
+Base.angle(g::DataGrid) = DataGrid(angle.(g.data) + 2π * (imag.(g.data) .< 0), g.basis, g.shift)
 
-#---Grid similarity checks-------------------------------------------------------------------------#
+#---Collecting shared grid properties--------------------------------------------------------------#
 """
-    Electrum.grid_specific_check(g::DataGrid...) -> Nothing
+    Electrum.get_shared_properties(f, args::Tuple, [exception::Exception = ErrorException("")])
+        -> eltype(f.(args))
 
-Performs extra checks that might be needed for a specific type of data grid. For any new types that
-subtype `AbstractDataGrid` and require extra checks, this method should be defined. As an example,
-`HKLData` has a check to ensure that the k-points associated with the data grids are identical.
-
-By default, it performs no checks. It should always return `nothing`.
+Promotes and compares the results of applying function or functor `f` to a set of arguments. If all
+elements of the resulting tuple are equal, the only unique element is returned. If not, an exception
+is thrown.
 """
-grid_specific_check(g...) = nothing
-# Needed to resolve method ambiguities
-grid_specific_check() = nothing
+function get_shared_properties(f, args::Tuple, ex::Exception = ErrorException(""))
+    p = promote(f.(args)...)
+    return all(==(first(p)), p) ? first(p) : throw(ex)
+end
 
 """
-    Electrum.grid_check(g::DataGrid{D}...) -> nothing
+    Electrum.get_basis_shift(grids::Tuple{Vararg{Datagrid}})
 
-Checks that the basis vectors and shift associated with `DataGrid` objects are identical. It also
-performs checks specific to the data type by calling `Electrum.grid_specific_check(g...)`.
+Gets the shared lattice basis vectors and shift associated with a set of datagrids.
 """
-function grid_check(g::DataGrid...)
-    grid_specific_check(g...)
-    any(h -> !isapprox(basis(first(g)), basis(h)), g) && error("Basis vectors do not match.")
-    return nothing
+function get_basis_shift(args::Tuple{Vararg{DataGrid}})
+    return (
+        get_shared_properties(basis, args, LatticeMismatch("Unequal lattice basis vectors.")),
+        get_shared_properties(shift, args, LatticeMismatch("Incommensurate lattice shifts."))
+    )
 end
 
 #---Broadcasting-----------------------------------------------------------------------------------#
 
-function Base.similar(g::DataGrid, T::Type, sz::Tuple{Vararg{<:Integer}})
+function Base.similar(g::DataGrid, ::Type{T}, sz::Tuple{Vararg{Int}}) where T
     return DataGrid(Array{T}(undef, sz), g.basis, g.shift)
 end
 
-function Base.similar(g::DataGrid, T::Type, ax::Tuple{Vararg{<:AbstractUnitRange{<:Integer}}})
+function Base.similar(g::DataGrid, ::Type{T}, ax::Tuple{UnitRange,Vararg{UnitRange}}) where T
     return DataGrid(Array{T}(undef, length.(ax)), g.basis, g.shift)
 end
 
-Base.similar(g::DataGrid, T::Type) = similar(g, T, size(g))
+function Base.similar(g::DataGrid, ::Type{T}, ax::FFTBins) where T
+    return DataGrid(Array{T}(undef, size(ax)), g.basis, g.shift)
+end
+
+Base.similar(g::DataGrid, ::Type{T}) where T = similar(g, T, size(g))
 Base.similar(g::DataGrid, sz::Tuple) = similar(g, eltype(g), sz)
 Base.similar(g::DataGrid) = similar(g, eltype(g), size(g))
 
-const DataGridStyle{D,B,S} = Broadcast.ArrayStyle{DataGrid{D,B,S}}
+"""
+    DataGridStyle{D,B<:LatticeBasis,S<:AbstractVector{<:Real}} <: Broadcast.AbstractArrayStyle{D}
 
-function Base.BroadcastStyle(::Type{<:DataGrid{D,B,S}}) where {D,B,S}
-    return DataGridStyle{D,B,S}()
+The broadcast style for `DataGrid` objects.
+"""
+struct DataGridStyle{D,B<:LatticeBasis,S<:AbstractVector{<:Real}} <: Broadcast.AbstractArrayStyle{D}
 end
 
+DataGridStyle{D,B,S}(::Val{D}) where {D,B,S} = DataGridStyle{D,B,S}()
+# Mismatching dimensions should fail
+function DataGridStyle{D,B,S}(::Val) where {D,B,S}
+    throw(DimensionMismatch("Cannot broadcast a DataGrid to arrays of varying dimensions"))
+end
+
+Base.BroadcastStyle(::Type{<:DataGrid{D,B,S}}) where {D,B,S} = DataGridStyle{D,B,S}()
+
 # Allow broadcasting with other arrays, but don't preserve basis/shift - return Array
-Base.BroadcastStyle(::DataGridStyle{D,B,S}, x::Broadcast.AbstractArrayStyle{D}) where {D,B,S} = x
 Base.BroadcastStyle(::DataGridStyle{D,B,S}, x::Broadcast.DefaultArrayStyle{D}) where {D,B,S} = x
+Base.BroadcastStyle(::DataGridStyle{D,B,S}, x::Broadcast.AbstractArrayStyle{D}) where {D,B,S} = x
 
 # Promote the element types of the basis and shift
 function Base.BroadcastStyle(::DataGridStyle{D,B,S}, ::DataGridStyle{D,C,T}) where {D,B,S,C,T}
     return DataGridStyle{D,promote_type(B,C),promote_type(S,T)}()
 end
 
-"""
-    Electrum.get_basis_and_shift(bc::Broadcast.Broadcasted)
-    Electrum.get_basis_and_shift(args::NTuple{N,<:DataGrid{D,B,S} where {D,B,S}})
-        -> Tuple{promote_type(B), promote_type(S)}
-
-From a list of `DataGrid` objects, return the shared lattice basis vectors and lattice shifts. If
-the set contains inequivalent values, an `Electrum.LatticeMismatch` exception will be thrown.
-"""
-function get_basis_and_shift(args::NTuple{N,<:DataGrid{D,B,S} where {D,B,S}}) where N
-    (ub, us) = (unique(promote((getproperty(g, p) for g in args)...)) for p in (:basis, :shift))
-    isone(length(ub)) || throw(LatticeMismatch("Lattice basis vectors are not equal."))
-    isone(length(us)) || throw(LatticeMismatch("Lattice shifts are not equal."))
-    return (only(ub), only(us))
-end
-
-get_basis_and_shift(bc::Broadcast.Broadcasted) = get_basis_and_shift(bc.args)
-
 function Base.similar(bc::Broadcast.Broadcasted{DataGridStyle{D,B,S}}, T::Type) where {D,B,S}
-    return DataGrid(Array{T}(undef, sz), get_basis_and_shift(bc)...)
+    grids = filter(x -> x isa DataGrid, bc.args)
+    (b, s) = get_basis_shift(grids)
+    sz = get_shared_properties(size, grids, DimensionMismatch("Unequal grid sizes."))
+    return DataGrid(Array{T}(undef, sz), b, s)
 end
 
 #---More mathematical operations-------------------------------------------------------------------#
@@ -249,18 +258,11 @@ function Base.:≈(g::DataGrid, h::DataGrid; kw...)
     return all(getfield(g, f; kw...) ≈ getfield(h, f; kw...) for f in fieldnames(DataGrid))
 end
 
-Base.:*(s, g::DataGrid) = DataGrid(s * g.data, g.basis, g.shift)
-Base.:*(g::DataGrid, s) = DataGrid(g.data * s, g.basis, g.shift)
+Base.:*(s::Number, g::DataGrid) = DataGrid(s * g.data, g.basis, g.shift)
+Base.:*(g::DataGrid, s::Number) = DataGrid(g.data * s, g.basis, g.shift)
 
-function Base.:+(g::DataGrid, h::DataGrid)
-    grid_check(g, h)
-    return DataGrid(g.data + h.data, g.basis, g.shift)
-end
-
-function Base.:-(g::DataGrid, h::DataGrid)
-    grid_check(g, h)
-    return DataGrid(g.data - h.data, g.basis, g.shift)
-end
+Base.:+(g::DataGrid, h::DataGrid) = DataGrid(g.data + h.data, get_basis_shift((g, h))...)
+Base.:-(g::DataGrid, h::DataGrid) = DataGrid(g.data - h.data, get_basis_shift((g, h))...)
 
 #---FFTs-------------------------------------------------------------------------------------------#
 """
