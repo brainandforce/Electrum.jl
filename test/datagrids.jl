@@ -14,6 +14,19 @@
     @test g .+ g == reference
     @test 2 .* g == reference
     @test volume(g) == Electrum.ANG2BOHR^3
+    # similar() and zeros() constructors
+    @test size(similar(g)) == size(g)
+    @test eltype(similar(g)) == eltype(g)
+    s = similar(g, Int, (4, 20, 69))
+    @test s isa RealDataGrid{3,Int}
+    @test size(s) === (4, 20, 69)
+    @test basis(s) === basis(g)
+    @test shift(s) === shift(g)
+    z = zeros(ReciprocalDataGrid{3,Int}, basis(g), 4, 20, 69)
+    @test z.data == zeros(Int, 4, 20, 69)
+    @test basis(z) == ReciprocalBasis(g)
+    @test shift(z) isa KPoint{3}
+    @test weight(shift(z)) == 1
 end
 
 @testset "Fourier transforms" begin
