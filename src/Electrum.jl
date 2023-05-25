@@ -121,10 +121,10 @@ export name, atomic_number, isdummy, displacement, occupancy, distance, deduplic
 include("crystals.jl")
 export AbstractCrystal, Crystal, CrystalWithDatasets
 export data, generators, set_transform!
-# Methods and structs for working with k-points and band structures
-include("data/reciprocalspace.jl")
-export KPoint, KPointMesh, BandAtKPoint, BandStructure
-export weight, nkpt, nband
+# Weighed k-points and k-point meshes
+include("data/kpoints.jl")
+export KPoint, KPointMesh
+export weight
 # Real and reciprocal space data grids
 include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
@@ -132,6 +132,10 @@ export shift, fft, ifft, fftfreq, voxelsize, integrate, remove_shift
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction, fermi
+# Band structures
+include("data/bands.jl")
+export BandAtKPoint, BandStructure
+export nkpt, nband
 # Density of states
 include("data/dos.jl")
 export  AbstractDensityOfStates, DensityOfStates, ProjectedDensityOfStates, FatBands
