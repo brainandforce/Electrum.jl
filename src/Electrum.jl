@@ -147,7 +147,7 @@ export readXSF3D, readXSF, writeXSF
 include("software/cppackage.jl")
 export readCPcoeff, readCPgeo, readCPcell
 include("software/abinit.jl")
-export read_abinit_DEN, read_abinit_POT, read_abinit_WFK,
+export read_abinit_DEN, read_abinit_POT, read_abinit_WFK
 #= Removed exports for abinit anaddb functionality
 export read_abinit_anaddb_out, read_abinit_anaddb_in, write_abinit_modes, read_abinit_anaddb_PHDOS
 =#
