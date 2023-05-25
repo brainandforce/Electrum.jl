@@ -83,7 +83,7 @@ function readXSF3D(
     function getlattice!(itr)
         latt = SVector{3}((SVector{3}(parse.(Float64, split(iterate(itr)[1]))) for _ in 1:3))
         @debug string("Found vectors:\n", (string(v) * "\n" for v in latt)...)
-        return RealBasis(hcat(latt...) * BOHR2ANG)
+        return RealBasis(hcat(latt...) * ANG2BOHR)
     end
     # Function for getting 3D lists of atoms
     function getatoms!(itr, basis::LatticeBasis, natom::Integer)
