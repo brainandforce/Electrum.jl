@@ -121,45 +121,55 @@ The `RealBasis` and `ReciprocalBasis` types return `ByRealSpace()` and `ByRecipr
 respectively, and by default, any type with a field named `:basis` will return the data space trait
 associated with the type of that field.
 
-## `AbstractDataGrid` and its subtypes
+## `DataGrid`, `RealDataGrid`, and `ReciprocalDataGrid`
 
-An `AbstractDataGrid{D,T}` contains data defined in a crystal lattice of `D` dimensions containing
-elements of type `T`, either in real space (`RealSpaceDataGrid`) or in reciprocal space (`HKLData`).
-At minimum, concrete subtypes must contain an `LatticeBasis{D}` and an `Array{T,D}` which contains
-the entries.
+An `DataGrid{D,B<:Electrum.LatticeBasis,S<:AbstractVector{<:Real},T}` contains data defined in a
+crystal lattice of `D` with basis vectors of type `B`, a shift parameter of type `S`, and elements
+of type `T`, either in real space (`RealDataGrid`) or in reciprocal space (`ReciprocalDataGrid`).
+These aliases are defined as follows:
 
-`AbstractDataGrid` uses zero-based, periodic indexing: the first index of an `AbstractDataGrid{D}`
-is `zero(NTuple{D,Int})`, and indices whose moduli with respect to size along that dimension are
+```julia
+const RealDataGrid{D,T} = DataGrid{D,RealBasis{D,Float64},SVector{D,Float64},T}
+const ReciprocalDataGrid{D,T} = DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},T}
+```
+!!! note Look closely at the above definition: the shift data type for `RealDataGrid{D}` is
+`SVector{D,Float64}`, but the shift data type for `ReciprocalDataGrid{D}` is `KPoint{D}`. When
+the `DataGrid` constructor without the shift type parameter is invoked, the basis type is used to
+infer the appropriate shift type so that a `RealDataGrid` or `ReciprocalDataGrid` is constructed.
+
+`DataGrid` uses zero-based, periodic indexing: the first index of an `AbstractDataGrid{D}` is
+`zero(NTuple{D,Int})`, and indices whose moduli with respect to size along that dimension are
 identical will reference the same element: for instance, for `g::AbstractDataGrid{3}` with size
 `(10, 10, 10)`, `g[69, 420, 1337] === g[9, 0, 7]`. Encountering a `BoundsError` is not possible
-when indexing an `AbstractDataGrid`.
+when indexing an `DataGrid`.
 
-The basis of an `AbstractDataGrid` can be recovered with `basis(::AbstractDataGrid)`. If you decide
-to subtype `AbstractDataGrid`, note that the method is defined:
+The basis of an `DataGrid` can be recovered with `basis(::DataGrid)`, which will be of the type
+specified by the type parameter. 
+
+### Broadcasting and mathematical operations
+
+Broadcasting is defined for `DataGrid` with a custom `Base.Broadcast.BroadcastStyle` subtype:
 ```julia
-basis(g::AbstractDataGrid) = g.basis
+Electrum.DataGridStyle{D,B,S} <: Broadcast.AbstractArrayStyle{D}
 ```
-The data type for the basis should be `RealBasis` if representing real space data and
-`ReciprocalBasis` if representing reciprocal space data, corresponding with the traits mentioned
-previously.
+This allows `DataGrid` instances to operated on with dot syntax. However, they must share lattice
+basis vectors and shift values. If they do not match, an `Electrum.LatticeMismatch` exception will
+be thrown.
 
-## Mathematical operations
+!!! note Although `Base.Broadcast.ArrayStyle` is usually overridden by other subtypes of 
+`Base.Broadcast.AbstractArrayStyle`, it does not override `Electrum.DataGridStyle`. Adding a
+`DataGrid` to an `Array` returns an `Array`, and adding a `DataGrid` to other `AbstractArray`
+subtypes returns the `AbstractArray` subtype defined by the `Broadcast.BroadcastStyle`. In the case
+of a dimension mismatch, the broadcast style wll be `Broadcast.ArrayConflict` - the operation will
+throw a `DimensionMismatch`.
 
-Supported unary mathematical operations on a `RealSpaceDataGrid` are negation (`-`) and the fast 
-Fourier transform (`FFTW.fft()`/`FFTW.ifft()`).
+The `+` and `-` operators are defined for `DataGrid` instances, and they are faster than the
+broadcasted `.+` and `.-` equivalents. As with the broadcasted versions, checks are implemented to
+ensure that the lattice basis vectors and shifts match.
 
-Binary operations, however, need checks to ensure that two grids are compatible with each other.
-"Compatible" means:
-  * The datagrids are of the same spatial dimension.
-  * The basis vectors of both grids are identical.
-  * The shifts of both grids are identical.
-  * The number of elements along each dimension are identical.
+Similarly, the `*`, `/`, and `\` operators are defined for pairs of `DataGrid` and `Number`
+instances, and again, are faster than their broadcasted equivalents.
 
-Failure to meet any of these criteria will result in an `AssertionError` being thrown. The internal
-function `Electrum.grid_check()` performs these checks and is called before binary operations are 
-performed. This function, in turn, calls `Electrum.grid_specific_check()` which can be overloaded
-by the user to perform other tests for custom subtypes of `AbstractDataGrid`. This function should
-return `nothing` and throw `AssertionError` when incompatible grids are found.
-
-In the future, we may relax some requirement by using Fourier interpolation, though a warning will
-be thrown if this is invoked.
+The Fourier transform and its inverse are available through an overload of `FFTW.fft()` and
+`FFTW.ifft()`. The transforms are normalized with respect to the basis vectors of the space, so
+for `g::DataGrid`, `ifft(fft(g)) ≈ g` (to within floating point error).
