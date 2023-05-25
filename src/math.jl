@@ -129,4 +129,5 @@ Base.getindex(r::FFTLength, i::CartesianIndex{1}) = r[only(i.I)]
 
 Base.iterate(r::FFTLength, i = 1) = i in eachindex(r) ? (r[i], i+1) : nothing
 
-Base.sort(r::FFTLength) = range(extrema(r)...)
+# For Julia 1.6 compatibility: must use keyword arguments
+Base.sort(r::FFTLength) = range(start = minimum(r), stop = maximum(r))
