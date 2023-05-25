@@ -17,9 +17,10 @@ and well-maintained scientific software.
 
 ## How to install
 
-Electrum.jl is not in the Julia package registry yet, so you'll need to install it like this:
+As of the time of writing, Electrum.jl is not in the Julia package registry yet, so you'll need to
+install it by referencing the URL:
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl 
+(@v1.9) pkg> add https://github.com/brainandforce/Electrum.jl 
 ```
 You can access package mode by typing `]` at the REPL. Alternatively, you can work with the `Pkg`
 module:
@@ -29,7 +30,7 @@ julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl")
 If you'd like to track a specific branch, you can specify this as well (here, `release` is used as
 an example):
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl#release
+(@v1.9) pkg> add https://github.com/brainandforce/Electrum.jl#release
 ```
 ```julia-repl
 julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="release")
@@ -37,7 +38,7 @@ julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="release"
 The current development state is kept in the `main` branch, and the most recent stable version is
 the head of the `release` branch. Specific releases for a minor version may be found by suffixing
 the minor version with `/release`: for instance, `0.1/release` contains the latest release version
-in the 0.1 series (there are no current releases).
+in the 0.1 series.
 
 ## Current features
 
@@ -54,7 +55,8 @@ in the 0.1 series (there are no current releases).
      + XYZ files
      + VASP POSCAR
 * Operations on datagrids:
-     + Addition, subtraction, multiplication
+     + Standard arithmetic operations: addition, subtraction, multiplication, division, negation...
+     + Broadcasting of any Julia operation with dot syntax
      + FFTs and inverse FFTs on real and reciprocal space data
 
 ## Planned features
@@ -64,10 +66,10 @@ This project is just starting to get off the ground, but here's what we have pla
   * Reading and writing of common file formats:
       + XTL files
       + CIF files
-      + abinit input and output files
   * Manipulation of data grids associated with crystal structures
       + Real space grid reinterpolation
   * Other operations
+      + Working with crystal symmetry
       + Converting k-point meshes to symmetry-reduced lists of weighted k-points
      
 ...and more that we will decide in time! If you'd like to contibute, be sure to read the included
