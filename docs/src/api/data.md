@@ -9,16 +9,17 @@ Electrum.basis(::Any)
 
 ## Basic data grids
 ```@docs
-Electrum.AbstractDataGrid
-Electrum.RealSpaceDataGrid
-Electrum.voxelsize
-Electrum.integrate
-Electrum.HKLData
+Electrum.DataGrid
+Electrum.RealDataGrid
+Electrum.ReciprocalDataGrid
 Electrum.fft
 Electrum.ifft
+Electrum.voxelsize
+Electrum.integrate
+Electrum.remove_shift 
 ```
 
-## More complex data grids
+## Wavefunctions
 ```@docs
 Electrum.PlanewaveWavefunction
 Electrum.PlanewaveIndex
