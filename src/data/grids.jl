@@ -137,7 +137,7 @@ Base.hash(g::DataGrid, h::UInt) = reduce(xor, hash(getfield(g, f), h) for f in f
 
 Base.size(g::DataGrid) = size(g.data)
 # For Julia 1.6 compatibility: must use keyword arguments
-Base.axes(g::DataGrid{D}) where D = NTuple{D}(range(start = 0, stop = x - 1) for x in size(g))
+Base.axes(g::DataGrid{D}) where D = NTuple{D}(range(0, stop = x - 1) for x in size(g))
 
 # Linear indexing should be defined automatically
 Base.getindex(g::DataGrid, i...) = getindex(g.data, reinterpret_index(g, i)...)
