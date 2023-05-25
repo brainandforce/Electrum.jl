@@ -110,16 +110,18 @@ Electrum.jl supports a good number of different data types, including:
 ## Data traits
 
 Electrum.jl uses a trait system to classify its types that are used to store non-structural crystal
-data. These are subtypes of `Electrum.CrystalDataTrait` and include `Electrum.ByRealSpace()`
-`Electrum.ByReciprocalSpace()`, and `Electrum.ByAtom()`, which correspond to data in real space,
-data in reciprocal space, and data associated with individual atomic positions, respectively.
+data. These are subtypes of `Electrum.CrystalDataTrait` and include `Electrum.ByRealSpace{D}`,
+`Electrum.ByReciprocalSpace{D}`, and `Electrum.ByAtom`, which correspond to data in D-dimensional
+real space, data in D-dimensional reciprocal space, and data associated with individual atoms,
+respectively.
 
-To recover the data space trait, `data_space()` may be called with either the object or object type.
+To recover the data space trait, `DataSpace()` may be called with either the object or object type.
 For custom types, this may be overloaded.
 
-The `RealBasis` and `ReciprocalBasis` types return `ByRealSpace()` and `ByReciprocalSpace()`,
-respectively, and by default, any type with a field named `:basis` will return the data space trait
-associated with the type of that field.
+The `RealBasis{D}` and `ReciprocalBasis{D}` types return `ByRealSpace{D}()` and
+`ByReciprocalSpace{D}()`, respectively. By default, types that have a defined `basis()` function
+(or, by extension, a field `basis::Electrum.LatticeBasis`) will derive the trait from the return
+type of `basis()`.
 
 ## `DataGrid`, `RealDataGrid`, and `ReciprocalDataGrid`
 
