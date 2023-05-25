@@ -261,6 +261,12 @@ end
 Base.:*(s::Number, g::DataGrid) = DataGrid(s * g.data, g.basis, g.shift)
 Base.:*(g::DataGrid, s::Number) = DataGrid(g.data * s, g.basis, g.shift)
 
+Base.:/(s::Number, g::DataGrid) = DataGrid(s / g.data, g.basis, g.shift)
+Base.:/(g::DataGrid, s::Number) = DataGrid(g.data / s, g.basis, g.shift)
+# Right division is never used, but it's here for convenience
+Base.:\(s::Number, g::DataGrid) = DataGrid(s \ g.data, g.basis, g.shift)
+Base.:\(g::DataGrid, s::Number) = DataGrid(g.data \ s, g.basis, g.shift)
+
 Base.:+(g::DataGrid, h::DataGrid) = DataGrid(g.data + h.data, get_basis_shift((g, h))...)
 Base.:-(g::DataGrid, h::DataGrid) = DataGrid(g.data - h.data, get_basis_shift((g, h))...)
 
