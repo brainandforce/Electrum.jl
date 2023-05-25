@@ -239,7 +239,7 @@ function Base.getindex(
     spin::Integer,
     kpt::Integer,
     band::Integer,
-    g::Vararg{<:Integer,D}
+    g::Vararg{Integer,D}
 ) where D
     return wf[PlanewaveIndex(spin, kpt, band, g)]
 end
@@ -257,7 +257,7 @@ function Base.setindex!(
     spin::Integer,
     kpt::Integer,
     band::Integer,
-    g::Vararg{<:Integer,D}
+    g::Vararg{Integer,D}
 ) where D
     wf[PlanewaveIndex(spin, kpt, band, g)] = x
 end

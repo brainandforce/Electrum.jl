@@ -3,7 +3,9 @@
 @computed struct SphericalHarmonic{Lmax}
     v::NTuple{(Lmax+1)^2,Float64}
     # Default constructor without parameters takes numbers directly
-    function SphericalHarmonic(x::Vararg{<:Real,N}) where N
+    # TODO: when removing the N parameter, the following message comes up during compilation:
+    # ERROR: LoadError: syntax: local variable name "Lmax" conflicts with a static parameter
+    function SphericalHarmonic(x::Vararg{Real,N}) where N
         L = sqrt(length(x)) - 1
         if isinteger(L)
             Lmax = Int(L)
