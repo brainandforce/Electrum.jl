@@ -13,6 +13,7 @@
     @test 2 * g == reference
     @test g .+ g == reference
     @test 2 .* g == reference
+    @test volume(g) == Electrum.ANG2BOHR^3
 end
 
 @testset "Fourier transforms" begin
