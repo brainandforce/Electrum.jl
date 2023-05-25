@@ -124,21 +124,22 @@ export data, generators, set_transform!
 # Weighed k-points and k-point meshes
 include("data/kpoints.jl")
 export KPoint, KPointMesh
-export weight
+export weight, nkpt
 # Real and reciprocal space data grids
 include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
 export shift, fft, ifft, fftfreq, voxelsize, integrate, remove_shift
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
-export PlanewaveIndex, PlanewaveWavefunction, fermi
+export PlanewaveIndex, PlanewaveWavefunction
+export fermi
 # Band structures
 include("data/bands.jl")
 export BandAtKPoint, BandStructure
-export nkpt, nband
+export nband
 # Density of states
 include("data/dos.jl")
-export  AbstractDensityOfStates, DensityOfStates, ProjectedDensityOfStates, FatBands
+export AbstractDensityOfStates, DensityOfStates, ProjectedDensityOfStates, FatBands
 export smear, energies, nelectrons
 # Data associated with atoms
 include("data/atomic.jl")

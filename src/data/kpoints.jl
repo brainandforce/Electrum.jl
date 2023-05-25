@@ -93,3 +93,11 @@ Base.setindex!(k::KPointMesh, x, i) = setindex!(k.points, x, i)
 Base.convert(T::Type{Vector{<:KPoint}}, k::KPointMesh) = k.points::T
 Base.convert(T::Type{<:KPointMesh}, v::AbstractVector{<:KPoint}) = KPointMesh(v)::T
 Base.convert(T::Type{<:KPointMesh}, k::KPointMesh) = k::T
+
+"""
+    nkpt(k::KPointMesh) -> Int
+
+Counts the number of k-points (equivalent to `length(k)`). This function can be defined for custom
+types that contain a `KPointMesh`.
+"""
+nkpt(k::KPointMesh) = length(k)
