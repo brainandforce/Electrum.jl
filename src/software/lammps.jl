@@ -31,13 +31,22 @@ function read_lammps_data(io::IO; atom_types::AbstractVector = NamedAtom[])
         elseif occursin(r"zlo.+zhi", ln)
             basis_M[3,3] = parse(Float64, split(ln)[2]) - parse(Float64, split(ln)[1])
         # Match these in any order
-        elseif all(occursin(t, ln) for t in ["xy", "xz", "yz"])
-            tilt_tokens = filter(s -> (s in ["xy", "xz", "yz"]), split(ln))
-            indices = [
-                Tuple(parse(Int, c) for c in s)
-                for s in replace.(tilt_tokens, "x" => "1", "y" => "2", "z" => "3")
-            ]
-            for (i,s) in zip(indices, split(ln)[1:3])
+        elseif all(occursin(t, ln) for t in ("xy", "xz", "yz"))
+            tokens = split(ln)
+            tilt_tokens = filter(s -> (s in ("xy", "xz", "yz")), tokens)
+            indices = Vector{Tuple{Int,Int}}(undef, 3)
+            for (n,s) in enumerate(tilt_tokens)
+                if s == "xy"
+                    indices[n] = (1,2)
+                elseif s == "xz"
+                    indices[n] = (1,3)
+                elseif s == "yz"
+                    indices[n] = (2,3)
+                else
+                    error("Invalid box tilt definition")
+                end
+            end
+            for (i,s) in zip(indices, tokens[1:3])
                 basis_M[i...] = parse.(Float64, s)
             end
         end
