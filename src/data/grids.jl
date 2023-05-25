@@ -47,6 +47,8 @@ end
 
 Base.has_offset_axes(g::DataGrid) = true
 
+Base.show(io::IO, g::DataGrid) = print(io, typeof(g), (g.data, g.basis, g.shift))
+
 const RealDataGrid{D,T} = DataGrid{D,RealBasis{D,Float64},SVector{D,Float64},T}
 const ReciprocalDataGrid{D,T} = DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},T}
 

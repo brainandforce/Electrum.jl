@@ -46,6 +46,8 @@ end
 LatticeBasis{S,D,T}(::StaticArray) where {S,D,T} = _nonsquare_matrix_error()
 LatticeBasis{S,D}(::StaticArray) where {S,D} = _nonsquare_matrix_error()
 
+Base.show(io::IO, b::LatticeBasis) = print(io, typeof(b), '(', b.matrix, ')')
+
 """
     RealBasis{D,T}
 
