@@ -141,7 +141,11 @@ include("data/atomic.jl")
 export SphericalHarmonic
 # Methods and structs for working with different file formats
 include("filetypes.jl")
-export readXYZ, writeXYZ, readXSF3D, readXSF, writeXSF, readCPcoeff, readCPgeo, readCPcell
+export readXYZ, writeXYZ
+include("software/xcrysden.jl")
+export readXSF3D, readXSF, writeXSF
+include("software/cppackage.jl")
+export readCPcoeff, readCPgeo, readCPcell
 include("software/abinit.jl")
 export read_abinit_DEN, read_abinit_POT, read_abinit_WFK, read_abinit_anaddb_out,
     read_abinit_anaddb_in, write_abinit_modes, read_abinit_anaddb_PHDOS
