@@ -1,25 +1,26 @@
 """
-    KPoint{D} <: DenseVector{D,Float64}
+    KPoint{D,T} <: DenseVector{D,T}
 
 Stores a k-point with an associated weight that corresponds to the number of symmetry-equivalent
 k-points, stored as an integer.
 """
-struct KPoint{D} <: DenseVector{Float64}
-    point::SVector{D,Float64}
+struct KPoint{D,T} <: DenseVector{T}
+    point::SVector{D,T}
     weight::Int
-    KPoint(pt::StaticVector{D,<:Real}, wt::Integer = 1) where D = new{D}(pt .- round.(pt), wt)
+    KPoint{D,T}(pt::AbstractVector{<:Real}, wt::Integer = 1) where {D,T} = new(pt .- round(pt), wt)
 end
 
+KPoint{D}(pt::AbstractVector{T}, wt::Integer = 1) where {D,T} = KPoint{D,T}(pt, wt)
+KPoint(pt::SVector{D,T}, wt::Integer = 1) where {D,T} = KPoint{D,T}(pt, wt)
+
 KPoint(x::Real...; weight::Integer = 1) = KPoint(SVector(x), weight)
-KPoint{D}(pt::AbstractVector{<:Real}, wt::Integer = 1) where D = KPoint(SVector{D,Float64}(pt), wt)
 
 Base.hash(k::KPoint, h::UInt) = hash(k.point, hash(k.weight, h))
 Base.:(==)(k1::KPoint, k2::KPoint) = k1.point == k2.point && k1.weight == k2.weight
 
-Base.length(::Type{KPoint{D}}) where D = D
-Base.size(::Type{KPoint{D}}) where D = (D,)
+Base.size(::Type{<:KPoint{D}}) where D = (D,)
 Base.size(k::KPoint) = size(k.point)
-Base.axes(::Type{KPoint{D}}) where D = (Base.OneTo(D),)
+Base.axes(::Type{<:KPoint{D}}) where D = (Base.OneTo(D),)
 Base.axes(k::KPoint) = axes(k.point)
 
 Base.IndexStyle(::Type{<:KPoint}) = IndexLinear()
@@ -27,10 +28,11 @@ Base.getindex(k::KPoint, i) = k.point[i]
 
 Base.convert(T::Type{<:StaticVector}, k::KPoint) = convert(T, k.point)::T
 Base.convert(T::Type{<:Vector}, k::KPoint) = convert(T, k.point)::T
+
 Base.convert(T::Type{<:KPoint}, v::AbstractVector{<:Real}) = T(v, 1)
 Base.convert(T::Type{<:KPoint}, k::KPoint) = k::T
 
-Base.zero(::Type{KPoint{D}}) where D = KPoint(zero(SVector{D,Float64}))
+Base.zero(::Type{KPoint{D,T}}) where {D,T} = KPoint(zero(SVector{D,T}))
 
 """
     weight(k::KPoint) -> Int
@@ -42,7 +44,7 @@ weight(k::KPoint) = k.weight
 #---Generated lists of k-points--------------------------------------------------------------------#
 
 """
-    KPointMesh{D} <: AbstractVector{KPoint{D}}
+    KPointMesh{D,T} <: AbstractVector{KPoint{D,T}}
 
 Contains a list of k-points associated with a matrix describing the mesh that was used to generate
 the points, and its shift off the Γ point (origin). If the mesh used to generate the points is
@@ -50,33 +52,33 @@ unknown, it will be set to the zero matrix of dimension `D`.
 
 A `KPointMesh` can be indexed as if it were an ordinary `Vector{KPoint{D}}`.
 """
-struct KPointMesh{D} <: AbstractVector{KPoint{D}}
-    points::Vector{KPoint{D}}
+struct KPointMesh{D,T} <: AbstractVector{KPoint{D,T}}
+    points::Vector{KPoint{D,T}}
     grid::SMatrix{D,D,Int}
-    shift::SVector{D,Float64}
-    function KPointMesh(
-        points::AbstractVector{KPoint{D}}, 
-        grid::StaticMatrix{D,D,<:Integer} = zeros(SMatrix{D,D,Int}),
-        shift::StaticVector{D,<:Real} = zeros(SVector{D,Float64})
-    ) where D
-        return new{D}(points, grid, shift)
+    shift::SVector{D,T}
+    function KPointMesh{D,T}(
+        points::AbstractVector{<:AbstractVector},
+        grid::AbstractMatrix{<:Integer} = zero(SMatrix{3,3,Int}),
+        shift::AbstractVector = zero(SVector{D,T})
+    ) where {D,T}
+        return new{D,T}(points, grid, shift)
     end
 end
 
-function KPointMesh(
-    points::AbstractVector,
-    grid::StaticMatrix{D,D,<:Integer} = zeros(SMatrix{D,D,Int}),
-    shift::StaticVector{D,<:Real} = zeros(SVector{D,Float64})
-) where D
-    return KPointMesh(KPoint{D}.(points), grid, shift)
+function KPointMesh{D}(
+    points::AbstractVector{<:AbstractVector{T}},
+    grid::AbstractMatrix{<:Integer} = zeros(SMatrix{D,D,Int}),
+    shift::AbstractVector{<:Real} = zeros(SVector{D,Bool})
+) where {D,T}
+    return KPointMesh{D,promote_type(T, eltype(shift))}(points, grid, shift)
 end
 
-function KPointMesh{D}(
-    points::AbstractVector,
-    grid::AbstractMatrix{<:Integer} = zeros(SMatrix{D,D,Int}),
-    shift::AbstractVector{<:Real} = zeros(SVector{D,Float64})
-) where D
-    return KPointMesh(points, SMatrix{D,D,Int}(grid), SVector{D,Float64}(shift))
+function KPointMesh(
+    points::AbstractVector{<:AbstractVector{T}},
+    grid::StaticMatrix{D,D,<:Integer} = zeros(SMatrix{D,D,Int}),
+    shift::StaticVector{D,<:Real} = zeros(SVector{D,Bool})
+) where {D,T}
+    return KPointMesh{D,promote_type(T, eltype(shift))}(points, grid, shift)
 end
 
 function Base.:(==)(k1::KPointMesh, k2::KPointMesh)

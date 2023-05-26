@@ -130,7 +130,7 @@ but they are not resizable, and the backing array should not be resized.
 struct PlanewaveWavefunction{D,T} <: AbstractArray{T,D}
     basis::ReciprocalBasis{D,Float64}
     spins::Vector{SVector{D,Float64}}
-    kpoints::KPointMesh{D}
+    kpoints::KPointMesh{D,Float64}
     energies::Array{Float64,3}
     occupancies::Array{Float64,3}
     grange::NTuple{D,UnitRange{Int}}
