@@ -862,8 +862,7 @@ function read_abinit_anaddb_out(io::IO)
 end
 
 """
-    read_abinit_anaddb_out(io::IO)
-    read_abinit_anaddb_out(filename::AbstractString)
+    read_abinit_anaddb_out(file)
         -> Tuple{Int64, FatBands{3}, Array{SVector{6,Float64}}, Vector{Float64}}
 
 Reads an output file from anaddb and returns the fineness of the kpoint path,
@@ -885,7 +884,7 @@ to be the first k-point entered in the anaddb analysis.
 
 Energies: Energies are given in a Vector{Float64} with a length matching the number of modes.
 """
-read_abinit_anaddb_out(filename::AbstractString) = open(read_abinit_anaddb_out, filename)
+read_abinit_anaddb_out(filename) = open(read_abinit_anaddb_out, filename)
 
 function read_abinit_anaddb_in(io::IO)
     readuntil(io, "nph1l")  # number of phonons in list 1
@@ -906,8 +905,7 @@ function read_abinit_anaddb_in(io::IO)
 end
 
 """
-    read_abinit_anaddb_in(io::IO) -> Vector{String}    
-    read_abinit_anaddb_in(filename::AbstractString) -> Vector{String}
+    read_abinit_anaddb_in(file) -> Vector{String}
 
 Reads an input file for anaddb to determine the string of the path through reciprocal space
 (`Vector{String}``) to plot the phonon dispersion curves. Also returns the fineness of the k-point
@@ -929,7 +927,7 @@ qph1l       0.00   0.00   0.00   1   !GAMMA
 
 Here, the "GAMMA" and "X" are returned in the Vector{String}.
 """
-read_abinit_anaddb_in(filename::AbstractString) = open(read_abinit_anaddb_in, filename)
+read_abinit_anaddb_in(filename) = open(read_abinit_anaddb_in, filename)
 
 # TODO: refactor this function into multiple methods
 """
@@ -958,6 +956,7 @@ function write_abinit_modes(
     end
 end
 
+# TODO: rewrite this so that it doesn't allocate all of the lines
 """
     read_abinit_anaddb_PHDOS(file) -> Tuple{DensityOfStates, Vector{ProjectedDensityOfStates}}
 
