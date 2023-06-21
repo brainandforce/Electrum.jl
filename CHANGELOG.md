@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+ -  Unexported methods for reading anaddb inputs/outputs now have more standard signatures
+
 ### Fixed
  -  `voxelsize(::DataGrid)` now correctly uses the grid length, not the basis vector length
  -  `lengths(::LatticeBasis)` now correctly uses a column iterator to return the length values
@@ -16,4 +19,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.1]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.1
 [0.1.0]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.0
