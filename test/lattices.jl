@@ -15,4 +15,6 @@
     # Type promotion
     @test promote_type(RealBasis{3,Int64}, RealBasis{3,Float32}) === RealBasis{3,Float32}
     @test promote_type(RealBasis{3,Int64}, ReciprocalBasis{3,Float32}) === SMatrix{3,3,Float32,9}
+    # Metrics
+    @test all(x == Electrum.ANG2BOHR for x in lengths(b))
 end
