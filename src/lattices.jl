@@ -187,7 +187,7 @@ LinearAlgebra.det(b::LatticeBasis) = det(b.matrix)
 Returns the lengths of the basis vectors. The units correspond to the type of the basis vectors: for
 `RealBasis` the units are bohr, and for `ReciprocalBasis` the units are rad*bohr⁻¹.
 """
-lengths(b::LatticeBasis{S,D}) where {S,D} = SVector{D}(norm(v) for v in b)
+lengths(b::LatticeBasis{S,D}) where {S,D} = SVector{D}(norm(v) for v in eachcol(b))
 
 """
     volume(b::LatticeBasis) -> Real
