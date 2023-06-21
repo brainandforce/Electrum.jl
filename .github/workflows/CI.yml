@@ -5,6 +5,11 @@ on:
     - main
     - release
     - next
+    paths-ignore:
+      - CITATION.cff
+      - CONTRIBUTING.md
+      - LICENSE
+      - README.md
   pull_request:
     branches:
     - '*'
