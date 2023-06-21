@@ -8,6 +8,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Fixed
+ -  `voxelsize(::DataGrid)` now correctly uses the grid length, not the basis vector length
  -  `lengths(::LatticeBasis)` now correctly uses a column iterator to return the length values
 
 ## [0.1.0] - 2023-05-25

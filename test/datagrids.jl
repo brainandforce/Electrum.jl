@@ -14,6 +14,7 @@
     @test g .+ g == reference
     @test 2 .* g == reference
     @test volume(g) == Electrum.ANG2BOHR^3
+    @test voxelsize(g) == Electrum.ANG2BOHR^3 / prod(size(g))
     # similar() and zeros() constructors
     @test size(similar(g)) == size(g)
     @test eltype(similar(g)) == eltype(g)
