@@ -168,7 +168,7 @@ volume(g::DataGrid) = volume(basis(g))
 Gets the size of a single real space voxel associated with a data grid. Units are assumed to be
 bohr³.
 """
-voxelsize(g::DataGrid) = volume(RealBasis(g)) / length(RealBasis(g))
+voxelsize(g::DataGrid) = volume(RealBasis(g)) / length(g)
 
 #---Unary mathematical operations------------------------------------------------------------------#
 
