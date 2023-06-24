@@ -333,6 +333,109 @@ accounting for the voxel volumes.
 integrate(f, g::RealDataGrid) = sum(f.(g.data)) * voxelsize(g)
 integrate(g::RealDataGrid) = sum(g.data) * voxelsize(g)
 
+"""
+    Electrum.pdev_kernel(g::RealDataGrid{D}, dim::Integer) -> Array{T,D}
+
+Calculates the partial derivative of `g` along the dimension indexed by `dim`, and return the result
+in a plain Julia array. This is implemented with a fast Fourier transform.
+
+A specialized method exists to calculate the partial derivative for real-valued data, which uses
+`FFTW.rfft()` and `FFTW.brfft()` to cut down on the size of the final transform.
+"""
+function pdev_kernel(g::RealDataGrid, dim::Integer)
+    r = fft(g.data, dim)
+    for (n,s) in enumerate(eachslice(r, dims = dim))
+        s .*= 2π * im * (n - 1) / size(g, dim)
+    end
+    return bfft!(r, dim)
+end
+
+function pdev_kernel(g::RealDataGrid{D,<:Real}, dim::Integer) where D
+    r = rfft(g.data, dim)
+    for (n,s) in enumerate(eachslice(r, dims = dim))
+        s .*= 2π * im * (n - 1) / size(g, dim)
+    end
+    return brfft(r, size(g, dim), dim)
+end
+
+"""
+    partial_derivative(g::RealDataGrid, dim::Integer)
+
+Calculates the partial derivative of `g` along coordinates with respect to the basis vector of
+dimension `dim`.
+"""
+function partial_derivative(g::RealDataGrid, dim::Integer)
+    return RealDataGrid(pdev_kernel(g, dim), basis(g), shift(g))
+end
+
+"""
+    cell_gradient(g::RealDataGrid{D}) -> RealDataGrid{D,<:SVector{D}}
+
+Calculates the gradient of a `RealDataGrid`, which consists of vectors containing the components of
+the partial derivatives along coordinates with respect to the basis vectors of the unit cell.
+The gradient may need to be transformed to obtain a more standard result: for this, use the
+`gradient()` function.
+"""
+function cell_gradient(g::RealDataGrid{D}) where D
+    # Perform a single run to get the element type for the FFT
+    pdev = pdev_kernel(g, 1)
+    # Preallocate the array for storing the final result
+    result = Array{SVector{D,eltype(pdev)},D}(undef, size(pdev))
+    # Append the result 
+    for n in eachindex(result)
+        result[n] = pdev[n] * SUnitVector(1)
+    end
+    # Repeat this again for each index
+    for i in 2:D
+        pdev .= pdev_kernel(g, i)
+        for n in eachindex(result)
+            result[n] = pdev[n] * SUnitVector(i)
+        end
+    end
+    return RealDataGrid(result, basis(g), shift(g))
+end
+
+cell_gradient(::RealDataGrid{0}) = error("Cannot take gradients of zero-dimensional arrays")
+
+"""
+    gradient(g::RealDataGrid{D}) -> RealDataGrid{D,<:SVector{D}}
+
+Calculates the gradient of a `RealDataGrid`, which consists of vectors containing the components of
+the partial derivatives along the orthonormal real space basis. The units of the output are those
+of the input multiplied by inverse bohr.
+"""
+function gradient(g::RealDataGrid{D}) where D
+    # Perform a single run to get the element type for the FFT
+    pdev = pdev_kernel(g, 1)
+    # Preallocate the array for storing the final result
+    result = zeros(SVector{D,eltype(pdev)}, size(pdev))
+    # Append the result 
+    for n in eachindex(result)
+        result[n] += basis(g) \ (pdev[n] * SUnitVector{D}(1))
+    end
+    # Repeat this again for each index
+    for i in 2:D
+        pdev .= pdev_kernel(g, i)
+        for n in eachindex(result)
+            result[n] += basis(g) \ (pdev[n] * SUnitVector{D}(i))
+        end
+    end
+    return RealDataGrid(result, basis(g), shift(g))
+end
+
+gradient(::RealDataGrid{0}) = error("Cannot take gradients of zero-dimensional arrays")
+
+"""
+    directional_derivative(g::RealDataGrid{D}, v::AbstractVector) -> RealDataGrid{D}
+
+Calculates the directional derivative of a `RealDataGrid` along a vector `v`. Note that `v` does not
+need to be normalized, and an unnormalized input will scale the results accordingly.
+"""
+function directional_derivative(g::RealDataGrid{D}, v::AbstractVector) where D
+    # TODO: figure out if we can do this without allocating the gradient array
+    return RealDataGrid([v * x for x in gradient(g)], basis(g), shift(g))
+end
+
 #=
 """
     reinterpolate(g::RealDataGrid, dims::Integer...) -> 
