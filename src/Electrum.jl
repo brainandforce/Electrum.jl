@@ -128,7 +128,8 @@ export weight, nkpt
 # Real and reciprocal space data grids
 include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
-export shift, fft, ifft, fftfreq, voxelsize, integrate, remove_shift
+export shift, fft, ifft, fftfreq, voxelsize, integrate, partial_derivative, cell_gradient, gradient,
+    remove_shift
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction
