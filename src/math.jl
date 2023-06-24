@@ -1,4 +1,24 @@
 """
+    Electrum.SUnitVector{D,T}
+
+Represents a static unit vector (a vector which has exactly one nonzero element equal to 
+`oneunit(T)`).
+"""
+struct SUnitVector{D,T} <: StaticVector{D,T}
+    index::Int
+    function SUnitVector{D,T}(index) where {D,T}
+        return 0 < index <= D ? new(index) : error("Index $index is not in 1:$D")
+    end
+end
+
+SUnitVector{D}(index) where D = SUnitVector{D,Bool}(index)
+
+Base.getindex(u::SUnitVector{D,T}, i::Int) where {D,T} = T(isequal(u.index, i))
+Base.getindex(u::SUnitVector, i::Integer) = getindex(u, Int(i))
+
+#---Linear independence check----------------------------------------------------------------------#
+
+"""
     Electrum._is_linearly_independent(M::AbstractMatrix) -> Bool
     Electrum._is_linearly_independent(vecs::AbstractVector...) -> Bool
 
@@ -8,6 +28,8 @@ This function always returns `false` if the first dimension of the matrix is les
 """
 is_linearly_independent(M::AbstractMatrix) = !isless(size(M)...) && rank(M) == minimum(size(M))
 is_linearly_independent(vecs::AbstractVector...) = is_linearly_independent(hcat(vecs...))
+
+#---Index reintepretation--------------------------------------------------------------------------#
 
 """
     Electrum.reinterpret_index(sz::NTuple{D,<:Integer}, i) -> typeof(i)
