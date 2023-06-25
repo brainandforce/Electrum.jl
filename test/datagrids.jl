@@ -48,3 +48,29 @@ end
     @test collect(FFTBins(3,3)) == [CartesianIndex(x,y) for x in [0, 1, -1], y in [0, 1, -1]]
     @test FFTBins(CartesianIndices(FFTBins(3,3))) == FFTBins(3,3)
 end
+
+@testset "Gradients" begin
+    grid = [sinpi((b - 1)/10) for a in 1:10, b in 1:20, c in 1:30]
+    expected_pdev = [2π * cospi((b - 1)/10) for a in 1:10, b in 1:20, c in 1:30]
+    expected_grad = [SVector{3}(0, x/2, 0) for x in expected_pdev]
+    b1 = RealBasis{3}(diagm([1,2,3]))
+    g = RealDataGrid(grid, b1)
+    # We constructed the grid so that the partial derivative in this direction is zero
+    @test all(iszero.(partial_derivative(g, 1)))
+    @test partial_derivative(g, 2).data ≈ expected_pdev
+    @test gradient(g).data ≈ expected_grad
+    # Test out the same things but with complex arrays
+    # There is a separate kernel for real-valued gradients
+    gc = RealDataGrid(complex(grid), b1)
+    @test all(iszero.(Electrum.pdev_kernel(gc, 1)))
+    @test partial_derivative(gc, 2).data ≈ complex(expected_pdev)
+    # Test that the gradients scale correctly with changes to the basis
+    # If the basis vectors are shortened, then 
+    b2 = RealBasis{3}(diagm([1,1,3]))
+    h = RealDataGrid(grid, b2)
+    @test gradient(h).data ≈ 2 * gradient(g).data
+    #= TODO: check what happens when we use skew vectors
+    b3 = RealBasis{3}([1 0 0; 1 2 0; 0 0 3])
+    j = RealDataGrid(grid, b3)
+    =#
+end
