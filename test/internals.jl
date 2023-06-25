@@ -18,4 +18,13 @@
     @test Base.has_offset_axes(xsf["this_is_3Dgrid#1"])
     @test Base.has_offset_axes(v80_wfk["wavefunction"])
     @test Base.has_offset_axes(v80_wfk["wavefunction"][1,1,1])
+    # SUnitVector
+    @test Electrum.SUnitVector{3}(2) === SVector{3,Bool}(0, 1, 0)
+    @test Electrum.SUnitVector{3}(2) + Electrum.SUnitVector{3}(1) == SVector{3,Bool}(1, 1, 0)
+    @test 2 * Electrum.SUnitVector{3}(3) === SVector{3}(0, 0, 2)
+    @test_throws ErrorException Electrum.SUnitVector{3}(0)
+    @test_throws ErrorException Electrum.SUnitVector{3}(4)
+    @test Electrum.SUnitVector{3}(1)[1] === true
+    @test Electrum.SUnitVector{3}(1)[:] === SVector{3,Bool}(1, 0, 0)
+    @test Electrum.SUnitVector{3}(1)[1:2] == [1, 0]
 end
