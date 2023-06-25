@@ -16,6 +16,9 @@ Electrum.fft
 Electrum.ifft
 Electrum.voxelsize
 Electrum.integrate
+Electrum.partial_derivative
+Electrum.gradient
+Electrum.directional_derivative
 Electrum.remove_shift 
 ```
 
