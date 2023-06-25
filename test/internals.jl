@@ -27,4 +27,5 @@
     @test Electrum.SUnitVector{3}(1)[1] === true
     @test Electrum.SUnitVector{3}(1)[:] === SVector{3,Bool}(1, 0, 0)
     @test Electrum.SUnitVector{3}(1)[1:2] == [1, 0]
+    @test_throws MethodError Electrum.SUnitVector{3,Char}(1)
 end
