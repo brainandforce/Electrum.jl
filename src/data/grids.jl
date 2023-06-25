@@ -344,8 +344,9 @@ A specialized method exists to calculate the partial derivative for real-valued 
 """
 function pdev_kernel(g::RealDataGrid, dim::Integer)
     r = fft(g.data, dim)
+    sz = size(g, dim)
     for (n,s) in enumerate(eachslice(r, dims = dim))
-        s .*= 2π * im * (n - 1) / size(g, dim)
+        s .*= 2π * im * FFTLength(sz)[n] / sz
     end
     return bfft!(r, dim)
 end
