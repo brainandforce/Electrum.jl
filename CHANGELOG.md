@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+ -  `partial_derivative()`, `gradient()`, and `directional_derivative()` functions for real space
+data
+ -  `Electrum.SUnitVector{D,T}` data type for generating unit vectors. A unit vector of dimension
+`D` and type `T` can be constructed with the unit at index `i` with `Electrum.SUnitVector{D,T}(i)`,
+provided `oneunit(T)` is defined.
+
 ## [0.1.1] - 2023-06-21
 
 ### Changed
