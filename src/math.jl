@@ -6,12 +6,12 @@ Represents a static unit vector (a vector which has exactly one nonzero element 
 """
 struct SUnitVector{D,T} <: StaticVector{D,T}
     index::Int
-    function SUnitVector{D,T}(index) where {D,T}
+    function SUnitVector{D,T}(index::Integer) where {D,T}
         return 0 < index <= D ? new(index) : error("Index $index is not in 1:$D")
     end
 end
 
-SUnitVector{D}(index) where D = SUnitVector{D,Bool}(index)
+SUnitVector{D}(index::Integer) where D = SUnitVector{D,Bool}(index)
 
 Base.getindex(u::SUnitVector{D,T}, i::Int) where {D,T} = T(isequal(u.index, i))
 Base.getindex(u::SUnitVector, i::Integer) = getindex(u, Int(i))
