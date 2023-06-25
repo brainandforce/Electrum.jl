@@ -428,12 +428,13 @@ gradient(::RealDataGrid{0}) = error("Cannot take gradients of zero-dimensional a
 """
     directional_derivative(g::RealDataGrid{D}, v::AbstractVector) -> RealDataGrid{D}
 
-Calculates the directional derivative of a `RealDataGrid` along a vector `v`. Note that `v` does not
-need to be normalized, and an unnormalized input will scale the results accordingly.
+Calculates the directional derivative of a `RealDataGrid` along a vector `v` in Cartesian
+coordinates. Note that `v` does not need to be normalized, nor is it automatically normalized; 
+an unnormalized input will scale the results accordingly.
 """
 function directional_derivative(g::RealDataGrid{D}, v::AbstractVector) where D
     # TODO: figure out if we can do this without allocating the gradient array
-    return RealDataGrid([v * x for x in gradient(g)], basis(g), shift(g))
+    return RealDataGrid([dot(v,x) for x in gradient(g)], basis(g), shift(g))
 end
 
 #=
