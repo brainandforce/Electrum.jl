@@ -7,6 +7,7 @@ Represents a static unit vector (a vector which has exactly one nonzero element 
 struct SUnitVector{D,T} <: StaticVector{D,T}
     index::Int
     function SUnitVector{D,T}(index::Integer) where {D,T}
+        oneunit(T)  # throws error for anything that has no oneunit() definition
         return 0 < index <= D ? new(index) : error("Index $index is not in 1:$D")
     end
 end
