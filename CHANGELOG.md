@@ -39,6 +39,9 @@ The developers would like to wish you a happy [Tau Day](https://tauday.com/)!
 ### Fixed
   - Reference to old field name for previous data grid type was corrected
 
+### Changed
+ -  Added dependency on Requires.jl for optional features
+
 ## [0.1.2]: 2023-06-26
 
 ### Added
