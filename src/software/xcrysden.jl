@@ -224,7 +224,7 @@ function writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true) where D
     println(io, " "^8, join([rpad(string(n + 1), 8) for n in size(data)]))
     # Print the grid offset
     print(io, " "^4)
-    for x in data.orig
+    for x in shift(data)
         @printf(io, "%20.14f", x)
     end
     print(io, "\n" * " "^4)
