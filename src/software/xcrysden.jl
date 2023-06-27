@@ -229,8 +229,8 @@ function writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true) where D
     end
     print(io, "\n" * " "^4)
     # Print the basis vectors for the grid
-    for (n, x) in enumerate(matrix(basis(data)))
-        @printf(io, "%20.14f", x)
+    for (n, x) in enumerate(basis(data))
+        @printf(io, "%20.14f", x * BOHR2ANG)
         n % D == 0 && print(io, "\n" * " "^4)
     end
     # This should generate a view that wraps around for a "general grid"
