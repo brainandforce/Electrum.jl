@@ -601,6 +601,55 @@ end
 
 read_abinit_header(filename) = open(read_abinit_header, filename)
 
+#---New types for datagrids------------------------------------------------------------------------#
+"""
+    ABINITSpinfulQty{nspden,T}
+
+Represents a quantity obtained from an abinit output file, with components depending on the value of
+the abinit `nspden`, which may be either 1, 2, or 4.
+"""
+abstract type ABINITSpinfulQty{nspden,T<:Real}
+end
+
+"""
+    ABINITSpinfulDensity{nspden,T} <: ABINITSpinfulQty{nspden,T}
+
+Stores the value of electron density at a single point.
+  * When `nspden = 1`, the data consists only of the total potential.
+  * When `nspden = 2`, the data consists of the spin-up and spin-down potential.
+  * When `nspden = 4`, the data consists of the up-up inteaction potential, the down-down
+interaction potential, and the real and imaginary components of the up-down potential.
+
+Note that the Hartree potential from a `VHA` file is independent of spin, and for calculations where
+`nspden ≠ 1`, the spin-independent array is simply repeated.
+"""
+struct ABINITSpinfulPotential{nspden,T} <: ABINITSpinfulQty{nspden,T}
+    data::NTuple{nspden,T}
+end
+
+"""
+    ABINITSpinfulDensity{nspden,T} <: ABINITSpinfulQty{nspden,T}
+
+Stores the value of electron density at a single point.
+  * When `nspden = 1`, the data consists only of the total electron density.
+  * When `nspden = 2`, the data consists of the total electron density and the spin-up density.
+  * When `nspden = 4`, the data consists of the total electron density and the x, y, and z 
+magnetization components.
+"""
+struct ABINITSpinfulDensity{nspden,T} <: ABINITSpinfulQty{nspden,T}
+    data::NTuple{nspden,T}
+end
+
+Base.getindex(q::ABINITSpinfulQty, i::Integer) = q.data[i]
+Base.setindex(q::ABINITSpinfulQty, x, i::Integer) = typeof(q)(Base.setindex(q.data, x, i))
+
+Base.only(q::ABINITSpinfulQty{1}) = only(q.data)
+Base.convert(T::Type, q::ABINITSpinfulQty{1}) = convert(T, only(q))
+
+const ABINITPotentialGrid{nspden,T} = RealDataGrid{3,ABINITSpinfulPotential{nspden,T}}
+const ABINITDensityGrid{nspden,T} = RealDataGrid{3,ABINITSpinfulDensity{nspden,T}}
+
+#---Legacy datagrid code---------------------------------------------------------------------------#
 """
     Electrum.read_abinit_datagrids(T, io, nspden, ngfft) -> Vector{Matrix{T}}
 
