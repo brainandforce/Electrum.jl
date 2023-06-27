@@ -234,10 +234,10 @@ function writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true) where D
         n % D == 0 && print(io, "\n" * " "^4)
     end
     # This should generate a view that wraps around for a "general grid"
-    if periodic
-        g = view(data.data, (1 .+ (0:n) .% n for n in size(data))...)
+    g = if periodic
+        view(data.data, (1 .+ (0:n) .% n for n in size(data))...)
     else
-        g = view(M, (1:n for n in size(M))...)
+        view(data.data, axes(data.data)...)
     end
     # Print the actual data in the grid
     for (n,x) in enumerate(g)
