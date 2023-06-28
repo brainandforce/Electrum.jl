@@ -253,7 +253,7 @@ function writeXSF(io::IO, data::Dict{K,<:RealDataGrid{D}}; periodic=true) where 
     println(io, "BEGIN_BLOCK_DATAGRID_", D, "D")
     println(io, "Written by Electrum.jl")
     for (k,d) in data
-        writeXSF(io::IO, k, d, periodic=periodic)
+        writeXSF(io::IO, k, d; periodic)
     end
     println(io, "END_BLOCK_DATAGRID_", D, "D")
 end
@@ -269,7 +269,7 @@ function writeXSF(
     periodic=true
 )
     writeXSF(io, Crystal(xtaldata))
-    writeXSF(io, data(xtaldata), periodic=periodic)
+    writeXSF(io, data(xtaldata); periodic)
 end
 
 function writeXSF(filename, data...; kwargs...)
