@@ -223,7 +223,7 @@ occurs (values are repeated at the end of each dimension).
 function writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true) where D
     println(io, "    DATAGRID_", D, "D_", key)
     # Print the grid size (+1)
-    println(io, " "^8, join([rpad(string(n + 1), 8) for n in size(data)]))
+    println(io, " "^8, join(rpad(string(n + periodic), 8) for n in size(data)))
     # Print the grid offset
     print(io, " "^4)
     for x in shift(data)
