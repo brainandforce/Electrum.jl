@@ -156,10 +156,11 @@ function readXSF3D(
     transform = if iszero(conv) 
         SMatrix{3,3,Int}(LinearAlgebra.I)
     else
-        round.(Int, conv.matrix / prim.matrix)
+        round.(Int, conv / prim)
     end
     return CrystalWithDatasets{3,String,RealDataGrid{3,Float64}}(
-        Crystal(atom_list, spgrp, origin, transform), data
+        Crystal(atom_list, spgrp, origin, transform),
+        data
     )
 end
 
