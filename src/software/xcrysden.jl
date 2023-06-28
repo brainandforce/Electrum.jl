@@ -4,15 +4,13 @@
         io::IO;
         spgrp::Integer = 0,
         origin::AbstractVector{<:Real} = [0, 0, 0]
-        ctr::Symbol = :P
     ) -> CrystalWithDatasets{3}
 
 Reads in an XCrysDen XSF file from an input stream and returns a `CrystalWithDatasets{3}` with all
 datasets that have been included within the file.
 
 Space group and origin information are not supplied in XSF files, but they can be supplied using the
-`spgrp` and `origin` keyword arguments. Centering information can be provided using the `ctr` 
-argument, but is overridden by a space group assignment.
+`spgrp` and `origin` keyword arguments.
 """
 function readXSF3D(
     io::IO;
