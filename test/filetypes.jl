@@ -10,6 +10,13 @@
     @test g[0,0,0] === 0.0
     @test g[1,1,1] === 1.732
     @test g[1,2,3] === 3.742
+    # Test whether writing outputs and reading them back in gives us the same values
+    output_filename = joinpath(tmpdir, "output.xsf")
+    writeXSF(output_filename, xsf)
+    xsf2 = readXSF(output_filename)
+    h = xsf2["this_is_3Dgrid#1"]
+    @test size(h) === size(g)
+    @test iszero(h - g)
 end
 
 @testset "abinit outputs" begin
