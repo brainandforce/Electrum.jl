@@ -16,7 +16,7 @@ argument, but is overridden by a space group assignment.
 function readXSF3D(
     io::IO;
     spgrp::Integer = 0,
-    origin::AbstractVector{<:Real} = [0, 0, 0],
+    origin::AbstractVector{<:Real} = zero(SVector{3,Bool}),
 )
     # Function for getting lattice basis vectors
     function getlattice!(itr)
