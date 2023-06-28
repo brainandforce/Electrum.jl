@@ -8,33 +8,33 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
- -  Tests for XSF writing
+  - Tests for XSF writing
 
 ### Fixed
- -  More outstanding bugs for XSF writing
+  - More outstanding bugs for XSF writing
 
 ## [0.1.3]: 2023-06-27
 
 ### Fixed
- -  Reference to old field name for previous data grid type was corrected
+  - Reference to old field name for previous data grid type was corrected
 
 ## [0.1.2]: 2023-06-26
 
 ### Added
- -  `partial_derivative()`, `gradient()`, and `directional_derivative()` functions for real space
+  - `partial_derivative()`, `gradient()`, and `directional_derivative()` functions for real space
 data
- -  `Electrum.SUnitVector{D,T}` data type for generating unit vectors. A unit vector of dimension
+  - `Electrum.SUnitVector{D,T}` data type for generating unit vectors. A unit vector of dimension
 `D` and type `T` can be constructed with the unit at index `i` with `Electrum.SUnitVector{D,T}(i)`,
 provided `oneunit(T)` is defined.
 
 ## [0.1.1] - 2023-06-21
 
 ### Changed
- -  Unexported methods for reading anaddb inputs/outputs now have more standard signatures
+  - Unexported methods for reading anaddb inputs/outputs now have more standard signatures
 
 ### Fixed
- -  `voxelsize(::DataGrid)` now correctly uses the grid length, not the basis vector length
- -  `lengths(::LatticeBasis)` now correctly uses a column iterator to return the length values
+  - `voxelsize(::DataGrid)` now correctly uses the grid length, not the basis vector length
+  - `lengths(::LatticeBasis)` now correctly uses a column iterator to return the length values
 
 ## [0.1.0] - 2023-05-25
 
