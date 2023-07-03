@@ -650,7 +650,7 @@ function read_abinit_datagrids(
 end
 
 """
-    read_abinit_density(file)
+    read_abinit_DEN(file)
         -> CrystalWithDatasets{3,String,RealDataGrid{3,Float64}}
 
 Reads a FORTRAN binary formatted abinit density file. By default, abinit density files will have
@@ -689,7 +689,7 @@ end
 read_abinit_DEN(filename) = open(read_abinit_DEN, filename)
 
 """
-    read_abinit_potential(file)
+    read_abinit_POT(file)
         -> CrystalWithDatasets{3,String,RealDataGrid{3,T<:Number}}
 
 Reads a FORTRAN binary formatted abinit potential file.
