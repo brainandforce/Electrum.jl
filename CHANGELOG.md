@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+  - Unit conversions weren't implemented for writing XSF files
+
 ## [0.1.4]: 2023-06-28
 
 The developers would like to wish you a happy [Tau Day](https://tauday.com/)!
