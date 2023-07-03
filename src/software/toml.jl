@@ -41,10 +41,10 @@ function toml_convert(l::PeriodicAtomList)
     return Dict{String,Any}("basis" => toml_convert(basis(l)), "atoms" => toml_convert.(l))
 end
 
-function toml_convert(x::Crystal)
+function toml_convert(x::Crystal{D}) where D
     data = toml_convert(x.atoms)
     data["space_group"] = Dict{String,Any}("number" => x.sgno, "origin" => x.sgorig)
-    data["transform"] = eachcol(x.transform)
+    data["transform"] = SVector{D}(eachcol(x.transform))
     return data
 end
 
