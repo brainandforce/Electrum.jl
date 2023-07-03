@@ -212,7 +212,7 @@ Gets the ABINIT version information from a calculation output header.
 function get_abinit_version(io::IO)
     # Get the size of the first data entry
     sz = read(io, Int32)
-    codvsn = VersionNumber(String(read(io, sz - 8)))
+    codvsn = VersionNumber(strip(String(read(io, sz - 8))))
     headform = read(io, Int32)
     fform = read(io, Int32)
     # Skip to the next field - assume the next thing to happen is one of the header reading methods
