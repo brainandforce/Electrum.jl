@@ -60,9 +60,7 @@ end
     using TOML
     xtal = v80_den.xtal
     toml_path = joinpath(tmpdir, "test.toml")
-    open(toml_path, write=true) do io
-        TOML.print(io, v80_den.xtal)
-    end
+    writeTOML(toml_path, xtal)
     toml = TOML.parsefile(joinpath(tmpdir, "test.toml"))
     @test toml["transform"] == eachcol(xtal.transform)
     @test toml["basis"]["vectors"] == eachcol(basis(xtal))
