@@ -56,6 +56,7 @@ Electrum.jl is tested against the most recent LTS release (currently 1.6.7).
      + XCrysDen XSF
      + XYZ files
      + VASP POSCAR
+     + TOML files
 * Operations on datagrids:
      + Standard arithmetic operations: addition, subtraction, multiplication, division, negation...
      + Broadcasting of any Julia operation with dot syntax
