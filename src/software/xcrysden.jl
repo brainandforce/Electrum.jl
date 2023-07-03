@@ -195,7 +195,7 @@ function writeXSF(io::IO, l::PeriodicAtomList{D}) where D
     println(io, "PRIMVEC")
     for (n, x) in enumerate(basis(l))
         @printf(io, "%20.14f  ", x * BOHR2ANG)
-        n % D == 0 && println(io)
+        iszero(n % D) && println(io)
     end
     # Coordinates of the atoms in the primitive cell
     println(io, "PRIMCOORD")
@@ -232,7 +232,7 @@ function writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true) where D
     # Print the basis vectors for the grid
     for (n, x) in enumerate(basis(data))
         @printf(io, "%20.14f", x * BOHR2ANG)
-        n % D == 0 && print(io, "\n" * " "^4)
+        iszero(n % D) && print(io, "\n" * " "^4)
     end
     # This should generate a view that wraps around for a "general grid"
     g = if periodic
@@ -243,10 +243,10 @@ function writeXSF(io::IO, key, data::RealDataGrid{D}; periodic=true) where D
     # Print the actual data in the grid
     for (n,x) in enumerate(g)
         @printf(io, "%20.14f", x)
-        n % 4 == 0 && print(io, "\n" *  " "^4)
+        iszero(n % 4) && print(io, "\n" *  " "^4)
     end
     # End the datagrid
-    length(g) % 4 == 0 || println(io)
+    iszero(length(g) % 4) || println(io)
     println(io, "    END_DATAGRID_", D, "D")
 end
 
