@@ -5,7 +5,6 @@
 ### Reading
 ```@docs
 Electrum.readXYZ
-Electrum.readXSF
 Electrum.readCPcoeff
 Electrum.readCPgeo
 Electrum.readCPcell
@@ -14,6 +13,18 @@ Electrum.readCPcell
 ### Writing
 ```@docs
 Electrum.writeXYZ
+Electrum.writeTOML
+```
+
+## XCrysDen XSF files
+
+### Reading
+```@docs
+Electrum.readXSF
+```
+
+### Writing
+```@docs
 Electrum.writeXSF
 ```
 
