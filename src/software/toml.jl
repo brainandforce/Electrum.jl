@@ -57,6 +57,6 @@ writeTOML(io::IO, x::Crystal; kwargs...) = TOML.print(io, toml_convert(x); kwarg
 Writes `x`, an Electrum data type, to a file. Currently, `x` may be either an `AbstractAtomList` or
 a `Crystal`.
 """
-function writeTOML(file, x; kwargs...) = open(io -> writeTOML(io, x; kwargs...), file)
+writeTOML(file, x; kwargs...) = open(io -> writeTOML(io, x; kwargs...), file; write=true)
 
 export writeTOML
