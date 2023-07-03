@@ -7,11 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.5]: 2023-07-02
+
 ### Changed
-  - When reading XSF files, the fractional coordinates are read in relative to the unit cell
+  - When reading XSF files, the fractional coordinates are stored relative to the unit cell
 
 ### Fixed
-  - Unit conversions weren't implemented for writing XSF files
+  - Unit conversions weren't implemented for reading/writing XSF files
 
 ## [0.1.4]: 2023-06-28
 
@@ -51,6 +53,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.5]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.5
 [0.1.4]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.4
 [0.1.3]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.3
 [0.1.2]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.2
