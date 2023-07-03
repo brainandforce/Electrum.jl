@@ -1,11 +1,11 @@
 """
-    Electrum.to_toml_data(x) -> Dict{String}
+    Electrum.toml_convert(x) -> Dict{String}
 
 Converts an Electrum data type to a dictionary, which `TOML.print()` supports for direct output.
 """
-function to_toml_data end
+function toml_convert end
 
-function to_toml_data(b::AbstractBasis)
+function toml_convert(b::AbstractBasis)
     return Dict{String,Any}(
         "realspace" => !(DataSpace(b) isa ByReciprocalSpace),
         "dimension" => size(b,1),
@@ -13,43 +13,43 @@ function to_toml_data(b::AbstractBasis)
     )
 end
 
-to_toml_data(a::NamedAtom) = Dict{String,Any}("name" => name(a), "number" => atomic_number(a))
+toml_convert(a::NamedAtom) = Dict{String,Any}("name" => name(a), "number" => atomic_number(a))
 
-function to_toml_data(p::CartesianAtomPosition)
-    data = to_toml_data(NamedAtom(p))
+function toml_convert(p::CartesianAtomPosition)
+    data = toml_convert(NamedAtom(p))
     data["cartesian"] = displacement(p)
     return data
 end
 
-function to_toml_data(p::FractionalAtomPosition)
-    data = to_toml_data(NamedAtom(p))
+function toml_convert(p::FractionalAtomPosition)
+    data = toml_convert(NamedAtom(p))
     data["fractional"] = displacement(p)
     return data
 end
 
-function to_toml_data(p::FractionalAtomPosition, b::AbstractBasis)
-    data = to_toml_data(p)
+function toml_convert(p::FractionalAtomPosition, b::AbstractBasis)
+    data = toml_convert(p)
     data["cartesian"] = RealBasis(b) * displacement(p)
     return data
 end
 
-function to_toml_data(l::AtomList)
-    return Dict{String,Any}(to_toml_data.(l))
+function toml_convert(l::AtomList)
+    return Dict{String,Any}(toml_convert.(l))
 end
 
-function to_toml_data(l::PeriodicAtomList)
-    return Dict{String,Any}("basis" => to_toml_data(basis(l)), "atoms" => to_toml_data.(l))
+function toml_convert(l::PeriodicAtomList)
+    return Dict{String,Any}("basis" => toml_convert(basis(l)), "atoms" => toml_convert.(l))
 end
 
-function to_toml_data(x::Crystal)
-    data = to_toml_data(x.atoms)
+function toml_convert(x::Crystal)
+    data = toml_convert(x.atoms)
     data["space_group"] = Dict{String,Any}("number" => x.sgno, "origin" => x.sgorig)
     data["transform"] = eachcol(x.transform)
     return data
 end
 
-writeTOML(io::IO, x::AbstractAtomList; kwargs...) = TOML.print(io, to_toml_data(x); kwargs...)
-writeTOML(io::IO, x::Crystal; kwargs...) = TOML.print(io, to_toml_data(x); kwargs...)
+writeTOML(io::IO, x::AbstractAtomList; kwargs...) = TOML.print(io, toml_convert(x); kwargs...)
+writeTOML(io::IO, x::Crystal; kwargs...) = TOML.print(io, toml_convert(x); kwargs...)
 
 """
     writeTOML(file, x; sorted=false, by=identity)
