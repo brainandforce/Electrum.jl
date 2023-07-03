@@ -99,3 +99,15 @@ Electrum.jl supports the reading and writing of LAMMPS atomic position data.
 
 !!! info Like VASP `POSCAR` files, LAMMPS data files do not contain explicit atomic information. If
 none is provided, dummy atoms corresponding to each atom type will be used.
+
+# TOML
+
+Electrum.jl can export `AbstractAtomPosition` and `Crystal` data to TOML files through the
+`writeTOML(file, data)` function. The internal `Electrum.toml_convert()` can be used to convert data
+to a dictionary that `TOML.print()` can support.
+
+This functionality works only if the TOML module is loaded (as a weak dependency through Requires).
+If it is not available, run the following command in the REPL:
+```
+julia> using TOML
+```
