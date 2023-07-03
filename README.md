@@ -44,12 +44,13 @@ Electrum.jl is tested against the most recent LTS release (currently 1.6.7).
 ## Current features
 
 * Reading of common file formats:
-     + abinit potential, density, and wavefunction outputs from versions 7.10.5 and 8.10.4
-     + LAMMPS atomic position data
-     + VASP POSCAR, WAVECAR, DOSCAR, and PROCAR
-     + XCrysDen XSF
+     + abinit potential, density, and wavefunction outputs: tested on versions 7.10.5, 8.10.3,
+     and 9.10.1 (current version as of last update)
+     + LAMMPS atomic position data: tested on 3 November 2022 release
+     + VASP POSCAR, WAVECAR, DOSCAR, and PROCAR: tested on version 4.6
+     + XCrysDen XSF: tested against [the official specification][xsf-spec-url]
      + XYZ files
-     + CPpackage2 outputs
+     + CPpackage2 outputs: tested against the release version of [CPpackage3]
 * Writing of common file formats:
      + LAMMPS atomic position data
      + XCrysDen XSF
@@ -86,3 +87,5 @@ This project is just starting to get off the ground, but here's what we have pla
 [aqua-url]:         https://github.com/JuliaTesting/Aqua.jl
 [codecov-img]:      https://codecov.io/gh/brainandforce/Electrum.jl/branch/main/graph/badge.svg
 [codecov-url]:      https://codecov.io/gh/brainandforce/Electrum.jl/
+[xsf-spec-url]:     http://www.xcrysden.org/doc/XSF.html
+[cppackage-url]:    https://github.com/dcfredrickson/CPpackage3
