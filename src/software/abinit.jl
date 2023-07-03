@@ -732,7 +732,7 @@ end
 read_abinit_POT(filename) = open(read_abinit_POT, filename)
 
 """
-    read_abinit_WFK(file)
+    read_abinit_WFK(file; quiet = false)
         -> CrystalWithDatasets{3,String,PlanewaveWavefunction{3,Complex{Float64}}}
 
 Reads a FORTRAN binary formatted abinit wavefunction file.

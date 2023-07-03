@@ -13,6 +13,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
   - `Electrum.get_abinit_version(::IO)` now strips spaces before constructing the version string
 
+### Fixed
+  - Some abinit docstrings had incorrect function names/arguments
+
 ## [0.1.5]: 2023-07-02
 
 ### Changed
