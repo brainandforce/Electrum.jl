@@ -55,3 +55,19 @@ end
     @test all(isapprox.(displacement.(lammps.atoms), displacement.(poscar.atoms), atol=1e-6))
     @test isapprox(basis(lammps), basis(poscar), atol=1e-6 * Electrum.ANG2BOHR)
 end
+
+@testset "TOML" begin
+    using TOML
+    xtal = v80_den.xtal
+    toml_path = joinpath(tmpdir, "test.toml")
+    open(toml_path, write=true) do io
+        TOML.print(io, v80_den.xtal)
+    end
+    toml = TOML.parsefile(joinpath(tmpdir, "test.toml"))
+    @test toml["transform"] == eachcol(xtal.transform)
+    @test toml["basis"]["vectors"] == eachcol(basis(xtal))
+    @test toml["basis"]["dimension"] == 3
+    @test toml["basis"]["realspace"]
+    @test length(toml["atoms"]) == 2
+    @test toml["atoms"][1]["name"] == "Sc"
+end
