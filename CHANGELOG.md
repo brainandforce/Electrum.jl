@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
   - Support for reading abinit 9.10.1 binary outputs
+  - Support for writing TOML files (optional thanks to Requires.jl dependency)
 
 ### Changed
   - `Electrum.get_abinit_version(::IO)` now strips spaces before constructing the version string
