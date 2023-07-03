@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.6]: 2023-07-03
+
 ### Added
   - Support for reading abinit 9.10.1 binary outputs
   - Support for writing TOML files (optional thanks to Requires.jl dependency)
@@ -66,6 +68,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.6]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.6
 [0.1.5]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.5
 [0.1.4]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.4
 [0.1.3]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.3
