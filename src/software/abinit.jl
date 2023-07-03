@@ -225,6 +225,9 @@ end
 
 Reads in an abinit header from the outputs of calculations made by versions up to 7.10. These files
 will contain a `headform` value of 57.
+
+This function has been tested with outputs from abinit 7.10.5 using calculation data generated with
+both norm-conserving pseudopotentials and PAW atomic data.
 """
 function read_abinit_header_57(io::IO)
     # Variable names in this function correspond to names given here:
@@ -384,8 +387,11 @@ end
 """
     Electrum.read_abinit_header_80(io::IO) -> ABINITHeader
 
-Reads in an abinit header from the outputs of calculations made by versions up to 8.10. These files
+Reads in an abinit header from the outputs of calculations made by versions up to 9.10. These files
 will contain a `headform` value of 80.
+
+This function has been tested with outputs from abinit 8.10.3 and abinit 9.10.1 using calculation
+data generated with norm-conserving pseudopotentials.
 """
 function read_abinit_header_80(io::IO)
     # Variable names in this function correspond to names given here:
