@@ -33,7 +33,7 @@ function readXSF3D(
             # Get atomic number (first entry)
             num = parse(Int, entries[1])
             # Get atomic position (next 3)
-            pos = SVector{3,Float64}(parse.(Float64, entries[s]) for s in 2:4)
+            pos = SVector{3,Float64}(parse.(Float64, entries[s]) * ANG2BOHR for s in 2:4)
             # Add this to the vector
             apos[n] = CartesianAtomPosition{3}(num, pos)
         end
@@ -205,7 +205,7 @@ function writeXSF(io::IO, l::PeriodicAtomList{D}) where D
     for a in AtomList(l)
         @printf(io, "%6i", atomic_number(a))
         for x in displacement(a)
-            @printf(io, "%20.14f  ", x)
+            @printf(io, "%20.14f  ", x * BOHR2ANG)
         end
         println(io)
     end
