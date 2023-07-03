@@ -33,9 +33,7 @@ function toml_convert(p::FractionalAtomPosition, b::AbstractBasis)
     return data
 end
 
-function toml_convert(l::AtomList)
-    return Dict{String,Any}(toml_convert.(l))
-end
+toml_convert(l::AtomList) = toml_convert.(l)
 
 function toml_convert(l::PeriodicAtomList)
     return Dict{String,Any}("basis" => toml_convert(basis(l)), "atoms" => toml_convert.(l))
