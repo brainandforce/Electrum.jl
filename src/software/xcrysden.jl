@@ -129,7 +129,7 @@ function readXSF3D(
             natom = parse(Int, split(ln)[1])
             @debug string("natom = ", natom)
             # The next lines have all of the atoms
-            atom_list = getatoms!(iter, prim, natom)
+            atom_list = move_into_cell(getatoms!(iter, prim, natom))
         elseif contains(ln, "CONVCOORD") && isempty(atom_list)
             # TODO: complete this, but it's low priority
             # The PRIMCOORD block gets everything we need right now

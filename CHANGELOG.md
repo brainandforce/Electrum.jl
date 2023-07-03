@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+  - When reading XSF files, the fractional coordinates are read in relative to the unit cell
+
 ### Fixed
   - Unit conversions weren't implemented for writing XSF files
 
