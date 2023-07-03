@@ -1,3 +1,10 @@
+"""
+    Electrum.to_toml_data(x) -> Dict{String}
+
+Converts an Electrum data type to a dictionary, which `TOML.print()` supports for direct output.
+"""
+function to_toml_data end
+
 function to_toml_data(b::AbstractBasis)
     return Dict{String,Any}(
         "realspace" => !(DataSpace(b) isa ByReciprocalSpace),
