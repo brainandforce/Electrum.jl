@@ -67,11 +67,11 @@ For further information, see `Electrum.LatticeBasis`.
 const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
 
 """
-    AbstractBasis{D,T} (alias for Union{RealBasis{D,T},ReciprocalBasis{D,T}})
+    AbstractBasis{D,T} (alias for LatticeBasis{<:Electrum.BySpace,D,T})
 
-Union type for `RealBasis{D,T}` and `ReciprocalBasis{D,T}`.
+Supertype that can be used to refer to either a `RealBasis{D,T}` or a `ReciprocalBasis{D,T}`.
 """
-const AbstractBasis{D,T} = Union{RealBasis{D,T},ReciprocalBasis{D,T}}
+const AbstractBasis = LatticeBasis{<:BySpace}
 
 LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
 LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
