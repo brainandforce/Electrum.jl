@@ -18,11 +18,27 @@ abstract type DataSpace{D} <: CrystalDataTrait
 end
 
 """
+    ByAtom{D}
+
+Trait for data associated with atomic positions in a crystal.
+"""
+struct ByAtom{D} <: DataSpace{D}
+end
+
+"""
+    BySpace{D}
+
+Supertype for the `ByRealSpace{D}` and `ByReciprocalSpace{D}` traits.
+"""
+abstract type BySpace{D}
+end
+
+"""
     ByRealSpace{D}
 
 Trait for real space data in `D` dimensions.
 """
-struct ByRealSpace{D} <: DataSpace{D}
+struct ByRealSpace{D} <: BySpace{D}
 end
 
 """
@@ -30,13 +46,5 @@ end
 
 Trait for reciprocal space data in `D` dimensions.
 """
-struct ByReciprocalSpace{D} <: DataSpace{D}
-end
-
-"""
-    ByAtom{D}
-
-Trait for data associated with atomic positions in a crystal.
-"""
-struct ByAtom{D} <: DataSpace{D}
+struct ByReciprocalSpace{D} <: BySpace{D}
 end
