@@ -139,12 +139,22 @@ Base.size(g::DataGrid) = size(g.data)
 # For Julia 1.6 compatibility: must use keyword arguments
 Base.axes(g::DataGrid{D}) where D = NTuple{D}(range(0, stop = x - 1) for x in size(g))
 
-# Linear indexing should be defined automatically
+# Linear indexing is also zero-based but NOT periodic
+Base.@propagate_inbounds Base.getindex(g::DataGrid, i) = getindex(g.data, i+1)
+Base.@propagate_inbounds Base.setindex!(g::DataGrid, x, i) = setindex!(g.data, x, i+1)
+Base.eachindex(::IndexLinear, g::DataGrid) = eachindex(g.data) .- 1
+
+# Periodic indexing eliminates the need for bounds checking
 Base.getindex(g::DataGrid, i...) = @inbounds getindex(g.data, reinterpret_index(g, i)...)
 Base.setindex!(g::DataGrid, x, i...) = @inbounds setindex!(g.data, x, reinterpret_index(g, i)...)
 
-Base.getindex(g::DataGrid, i::CartesianIndex) = getindex(g, i.I...)
-Base.setindex!(g::DataGrid, x, i::CartesianIndex) = setindex!(g, x, i.I...)
+function Base.getindex(g::DataGrid, i::CartesianIndex)
+    return @inbounds getindex(g.data, reinterpret_index(g, i))
+end
+
+function Base.setindex!(g::DataGrid, x, i::CartesianIndex)
+    return @inbounds setindex!(g.data, x, reinterpret_index(g, i))
+end
 
 Base.CartesianIndices(g::DataGrid) = CartesianIndices(axes(g))
 
