@@ -28,6 +28,13 @@
     @test basis(z) == ReciprocalBasis(g)
     @test shift(z) isa KPoint{3}
     @test weight(shift(z)) == 1
+    # Indexing
+    @test g[1,2,3] === g[CartesianIndex(1,2,3)]
+    @test g[end] === g[3,3,3]
+    @test g[end] === g[63]
+    @test eachindex(IndexLinear(), z) == 0:(prod(size(z)) - 1)
+    @test all(iszero, firstindex(z, n) for n in 1:3)
+    @test [lastindex(z, n) for n in 1:3] == collect(size(z) .- 1)
 end
 
 @testset "Fourier transforms" begin
