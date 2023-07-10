@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+  - Cartesian indexing for `DataGrid` skips out on unnecessary bounds checking (due to periodicity).
+
 ## [0.1.6]: 2023-07-03
 
 ### Added
