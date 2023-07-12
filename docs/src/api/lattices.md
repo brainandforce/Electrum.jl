@@ -4,6 +4,7 @@
 ```@docs
 Electrum.RealBasis
 Electrum.ReciprocalBasis
+Electrum.AbstractBasis
 ```
 
 ## Methods
