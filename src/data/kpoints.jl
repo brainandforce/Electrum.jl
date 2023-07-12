@@ -7,7 +7,7 @@ k-points, stored as an integer.
 struct KPoint{D,T} <: DenseVector{T}
     point::SVector{D,T}
     weight::Int
-    KPoint{D,T}(pt::AbstractVector{<:Real}, wt::Integer = 1) where {D,T} = new(pt .- round(pt), wt)
+    KPoint{D,T}(pt::AbstractVector{<:Real}, wt::Integer = 1) where {D,T} = new(pt .- round.(pt), wt)
 end
 
 KPoint{D}(pt::AbstractVector{T}, wt::Integer = 1) where {D,T} = KPoint{D,T}(pt, wt)
