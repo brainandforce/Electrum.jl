@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.7]: 2023-07-12
+
 ### Added
   - `Electrum.BySpace{D}` as a supertype for `ByRealSpace{D}` and `ByReciprocalSpace{D}`
   - `AbstractBasis{D,T}` as a type alias for `Electrum.LatticeBasis{<:Electrum.BySpace,D,T}`
@@ -75,6 +77,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.7]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.7
 [0.1.6]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.6
 [0.1.5]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.5
 [0.1.4]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.4
