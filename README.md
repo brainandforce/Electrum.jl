@@ -61,6 +61,7 @@ Electrum.jl is tested against the most recent LTS release (currently 1.6.7).
      + Standard arithmetic operations: addition, subtraction, multiplication, division, negation...
      + Broadcasting of any Julia operation with dot syntax
      + FFTs and inverse FFTs on real and reciprocal space data
+     + Real space gradients
 
 ## Planned features
 
@@ -74,6 +75,7 @@ This project is just starting to get off the ground, but here's what we have pla
   * Other operations
       + Working with crystal symmetry
       + Converting k-point meshes to symmetry-reduced lists of weighted k-points
+  * Integration with [AtomsBase.jl](https://github.com/JuliaMolSim/AtomsBase.jl)
      
 ...and more that we will decide in time! If you'd like to contibute, be sure to read the included
 [contributing guidelines.](CONTRIBUTING.md)
