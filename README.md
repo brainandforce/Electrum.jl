@@ -50,7 +50,7 @@ Electrum.jl is tested against the most recent LTS release (currently 1.6.7).
      + VASP POSCAR, WAVECAR, DOSCAR, and PROCAR: tested on version 4.6
      + XCrysDen XSF: tested against [the official specification][xsf-spec-url]
      + XYZ files
-     + CPpackage2 outputs: tested against the release version of [CPpackage3][cppackage-url]
+     + CPpackage outputs: tested against the release version of [CPpackage3][cppackage-url]
 * Writing of common file formats:
      + LAMMPS atomic position data
      + XCrysDen XSF
