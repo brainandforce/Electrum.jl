@@ -177,7 +177,7 @@ function PlanewaveWavefunction{D,T}(
     return PlanewaveWavefunction(
         basis,
         zeros(SVector{D,Float64}, nspin),
-        KPointMesh(zeros(KPoint{D}, nkpt)),
+        KPointMesh(zeros(KPoint{D,Float64}, nkpt)),
         zeros(Float64, nband, nkpt, nspin),
         zeros(Float64, nband, nkpt, nspin),
         grange,
