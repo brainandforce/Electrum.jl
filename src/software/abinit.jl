@@ -673,7 +673,7 @@ function read_abinit_DEN(io::IO)
     # Add each dataset to the dictionary
     data = Dict{String, RealDataGrid{3,T}}()
     # Convert the basis
-    basis = RealBasis(BOHR2ANG * header.rprimd)
+    basis = RealBasis(header.rprimd)
     # Fill the dictionary
     data["density_total"] = RealDataGrid(rho[1], basis)
     if header.nspden == 2
@@ -714,7 +714,7 @@ function read_abinit_POT(io::IO)
     # No conversion will occur here: assume units of Hartree
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
     data = Dict{String, RealDataGrid{3,T}}()
-    basis = RealBasis{3}(BOHR2ANG * header.rprimd)
+    basis = RealBasis{3}(header.rprimd)
     if header.nspden == 1
         data["potential_total"] = RealDataGrid(rho[1], basis)
     elseif header.nspden == 2
