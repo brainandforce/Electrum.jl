@@ -1,5 +1,5 @@
 """
-    KPoint{D} <: DenseVector{D,Float64}
+    KPoint{D} <: DenseVector{Float64}
 
 Stores a k-point with an associated weight that corresponds to the number of symmetry-equivalent
 k-points, stored as an integer.
