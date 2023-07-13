@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+  - Constructor for `KPoint{D}` does not automatically truncate the coefficients: this should
+prevent bugs arising from imprecision in k-points with coefficients that are not exactly 0.5.
+
+### Fixed
+  - Reading of WAVECAR files should now index correctly: this was broken due to automatic rounding.
+
 ## [0.1.8]: 2023-07-13
 
 ### Fixed
@@ -82,6 +89,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.8]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.8
 [0.1.7]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.7
 [0.1.6]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.6
 [0.1.5]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.5
