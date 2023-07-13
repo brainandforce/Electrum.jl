@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.8]: 2023-07-13
+
 ### Fixed
   - Import of abinit binary outputs have the correct basis vectors associated with the data
 
