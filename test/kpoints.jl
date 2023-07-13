@@ -1,7 +1,13 @@
 @testset "k-points" begin
     @test KPoint(0, 0, 0, weight = 1) != KPoint(0, 0, 0, weight = 2)
     @test hash(KPoint(0, 0, 0, weight = 1)) != hash(KPoint(0, 0, 0, weight = 2))
-    @test KPoint(1, 2, 3) == KPoint(0, 0, 0)
+    # Truncation
+    # TODO: see note for trunc() in Electrum.jl/src/kpoints.jl
+    @test truncate(KPoint(1, 2, 3)) == KPoint(0, 0, 0)
+    @test truncate(KPoint(0.5, -0.5, 1.5)) == KPoint(0.5, -0.5, -0.5)
+    @test truncate(KPoint(0.5, -0.5 + eps(Float64), 1.5)) == KPoint(0.5, -0.5 + eps(Float64), -0.5)
+    @test truncate(KPoint(0.5, -0.5 - eps(Float64), 1.5)) == KPoint(0.5,  0.5 - eps(Float64), -0.5)
+    # Length measurement
     @test length(KPoint(1, 2, 3, 4, 5)) == 5
     @test length(KPoint{2}) == 2
 end

@@ -39,8 +39,15 @@ Returns the weight associated with a k-point.
 """
 weight(k::KPoint) = k.weight
 
-#---Generated lists of k-points--------------------------------------------------------------------#
+# TODO: can we implement a remainder that excludes -0.5?
+"""
+    truncate(k::KPoint) -> KPoint
 
+Moves a k-point so that its values lie within the range [-1/2, 1/2]. The weight is preserved.
+"""
+Base.truncate(k::KPoint) = KPoint(rem.(k.point, 1, RoundNearest), k.weight)
+
+#---Generated lists of k-points--------------------------------------------------------------------#
 """
     KPointMesh{D} <: AbstractVector{KPoint{D}}
 
