@@ -17,7 +17,9 @@ end
 
 Reads a VASP POSCAR file. A POSCAR contains the basis vectors of the system (potentially given with
 a scaling factor), the positions of all atoms as either Cartesian or reduced coordinates, and
-potentially information needed to perform an ab initio MD run (currently ignored).
+potentially information needed to perform an ab initio MD run (currently ignored). Regardless of
+whether the coordinates are Cartesian or fractional, this function always returns a 
+`PeriodicAtomList{3}`.
 
 By default, if the provided file path is a directory, `readPOSCAR()` will read from a file named
 `POSCAR` in that directory. If no path is provided, a file named `POSCAR` in the current working
@@ -57,27 +59,24 @@ function readPOSCAR(io::IO)
     end
     # Create the iterator for atom names
     name_iter = Iterators.flatten(Iterators.repeated(a, b) for (a,b) in zip(atomnames, natomtypes))
-    # Determine whether the coordinates are fractional (Direct) or Cartesian
+    # Determine whether the coordinates are fractional (Direct) or Cartesian by looping for keyword
+    # Velocity data will always be ignored
     while true
         ln = readline(io)
         if contains("direct", lowercase(ln))
-            # Generate the list of atoms
             positions = Vector{FractionalAtomPosition{3}}(undef, sum(natomtypes))
             for (n,s) in enumerate(name_iter)
                 ln = readline(io)
                 positions[n] = FractionalAtomPosition{3}(s, parse.(Float64, split(ln)))
             end
-            # Velocity data is ignored
             return PeriodicAtomList(latt, positions)
         elseif contains("cartesian", lowercase(ln))
-            # Generate the list of atoms
             positions = Vector{CartesianAtomPosition{3}}(undef, sum(natomtypes))
             for (n,s) in enumerate(name_iter)
                 ln = readline(io)
                 # Convert the units to Bohr here
                 positions[n] = CartesianAtomPosition{3}(s, ANG2BOHR * parse.(Float64, split(ln)))
             end
-            # Velocity data is ignored
             return PeriodicAtomList(latt, positions)
         end
     end
