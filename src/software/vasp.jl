@@ -55,32 +55,27 @@ function readPOSCAR(io::IO)
     if isempty(atomnames)
         atomnames = [string("X", n) for n in 1:length(natomtypes)]
     end
+    # Create the iterator for atom names
+    name_iter = Iterators.flatten(Iterators.repeated(a, b) for (a,b) in zip(atomnames, natomtypes))
     # Determine whether the coordinates are fractional (Direct) or Cartesian
     while true
         ln = readline(io)
         if contains("direct", lowercase(ln))
             # Generate the list of atoms
             positions = Vector{FractionalAtomPosition{3}}(undef, sum(natomtypes))
-            ctr = 1
-            for (n,s) in enumerate(atomnames)
-                for _ in 1:natomtypes[n]
-                    ln = readline(io)
-                    positions[ctr] = FractionalAtomPosition{3}(s, parse.(Float64, split(ln)))
-                    ctr = ctr + 1
-                end
+            for (n,s) in enumerate(name_iter)
+                ln = readline(io)
+                positions[n] = FractionalAtomPosition{3}(s, parse.(Float64, split(ln)))
             end
             # Velocity data is ignored
             return PeriodicAtomList(latt, positions)
         elseif contains("cartesian", lowercase(ln))
             # Generate the list of atoms
             positions = Vector{CartesianAtomPosition{3}}(undef, sum(natomtypes))
-            ctr = 1
-            for (n,s) in enumerate(atomnames)
-                for _ in 1:natomtypes[n]
-                    ln = readline(io)
-                    positions[ctr] = CartesianAtomPosition{3}(s, parse.(Float64, split(ln)))
-                    ctr = ctr + 1
-                end
+            for (n,s) in enumerate(name_iter)
+                ln = readline(io)
+                # Convert the units to Bohr here
+                positions[n] = CartesianAtomPosition{3}(s, ANG2BOHR * parse.(Float64, split(ln)))
             end
             # Velocity data is ignored
             return PeriodicAtomList(latt, positions)
