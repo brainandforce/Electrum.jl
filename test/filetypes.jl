@@ -48,10 +48,15 @@ end
     contcar = readCONTCAR(tmpdir)
     @test basis(contcar) ≈ basis(poscar)
     @test contcar.atoms == sort(poscar).atoms
+    # Test that POSCARs for direct and Cartesian coordinates match up to floating point error
+    c = readPOSCAR("files/In3Ir_cartesian.vasp")
+    d = readPOSCAR("files/In3Ir_direct.vasp")
+    @test basis(c) === basis(d)
+    @test all(isapprox.(displacement.(c), displacement.(d), atol=sqrt(eps(Float64))))
 end
 
 @testset "LAMMPS position data" begin
-    # This is going to suffer from floating point errors/parsing differences
+    # This is going to suffer from large floating point errors/parsing differences
     @test all(isapprox.(displacement.(lammps.atoms), displacement.(poscar.atoms), atol=1e-6))
     @test isapprox(basis(lammps), basis(poscar), atol=1e-6 * Electrum.ANG2BOHR)
 end
