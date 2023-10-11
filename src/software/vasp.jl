@@ -55,21 +55,42 @@ function readPOSCAR(io::IO)
     if isempty(atomnames)
         atomnames = [string("X", n) for n in 1:length(natomtypes)]
     end
-    # Find the "Direct" keyword
+    # Determine whether the coordinates are fractional (Direct) or Cartesian
     while true
-        contains("Direct", readline(io)) && break
-    end
-    # Generate the list of atoms
-    positions = Vector{FractionalAtomPosition{3}}(undef, sum(natomtypes))
-    ctr = 1
-    for (n,s) in enumerate(atomnames)
-        for x in 1:natomtypes[n]
-            positions[ctr] = FractionalAtomPosition{3}(s, parse.(Float64, split(readline(io))))
-            ctr = ctr + 1
+        ln = readline(io)
+        if contains("direct", lowercase(ln))
+            # Generate the list of atoms
+            positions = Vector{FractionalAtomPosition{3}}(undef, sum(natomtypes))
+            ctr = 1
+            for (n,s) in enumerate(atomnames)
+                for _ in 1:natomtypes[n]
+                    ln = readline(io)
+                    positions[ctr] = FractionalAtomPosition{3}(s, parse.(Float64, split(ln)))
+                    ctr = ctr + 1
+                end
+            end
+            # Velocity data is ignored
+            return PeriodicAtomList(latt, positions)
+        elseif contains("cartesian", lowercase(ln))
+            # Generate the list of atoms
+            positions = Vector{CartesianAtomPosition{3}}(undef, sum(natomtypes))
+            ctr = 1
+            for (n,s) in enumerate(atomnames)
+                for _ in 1:natomtypes[n]
+                    ln = readline(io)
+                    positions[ctr] = CartesianAtomPosition{3}(s, parse.(Float64, split(ln)))
+                    ctr = ctr + 1
+                end
+            end
+            # Velocity data is ignored
+            return PeriodicAtomList(latt, positions)
         end
     end
-    # Velocity data is ignored
-    return PeriodicAtomList(latt, positions)
+    error(
+        "No keyword for the atomic coordinate representation was found.\n" *
+        "Valid POSCAR files should contain the keyword \"Direct\" for fractional coordinates, or " *
+        "\"Cartesian\" for Cartesian coordinates."
+    )
 end
 
 readPOSCAR(file) = open(readPOSCAR, convert_vasp_path(file, "POSCAR"))
