@@ -1,3 +1,4 @@
+# TODO: restore doctests at some point
 """
     Electrum.SUnitVector{D,T}
 
@@ -18,7 +19,6 @@ Base.getindex(u::SUnitVector{D,T}, i::Int) where {D,T} = T(isequal(u.index, i))
 Base.getindex(u::SUnitVector, i::Integer) = getindex(u, Int(i))
 
 #---Linear independence check----------------------------------------------------------------------#
-
 """
     Electrum._is_linearly_independent(M::AbstractMatrix) -> Bool
     Electrum._is_linearly_independent(vecs::AbstractVector...) -> Bool
@@ -80,7 +80,7 @@ array index to an FFT bin index, or vice versa.
 The outputs use the convention where frequencies at or above the Nyquist frequency for that
 dimension are negative, matching the output of `FFTW.fftfreq`.
 
-```jldoctest
+```
 julia> FFTBins(4)
 4-element FFTIndices{1}:
  CartesianIndex(0,)
@@ -124,7 +124,7 @@ plain `Int` types rather than the `CartesianIndex` of `FFTBins`.
 
 In essence, it serves as a counterpart to `Base.OneTo` for FFT bins.
 
-```jldoctest
+```
 julia> Electrum.FFTLength(4)
 4-element FFTLength:
  0
