@@ -11,6 +11,7 @@ makedocs(
     sitename = "Electrum.jl",
     format = Documenter.HTML(prettyurls = is_ci_env),
     modules = [Electrum],
+    checkdocs = :exports,
     warnonly = is_ci_env,
     pages = [
         "Home" => "index.md",
