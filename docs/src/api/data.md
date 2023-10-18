@@ -38,7 +38,6 @@ Electrum.fermi(::PlanewaveWavefunction)
 ```@docs
 Electrum.BandAtKPoint
 Electrum.BandStructure
-Electrum.nkpt
 Electrum.nband(::BandStructure)
 Electrum.nband(::BandAtKPoint)
 Electrum.FatBands
