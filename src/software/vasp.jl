@@ -14,19 +14,19 @@ end
 
 """
     readPOSCAR(file) -> PeriodicAtomList{3}
+    readCONTCAR(file) -> PeriodicAtomList{3}
 
-Reads a VASP POSCAR file. A POSCAR contains the basis vectors of the system (potentially given with
-a scaling factor), the positions of all atoms as either Cartesian or reduced coordinates, and
-potentially information needed to perform an ab initio MD run (currently ignored). Regardless of
-whether the coordinates are Cartesian or fractional, this function always returns a 
-`PeriodicAtomList{3}`.
+Reads a VASP POSCAR or CONTCAR file. A POSCAR contains the basis vectors of the system (potentially
+given with a scaling factor), the positions of all atoms as either Cartesian or reduced coordinates,
+and potentially information needed to perform an ab initio MD run (currently ignored). The similarly
+formatted CONTCAR file is the geometry output generated after a VASP run.
+
+Regardless of whether the coordinates are Cartesian or fractional, this function always returns a 
+`PeriodicAtomList{3}`, and the units are converted from angstroms to bohr.
 
 By default, if the provided file path is a directory, `readPOSCAR()` will read from a file named
-`POSCAR` in that directory. If no path is provided, a file named `POSCAR` in the current working
-directory is read.
-
-The similar `readCONTCAR` function does much the same as `readPOSCAR`, but defaults to the file name
-`CONTCAR` instead of `POSCAR`.
+`POSCAR` in that directory. If no argument is provided, a file named `POSCAR` in the current working
+directory is read. `readCONTCAR()` will search for a file named `CONTCAR` in an analogous manner.
 """
 function readPOSCAR(io::IO)
     # Skip the comment line
@@ -90,31 +90,23 @@ end
 readPOSCAR(file) = open(readPOSCAR, convert_vasp_path(file, "POSCAR"))
 readPOSCAR() = open(readPOSCAR, "POSCAR")
 
-"""
-    readCONTCAR(file) -> PeriodicAtomList{3}
-
-Reads a VASP CONTCAR file.  A CONTCAR file is written at the end of a VASP run and contains the
-atomic coordinates after the calculation completed. This is relevant for geometry optimizations or
-molecular dynamics runs.
-
-The function is broadly similar to `readPOSCAR`, but the default file names for directory arguments
-or no argument is `CONTCAR` instead of `POSCAR`. For more help, see `readPOSCAR`.
-"""
 readCONTCAR(io::IO) = readPOSCAR(io)
 readCONTCAR(file) = open(readPOSCAR, convert_vasp_path(file, "CONTCAR"))
 readCONTCAR() = open(readPOSCAR, "CONTCAR")
+@doc (@doc readPOSCAR) readCONTCAR
 
 """
     writePOSCAR([file = "POSCAR"], data; names = true, dummy = false, comment)
+    writeCONTCAR([file = "CONTCAR"], data; names = true, dummy = false, comment)
 
-Writes crystal data to a VASP POSCAR output. The `data` can be a `PeriodicAtomList` or an
-`AbstractCrystal`. If a directory names is given instead of a file name, the data will be written to
-a file named `POSCAR` in the provided directory. If no filename is provided, it is written to
-`POSCAR` in the current directory.
+Writes crystal data to a VASP POSCAR or CONTCAR output. The `data` can be a `PeriodicAtomList` or an
+`AbstractCrystal`. If a directory name is given instead of a file name, the data will be written to
+a file named `POSCAR` or `CONTCAR` in the provided directory, depending on the function used. If no
+argument is provided, it is written to `POSCAR` or `CONTCAR` in the current directory.
 
 By default, atom names are written, but this is known to break VASP 4.6. This may be overridden by
 setting `names` to `false`, but this is known to cause its own incompatibility issues: it is known
-that VESTA will crash if the line containing the atomic names is missing.
+that VESTA, for instance, will crash if the line containing the atomic names is missing.
 
 Dummy atoms are not are not written by default, but they may be written by setting `dummy=true`.
 
@@ -159,12 +151,6 @@ end
 
 writePOSCAR(data; kwargs...) = writePOSCAR("POSCAR", data; kwargs...)
 
-"""
-    writeCONTCAR([file = "CONTCAR"], data; names = true, dummy = false, comment)
-
-Writes crystal data to a VASP POSCAR output, but with the default filename being `CONTCAR` instead
-of `POSCAR`. For more detailed help, see `writePOSCAR`.
-"""
 writeCONTCAR(io::IO, data; kwargs...) = writePOSCAR(io, data; kwargs...)
 
 function writeCONTCAR(file, data; kwargs...)
@@ -172,6 +158,8 @@ function writeCONTCAR(file, data; kwargs...)
 end
 
 writeCONTCAR(data; kwargs...) = writePOSCAR("CONTCAR", data; kwargs...)
+
+@doc (@doc writePOSCAR) writeCONTCAR
 
 # Kendall got everything done before 6 PM (2022-02-01)
 """
