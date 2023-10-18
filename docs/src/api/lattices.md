@@ -9,8 +9,9 @@ Electrum.AbstractBasis
 
 ## Methods
 ```@docs
-Electrum.lengths()
-Electrum.volume()
+Electrum.basis
+Electrum.lengths(::Electrum.LatticeBasis)
+Electrum.volume(::Electrum.LatticeBasis)
 Electrum.angles_cos
 Electrum.angles_rad
 Electrum.angles_deg
