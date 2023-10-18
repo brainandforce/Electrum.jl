@@ -1,11 +1,6 @@
 # Crystal data
 
 ## General
-```@docs
-Electrum.lengths(::Any)
-Electrum.volume(::Any)
-Electrum.basis(::Any)
-```
 
 ## Basic data grids
 ```@docs
@@ -14,6 +9,7 @@ Electrum.RealDataGrid
 Electrum.ReciprocalDataGrid
 Electrum.fft
 Electrum.ifft
+Electrum.volume(::DataGrid)
 Electrum.voxelsize
 Electrum.integrate
 Electrum.partial_derivative
