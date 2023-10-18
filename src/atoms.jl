@@ -35,9 +35,65 @@ function Base.isless(a1::NamedAtom, a2::NamedAtom)
     return isequal(a1.num, a2.num) ? isless(a1.name, a2.name) : isless(a1.num, a2.num)
 end
 
+"""
+    name(a::NamedAtom) -> String
+
+Returns the name associated with a `NamedAtom`. For atoms constructed with only an atomic number,
+the name will be the atomic symbol.
+
+# Examples
+```
+julia> a = NamedAtom("Cl1", 17)
+NamedAtom("Cl1", 17)
+
+julia> name(a)
+"Cl1"
+```
+"""
 name(a::NamedAtom) = a.name
+
+"""
+    atomic_number(a::NamedAtom)
+
+Returns the atomic number associated with a `NamedAtom`. For atoms constructed with only a name, the
+atomic number returned will be that associated with the symbol if the symbol exactly corresponds to
+an atom name.
+
+# Examples
+```
+julia> a = NamedAtom("Cl1", 17)
+NamedAtom("Cl1", 17)
+
+julia> atomic_number(a)
+17
+```
+"""
 atomic_number(a::NamedAtom) = a.num
-isdummy(a::NamedAtom) = (a.num == 0)
+
+"""
+    isdummy(a::NamedAtom) -> Bool
+
+Returns `true` if the atomic number of a `NamedAtom` is zero, `false` otherwise. Atoms with zero as
+the atomic number are treated as dummy atoms, which may be used to reference specific positions in a
+molecule or crystal.
+
+# Examples
+```
+julia> a = NamedAtom("Cl1", 17)
+NamedAtom("Cl1", 17)
+
+julia> b = NamedAtom("test")
+NamedAtom("test", 0)
+
+julia> isdummy(a)
+false
+
+julia> isdummy(b)
+true
+```
+"""
+isdummy(a::NamedAtom) = iszero(a.num)
+
 """
     Electrum.reset_name(a::NamedAtom)
 
