@@ -26,6 +26,18 @@ function Base.getproperty(atom::NamedAtom, p::Symbol)
     return getfield(atom, p)
 end
 
+"""
+    NamedAtom(num::Integer)
+
+Construct a `NamedAtom` from an atomic number. The name will automatically be assigned as the atomic
+symbol.
+
+# Examples
+```
+julia> NamedAtom(17)
+NamedAtom("Cl", 17)
+```
+"""
 NamedAtom(num::Integer) = num in 1:118 ? NamedAtom(ELEMENTS[num], num) : NamedAtom("dummy", num)
 
 """
