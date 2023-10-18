@@ -108,3 +108,14 @@ Counts the number of k-points (equivalent to `length(k)`). This function can be 
 types that contain a `KPointMesh`.
 """
 nkpt(k::KPointMesh) = length(k)
+
+"""
+    nkpt(x) -> Int
+
+Counts the number of explicitly enumerated k-points associated with an object containing a
+`KPointMesh`.
+
+By default, this function returns `length(KPointMesh(x))`, so defining `KPointMesh(x::T)` for a
+type `T` containing a `KPointMesh` will automatically define `nkpt(x::T)`.
+"""
+nkpt(x) = length(KPointMesh(x))
