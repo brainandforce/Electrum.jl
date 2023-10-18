@@ -21,6 +21,7 @@ Electrum.writeTOML
 ### Reading
 ```@docs
 Electrum.readXSF
+Electrum.readXSF3D
 ```
 
 ### Writing
@@ -43,15 +44,18 @@ Electrum.read_abinit_WFK
 ### Reading
 
 ```@docs
+Electrum.readCONTCAR
 Electrum.readDOSCAR
 Electrum.readPOSCAR
 Electrum.readPROCAR
 Electrum.readWAVECAR
+Electrum.get_fermi
 ```
 
 ### Writing
 
 ```@docs
+Electrum.writeCONTCAR
 Electrum.writePOSCAR
 ```
 
