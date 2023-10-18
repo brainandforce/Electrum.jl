@@ -80,6 +80,7 @@ array index to an FFT bin index, or vice versa.
 The outputs use the convention where frequencies at or above the Nyquist frequency for that
 dimension are negative, matching the output of `FFTW.fftfreq`.
 
+# Examples
 ```
 julia> FFTBins(4)
 4-element FFTIndices{1}:
@@ -124,6 +125,7 @@ plain `Int` types rather than the `CartesianIndex` of `FFTBins`.
 
 In essence, it serves as a counterpart to `Base.OneTo` for FFT bins.
 
+# Examples
 ```
 julia> Electrum.FFTLength(4)
 4-element FFTLength:
