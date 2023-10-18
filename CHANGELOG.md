@@ -12,6 +12,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `NamedAtom(::AbstractString)` now performs a more robust check for a valid atomic symbol. 
 Strings such as `"Cl2"` are checked from the start to the first non-letter character.
 
+### Changed
+  - Consolidated docstrings for several closely related types and functions, including
+`readPOSCAR()` and `readCONTCAR()`, `Electrum.DataGrid` and its aliases, and `Electrum.LatticeBasis`
+and its aliases.
+  - `basis(x)` performs a type assertion to ensure an `Electrum.LatticeBasis` is returned.
+
 ## [0.1.9]: 2023-07-13
 
 ### Changed
