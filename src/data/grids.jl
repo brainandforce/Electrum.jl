@@ -22,6 +22,8 @@ within the grid. This is done with `Electrum.reinterpret_index()`.
 
 Linear indexing is one-based like that of the underlying array.
 
+# Type aliases
+
 For convenience, the aliases `RealDataGrid` and `ReciprocalDataGrid` are provided and are defined
 below:
 
@@ -50,7 +52,9 @@ Base.has_offset_axes(g::DataGrid) = true
 Base.show(io::IO, g::DataGrid) = print(io, typeof(g), (g.data, g.basis, g.shift))
 
 const RealDataGrid{D,T} = DataGrid{D,RealBasis{D,Float64},SVector{D,Float64},T}
+@doc (@doc DataGrid) RealDataGrid
 const ReciprocalDataGrid{D,T} = DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},T}
+@doc (@doc DataGrid) ReciprocalDataGrid
 
 #---Constructors-----------------------------------------------------------------------------------#
 """
