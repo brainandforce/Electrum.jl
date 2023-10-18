@@ -40,8 +40,8 @@ nband(b::BandAtKPoint) = length(b.e)
     BandStructure{D}
 
 Stores information about an electronic band structure, including the list of k-points used to
-generate the data (as am `AbstractVector{KPoint{D}}`)and the band information at every k-point (as a
-`Vector{BandAtKPoint}`).
+generate the data (as an `AbstractVector{KPoint{D}}`) and the band information at every k-point (as
+a `Vector{BandAtKPoint}`).
 """
 struct BandStructure{D}
     # k-points for which band data is defined
@@ -73,7 +73,11 @@ function Base.getindex(b::BandStructure{D}, inds...) where D
     return (b.kpts[inds...], b.bands[inds...])
 end
 
-nkpt(b::BandStructure) = nkpt(b.kpts)
+"""
+    nband(b::BandStructure) -> Int
+
+Returns the number of bands (occupied and unoccupied) associated with a `BandStructure`.
+"""
 nband(b::BandStructure) = nband(b.bands[1])
 
 """
