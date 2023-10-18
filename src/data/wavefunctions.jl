@@ -194,9 +194,21 @@ function Base.LinearIndices(wf::PlanewaveWavefunction)
     return LinearIndices((wf.grange..., wf.bands, wf.kpoints, wf.spins))
 end
 
+"""
+    nspin(wf::PlanewaveWavefunction) -> Int
+
+Returns the number of spins associated with a `PlanewaveWavefunction`.
+"""
 nspin(wf::PlanewaveWavefunction) = length(wf.spins)
-nkpt(wf::PlanewaveWavefunction) = length(wf.kpoints)
+
+"""
+    nband(wf::PlanewaveWavefunction) -> Int
+
+Returns the number of bands (occupied and unoccupied) associated with a `PlanewaveWavefunction`.
+"""
 nband(wf::PlanewaveWavefunction) = size(wf.energies, 1)
+
+KPointMesh(wf::PlanewaveWavefunction) = wf.kpoints
 
 # Override some of the more generic AbstractDataGrid methods
 Base.getindex(wf::PlanewaveWavefunction, i...) = throw(MethodError(getindex, (wf, i...)))
