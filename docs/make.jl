@@ -1,12 +1,17 @@
 #! /usr/bin/env julia
 
 using Documenter
+using LinearAlgebra, FFTW
 using Electrum
+
+is_ci_env = (get(ENV, "CI", nothing) == true)
+@info "is_ci_env == $is_ci_env"
 
 makedocs(
     sitename = "Electrum.jl",
-    format = Documenter.HTML(prettyurls = (get(ENV, "CI", nothing) == true)),
+    format = Documenter.HTML(prettyurls = is_ci_env),
     modules = [Electrum],
+    warnonly = is_ci_env,
     pages = [
         "Home" => "index.md",
         "Types" => "types.md",
