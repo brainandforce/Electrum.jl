@@ -8,11 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+  - Support for POSCAR and CONTCAR files with Cartesian coordinates.
   - Docstrings for `name(::NamedAtom)`, `atomic_number(::NamedAtom)`, and `isdummy(::NamedAtom)`.
   - `NamedAtom(::AbstractString)` now performs a more robust check for a valid atomic symbol. 
 Strings such as `"Cl2"` are checked from the start to the first non-letter character.
 
 ### Changed
+  - `readPOSCAR()` and `readCONTCAR()` now throw errors if the coordinate specification is missing.
   - Consolidated docstrings for several closely related types and functions, including
 `readPOSCAR()` and `readCONTCAR()`, `Electrum.DataGrid` and its aliases, and `Electrum.LatticeBasis`
 and its aliases.
