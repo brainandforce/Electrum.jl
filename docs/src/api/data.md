@@ -18,27 +18,27 @@ Electrum.directional_derivative
 Electrum.remove_shift 
 ```
 
-## Wavefunctions
-```@docs
-Electrum.PlanewaveWavefunction
-Electrum.PlanewaveIndex
-Electrum.nspin(::PlanewaveWavefunction)
-Electrum.nkpt(::PlanewaveWavefunction)
-Electrum.nband(::PlanewaveWavefunction)
-Electrum.fermi(::PlanewaveWavefunction)
-```
-
 ## k-points
 ```@docs
 Electrum.KPoint
 Electrum.KPointMesh
+Electrum.nkpt
+```
+
+## Wavefunctions
+```@docs
+Electrum.PlanewaveWavefunction
+Electrum.PlanewaveIndex
+Electrum.nspin
+Electrum.nband(::PlanewaveWavefunction)
+Electrum.fermi(::PlanewaveWavefunction)
 ```
 
 ## Band structures
 ```@docs
 Electrum.BandAtKPoint
 Electrum.BandStructure
-Electrum.nkpt(::BandStructure)
+Electrum.nkpt
 Electrum.nband(::BandStructure)
 Electrum.nband(::BandAtKPoint)
 Electrum.FatBands
