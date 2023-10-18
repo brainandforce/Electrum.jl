@@ -314,6 +314,14 @@ The inverse FFT is normalized so that `ifft(fft(g)) ≈ g` (to within floating p
 """
 FFTW.ifft(g::DataGrid) = DataGrid(bfft(g.data) * fftvol(g), inv(basis(g)))
 
+function FFTW.fftfreq(g::DataGrid, ::ByRealSpace)
+    return map(i -> SVector(2π .* Tuple(i) ./ size(g)), FFTBins(g))
+end
+
+function FFTW.fftfreq(g::DataGrid, ::ByReciprocalSpace)
+    return map(i -> SVector(Tuple(i) .* size(g) ./ 2π), CartesianIndices(g))
+end
+
 """
     fftfreq(g::DataGrid{D}) -> Array{SVector{D,Float64},D}
 
@@ -327,14 +335,6 @@ For reciprocal space data, the frequencies are binned with the assumption that t
 are given in angular wavenumbers, and they represent real space coordinates. The Nyquist frequency
 convention is *not* used, so all elements will have positive indices.
 """
-function FFTW.fftfreq(g::DataGrid, ::ByRealSpace)
-    return map(i -> SVector(2π .* Tuple(i) ./ size(g)), FFTBins(g))
-end
-
-function FFTW.fftfreq(g::DataGrid, ::ByReciprocalSpace)
-    return map(i -> SVector(Tuple(i) .* size(g) ./ 2π), CartesianIndices(g))
-end
-
 FFTW.fftfreq(g::DataGrid) = fftfreq(g, DataSpace(g))
 
 #---Operations specific to `RealDataGrid`----------------------------------------------------------#
