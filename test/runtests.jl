@@ -18,6 +18,7 @@ lammps = read_lammps_data("files/lammps.data", atom_types = [14, 77])
 @testset "All tests" begin
     include("internals.jl")
     include("lattices.jl")
+    include("atoms.jl")
     include("datagrids.jl")
     include("supercell.jl")
     include("crystals.jl")
