@@ -110,7 +110,7 @@ Returns the lattice basis associated with a data structure. By default, this ret
 Although basis(x) should always return an `Electrum.LatticeBasis`, the exact return type may vary.
 For predictable results, use `convert(T, basis(x))` where `T` is the desired type.
 """
-basis(x) = x.basis
+basis(x) = x.basis::LatticeBasis
 
 #---Data space traits------------------------------------------------------------------------------#
 
