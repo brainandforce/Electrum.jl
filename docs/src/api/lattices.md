@@ -15,5 +15,7 @@ Electrum.volume(::Electrum.LatticeBasis)
 Electrum.angles_cos
 Electrum.angles_rad
 Electrum.angles_deg
+Electrum.gram
+Electrum.triangularize
 Electrum.maxHKLindex
 ```

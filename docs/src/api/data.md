@@ -9,6 +9,7 @@ Electrum.RealDataGrid
 Electrum.ReciprocalDataGrid
 Electrum.fft
 Electrum.ifft
+AbstractFFTs.fftfreq(::DataGrid)
 Electrum.volume(::DataGrid)
 Electrum.voxelsize
 Electrum.integrate
@@ -23,6 +24,7 @@ Electrum.remove_shift
 Electrum.KPoint
 Electrum.KPointMesh
 Electrum.nkpt
+Electrum.weight
 ```
 
 ## Wavefunctions
@@ -57,4 +59,5 @@ Electrum.nelectrons
 ## Atomic data
 ```@docs
 Electrum.SphericalHarmonic
+LinearAlgebra.dot(::SphericalHarmonic, ::SphericalHarmonic)
 ```
