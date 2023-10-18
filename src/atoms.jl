@@ -27,7 +27,24 @@ function Base.getproperty(atom::NamedAtom, p::Symbol)
 end
 
 NamedAtom(num::Integer) = num in 1:118 ? NamedAtom(ELEMENTS[num], num) : NamedAtom("dummy", num)
-NamedAtom(atomname::AbstractString) = NamedAtom(atomname, get(ELEMENT_LOOKUP, atomname, 0))
+
+"""
+    NamedAtom(atomname::AbstractString)
+
+Construct a `NamedAtom` from a string. This string will be stripped at the first character that is
+not a letter to determine whether an atomic number can be assigned.
+
+# Examples
+```
+julia> NamedAtom("Cl1")
+NamedAtom("Cl1", 17)
+```
+"""
+function NamedAtom(atomname::AbstractString)
+    # Strip any non-letter symbols from the input string
+    symbol = atomname[begin:findfirst(!isletter, atomname) - 1]
+    return NamedAtom(atomname, get(ELEMENT_LOOKUP, symbol, 0))
+end
 
 Base.show(io::IO, atom::NamedAtom) = print(io, "NamedAtom(\"", atom.name, "\", ", atom.num, ")")
 
