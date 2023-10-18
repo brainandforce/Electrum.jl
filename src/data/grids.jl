@@ -465,7 +465,14 @@ end
 
 reinterpolate(g::RealDataGrid{D}, dims::Vararg{<:Integer,D}) = reinterpolate(g, dims)
 =#
+"""
+    remove_shift(g::RealDataGrid) -> RealDataGrid
 
+Shifts the data in a `RealDataGrid` so that the shift vector of the new `RealDataGrid` is zero.
+Currently, only shifts for trivial cases (where the data shifting can be accomplished by a simple 
+circular shift of the array) are implemented; future implementations will need to use Fourier
+transforms to accomplish this task.
+"""
 function remove_shift(g::RealDataGrid)
     # If this is an integer, removing the shift is easy
     offset_float = size(g) .* shift(g)
