@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - Docstrings for `name(::NamedAtom)`, `atomic_number(::NamedAtom)`, and `isdummy(::NamedAtom)`.
+  - `NamedAtom(::AbstractString)` now performs a more robust check for a valid atomic symbol. 
+Strings such as `"Cl2"` are checked from the start to the first non-letter character.
+
 ## [0.1.9]: 2023-07-13
 
 ### Changed
