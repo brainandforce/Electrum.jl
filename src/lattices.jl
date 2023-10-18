@@ -21,10 +21,19 @@ _nonsquare_matrix_error() = throw(DimensionMismatch("Input must be a square matr
 Represents the basis vectors of a `D`-dimensional lattice in real space (when `S === ByRealSpace`)
 or in reciprocal space (when `S === ByReciprocalSpace`). The units of `LatticeBasis{ByRealSpace}`
 are bohr, and those of `LatticeBasis{ByReciprocalSpace}` are rad*bohr⁻¹. File import and export
-methods will take this into account.
+methods in Electrum will automatically perform unit conversion if the units used by the software
+package are different.
 
-For convenience, the type aliases `RealBasis = LatticeBasis{ByRealSpace}` and 
-`ReciprocalBasis = LatticeBasis{ByReciprocalSpace}` are provided and exported.
+# Type aliases
+
+For convenience, the type aliases `RealBasis` and `ReciprocalBasis` are defined below:
+
+    const RealBasis = LatticeBasis{ByRealSpace}
+    const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
+    const AbstractBasis = LatticeBasis{<:BySpace}
+
+These type aliases are exported, and in most circumstances code should refer to these types for the
+sake of readability, not `Electrum.LatticeBasis`, which is unexported.
 
 # Internals
 
@@ -48,30 +57,12 @@ LatticeBasis{S,D}(::StaticArray) where {S,D} = _nonsquare_matrix_error()
 
 Base.show(io::IO, b::LatticeBasis) = print(io, typeof(b), '(', b.matrix, ')')
 
-"""
-    RealBasis{D,T}
-
-Represents a lattice defined in `D`-dimensional real space, in units of bohr.
-
-For further information, see `Electrum.LatticeBasis`.
-"""
 const RealBasis = LatticeBasis{ByRealSpace}
-
-"""
-    ReciprocalBasis{D,T}
-
-Represents a lattice defined in `D`-dimensional reciprocal space, in units of rad*bohr⁻¹.
-
-For further information, see `Electrum.LatticeBasis`.
-"""
+@doc (@doc LatticeBasis) RealBasis
 const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
-
-"""
-    AbstractBasis{D,T} (alias for LatticeBasis{<:Electrum.BySpace,D,T})
-
-Supertype that can be used to refer to either a `RealBasis{D,T}` or a `ReciprocalBasis{D,T}`.
-"""
+@doc (@doc LatticeBasis) ReciprocalBasis
 const AbstractBasis = LatticeBasis{<:BySpace}
+@doc (@doc LatticeBasis) AbstractBasis
 
 LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
 LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
