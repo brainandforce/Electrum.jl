@@ -20,6 +20,7 @@ Electrum.atomtypes
 Electrum.natomtypes
 Electrum.atomcounts
 Base.isapprox(::T, ::T) where T<:AbstractAtomPosition
+Electrum.distance(::CartesianAtomPosition, ::CartesianAtomPosition)
 ```
 
 ## Moving and processing atom lists

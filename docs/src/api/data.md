@@ -14,9 +14,16 @@ Electrum.volume(::DataGrid)
 Electrum.voxelsize
 Electrum.integrate
 Electrum.partial_derivative
+Electrum.cell_gradient
 Electrum.gradient
 Electrum.directional_derivative
 Electrum.remove_shift 
+```
+
+## FFT iterators
+```@docs
+Electrum.FFTLength
+Electrum.FFTBins
 ```
 
 ## k-points
