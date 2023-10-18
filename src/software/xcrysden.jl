@@ -1,13 +1,14 @@
 #---Reading----------------------------------------------------------------------------------------#
 """
     readXSF3D(
-        io::IO;
+        file;
         spgrp::Integer = 0,
         origin::AbstractVector{<:Real} = [0, 0, 0]
     ) -> CrystalWithDatasets{3}
 
 Reads in an XCrysDen XSF file from an input stream and returns a `CrystalWithDatasets{3}` with all
-datasets that have been included within the file.
+datasets that have been included within the file. The XSF file must contain 3D crystal data; data
+of other dimensionalities (such as slab data) will fail.
 
 Space group and origin information are not supplied in XSF files, but they can be supplied using the
 `spgrp` and `origin` keyword arguments.
@@ -162,22 +163,24 @@ function readXSF3D(
     )
 end
 
-"""
-    readXSF3D(
-        file;
-        spgrp::Integer = 0,
-        origin::AbstractVector{<:Real} = [0, 0, 0]
-        ctr::Symbol = :P
-    ) -> CrystalWithDatasets{3}
-
-Reads an XSF file at path `filename`.
-"""
 function readXSF3D(filename; kwargs...)
     open(filename) do io
         readXSF3D(io; kwargs...)
     end
 end
 
+"""
+    readXSF(
+        file;
+        spgrp::Integer = 0,
+        origin::AbstractVector{<:Real} = [0, 0, 0]
+    ) -> CrystalWithDatasets
+
+Generic function for reading XSF data of arbitrary dimensionality. Currently, only 3D data is
+supported, as this name is an alias for `readXSF3D`. This will change in the future.
+
+For more information, see the documentation for `readXSF3D`.
+"""
 const readXSF = readXSF3D
 
 #---Writing----------------------------------------------------------------------------------------#
