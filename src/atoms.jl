@@ -54,7 +54,8 @@ NamedAtom("Cl1", 17)
 """
 function NamedAtom(atomname::AbstractString)
     # Strip any non-letter symbols from the input string
-    symbol = atomname[begin:findfirst(!isletter, atomname) - 1]
+    x = findfirst(!isletter, atomname)
+    symbol = isnothing(x) ? atomname : atomname[begin:x-1]
     return NamedAtom(atomname, get(ELEMENT_LOOKUP, symbol, 0))
 end
 
