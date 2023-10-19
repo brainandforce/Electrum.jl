@@ -1,5 +1,4 @@
 #---Traits----------------------------------------------------------------------------------------#
-
 """
     CrystalDataTrait
 
@@ -48,3 +47,13 @@ Trait for reciprocal space data in `D` dimensions.
 """
 struct ByReciprocalSpace{D} <: BySpace{D}
 end
+
+"""
+    Electrum.dimension(::DataSpace{D}) = D
+    Electrum.dimension(::Type{<:DataSpace{D}}) = D
+
+Returns the number of dimensions (or other object representing the dimensionality) associated with a
+`DataSpace` trait.
+"""
+dimension(::DataSpace{D}) where D = D
+dimension(::Type{<:DataSpace{D}}) where D = D
