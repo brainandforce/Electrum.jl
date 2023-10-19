@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+  - Admonition boxes in documentation now render correctly
+
 ## [0.1.10]: 2023-10-19
 
 ### Added
