@@ -3,8 +3,21 @@ using Test, Aqua, Electrum
 
 tmpdir = mktempdir()
 
+excluded_methods = Function[Base.unsafe_convert]
+# Base.getindex ambiguity was resolved in 1.9:
+# https://github.com/JuliaLang/julia/pull/41807
+# TODO: can we still try to test other methods for Base.getindex? It's pretty important...
+if VERSION < v"1.9"
+    push!(excluded_methods, Base.getindex)
+end
+# Base.Sort.defalg ambiguity should be removed in 1.10:
+# https://github.com/JuliaLang/julia/pull/47383
+if VERSION < v"1.10"
+    push!(excluded_methods, Base.Sort.defalg)
+end
+
 Aqua.test_all(Electrum;
-    ambiguities = (exclude = [Base.Sort.defalg, Base.unsafe_convert],),
+    ambiguities = (exclude = excluded_methods,),
     project_toml_formatting = false
 )
 
