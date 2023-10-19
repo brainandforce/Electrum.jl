@@ -9,7 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
   - Support for POSCAR and CONTCAR files with Cartesian coordinates.
-  - Docstrings for `name(::NamedAtom)`, `atomic_number(::NamedAtom)`, and `isdummy(::NamedAtom)`.
+  - All exported functions have docstrings, and those docstrings are included in the online
+documentation.
   - `NamedAtom(::AbstractString)` now performs a more robust check for a valid atomic symbol. 
 Strings such as `"Cl2"` are checked from the start to the first non-letter character.
 
