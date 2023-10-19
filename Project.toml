@@ -16,6 +16,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 [compat]
 ComputedFieldTypes = "1"
 FFTW = "1"
+InlineStrings = "1"
 NormalForms = "0.1"
 StaticArrays = "1"
 Requires = "1"
