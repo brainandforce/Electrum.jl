@@ -1,7 +1,7 @@
 # Types
 
 Electrum.jl provides a rich type system for handling a variety of data that may arise in 
-computational work with periodic structures.. Many of these types are generic enough to handle cases
+computational work with periodic structures. Many of these types are generic enough to handle cases
 of crystals in arbitrary dimension, which may be useful for theoretical work or for handling
 complicated real-world cases, such as incommensurately modulated crystals.
 
@@ -134,10 +134,12 @@ These aliases are defined as follows:
 const RealDataGrid{D,T} = DataGrid{D,RealBasis{D,Float64},SVector{D,Float64},T}
 const ReciprocalDataGrid{D,T} = DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},T}
 ```
-!!! note Look closely at the above definition: the shift data type for `RealDataGrid{D}` is
-`SVector{D,Float64}`, but the shift data type for `ReciprocalDataGrid{D}` is `KPoint{D}`. When
-the `DataGrid` constructor without the shift type parameter is invoked, the basis type is used to
-infer the appropriate shift type so that a `RealDataGrid` or `ReciprocalDataGrid` is constructed.
+!!! note
+    Look closely at the above definition: the shift data type for `RealDataGrid{D}` is
+    `SVector{D,Float64}`, but the shift data type for `ReciprocalDataGrid{D}` is `KPoint{D}`. When
+    the `DataGrid` constructor without the shift type parameter is invoked, the basis type is used
+    to infer the appropriate shift type so that a `RealDataGrid` or `ReciprocalDataGrid` is
+    constructed.
 
 `DataGrid` uses zero-based, periodic indexing: the first index of an `AbstractDataGrid{D}` is
 `zero(NTuple{D,Int})`, and indices whose moduli with respect to size along that dimension are
@@ -158,12 +160,13 @@ This allows `DataGrid` instances to operated on with dot syntax. However, they m
 basis vectors and shift values. If they do not match, an `Electrum.LatticeMismatch` exception will
 be thrown.
 
-!!! note Although `Base.Broadcast.ArrayStyle` is usually overridden by other subtypes of 
-`Base.Broadcast.AbstractArrayStyle`, it does not override `Electrum.DataGridStyle`. Adding a
-`DataGrid` to an `Array` returns an `Array`, and adding a `DataGrid` to other `AbstractArray`
-subtypes returns the `AbstractArray` subtype defined by the `Broadcast.BroadcastStyle`. In the case
-of a dimension mismatch, the broadcast style wll be `Broadcast.ArrayConflict` - the operation will
-throw a `DimensionMismatch`.
+!!! info
+    Although `Base.Broadcast.ArrayStyle` is usually overridden by other subtypes of 
+    `Base.Broadcast.AbstractArrayStyle`, it does not override `Electrum.DataGridStyle`. Adding a
+    `DataGrid` to an `Array` returns an `Array`, and adding a `DataGrid` to other `AbstractArray`
+    subtypes returns the `AbstractArray` subtype defined by the `Broadcast.BroadcastStyle`. In the 
+    case of a dimension mismatch, the broadcast style wll be `Broadcast.ArrayConflict` - the
+    operation will throw a `DimensionMismatch`.
 
 The `+` and `-` operators are defined for `DataGrid` instances, and they are faster than the
 broadcasted `.+` and `.-` equivalents. As with the broadcasted versions, checks are implemented to

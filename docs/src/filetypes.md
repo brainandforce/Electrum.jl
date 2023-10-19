@@ -45,8 +45,10 @@ Because wavefunctions are large files, and reading them can be slow, `read_abini
 `@info` messages for every k-point that is read in. This can be disabled by setting the keyword
 argument `quiet = true`.
 
-!!! info abinit 7.10.5 (header version 57) does not output the matrix associated with the k-point
-mesh used in the calculation (the kptrlatt field).
+!!! warning
+    abinit 7.10.5 (header version 57) does not output the matrix associated with the k-point
+    mesh used in the calculation (the kptrlatt field). The matrix contained in the associated
+    `KPointMesh{3}` object will be zero.
 
 # VASP
 
@@ -72,9 +74,10 @@ and its format is identical to that of the `POSCAR` file. In the case of geometr
 contents of `CONTCAR` will differ from those of `POSCAR`. `readPOSCAR()` and `readCONTCAR()` will
 read these files into a `PeriodicAtomList{3}`.
 
-!!! info `POSCAR` files supported by VASP 4 do not contain explicit atomic identity information. If
-those are read in without modification, dummy atoms with numeric labels will be used instead of the
-true atom names.
+!!! info
+    `POSCAR` files supported by VASP 4 do not contain explicit atomic identity information. If those
+    are read in without modification, dummy atoms with numeric labels will be used instead of the
+    true atom names.
 
 ### PROCAR
 
@@ -86,9 +89,10 @@ about contributions from atomic orbitals).
 The `WAVECAR` file contains the coefficients for the wavefunction's reciprocal space representation
 at each k-point. The wavefunction is stored in an order with sparse, implied indexing. 
 
-!!! warn VASP does not store the weights of k-points in the `WAVECAR`, nor does it store the matrix
-that generated the k-point mesh. Naïve summing of quantities associated with each k-point should be
-avoided.
+!!! warning
+    VASP does not store the weights of k-points in the `WAVECAR`, nor does it store the matrix
+    that generated the k-point mesh. Naïve summing of quantities associated with each k-point should
+    be avoided.
 
 Like `read_abinit_wavefunction()`, `readWAVECAR()` will print `@info` messages by default for each
 k-point read in. This can be disabled by setting the keyword argument `quiet = true`.
@@ -97,8 +101,9 @@ k-point read in. This can be disabled by setting the keyword argument `quiet = t
 
 Electrum.jl supports the reading and writing of LAMMPS atomic position data.
 
-!!! info Like VASP `POSCAR` files, LAMMPS data files do not contain explicit atomic information. If
-none is provided, dummy atoms corresponding to each atom type will be used.
+!!! info
+    Like VASP `POSCAR` files, LAMMPS data files do not contain explicit atomic information. If none
+    is provided, dummy atoms corresponding to each atom type will be used.
 
 # TOML
 
