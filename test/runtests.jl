@@ -3,7 +3,10 @@ using Test, Aqua, Electrum
 
 tmpdir = mktempdir()
 
-Aqua.test_all(Electrum; project_toml_formatting=false)
+Aqua.test_all(Electrum;
+    ambiguities = (exclude = [Base.Sort.defalg, Base.unsafe_convert],),
+    project_toml_formatting = false
+)
 
 xsf = readXSF3D("files/test.xsf")
 header_den = Electrum.read_abinit_header("files/Sc_eq_o_DEN")
