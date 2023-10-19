@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.10]: 2023-10-19
+
 ### Added
   - Support for POSCAR and CONTCAR files with Cartesian coordinates.
   - All exported functions have docstrings, and those docstrings are included in the online
