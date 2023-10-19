@@ -53,7 +53,8 @@ end
     name(a::NamedAtom) -> String
 
 Returns the name associated with a `NamedAtom`. For atoms constructed with only an atomic number,
-the name will be the atomic symbol.
+the name will be the atomic symbol. This function returns a `Base.String` for compatibility, not the
+`InlineStrings.InlineString15` from the backing field.
 
 # Examples
 ```
@@ -64,7 +65,7 @@ julia> name(a)
 "Cl1"
 ```
 """
-name(a::NamedAtom) = a.name
+name(a::NamedAtom) = convert(String, a.name)
 
 """
     atomic_number(a::NamedAtom)
