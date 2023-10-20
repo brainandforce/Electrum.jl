@@ -18,7 +18,7 @@ this repo to your Julia environment (which should be at least v1.6, and ideally 
 version):
 
 ```
-(@v1.8 pkg)> add https://github.com/brainandforce/Electrum.jl
+(@v1.6+ pkg)> add https://github.com/brainandforce/Electrum.jl
 ```
 
 You can also do this by importing `Pkg` and entering the following command:
@@ -36,7 +36,7 @@ state, and not the release version. You can do this by specifying the branch you
 (let's assume it's `next`):
 
 ```
-(@v1.8) pkg> add https://github.com/brainandforce/Electrum.jl#next
+(@v1.6+) pkg> add https://github.com/brainandforce/Electrum.jl#next
 ```
 ```julia-repl
 julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="next")
