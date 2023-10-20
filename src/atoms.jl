@@ -109,8 +109,8 @@ true
 """
 isdummy(a::NamedAtom) = iszero(a.num)
 
-Base.convert(T::Type{<:AbstractString}, a::NamedAtom) = convert(T, name(a))
-Base.convert(T::Type{<:Number}, a::NamedAtom) = convert(T, atomic_number(a))
+Base.convert(T::Type{<:AbstractString}, a::NamedAtom) = convert(T, a.name)
+Base.convert(T::Type{<:Number}, a::NamedAtom) = convert(T, a.num)
 Base.convert(::Type{NamedAtom}, x::Union{AbstractString,Number}) = NamedAtom(x)
 
 """
