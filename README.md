@@ -81,6 +81,12 @@ This project is just starting to get off the ground, but here's what we have pla
 ...and more that we will decide in time! If you'd like to contibute, be sure to read the included
 [contributing guidelines.](CONTRIBUTING.md)
 
+## Packages which use Electrum.jl
+
+If your package uses Electrum.jl, we'd like to know about it - open an issue or a pull request with
+changes to the list of packages we know depend on Electrum.jl given below:
+  - [DFT-raMO][dftramo-url] (currently not available in the Julia package registry)
+
 [docs-stable-img]:  https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]:  https://brainandforce.github.io/Electrum.jl/stable
 [docs-dev-img]:     https://img.shields.io/badge/docs-dev-blue.svg
@@ -93,3 +99,4 @@ This project is just starting to get off the ground, but here's what we have pla
 [codecov-url]:      https://codecov.io/gh/brainandforce/Electrum.jl/
 [xsf-spec-url]:     http://www.xcrysden.org/doc/XSF.html
 [cppackage-url]:    https://github.com/dcfredrickson/CPpackage3
+[dftramo-url]:      https://github.com/xamberl/DFT-raMO
