@@ -20,7 +20,7 @@ and well-maintained scientific software.
 Electrum.jl is available in the Julia General package registry! You can add it to your environment
 with the `add` command in package mode:
 ```
-(@v1.9) pkg> add https://github.com/brainandforce/Electrum.jl 
+(@v1.6+) pkg> add https://github.com/brainandforce/Electrum.jl 
 ```
 Or you can import the `Pkg` module:
 ```julia-repl
@@ -29,7 +29,7 @@ julia> Pkg.add("Electrum")
 If you'd like to track a specific on this repository for development purposes, you can refer to the
 repo URL and tag it with the desired branch name (here, I've used `release`):
 ```
-(@v1.9) pkg> add https://github.com/brainandforce/Electrum.jl#release
+(@v1.6+) pkg> add https://github.com/brainandforce/Electrum.jl#release
 ```
 ```julia-repl
 julia> Pkg.add(url="https://github.com/brainandforce/Electrum.jl", rev="release")
@@ -39,7 +39,8 @@ the head of the `release` branch. Specific releases for a minor version may be f
 the minor version with `/release`: for instance, `0.1/release` contains the latest release version
 in the 0.1 series.
 
-Electrum.jl is tested against the most recent LTS release (currently 1.6.7).
+Electrum.jl is tested against the most recent LTS release (currently 1.6.7) and the current stable
+release. Julia 1.5 and earlier are not supported.
 
 ## Current features
 
