@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - New dependency on [InlineStrings.jl](https://github.com/JuliaStrings/InlineStrings.jl)
+
+### Changed
+  - `NamedAtom` now uses the `InlineString15` type instead of using an `NTuple{8,Char}`
+
 ### Fixed
   - Admonition boxes in documentation now render correctly
 
@@ -110,6 +116,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.10]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.10
 [0.1.9]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.9
 [0.1.8]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.8
 [0.1.7]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.7
