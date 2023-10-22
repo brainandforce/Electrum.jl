@@ -14,7 +14,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
   - `NamedAtom` now uses the `InlineString15` type instead of an `NTuple{8,Char}` for the `name`
-field.
+field. Atom labels of up to 15 Unicode characters are supported.
+  - `name(a::NamedAtom)` returns a `String`; `a.name` returns an `InlineStrings.InlineString15`, as
+does `getfield(a, :name)`.
 
 ### Fixed
   - Admonition boxes in documentation now render correctly.
