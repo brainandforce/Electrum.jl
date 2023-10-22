@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.11]: 2023-10-22
+
 ### Added
   - New dependency on [InlineStrings.jl](https://github.com/JuliaStrings/InlineStrings.jl)
 
@@ -117,6 +119,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.11]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.11
 [0.1.10]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.10
 [0.1.9]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.9
 [0.1.8]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.8
