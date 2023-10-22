@@ -57,3 +57,10 @@ Returns the number of dimensions (or other object representing the dimensionalit
 """
 dimension(::DataSpace{D}) where D = D
 dimension(::Type{<:DataSpace{D}}) where D = D
+
+"""
+    Electrum.dimension(x)
+
+Infers the number of dimensions `Electrum.DataSpace(x)` from the result of `DataSpace(x)`.
+"""
+dimension(x) = dimension(DataSpace(x))
