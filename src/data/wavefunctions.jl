@@ -300,3 +300,20 @@ function fermi(wf::PlanewaveWavefunction)
     approx = (maxocc/2 - eo_sorted[ind][2]) / (eo_sorted[ind+1][2] - eo_sorted[ind][2])
     return eo_sorted[ind][1] * approx + eo_sorted[ind+1][1] * (1 - approx)
 end
+
+"""
+    min_energy(wf::PlanewaveWavefunction) -> Float64
+
+Returns the minimum energy value (in Hartrees) in the energy entries for a `PlanewaveWavefunction`.
+"""
+min_energy(wf::PlanewaveWavefunction) = minimum(wf.energies)
+
+"""
+    max_energy(wf::PlanewaveWavefunction) -> Float64
+
+Returns the maximum energy value (in Hartrees) in the energy entries for a `PlanewaveWavefunction`.
+
+Note that this maximum energy will likely correspond to an unoccupied state, and should not be taken
+to be the Fermi energy. For this value, see `fermi(wf)`.
+"""
+max_energy(wf::PlanewaveWavefunction) = maximum(wf.energies)
