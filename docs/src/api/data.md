@@ -41,6 +41,8 @@ Electrum.PlanewaveIndex
 Electrum.nspin
 Electrum.nband(::PlanewaveWavefunction)
 Electrum.fermi(::PlanewaveWavefunction)
+Electrum.min_energy(::PlanewaveWavefunction)
+Electrum.max_energy(::PlanewaveWavefunction)
 ```
 
 ## Band structures
