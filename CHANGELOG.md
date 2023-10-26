@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - New `min_energy` and `max_energy` functions for `PlanewaveWavefunction`.
+
 ## [0.1.11]: 2023-10-22
 
 ### Added
