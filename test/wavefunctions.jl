@@ -17,4 +17,7 @@
     @test wavecar[i] == wavecar[CartesianIndex(i)]
     @test wavecar[1, 2, 3] isa ReciprocalDataGrid{3}
     @test vec(wavecar[1, 2, 3].data) == vec(wavecar.data[:, 3, 2, 1])
+    @test min_energy(wavecar) == minimum(wavecar.energies)
+    @test max_energy(wavecar) == maximum(wavecar.energies)
+    @test min_energy(wavecar) < fermi(wavecar) < max_energy(wavecar)
 end
