@@ -128,8 +128,10 @@ By default, `DataSpace(x)` will infer the appropriate trait from the lattice bas
 included in `x`. The fallback definition is:
 
     DataSpace(x) = DataSpace(typeof(basis(x))) # basis(x) falls back to x.basis
+    DataSpace(::Type{T}) where T = DataSpace(fieldtype(T, :basis))
 """
 DataSpace(x) = DataSpace(typeof(basis(x)))
+DataSpace(::Type{T}) where T = DataSpace(fieldtype(T, :basis))
 
 #---Type promotion---------------------------------------------------------------------------------#
 
