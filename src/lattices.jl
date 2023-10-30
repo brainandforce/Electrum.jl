@@ -118,11 +118,11 @@ DataSpace(::Type{<:LatticeBasis{S,D}}) where {S,D} = S{D}()
 DataSpace(b::LatticeBasis) = DataSpace(typeof(b))
 
 """
-    Electrum.DataSpace(x) -> CrystalDataTrait
+    Electrum.DataSpace(x) -> DataSpace
 
 Returns a trait that determines whether a data set associated with a crystal is defined in real
-space (`RealSpaceData{D}()`), reciprocal space (`ReciprocalSpaceData{D}()`), or by atomic positions
-(`AtomPositionData{D}`), where `D` is the number of dimensions.
+space (`ByRealSpace{D}()`), reciprocal space (`ByReciprocalSpace{D}()`), or by atomic positions
+(`ByAtom{D}`), where `D` is the number of dimensions.
 
 By default, `DataSpace(x)` will infer the appropriate trait from the lattice basis vectors
 included in `x`. The fallback definition is:
