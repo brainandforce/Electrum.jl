@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
   - New `min_energy` and `max_energy` functions for `PlanewaveWavefunction`.
+  - New internal `Electrum.dimension` function, which returns the type parameter of
+`Electrum.DataSpace{D}` (usually a number). For objects and types with a `Electrum.DataSpace` trait,
+this returns the associated dimension object.
+  - Fallback defintion for `Electrum.DataSpace(::Type{T}) where T`
+
+### Fixed
+  - `BySpace{D}` did not subtype `DataSpace{D}`.
 
 ## [0.1.11]: 2023-10-22
 
