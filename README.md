@@ -46,9 +46,9 @@ release. Julia 1.5 and earlier are not supported.
 
 * Reading of common file formats:
      + abinit potential, density, and wavefunction outputs: tested on versions 7.10.5, 8.10.3,
-     and 9.10.1 (current version as of last update)
+    and 9.10.1 (current version as of last update)
      + LAMMPS atomic position data: tested on 3 November 2022 release
-     + VASP POSCAR, WAVECAR, DOSCAR, and PROCAR: tested on version 4.6
+     + VASP POSCAR/CONTCAR, WAVECAR, DOSCAR, and PROCAR: tested on version 4.6
      + XCrysDen XSF: tested against [the official specification][xsf-spec-url]
      + XYZ files
      + CPpackage outputs: tested against the release version of [CPpackage3][cppackage-url]
@@ -56,7 +56,7 @@ release. Julia 1.5 and earlier are not supported.
      + LAMMPS atomic position data
      + XCrysDen XSF
      + XYZ files
-     + VASP POSCAR
+     + VASP POSCAR/CONTCAR
      + TOML files
 * Operations on datagrids:
      + Standard arithmetic operations: addition, subtraction, multiplication, division, negation...
@@ -85,7 +85,7 @@ This project is just starting to get off the ground, but here's what we have pla
 
 If your package uses Electrum.jl, we'd like to know about it - open an issue or a pull request with
 changes to the list of packages we know depend on Electrum.jl given below:
-  - [DFT-raMO][dftramo-url] (currently not available in the Julia package registry)
+  - [DFT-raMO][dftramo-url] (not currently available in the Julia package registry)
 
 [docs-stable-img]:  https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]:  https://brainandforce.github.io/Electrum.jl/stable
