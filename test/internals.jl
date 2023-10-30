@@ -28,4 +28,11 @@
     @test Electrum.SUnitVector{3}(1)[:] === SVector{3,Bool}(1, 0, 0)
     @test Electrum.SUnitVector{3}(1)[1:2] == [1, 0]
     @test_throws MethodError Electrum.SUnitVector{3,Char}(1)
+    @test Electrum.DataSpace(RealBasis{3}) === ByRealSpace{3}()
+    @test Electrum.DataSpace(basis(wavecar)) === ByReciprocalSpace{3}()
+    @test Electrum.DataSpace(wavecar) === ByReciprocalSpace{3}()
+    @test Electrum.DataSpace(typeof(wavecar)) === ByReciprocalSpace{3}()
+    @test Electrum.dimension(wavecar) === 3
+    @test Electrum.dimension(basis(wavecar)) === 3
+    @test Electrum.dimension(typeof(wavecar)) === 3
 end
