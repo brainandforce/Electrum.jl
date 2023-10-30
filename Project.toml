@@ -21,9 +21,11 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 ComputedFieldTypes = "1"
 FFTW = "1"
 InlineStrings = "1"
+LinearAlgebra = "1.6"
 NormalForms = "0.1"
-StaticArrays = "1"
+Printf = "1.6"
 Requires = "1"
+StaticArrays = "1"
 julia = "1.6"
 
 [extras]
