@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.12]: 2023-10-30
+
 ### Added
   - New `min_energy` and `max_energy` functions for `PlanewaveWavefunction`.
   - New internal `Electrum.dimension` function, which returns the type parameter of
@@ -131,6 +133,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.12]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.12
 [0.1.11]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.11
 [0.1.10]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.10
 [0.1.9]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.9
