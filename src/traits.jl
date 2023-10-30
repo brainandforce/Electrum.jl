@@ -29,7 +29,7 @@ end
 
 Supertype for the `ByRealSpace{D}` and `ByReciprocalSpace{D}` traits.
 """
-abstract type BySpace{D}
+abstract type BySpace{D} <: DataSpace{D}
 end
 
 """
