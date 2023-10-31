@@ -406,8 +406,8 @@ Reads a VASP OUTCAR file and returns the Fermi energy and alpha+beta value.
 function get_fermi(io::IO)
     readuntil(io, "E-fermi :")
     ln = split(readline(io))
-    fermi = parse.(Float64, ln[1])
-    alphabeta = parse.(Float64, strip(ln[5],':'))
+    fermi = parse.(Float64, ln[1]) .* EV2HARTREE
+    alphabeta = parse.(Float64, strip(ln[5],':')) .* EV2HARTREE
     return (fermi = fermi, alphabeta = alphabeta)
 end
 
