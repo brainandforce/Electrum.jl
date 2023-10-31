@@ -301,7 +301,7 @@ function readDOSCAR(io::IO)
         tdos_raw[:,n] = parse.(Float64, split(ln))
     end
     # Create DensityOfStates struct for total DOS
-    tdos = DensityOfStates(fermi, tdos_raw[1,:], tdos_raw[2,:], tdos_raw[3,:])
+    tdos = DensityOfStates(fermi*EV2HARTREE, tdos_raw[1,:].*EV2HARTREE, tdos_raw[2,:], tdos_raw[3,:])
     pdos = Vector{ProjectedDensityOfStates}(undef, nion)
     if haspdos
         # Loop through all the ions
@@ -318,7 +318,7 @@ function readDOSCAR(io::IO)
                 pdos_raw[:,n] = parse.(Float64, split(ln))
             end
             # Add to the vector
-            pdos[i] = ProjectedDensityOfStates(fermi, pdos_raw[1,:], pdos_raw[2:end,:])
+            pdos[i] = ProjectedDensityOfStates(fermi.*EV2HARTREE, pdos_raw[1,:].*EV2HARTREE, pdos_raw[2:end,:])
         end
     else
         # Don't return a vector filled with a bunch of undefined objects...
@@ -389,7 +389,7 @@ function readPROCAR(io::IO)
     
     # Returns a FatBands struct
     return FatBands{3}(
-        energies,
+        energies .* EV2HARTREE,
         projband,
         phase
     )
