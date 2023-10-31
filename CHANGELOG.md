@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+  - `readDOSCAR`, `readPROCAR`, and `get_fermi` now return energies in Hartree rather than eV.
+
 ## [0.1.12]: 2023-10-30
 
 ### Added
