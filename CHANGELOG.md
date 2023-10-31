@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.13]: 2023-10-31
+
+The developers would like to wish you a happy Halloween!
+
 ### Fixed
   - `readDOSCAR`, `readPROCAR`, and `get_fermi` now return energies in Hartree rather than eV.
 
@@ -17,7 +21,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - New internal `Electrum.dimension` function, which returns the type parameter of
 `Electrum.DataSpace{D}` (usually a number). For objects and types with a `Electrum.DataSpace` trait,
 this returns the associated dimension object.
-  - Fallback defintion for `Electrum.DataSpace(::Type{T}) where T`
+  - Provided a fallback defintion for `Electrum.DataSpace(::Type{T}) where T`.
 
 ### Fixed
   - `BySpace{D}` did not subtype `DataSpace{D}`.
@@ -136,6 +140,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.13]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.13
 [0.1.12]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.12
 [0.1.11]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.11
 [0.1.10]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.10
