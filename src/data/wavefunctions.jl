@@ -139,7 +139,7 @@ struct PlanewaveWavefunction{D,T} <: AbstractArray{T,D}
         basis::LatticeBasis,
         spins::AbstractVector{<:StaticVector{D,<:Real}},
         kpoints::AbstractVector{KPoint{D}},
-        energies::AbstractArray{<:Real,3},
+        energies::AbstractArray{<:Real,3},      # Not specific to 3D, this is from kpt/band/spin
         occupancies::AbstractArray{<:Real,3},
         grange::NTuple{D,<:AbstractUnitRange{<:Integer}},
         data::Array{T,4}
