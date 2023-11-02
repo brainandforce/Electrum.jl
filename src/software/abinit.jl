@@ -158,6 +158,9 @@ end
 Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
 Base.setindex!(h::ABINITHeader, x, name::Symbol) = setfield!(h, name, x)
 
+RealBasis(h::ABINITHeader) = RealBasis(h.rprimd)
+ReciprocalBasis(h::ABINITHeader) = ReciprocalBasis(RealBasis(h))
+
 #=
 """
     Electrum.symrel_to_sg(symrel::AbstractVector{<:AbstractMatrix{<:Integer}}) -> Int
