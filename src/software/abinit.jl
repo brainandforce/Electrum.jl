@@ -181,11 +181,8 @@ symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 
 function Crystal(h::ABINITHeader)
     atomlist = PeriodicAtomList(
-        RealBasis(h.rprimd),
-        FractionalAtomPosition.(
-            Int.(h.znucltypat[h.typat]),
-            h.xred
-        )
+        RealBasis(h),
+        FractionalAtomPosition.(Int.(h.znucltypat[h.typat]), h.xred)
     )
     # Don't include space group data since all atomic positions are generated (use defaults)
     return Crystal(atomlist)
@@ -676,7 +673,7 @@ function read_abinit_DEN(io::IO)
     # Add each dataset to the dictionary
     data = Dict{String, RealDataGrid{3,T}}()
     # Convert the basis
-    basis = RealBasis(header.rprimd)
+    basis = RealBasis(header)
     # Fill the dictionary
     data["density_total"] = RealDataGrid(rho[1], basis)
     if header.nspden == 2
@@ -717,7 +714,7 @@ function read_abinit_POT(io::IO)
     # No conversion will occur here: assume units of Hartree
     rho = read_abinit_datagrids(T, io, header.nspden, header.ngfft)
     data = Dict{String, RealDataGrid{3,T}}()
-    basis = RealBasis{3}(header.rprimd)
+    basis = RealBasis(header)
     if header.nspden == 1
         data["potential_total"] = RealDataGrid(rho[1], basis)
     elseif header.nspden == 2
@@ -754,7 +751,7 @@ function read_abinit_WFK(io::IO; quiet = false)
     # Get the header from the file
     header = read_abinit_header(io)
     # Get the reciprocal lattice
-    rlatt = convert(ReciprocalBasis, RealBasis(header.rprimd))
+    rlatt = ReciprocalBasis(header)
     # Get the minimum and maximum HKL values needed
     # Units for c (2*m_e/ħ^2) are hartree^-1 bohr^-2
     # this should affect only the size of the preallocated arrays
