@@ -763,7 +763,13 @@ function read_abinit_WFK(io::IO; quiet = false)
         "Calculated from ecut = ", header.ecut, " Hartree"
     )
     nb = maximum(header.nband)
-    wf = PlanewaveWavefunction{3,Complex{Float64}}(rlatt, header.nsppol, header.nkpt, nb, bounds...)
+    wf = PlanewaveWavefunction{3,Complex{Float64}}(
+        rlatt,
+        header.nsppol,
+        KPointMesh(header),
+        nb,
+        bounds...
+    )
     # Loop over all the spin polarizations
     for sppol in 1:header.nsppol
         # Loop over all the k-points
