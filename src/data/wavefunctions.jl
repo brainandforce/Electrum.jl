@@ -159,6 +159,37 @@ Base.has_offset_axes(::PlanewaveWavefunction) = true
     PlanewaveWavefunction{D,T}(
         basis::LatticeBasis,
         nspin::Integer,
+        nkpt::AbstractVector,
+        nband::Integer,
+        grange::AbstractUnitRange{<:Integer}...
+    )
+
+Constructs an empty `PlanewaveWavefunction` with `nspin` spins, a list of k-points `kptmesh`, 
+`nband` bands, and G-vectors in the ranges given by `grange`.
+"""
+function PlanewaveWavefunction{D,T}(
+    basis::LatticeBasis,
+    nspin::Integer,
+    kptmesh::AbstractVector{<:AbstractVector},
+    nband::Integer,
+    grange::Vararg{AbstractUnitRange{<:Integer},D}
+) where {D,T}
+    nkpt = length(kptmesh)
+    return PlanewaveWavefunction(
+        basis,
+        zeros(SVector{D,Float64}, nspin),
+        kptmesh,
+        zeros(Float64, nband, nkpt, nspin),
+        zeros(Float64, nband, nkpt, nspin),
+        grange,
+        zeros(T, prod(length.(grange)), nband, nkpt, nspin)
+    )
+end
+
+"""
+    PlanewaveWavefunction{D,T}(
+        basis::LatticeBasis,
+        nspin::Integer,
         nkpt::Integer,
         nband::Integer,
         grange::AbstractUnitRange{<:Integer}...
