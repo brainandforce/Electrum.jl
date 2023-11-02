@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - New `RealBasis`/`ReciprocalBasis` constructors for `Electrum.ABINITHeader`.
+  - New constructor for an empty `PlanewaveWavefunction` with known `KPointMesh`.
+
+### Fixed
+  - `read_abinit_WFK` now correctly stores the `KPointMesh` from the wavefunction file header.
+
 ## [0.1.13]: 2023-10-31
 
 The developers would like to wish you a happy Halloween!
