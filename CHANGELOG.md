@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.14]: 2023-11-02
+
 ### Added
   - New `RealBasis`/`ReciprocalBasis` constructors for `Electrum.ABINITHeader`.
   - New constructor for an empty `PlanewaveWavefunction` with known `KPointMesh`.
@@ -147,6 +149,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.14]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.14
 [0.1.13]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.13
 [0.1.12]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.12
 [0.1.11]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.11
