@@ -10,7 +10,7 @@ correct_shift(k::KPoint) = k
 
 #---Struct definition------------------------------------------------------------------------------#
 """
-    Electrum.DataGrid{D,B<:LatticeBasis,S<:AbstractVector{<:Real},T} <: AbstractArray{T,D}
+    Electrum.DataGrid{D,B<:LatticeBasis,S<:AbstractVector{<:Real},T} <: DenseArray{T,D}
 
 Stores a grid of values of type `T` defined in a `D`-dimensional crystal lattice basis of type `B`
 with a shift parameter of type `S`.
@@ -34,7 +34,7 @@ Note that `ReciprocalDataGrid` uses a `KPoint{D}` to represent the shift, as opp
 `SVector{D}`. This allows for the concurrent storage of a weight along with the shift, which may be
 relevant for wavefunctions which exploit the symmetry of the k-point mesh.
 """
-struct DataGrid{D,B<:LatticeBasis,S<:AbstractVector{<:Real},T} <: AbstractArray{T,D}
+struct DataGrid{D,B<:LatticeBasis,S<:AbstractVector{<:Real},T} <: DenseArray{T,D}
     data::Array{T,D}
     basis::B
     shift::S
