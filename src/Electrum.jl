@@ -127,7 +127,7 @@ export AbstractCrystal, Crystal, CrystalWithDatasets
 export data, generators, set_transform!
 # Weighed k-points and k-point meshes, energy/occupancy pairs
 include("data/kpoints.jl")
-export KPoint, KPointMesh, EnergyOccupancy
+export KPoint, KPointMesh, EnergyOccupancy, EnergiesOccupancies
 export weight, nkpt, energy, occupancy, energies, occupancies
 # Real and reciprocal space data grids
 include("data/grids.jl")
