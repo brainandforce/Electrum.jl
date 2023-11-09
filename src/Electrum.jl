@@ -128,7 +128,8 @@ export data, generators, set_transform!
 # Weighed k-points and k-point meshes, energy/occupancy pairs
 include("data/kpoints.jl")
 export KPoint, KPointMesh, EnergyOccupancy, EnergiesOccupancies
-export weight, nkpt, energy, occupancy, energies, occupancies
+export weight, nkpt, energy, occupancy, energies, occupancies, min_energy, max_energy,
+    min_occupancy, max_occupancy
 # Real and reciprocal space data grids
 include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
@@ -137,7 +138,7 @@ export shift, fft, ifft, fftfreq, voxelsize, integrate, partial_derivative, cell
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction
-export fermi, min_energy, max_energy, max_occupancy
+export fermi
 # Band structures
 include("data/bands.jl")
 export BandAtKPoint, BandStructure
