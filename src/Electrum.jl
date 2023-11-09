@@ -137,7 +137,7 @@ export shift, fft, ifft, fftfreq, voxelsize, integrate, partial_derivative, cell
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction
-export fermi, min_energy, max_energy
+export fermi, min_energy, max_energy, max_occupancy
 # Band structures
 include("data/bands.jl")
 export BandAtKPoint, BandStructure
