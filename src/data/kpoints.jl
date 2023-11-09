@@ -166,3 +166,36 @@ Returns the occupancy data associated with a collection of `EnergyOccupancy{T}` 
 this falls back to `occupancy.(a)`.
 """
 occupancies(a) = occupancy.(a)
+
+"""
+    min_energy(a) -> Real
+
+Returns the minimum energy in a collection of EnergyOccupancy data.
+"""
+min_energy(a) = minimum(energy(eo) for eo in a)
+
+"""
+    max_energy(a) -> Real
+
+Returns the maximum energy in a collection of EnergyOccupancy data.
+"""
+max_energy(a) = maximum(energy(eo) for eo in a)
+
+"""
+    min_occupancy(a) -> Real
+
+Returns the minimum occupancy in a collection of EnergyOccupancy data.
+"""
+min_occupancy(a) = minimum(occupancy(eo) for eo in a)
+
+"""
+    max_occupancy(a) -> Real
+
+Returns the maximum occupancy in a collection of EnergyOccupancy data. For a restricted calculation
+(no explicit treatment of spin), this is usually around 2, and for an unrestricted calculation
+(explicit spin treatment) this is usually around 1.
+
+In many cases, you may want to determine the maximum possible occupancy value, not the maximum in
+the dataset, in which case, you should use `round(Int, max_occupancy(a), RoundUp)`.
+"""
+max_occupancy(a) = maximum(occupancy(eo) for eo in a)
