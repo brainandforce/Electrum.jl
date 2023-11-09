@@ -137,8 +137,8 @@ end
 """
     EnergiesOccupancies{T,N} <: AbstractArray{EnergyOccupancy{T},N}
 
-Type alias for `Array{EnergyOccupancy{T},N}`. Data structures `T` which contain `EnergyOccupancy`
-values in a collection should define the constructor `EnergiesOccupancies(::T)`.
+Type alias for `Array{EnergyOccupancy{T},N}`. Data structures `S` which contain `EnergyOccupancy`
+values in a collection should define the constructor `EnergiesOccupancies(::S)`.
 """
 const EnergiesOccupancies{T,N} = Array{EnergyOccupancy{T},N}
 
@@ -157,59 +157,67 @@ Returns the occupancy value in an `EnergyOccupancy`.
 occupancy(eo::EnergyOccupancy) = eo.occupancy
 
 """
-    energies(a) -> Array{<:Real}
+    energies(x) -> Array{<:Real}
 
 Returns the energy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
-this falls back to `energy.(a)`, but it should be redefined for any type which contains such a
-collection.
+this falls back to `energy.(EnergyOccupancy(x))`.
 """
-energies(a) = energy.(a)
+energies(a::AbstractArray{<:EnergyOccupancy}) = energy.(a)
+energies(x) = energy.(EnergyOccupancy(x))
 
 """
-    occupancies(a) -> Array{<:Real}
+    occupancies(x) -> Array{<:Real}
 
 Returns the occupancy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
-this falls back to `occupancy.(a)`.
+this falls back to `occupancy.(EnergyOccupancy(x))`.
 """
-occupancies(a) = occupancy.(a)
+occupancies(a::AbstractArray{<:EnergyOccupancy}) = occupancy.(a)
+occupancies(x) = occupancy.(EnergyOccupancy(x))
 
 """
-    min_energy(a) -> Real
+    min_energy(x) -> Real
 
-Returns the minimum energy in a collection of EnergyOccupancy data.
+Returns the minimum energy in a collection of EnergyOccupancy data or an object containing such
+data.
 """
-min_energy(a) = minimum(energy(eo) for eo in a)
-
-"""
-    max_energy(a) -> Real
-
-Returns the maximum energy in a collection of EnergyOccupancy data.
-"""
-max_energy(a) = maximum(energy(eo) for eo in a)
+min_energy(a::AbstractArray{<:EnergyOccupancy}) = minimum(energy(eo) for eo in a)
+min_energy(x) = min_energy(EnergiesOccupancies(x))
 
 """
-    min_occupancy(a) -> Real
+    max_energy(x) -> Real
 
-Returns the minimum occupancy in a collection of EnergyOccupancy data.
+Returns the maximum energy in a collection of EnergyOccupancy data or an object containing such 
+data.
 """
-min_occupancy(a) = minimum(occupancy(eo) for eo in a)
+max_energy(a::AbstractArray{<:EnergyOccupancy}) = maximum(energy(eo) for eo in a)
+max_energy(x) = max_energy(EnergiesOccupancies(x))
 
 """
-    max_occupancy(a) -> Real
+    min_occupancy(x) -> Real
 
-Returns the maximum occupancy in a collection of EnergyOccupancy data. For a restricted calculation
-(no explicit treatment of spin), this is usually around 2, and for an unrestricted calculation
-(explicit spin treatment) this is usually around 1.
+Returns the minimum occupancy in a collection of EnergyOccupancy data or an object containing such
+data. For most raw calculation data, this should return zero if unoccupied states were considered.
+"""
+min_occupancy(a::AbstractArray{<:EnergyOccupancy}) = minimum(occupancy(eo) for eo in a)
+min_occupancy(x) = min_occupancy(EnergiesOccupancies(x))
+
+"""
+    max_occupancy(x) -> Real
+
+Returns the maximum occupancy in a collection of EnergyOccupancy data or an object containing such
+data. For a restricted calculation (no explicit treatment of spin), this is usually around 2, and
+for an unrestricted calculation (explicit spin treatment) this is usually around 1.
 
 In many cases, you may want to determine the maximum possible occupancy value, not the maximum in
 the dataset, in which case, you should use `round(Int, max_occupancy(a), RoundUp)`.
 """
-max_occupancy(a) = maximum(occupancy(eo) for eo in a)
+max_occupancy(a::AbstractArray{<:EnergyOccupancy}) = maximum(occupancy(eo) for eo in a)
+max_occupancy(x) = max_occupancy(EnergiesOccupancies(x))
 
 """
-    fermi(a::AbstractArray{EnergyOccupancy{T}}) -> T
+    fermi(x) -> Real
 
-Estimates the Fermi energy using the provided energy and occupancy values by interpolating the data
+Estimates the Fermi energy using the provided energy and occupancy data by interpolating the data
 between the occupancies nearest half of the maximum occupancy.
 """
 function fermi(a::AbstractArray{<:EnergyOccupancy})
@@ -224,9 +232,4 @@ function fermi(a::AbstractArray{<:EnergyOccupancy})
     return (energy(sorted[ind]) * approx) + (energy(sorted[ind+1]) * (1 - approx))
 end
 
-"""
-    fermi(x) = fermi(EnergiesOccupancies(x))
-
-Estimates the Fermi energy associated with data containing energy and occupancy values.
-"""
 fermi(x) = fermi(EnergiesOccupancies(x))
