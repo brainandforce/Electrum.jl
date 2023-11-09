@@ -332,6 +332,14 @@ function fermi(wf::PlanewaveWavefunction)
     return eo_sorted[ind][1] * approx + eo_sorted[ind+1][1] * (1 - approx)
 end
 
+energies(wf::PlanewaveWavefunction) = wf.energies
+occupancies(wf::PlanewaveWavefunction) = wf.occupancies
+EnergiesOccupancies(wf::PlanewaveWavefunction) = EnergyOccupancy.(wf.energies, wf.occupancies)
+
+function EnergiesOccupancies{T}(wf::PlanewaveWavefunction) where T
+    return EnergyOccupancy{T}.(wf.energies, wf.occpuancies)
+end
+
 """
     min_energy(wf::PlanewaveWavefunction) -> Float64
 
