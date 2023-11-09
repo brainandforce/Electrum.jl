@@ -34,15 +34,27 @@ Electrum.nkpt
 Electrum.weight
 ```
 
+## Energies and occupancies
+```@docs
+Electrum.EnergyOccupancy
+Electrum.EnergiesOccupancies
+Electrum.energy
+Electrum.occupancy
+Electrum.energies
+Electrum.occupancies
+Electrum.min_energy
+Electrum.max_energy
+Electrum.min_occupancy
+Electrum.max_occupancy
+Electrum.fermi
+```
+
 ## Wavefunctions
 ```@docs
 Electrum.PlanewaveWavefunction
 Electrum.PlanewaveIndex
 Electrum.nspin
 Electrum.nband(::PlanewaveWavefunction)
-Electrum.fermi(::PlanewaveWavefunction)
-Electrum.min_energy(::PlanewaveWavefunction)
-Electrum.max_energy(::PlanewaveWavefunction)
 ```
 
 ## Band structures
