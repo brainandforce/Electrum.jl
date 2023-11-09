@@ -205,3 +205,28 @@ In many cases, you may want to determine the maximum possible occupancy value, n
 the dataset, in which case, you should use `round(Int, max_occupancy(a), RoundUp)`.
 """
 max_occupancy(a) = maximum(occupancy(eo) for eo in a)
+
+"""
+    fermi(a::AbstractArray{EnergyOccupancy{T}}) -> T
+
+Estimates the Fermi energy using the provided energy and occupancy values by interpolating the data
+between the occupancies nearest half of the maximum occupancy.
+"""
+function fermi(a::AbstractArray{<:EnergyOccupancy})
+    # TODO: use Levenberg-Marquardt fitting
+    maxocc = round(Int, max_occupancy(a))
+    @assert maxocc in 1:2 "The calculated maximum occupancy was $maxocc."
+    sorted = sort!(vec(a), by=energy)
+    # Find the index of the last occupancy that's greater than half of maxocc
+    ind = findlast(x -> occupancy(x) > maxocc/2, sorted)
+    # Perform a linear interpolation between O[ind] and O[ind+1] 
+    approx = (occupancy(sorted[ind]) - maxocc/2) / mapreduce(occupancy, -, sorted[ind:ind+1])
+    return (energy(sorted[ind]) * approx) + (energy(sorted[ind+1]) * (1 - approx))
+end
+
+"""
+    fermi(x) = fermi(EnergiesOccupancies(x))
+
+Estimates the Fermi energy associated with data containing energy and occupancy values.
+"""
+fermi(x) = fermi(EnergiesOccupancies(x))
