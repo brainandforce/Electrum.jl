@@ -125,10 +125,10 @@ export name, atomic_number, isdummy, displacement, occupancy, distance, deduplic
 include("crystals.jl")
 export AbstractCrystal, Crystal, CrystalWithDatasets
 export data, generators, set_transform!
-# Weighed k-points and k-point meshes
+# Weighed k-points and k-point meshes, energy/occupancy pairs
 include("data/kpoints.jl")
-export KPoint, KPointMesh
-export weight, nkpt
+export KPoint, KPointMesh, EnergyOccupancy
+export weight, nkpt, energy, occupancy, energies, occupancies
 # Real and reciprocal space data grids
 include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
