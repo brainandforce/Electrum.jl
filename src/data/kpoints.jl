@@ -119,3 +119,48 @@ By default, this function returns `length(KPointMesh(x))`, so defining `KPointMe
 type `T` containing a `KPointMesh` will automatically define `nkpt(x::T)`.
 """
 nkpt(x) = length(KPointMesh(x))
+
+#---Energy/occupancy pairs-------------------------------------------------------------------------#
+"""
+    EnergyOccupancy{T<:Real}
+
+A data structure consisting of a pair of an energy value and an occupancy number, both of type `T`.
+Energies are assumed to be in Hartree. Occupancy values are not constrained, but will generally
+range from 0 to 2 for the results of restricted calculations (no separate treatment of spins), or
+from 0 to 1 for unrestricted calculations (wavefunctions with separate spins).
+"""
+struct EnergyOccupancy{T<:Real}
+    energy::T
+    occupancy::T
+end
+
+"""
+    energy(eo::EnergyOccupancy{T}) -> T
+
+Returns the energy value in an `EnergyOccupancy`.
+"""
+energy(eo::EnergyOccupancy) = eo.energy
+
+"""
+    occupancy(eo::EnergyOccupancy{T}) -> T
+
+Returns the occupancy value in an `EnergyOccupancy`.
+"""
+occupancy(eo::EnergyOccupancy) = eo.occupancy
+
+"""
+    energies(a) -> Array{<:EnergyOccupancy}
+
+Returns the energy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
+this falls back to `energy.(a)`, but it should be redefined for any type which contains such a
+collection.
+"""
+energies(a) = energy.(a)
+
+"""
+    occupancies(a) -> Array{<:EnergyOccupancy}
+
+Returns the occupancy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
+this falls back to `occupancy.(a)`.
+"""
+occupancies(a) = occupancy.(a)
