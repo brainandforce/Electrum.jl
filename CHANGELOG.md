@@ -7,6 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - New `EnergyOccupancy{T<:Real}` data structure for energy/occupancy pairs.
+  - New `EnergiesOccupancies{T,N}` type alias for `Array{EnergyOccupancy{T},N}`. A constructor for
+this type should be defined for all data structures containing energies and occupancies.
+  - New functions: `energy`, `occupancy`, `energies`, `occupancies`
+  - `EnergiesOccupancies` constructor for `PlanewaveWavefunction`
+
+### Changed
+  - `min_energy`, `max_energy`, `min_occupancy`, `max_occupancy`, and `fermi` all have generic
+definitions based on `AbstractArray{<:EnergyOccupancy}`.
+  - `PlanewaveWavefunction` uses these generic definitions via the constructor.
+
 ## [0.1.14]: 2023-11-02
 
 ### Added
