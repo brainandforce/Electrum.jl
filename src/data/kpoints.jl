@@ -134,6 +134,8 @@ struct EnergyOccupancy{T<:Real}
     occupancy::T
 end
 
+const EnergiesOccupancies{T,N} = Array{EnergyOccupancy{T},N}
+
 """
     energy(eo::EnergyOccupancy{T}) -> T
 
@@ -149,7 +151,7 @@ Returns the occupancy value in an `EnergyOccupancy`.
 occupancy(eo::EnergyOccupancy) = eo.occupancy
 
 """
-    energies(a) -> Array{<:EnergyOccupancy}
+    energies(a) -> Array{<:Real}
 
 Returns the energy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
 this falls back to `energy.(a)`, but it should be redefined for any type which contains such a
@@ -158,7 +160,7 @@ collection.
 energies(a) = energy.(a)
 
 """
-    occupancies(a) -> Array{<:EnergyOccupancy}
+    occupancies(a) -> Array{<:Real}
 
 Returns the occupancy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
 this falls back to `occupancy.(a)`.
