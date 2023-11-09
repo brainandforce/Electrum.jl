@@ -73,7 +73,7 @@ Electrum.DensityOfStates
 Electrum.ProjectedDensityOfStates
 Electrum.fermi(::AbstractDensityOfStates)
 Electrum.smear
-Electrum.energies
+Electrum.energies(::AbstractDensityOfStates)
 Electrum.nelectrons
 ```
 
