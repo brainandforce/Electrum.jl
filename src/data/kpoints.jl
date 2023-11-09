@@ -134,6 +134,12 @@ struct EnergyOccupancy{T<:Real}
     occupancy::T
 end
 
+"""
+    EnergiesOccupancies{T,N} <: AbstractArray{EnergyOccupancy{T},N}
+
+Type alias for `Array{EnergyOccupancy{T},N}`. Data structures `T` which contain `EnergyOccupancy`
+values in a collection should define the constructor `EnergiesOccupancies(::T)`.
+"""
 const EnergiesOccupancies{T,N} = Array{EnergyOccupancy{T},N}
 
 """
