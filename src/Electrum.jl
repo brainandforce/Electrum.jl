@@ -125,11 +125,15 @@ export name, atomic_number, isdummy, displacement, occupancy, distance, deduplic
 include("crystals.jl")
 export AbstractCrystal, Crystal, CrystalWithDatasets
 export data, generators, set_transform!
-# Weighed k-points and k-point meshes, energy/occupancy pairs
+# Weighed k-points and k-point meshes
 include("data/kpoints.jl")
-export KPoint, KPointMesh, EnergyOccupancy, EnergiesOccupancies
-export weight, nkpt, energy, occupancy, energies, occupancies, min_energy, max_energy,
-    min_occupancy, max_occupancy
+export KPoint, KPointMesh
+export weight, nkpt 
+# Energy/occupancy pairs
+include("data/energies.jl")
+export EnergyOccupancy, EnergiesOccupancies
+export energy, occupancy, energies, occupancies, min_energy, max_energy, min_occupancy,
+    max_occupancy, fermi
 # Real and reciprocal space data grids
 include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
@@ -138,7 +142,6 @@ export shift, fft, ifft, fftfreq, voxelsize, integrate, partial_derivative, cell
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction
-export fermi
 # Band structures
 include("data/bands.jl")
 export BandAtKPoint, BandStructure
