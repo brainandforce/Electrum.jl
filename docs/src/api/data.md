@@ -55,6 +55,8 @@ Electrum.PlanewaveWavefunction
 Electrum.PlanewaveIndex
 Electrum.nspin
 Electrum.nband(::PlanewaveWavefunction)
+Electrum.nonzero_g_indices
+Electrum.nonzero_g_vectors
 ```
 
 ## Band structures
