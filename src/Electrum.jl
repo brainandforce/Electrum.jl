@@ -142,6 +142,7 @@ export shift, fft, ifft, fftfreq, voxelsize, integrate, partial_derivative, cell
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction
+export nonzero_g_indices, nonzero_g_vectors
 # Band structures
 include("data/bands.jl")
 export BandAtKPoint, BandStructure
