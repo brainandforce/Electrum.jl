@@ -13,6 +13,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 this type should be defined for all data structures containing energies and occupancies.
   - New functions: `energy`, `occupancy`, `energies`, `occupancies`
   - `EnergiesOccupancies` constructor for `PlanewaveWavefunction`
+  - New `nonzero_g_indices` and `nonzero_g_vectors` functions for `PlanewaveWavefunction`
 
 ### Changed
   - `min_energy`, `max_energy`, `min_occupancy`, `max_occupancy`, and `fermi` all have generic
