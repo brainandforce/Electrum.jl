@@ -20,6 +20,9 @@ this type should be defined for all data structures containing energies and occu
 definitions based on `AbstractArray{<:EnergyOccupancy}`.
   - `PlanewaveWavefunction` uses these generic definitions via the constructor.
 
+### Fixed
+  - Missing export of `nspin`
+
 ## [0.1.14]: 2023-11-02
 
 ### Added
