@@ -318,3 +318,28 @@ EnergiesOccupancies(wf::PlanewaveWavefunction) = EnergyOccupancy.(wf.energies, w
 function EnergiesOccupancies{T}(wf::PlanewaveWavefunction) where T
     return EnergyOccupancy{T}.(wf.energies, wf.occpuancies)
 end
+
+#---Occupied portions of wavefunctions-------------------------------------------------------------#
+"""
+    nonzero_g_indices(wf::PlanewaveWavefunction{D}) -> Vector{CartesianIndex{D}}
+
+Returns a vector of `CartesianIndex` objects corresponding to planewave G-vector indices that are
+not all zero at each band and k-point.
+
+To return the G-vectors as objects which subtype `AbstractVector`, `nonzero_g_vectors(wf)` may be 
+used instead, which is equivalent to calling `SVector.(Tuple.(nonzero_g_indices(wf)))`.
+"""
+function nonzero_g_indices(wf::PlanewaveWavefunction)
+    return FFTBins(wf)[findall(any.(!iszero, eachslice(wf.data, dims = 1)))]
+end
+
+"""
+    nonzero_g_vectors(wf::PlanewaveWavefunction{D}) -> Vector{SVector{D,Int}}
+
+Returns a vector of `SVector{D,Int}` objects corresponding to planewave G-vectors that are not all
+zero at each band and k-point.
+
+This is equivalent to calling `SVector.(Tuple.(nonzero_g_indices(wf)))`, and can be used whenever
+`AbstractVector` inputs are needed instead of a `CartesianIndex`.
+"""
+nonzero_g_vectors(wf::PlanewaveWavefunction) = SVector.(Tuple.(nonzero_g_indices(wf)))
