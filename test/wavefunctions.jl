@@ -29,9 +29,8 @@
     @test min_occupancy(wavecar) == min_occupancy(EnergiesOccupancies(wavecar))
     @test max_occupancy(wavecar) == max_occupancy(EnergiesOccupancies(wavecar))
     @test min_energy(wavecar) <= fermi(wavecar) <= max_energy(wavecar)
-    # Nonzero G-vectors
-    for s in 1:nspin(wavecar), k in 1:nkpt(wavecar), b in 1:nband(wavecar)
-        # We should have at least as many indices as nonzero elements of each skb slice
-        @test size(nonzero_g_vectors(wavecar)) >= count(!iszero(wf.data[:,b,k,s]))
-    end
+    @test all(
+        size(nonzero_g_vectors(wavecar)) >= count(!iszero(wavecar.data[:,b,k,s]))
+        for b in 1:nband(wavecar), k in 1:nkpt(wavecar), s in 1:nspin(wavecar)
+    )
 end
