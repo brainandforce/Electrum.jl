@@ -30,7 +30,7 @@
     @test max_occupancy(wavecar) == max_occupancy(EnergiesOccupancies(wavecar))
     @test min_energy(wavecar) <= fermi(wavecar) <= max_energy(wavecar)
     @test all(
-        size(nonzero_g_vectors(wavecar)) >= count(!iszero(wavecar.data[:,b,k,s]))
+        length(nonzero_g_vectors(wavecar)) >= count(!iszero(wavecar.data[:,b,k,s]))
         for b in 1:nband(wavecar), k in 1:nkpt(wavecar), s in 1:nspin(wavecar)
     )
 end
