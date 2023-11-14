@@ -1,3 +1,35 @@
+#---General functions------------------------------------------------------------------------------#
+"""
+    nspin(x) -> Int
+
+Returns the number of spin states associated with a dataset. For 3D data, this is usually 1 or 2,
+depending on whether a restricted or unrestricted calculation was run.
+"""
+function nspin end
+
+"""
+    nband(x) -> int
+
+Returns the number of bands associated with a dataset.
+"""
+function nband end
+
+"""
+    ecut(x) -> Union{Real,Missing}
+
+Returns the energy cutoff (in Hartree) associated with a dataset. By default, this returns the value
+of `x.ecut`, unless this value is `NaN`, in which case it returns `missing`.
+"""
+ecut(x) = ifelse(isnan(x.ecut), missing, x.ecut)
+
+"""
+    fermi(x) -> Union{Real,Missing}
+
+Returns the Fermi energy (in Hartree) associated with a dataset. By default, this returns the value
+of `x.fermi`, unless this value is `NaN`, in which case it returns `missing`.
+"""
+fermi(x) = ifelse(isnan(x.fermi), missing, x.fermi)
+
 #---Band structures--------------------------------------------------------------------------------#
 """
     Electrum._assert_fermi_energy(data::AbstractArray{<:EnergyOccupancy}, fermi::Real) -> Nothing
@@ -59,12 +91,8 @@ end
 Base.size(b::ElectronicEnergyData) = reverse(size(b.data))
 Base.getindex(b::ElectronicEnergyData, i...) = getindex(b.data, reverse(i)...)
 
-"""
-    nspin(b::BandStructure) -> Int
-
-Returns the number of spins associated with `b` (usually 1 or 2).
-"""
 nspin(b::BandStructure) = size(b, 1)
+nband(b::BandStructure) = size(b, 3)
 
 """
     nkpt(b::BandStructure) -> Int
@@ -76,30 +104,6 @@ function nkpt(b::BandStructure)
     return size(b, 2)
 end
 
-"""
-    nband(b::BandStructure) -> Int
-
-Returns the number of bands associated with `b`.
-"""
-nband(b::BandStructure) = size(b, 3)
-
 KPointMesh(b::BandStructure) = b.kpoints
 
-"""
-    ecut(b::BandStructure{D,T}) -> Union{T,Missing}
-
-Returns the energy cutoff of `b`. By default, this returns `b.ecut`, unless its value is `NaN`, in
-which case it returns `missing`.
-"""
-ecut(b::BandStructure) = ifelse(isnan(b.ecut), missing, b.ecut)
-
-"""
-    fermi(b::BandStructure{D,T}) -> Union{T,Missing}
-
-Returns the Fermi energy of `b`. By default, this returns `b.fermi`, unless its value is `NaN`, in
-which case it returns `missing`.
-"""
-fermi(b::BandStructure) = ifelse(isnan(b.fermi), missing, b.fermi)
-
 #---Density of states------------------------------------------------------------------------------#
-
