@@ -34,6 +34,11 @@ Electrum.nkpt
 Electrum.weight
 ```
 
+## Spin states
+```@docs
+Electrum.SpinRange
+```
+
 ## Energies and occupancies
 ```@docs
 Electrum.EnergyOccupancy
