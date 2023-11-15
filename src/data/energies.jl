@@ -40,7 +40,7 @@ Returns the energy data associated with a collection of `EnergyOccupancy{T}` obj
 this falls back to `energy.(EnergyOccupancy(x))`.
 """
 energies(a::AbstractArray{<:EnergyOccupancy}) = energy.(a)
-energies(x) = energy.(EnergyOccupancy(x))
+energies(x) = energy.(EnergiesOccupancies(x))
 
 """
     occupancies(x) -> Array{<:Real}
@@ -49,7 +49,7 @@ Returns the occupancy data associated with a collection of `EnergyOccupancy{T}` 
 this falls back to `occupancy.(EnergyOccupancy(x))`.
 """
 occupancies(a::AbstractArray{<:EnergyOccupancy}) = occupancy.(a)
-occupancies(x) = occupancy.(EnergyOccupancy(x))
+occupancies(x) = occupancy.(EnergiesOccupancies(x))
 
 """
     min_energy(x) -> Real
