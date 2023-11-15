@@ -107,3 +107,80 @@ end
 KPointMesh(b::BandStructure) = b.kpoints
 
 #---Density of states------------------------------------------------------------------------------#
+"""
+    DensityOfStates{T<:Real} <: AbstractMatrix{StateDensity{T}}
+
+Stores density of states information in a matrix indexed by spin and energy level, as well as the
+associated energy cutoff and Fermi energy, if provided.
+
+# Indexing
+
+As with `BandStructure{T}`, the storage mode of `DensityOfStates{T}` is row-major, meaning that the
+density of states data associated with each spin is stored contiguously, but the spin index comes
+first, then energy index.
+"""
+struct DensityOfStates{T} <: AbstractMatrix{StateDensity{T}}
+    states::Matrix{StateDensity{T}}
+    ecut::T
+    fermi::T
+end
+
+Base.size(d::DensityOfStates) = reverse(size(d.states))
+Base.getindex(d::DensityOfStates, i...) = getindex(d.states, reverse(i)...)
+
+"""
+    ProjectedDensityOfStates{T<:Real} <: Vector{DensityOfStates{T}}
+
+Stores sets of `DensityOfStates{T}` information that has been projected by atom, orbital, or other
+method.
+
+Along with an array of all `StateDensity{T}` information, a set of atom labels stored as 
+`InlineStrings.InlineString15` objects (identical to how `NamedAtom` stores its atom labels).
+
+# Indexing
+
+A `ProjectedDensityOfStates{T}` object stores each set of constituent `DensityOfStates{T}` data
+contiguously, and indexing is row based, meaning that the first index argument is the atom number or
+label, the second is the spin index, and the remaining indices correspond to the energy levels.
+
+The total density of states, if present, resides at integer index 0, or string index `total`.
+
+# Total density of states
+
+By convention, the total density of states is stored at index 0. Whether this data is present is
+determined by the the result of `has_total_dos(p::ProjectedDensityOfStates)`.
+"""
+struct ProjectedDensityOfStates{T} <: Vector{DensityOfStates{T}}
+    states::Array{StateDensity{T},3}
+    labels::Vector{InlineString15}
+    ecut::T
+    fermi::T
+    hastotal::Bool
+end
+
+Base.has_offset_axes(p::ProjectedDensityOfStates) = !p.hastotal
+
+"""
+    has_total_dos(p::ProjectedDensityOfStates) -> Bool
+
+Returns `true` if the total DOS data is present, in which case the `total` or 0 index contains the
+corresponding `DensityOfStates` object.
+"""
+has_total_dos(p::ProjectedDensityOfStates) = p.hastotal
+
+Base.size(p::ProjectedDensityOfStates) = reverse(size(p.states))
+
+function Base.axes(p::ProjectedDensityOfStates)
+    ax = reverse(axes(p.states))
+    return Base.setindex(ax, ax[1] .- has_total_dos(p), 1)
+end
+
+function Base.getindex(p::ProjectedDensityOfStates, i::Int)
+    !p.hastotal && iszero(i) && error("This dataset does not contain total density of states data.")
+    return DensityOfStates(p.states[:,:,i+p.hastotal])
+end
+
+function Base.getindex(p::ProjectedDensityOfStates, s::AbstractString)
+    s == "total" && return p[:,:,0]
+    return DensityOfStates(p.states[:,:,findfirst(s, p.labels)])
+end
