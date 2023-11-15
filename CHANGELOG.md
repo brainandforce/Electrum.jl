@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - `[compat]` bounds are now provided for testing dependencies (Aqua.jl, Test.jl, TOML.jl).
+
+### Changed
+  - Increased `[compat]` minimum version of NormalForms.jl to 0.1.7
+
 ## [0.1.15] - 2023-11-13
 
 ### Added
