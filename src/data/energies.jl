@@ -1,16 +1,75 @@
 """
-    EnergyOccupancy{T<:Real}
+    AbstractEnergyData{T<:Real}
+
+Supertype for all data associated with energy values, with all quantities assumed to be in Hartree
+atomic units and of numeric type `T`.
+"""
+abstract type AbstractEnergyData{T<:Real}
+end
+
+Base.eltype(::Type{AbstractEnergyData{T}}) where T = T
+
+"""
+    energy(e::AbstractEnergyData{T}) -> T
+
+Returns the energy in hartree.
+
+Types descending from `AbstractEnergyData{T}` with a field named `energy` will automatically have
+this function defined.
+"""
+energy(e::AbstractEnergyData) = e.energy
+
+"""
+    occupancy(e::AbstractEnergyData{T}) -> T
+
+Returns occupancy data associated with energy data. Usually, occupancy values range from 0 to 2 in
+restricted calculations (no spin) or 0 to 1 in unrestricted calcuations.
+
+Types descending from `AbstractEnergyData{T}` with a field named `occupancy` will automatically have
+this function defined. For those which do not store occupancy data, the error message `"No occupancy
+data is associated with this type"` is automatically thrown.
+"""
+function occupancy(e::AbstractEnergyData)
+    hasproperty(e, :occupancy) || error("No occupancy data is associated with this type.")
+    return e.occupancy
+end
+
+"""
+    EnergyOccupancy{T} <: AbstractEnergyData{T}
 
 A data structure consisting of a pair of an energy value and an occupancy number, both of type `T`.
-Energies are assumed to be in Hartree. Occupancy values are not constrained, but will generally
-range from 0 to 2 for the results of restricted calculations (no separate treatment of spins), or
-from 0 to 1 for unrestricted calculations (wavefunctions with separate spins).
+
+These types serve as the elements of `BandStructure{T}`.
 """
-struct EnergyOccupancy{T<:Real}
+struct EnergyOccupancy{T} <: AbstractEnergyData{T}
     energy::T
     occupancy::T
 end
 
+"""
+    StateDensity{T} <: AbstractEnergyData{T}
+
+A set of energy data, occupancy values, and the density of states at that energy, all of type `T`.
+
+These types serve as the elements of `DensityOfStates{T}` and `ProjectedDensityOfStates{T}`.
+"""
+struct StateDensity{T} <: AbstractEnergyData{T}
+    energy::T
+    occupancy::T
+    density::T
+end
+
+(T::Type{<:EnergyOccupancy})(s::StateDensity) = T(energy(s), occupancy(s))
+Base.convert(T::Type{<:EnergyOccupancy}, s::StateDensity) = T(s)
+
+"""
+    density(s::StateDensity{T}) -> T
+
+Returns the density of states at the energy in the `StateDensity` object.
+"""
+density(s::StateDensity) = s.density
+
+# TODO: deprecate this type alias in favor of BandStructure{T}
 """
     EnergiesOccupancies{T,N} <: AbstractArray{EnergyOccupancy{T},N}
 
@@ -20,26 +79,12 @@ values in a collection should define the constructor `EnergiesOccupancies(::S)`.
 const EnergiesOccupancies{T,N} = Array{EnergyOccupancy{T},N}
 
 """
-    energy(eo::EnergyOccupancy{T}) -> T
-
-Returns the energy value in an `EnergyOccupancy`.
-"""
-energy(eo::EnergyOccupancy) = eo.energy
-
-"""
-    occupancy(eo::EnergyOccupancy{T}) -> T
-
-Returns the occupancy value in an `EnergyOccupancy`.
-"""
-occupancy(eo::EnergyOccupancy) = eo.occupancy
-
-"""
     energies(x) -> Array{<:Real}
 
 Returns the energy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
 this falls back to `energy.(EnergyOccupancy(x))`.
 """
-energies(a::AbstractArray{<:EnergyOccupancy}) = energy.(a)
+energies(a::AbstractArray{<:AbstractEnergyData}) = energy.(a)
 energies(x) = energy.(EnergiesOccupancies(x))
 
 """
@@ -48,8 +93,15 @@ energies(x) = energy.(EnergiesOccupancies(x))
 Returns the occupancy data associated with a collection of `EnergyOccupancy{T}` objects. By default,
 this falls back to `occupancy.(EnergyOccupancy(x))`.
 """
-occupancies(a::AbstractArray{<:EnergyOccupancy}) = occupancy.(a)
+occupancies(a::AbstractArray{<:AbstractEnergyData}) = occupancy.(a)
 occupancies(x) = occupancy.(EnergiesOccupancies(x))
+
+"""
+    densities(x) -> Array{<:Real}
+
+Returns the state density data associated with a collection of `StateDensity{T}` objects.
+"""
+densities(a::AbstractArray{<:StateDensity}) = density.(a)
 
 """
     min_energy(x) -> Real
@@ -57,7 +109,7 @@ occupancies(x) = occupancy.(EnergiesOccupancies(x))
 Returns the minimum energy in a collection of EnergyOccupancy data or an object containing such
 data.
 """
-min_energy(a::AbstractArray{<:EnergyOccupancy}) = minimum(energy(eo) for eo in a)
+min_energy(a::AbstractArray{<:AbstractEnergyData}) = minimum(energy(eo) for eo in a)
 min_energy(x) = min_energy(EnergiesOccupancies(x))
 
 """
@@ -66,7 +118,7 @@ min_energy(x) = min_energy(EnergiesOccupancies(x))
 Returns the maximum energy in a collection of EnergyOccupancy data or an object containing such 
 data.
 """
-max_energy(a::AbstractArray{<:EnergyOccupancy}) = maximum(energy(eo) for eo in a)
+max_energy(a::AbstractArray{<:AbstractEnergyData}) = maximum(energy(eo) for eo in a)
 max_energy(x) = max_energy(EnergiesOccupancies(x))
 
 """
@@ -75,7 +127,7 @@ max_energy(x) = max_energy(EnergiesOccupancies(x))
 Returns the minimum occupancy in a collection of EnergyOccupancy data or an object containing such
 data. For most raw calculation data, this should return zero if unoccupied states were considered.
 """
-min_occupancy(a::AbstractArray{<:EnergyOccupancy}) = minimum(occupancy(eo) for eo in a)
+min_occupancy(a::AbstractArray{<:AbstractEnergyData}) = minimum(occupancy(eo) for eo in a)
 min_occupancy(x) = min_occupancy(EnergiesOccupancies(x))
 
 """
@@ -88,7 +140,7 @@ for an unrestricted calculation (explicit spin treatment) this is usually around
 In many cases, you may want to determine the maximum possible occupancy value, not the maximum in
 the dataset, in which case, you should use `round(Int, max_occupancy(a), RoundUp)`.
 """
-max_occupancy(a::AbstractArray{<:EnergyOccupancy}) = maximum(occupancy(eo) for eo in a)
+max_occupancy(a::AbstractArray{<:AbstractEnergyData}) = maximum(occupancy(eo) for eo in a)
 max_occupancy(x) = max_occupancy(EnergiesOccupancies(x))
 
 """
@@ -97,7 +149,7 @@ max_occupancy(x) = max_occupancy(EnergiesOccupancies(x))
 Estimates the Fermi energy using the provided energy and occupancy data by interpolating the data
 between the occupancies nearest half of the maximum occupancy.
 """
-function fermi(a::AbstractArray{<:EnergyOccupancy})
+function fermi(a::AbstractArray{<:AbstractEnergyData})
     # TODO: use Levenberg-Marquardt fitting
     maxocc = round(Int, max_occupancy(a))
     @assert maxocc in 1:2 "The calculated maximum occupancy was $maxocc."
