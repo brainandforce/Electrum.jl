@@ -131,9 +131,9 @@ export KPoint, KPointMesh
 export weight, nkpt 
 # Energy/occupancy pairs
 include("data/energies.jl")
-export EnergyOccupancy, EnergiesOccupancies
-export energy, occupancy, energies, occupancies, min_energy, max_energy, min_occupancy,
-    max_occupancy, fermi
+export AbstractEnergyData, EnergyOccupancy, StateDensity, EnergiesOccupancies
+export energy, occupancy, density, energies, occupancies, densities, min_energy, max_energy,
+    min_occupancy, max_occupancy, fermi
 # Spin data: multiplicity and direction
 include("data/spin.jl")
 export Multiplicity, SpinBivector
