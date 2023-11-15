@@ -43,7 +43,7 @@ In order to avoid the presence of an extraneous type parameter, the backing `vec
 `SMatrix{D,D,T}`. The `vectors` property is private, and will not be revealed during REPL tab
 completion.
 """
-struct LatticeBasis{S<:Union{ByRealSpace,ByReciprocalSpace},D,T<:Real} <: StaticMatrix{D,D,T}
+struct LatticeBasis{S<:BySpace,D,T<:Real} <: StaticMatrix{D,D,T}
     vectors::SVector{D,SVector{D,T}}
     function LatticeBasis{S,D,T}(M::StaticMatrix) where {S,D,T}
         lattice_sanity_check(M)
