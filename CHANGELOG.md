@@ -12,6 +12,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
   - Increased `[compat]` minimum version of NormalForms.jl to 0.1.7
+  - `Electrum.LatticeBasis{S,D,T}` now has the type bound `S<:Electrum.BySpace` instead of the less
+concise `Union{Electrum.ByRealSpace,Electrum.ByReciprocalSpace}`.
+
+### Fixed
+  - Generic methods for `energies` and `occupancies` call the `EnergiesOccupancies` constructor 
+instead of `EnergyOccupancy`.
 
 ## [0.1.15] - 2023-11-13
 
