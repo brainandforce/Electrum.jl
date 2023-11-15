@@ -17,8 +17,7 @@ if VERSION < v"1.10"
 end
 
 Aqua.test_all(Electrum;
-    ambiguities = (exclude = excluded_methods,),
-    project_toml_formatting = false
+    ambiguities = (exclude = excluded_methods,)
 )
 
 xsf = readXSF3D("files/test.xsf")
