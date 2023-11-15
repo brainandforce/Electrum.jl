@@ -46,6 +46,8 @@ struct EnergyOccupancy{T} <: AbstractEnergyData{T}
     occupancy::T
 end
 
+EnergyOccupancy(energy, occupancy, density) = EnergyOccupancy(promote(energy, occupancy, density))
+
 """
     StateDensity{T} <: AbstractEnergyData{T}
 
@@ -58,6 +60,8 @@ struct StateDensity{T} <: AbstractEnergyData{T}
     occupancy::T
     density::T
 end
+
+StateDensity(energy, occupancy, density) = StateDensity(promote(energy, occupancy, density))
 
 (T::Type{<:EnergyOccupancy})(s::StateDensity) = T(energy(s), occupancy(s))
 Base.convert(T::Type{<:EnergyOccupancy}, s::StateDensity) = T(s)
