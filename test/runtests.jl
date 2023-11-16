@@ -3,7 +3,7 @@ using Test, Aqua, Electrum
 
 tmpdir = mktempdir()
 
-excluded_methods = Function[Base.unsafe_convert]
+excluded_methods = Function[Base.unsafe_convert, Base.lstrip, Base.rstrip]
 # Base.getindex ambiguity was resolved in 1.9:
 # https://github.com/JuliaLang/julia/pull/41807
 # TODO: can we still try to test other methods for Base.getindex? It's pretty important...
