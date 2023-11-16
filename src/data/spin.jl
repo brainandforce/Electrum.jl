@@ -29,7 +29,6 @@ Base.last(::Multiplicity{M}) where M = (M-1)//2
 Base.getindex(s::Multiplicity{M}, i::Integer) where M = first(s) + (i - 1)
 
 Base.UnitRange(::Multiplicity) = first(s):last(s)
-Base.convert(T::Type{<:AbstractVector}, s::Multiplicity) = convert(T, UnitRange(s))
 Base.show(io::IO, s::Multiplicity) = print(io, typeof(s), "()")
 
 function Base.show(io::IO, ::MIME"text/plain", s::Multiplicity)
