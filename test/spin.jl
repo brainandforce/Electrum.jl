@@ -15,6 +15,6 @@
     @test Multiplicity(1.0) === Multiplicity{1}()
     @test_throws AssertionError Multiplicity{0}()
     @test_throws AssertionError Multiplicity(0)
-    @test_throws AssertionError Multiplicity{1/2}()
-    @test_throws AssertionError Multiplicity(1/2)
+    @test_throws InexactError Multiplicity{1/2}()
+    @test_throws InexactError Multiplicity(1/2)
 end
