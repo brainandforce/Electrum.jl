@@ -21,6 +21,12 @@ struct Multiplicity{M} <: AbstractUnitRange{Rational{Int}}
     Multiplicity{M}() where M = (@assert M > 0 "M must be a positive integer."; new{Int(M)}())
 end
 
+"""
+    Multiplicity(M)
+
+Constructs `Multiplicity{M}()`. This function is not type-stable unless the value of `M` is known at
+compile time, similar to `Val(M)`.
+"""
 Multiplicity(M) = Multiplicity{Int(M)}()
 
 Base.size(::Multiplicity{M}) where M = M
