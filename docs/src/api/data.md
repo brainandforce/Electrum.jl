@@ -36,7 +36,7 @@ Electrum.weight
 
 ## Spin states
 ```@docs
-Electrum.SpinRange
+Electrum.Multiplicity
 ```
 
 ## Energies and occupancies
