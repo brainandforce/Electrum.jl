@@ -28,7 +28,7 @@ Base.first(::Multiplicity{M}) where M = -(M-1)//2
 Base.last(::Multiplicity{M}) where M = (M-1)//2
 Base.getindex(s::Multiplicity{M}, i::Integer) where M = first(s) + (i - 1)
 
-Base.UnitRange(::Multiplicity) = first(s):last(s)
+Base.UnitRange(s::Multiplicity) = first(s):last(s)
 Base.show(io::IO, s::Multiplicity) = print(io, typeof(s), "()")
 
 function Base.show(io::IO, ::MIME"text/plain", s::Multiplicity)
