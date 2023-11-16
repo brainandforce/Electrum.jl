@@ -131,7 +131,9 @@ Returns the lattice basis associated with a data structure. By default, this ret
 `getproperty(x, :basis)`. This may be implemented for custom data types by either adding a method to
 `basis()` or by defining custom `getproperty()` and `propertynames()` methods.
 
-Although basis(x) should always return an `Electrum.LatticeBasis`, the exact return type may vary.
+Although basis(x) should always return an `Electrum.LatticeBasis`, the exact return type may vary:
+not only can the numeric type vary, some data strucutres may store a real space lattice, and others
+may store a reciprocal space lattice, allowing for properties of the data contained to be inferred.
 For predictable results, use `convert(T, basis(x))` where `T` is the desired type.
 """
 basis(x) = x.basis::LatticeBasis
