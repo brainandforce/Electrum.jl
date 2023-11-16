@@ -39,8 +39,3 @@ end
 
 Base.UnitRange(s::Multiplicity) = first(s):last(s)
 Base.show(io::IO, s::Multiplicity) = print(io, typeof(s), "()")
-
-function Base.show(io::IO, ::MIME"text/plain", s::Multiplicity)
-    show(io, s)
-    print(io, " (equivalent to ", UnitRange(s), ")")
-end
