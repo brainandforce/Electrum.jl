@@ -29,7 +29,7 @@ compile time, similar to `Val(M)`.
 """
 Multiplicity(M) = Multiplicity{Int(M)}()
 
-Base.size(::Multiplicity{M}) where M = M
+Base.size(::Multiplicity{M}) where M = (M,)
 Base.first(::Multiplicity{M}) where M = -(M-1)//2
 Base.last(::Multiplicity{M}) where M = (M-1)//2
 
