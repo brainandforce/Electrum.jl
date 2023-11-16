@@ -26,7 +26,10 @@ Multiplicity(M) = Multiplicity{Int(M)}()
 Base.size(::Multiplicity{M}) where M = M
 Base.first(::Multiplicity{M}) where M = -(M-1)//2
 Base.last(::Multiplicity{M}) where M = (M-1)//2
-Base.getindex(s::Multiplicity{M}, i::Integer) where M = first(s) + (i - 1)
+
+@inbounds function Base.getindex(s::Multiplicity, i::Integer)
+    return i in eachindex(s) ? first(s) + (i - 1) : throw(BoundsError(s, i))
+end
 
 Base.UnitRange(s::Multiplicity) = first(s):last(s)
 Base.show(io::IO, s::Multiplicity) = print(io, typeof(s), "()")
