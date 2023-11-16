@@ -16,13 +16,12 @@ end
 _nonsquare_matrix_error() = throw(DimensionMismatch("Input must be a square matrix."))
 
 """
-    Electrum.LatticeBasis{S<:Union{ByRealSpace,ByReciprocalSpace},D,T} <: StaticMatrix{D,D,T}
+    Electrum.LatticeBasis{S<:Electrum.BySpace,D,T} <: StaticMatrix{D,D,T}
 
-Represents the basis vectors of a `D`-dimensional lattice in real space (when `S === ByRealSpace`)
-or in reciprocal space (when `S === ByReciprocalSpace`). The units of `LatticeBasis{ByRealSpace}`
-are bohr, and those of `LatticeBasis{ByReciprocalSpace}` are rad*bohr⁻¹. File import and export
-methods in Electrum will automatically perform unit conversion if the units used by the software
-package are different.
+Represents the basis vectors of a `D`-dimensional lattice in real or reciprocal space, depending on
+`S`. The units of `LatticeBasis{Electrum.ByRealSpace}` are bohr, and those of
+`LatticeBasis{Electrum.ByReciprocalSpace}` are rad*bohr⁻¹, corresponding to the convention that the
+dot product of a real space basis vector with a reciprocal space basis vector is 2π.
 
 # Type aliases
 
@@ -34,6 +33,31 @@ For convenience, the type aliases `RealBasis` and `ReciprocalBasis` are defined 
 
 These type aliases are exported, and in most circumstances code should refer to these types for the
 sake of readability, not `Electrum.LatticeBasis`, which is unexported.
+
+# Mathematical operations
+
+`Electrum.LatticeBasis` behaves as an ordinary matrix and should support all mathematical operations
+commonly used, including left division with vectors (`\\`), commonly used in the conversion between
+Cartesian and fractional (reduced) coordinates.
+
+In most cases, matrix multiplications will convert the result to an ordinary `StaticArray` or
+`Array`. However, right multiplications of an `Electrum.LatticeBasis{S,D}` with an 
+`SMatrix{D,D,<:Integer}` are treated as the application of a supercell building operation, and 
+return a new `Electrum.LatticeBasis{S,D}` instead.
+
+# Conversion 
+
+A `RealBasis` may be converted to a `ReciprocalBasis`, or vice versa, using either
+`convert(T::Electrum.LatticeBasis, b)` or the constructor `(T::Type{<:Electrum.LatticeBasis})(b)`.
+This automatically multiplies or divides by 2π as needed.
+
+The inverse operation `inv` also performs this conversion. This convention may change in a future
+update, as the current definition may break other assumptions about matrix inversion.
+
+# Interoperability
+
+File import and export methods in Electrum and any other software which returns these types must
+perform unit conversion if the units used by the other software package are different.
 
 # Internals
 
