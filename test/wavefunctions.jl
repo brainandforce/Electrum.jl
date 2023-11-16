@@ -21,7 +21,7 @@
     @test wavecar.energies == energies(EnergiesOccupancies(wavecar))
     @test wavecar.occupancies == occupancies(EnergiesOccupancies(wavecar))
     @test wavecar.energies == energies(wavecar)
-    @test wavecar.ocupancies == occupancies(wavecar)
+    @test wavecar.occupancies == occupancies(wavecar)
     @test min_energy(wavecar) == minimum(wavecar.energies)
     @test max_energy(wavecar) == maximum(wavecar.energies)
     @test min_energy(wavecar) == min_energy(EnergiesOccupancies(wavecar))
