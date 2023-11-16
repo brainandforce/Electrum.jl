@@ -192,7 +192,7 @@ function Base.show(io::IO, ::MIME"text/plain", l::AbstractAtomList; kwargs...)
     end
 end
 
-#---Types from data/reciprocalspace.jl-------------------------------------------------------------#
+#---Types from data/kpoints.jl========-------------------------------------------------------------#
 
 Base.summary(io::IO, k::KPoint) = print(io, typeof(k), " with weight ", k.weight)
 
@@ -204,6 +204,13 @@ end
 
 function Base.summary(io::IO, k::KPointMesh)
     print(io, length(k), "-element ", typeof(k), " (total weight ", sum(weight.(k)), ')')
+end
+
+#---Types from data/spin.jl------------------------------------------------------------------------#
+
+function Base.show(io::IO, ::MIME"text/plain", s::Multiplicity)
+    show(io, s)
+    print(io, " (equivalent to ", UnitRange(s), ")")
 end
 
 #---Types from data/grids.jl-----------------------------------------------------------------------#
