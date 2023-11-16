@@ -9,7 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
   - `[compat]` bounds are now provided for testing dependencies (Aqua.jl, Test.jl, TOML.jl).
-  - New `SpinRange{M}` type for valid spin values associated with multiplicity `M`.
+  - New `Multiplicity{M}` type for valid spin values associated with multiplicity `M`.
 
 ### Changed
   - Increased `[compat]` minimum version of NormalForms.jl to 0.1.7
