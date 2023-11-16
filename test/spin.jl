@@ -8,6 +8,13 @@
         for n in 1:100
     )
     @test all(Multiplicity(n)[2] == UnitRange(Multiplicity(n))[2] for n in 2:100)
+    @test_throws BoundsError Multiplicity{3}()[0]
+    @test_throws BoundsError Multiplicity{3}()[4]
+    # Constructor robustness
+    @test Multiplicity(1) === Multiplicity{1}()
+    @test Multiplicity(1.0) === Multiplicity{1}()
     @test_throws AssertionError Multiplicity{0}()
     @test_throws AssertionError Multiplicity(0)
+    @test_throws AssertionError Multiplicity{1/2}()
+    @test_throws AssertionError Multiplicity(1/2)
 end
