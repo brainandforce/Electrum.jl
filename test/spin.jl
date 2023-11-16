@@ -1,4 +1,5 @@
 @testset "Spin" begin
+    @test all(size(Multiplicity(n)) == n for n in 1:100)
     @test all(last(Multiplicity(n)) == (n - 1)//2 for n in 1:100)
     @test all(Multiplicity(n)[2] == -(n - 1)//2 + 1 for n in 2:100)
     @test all(iszero(last(Multiplicity(n)) + first(Multiplicity(n))) for n in 1:100)
@@ -17,4 +18,6 @@
     @test_throws AssertionError Multiplicity(0)
     @test_throws InexactError Multiplicity{1/2}()
     @test_throws InexactError Multiplicity(1/2)
+    # Text representation
+    @test eval(Meta.parse(repr(Multiplicity(3)))) === Multiplicity(3)
 end
