@@ -22,6 +22,7 @@ Aqua = "0.8"
 ComputedFieldTypes = "1"
 FFTW = "1"
 InlineStrings = "1"
+JLD2 = "0.4"
 LinearAlgebra = "1.6"
 NormalForms = "0.1.7"
 Printf = "1.6"
@@ -33,6 +34,7 @@ julia = "1.6"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
