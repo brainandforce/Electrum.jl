@@ -182,6 +182,9 @@ function __init__()
     @require TOML="fa267f1f-6049-4f14-aa54-33bafae1ed76" begin
         include("software/toml.jl")
     end
+    @require JLD2="033835bb-8acc-5ee8-8aae-3f567f8a3819" begin
+        include("software/JLD2.jl")
+    end
 end
 
 end # end of module
