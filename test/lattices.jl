@@ -23,6 +23,7 @@
         Electrum._gen_vertices((1:69, reshape(1:420, 3, 35, 4)))
     )
     @test collect(eachvertex([6 0; 0 9])) == vec(collect(eachvertex(SMatrix{2,2}(6, 0, 0, 9))))
+    @test all(eachvertex(0:1, 0:1) .== SVector{2,Int}.([(0, 0) (0, 1); (1,0) (1,1)]))
     result = SVector{3,Float64}[
         [0, 0, 0], [1, 0, 0], [0, 2, 0], [1, 2, 0],
         [0, 0, 3], [1, 0, 3], [0, 2, 3], [1, 2, 3]
