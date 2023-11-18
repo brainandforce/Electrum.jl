@@ -113,8 +113,8 @@ include("traits.jl")
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export RealBasis, ReciprocalBasis, AbstractBasis
-export basis, lengths, volume, angles_cos, angles_rad, angles_deg, gram, isdiag, qr, triangularize, 
-    maxHKLindex
+export eachvertex, basis, lengths, volume, angles_cos, angles_rad, angles_deg, gram, isdiag, qr,
+    triangularize, maxHKLindex
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
