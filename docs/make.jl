@@ -17,6 +17,7 @@ makedocs(
         "Home" => "index.md",
         "Types" => "types.md",
         "Lattices" => "lattices.md",
+        "Atoms and crystals" => "atoms.md",
         "File formats" => "filetypes.md",
         "API" => Any[
             "Lattices" => "api/lattices.md"
