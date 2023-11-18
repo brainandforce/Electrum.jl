@@ -1,35 +1,9 @@
-# Types
+# Data grids
 
-Electrum.jl provides a rich type system for handling a variety of data that may arise in 
-computational work with periodic structures. Many of these types are generic enough to handle cases
-of crystals in arbitrary dimension, which may be useful for theoretical work or for handling
-complicated real-world cases, such as incommensurately modulated crystals.
-
-# Datasets
-
-Electrum.jl supports a good number of different data types, including:
-  * Real space datagrids
-  * Reciprocal space data by HKL index
-  * Band structures and densities of states
-  * k-point lists and grids
-  * Data by atomic position
-  * Spherical harmonic coefficients
-
-## Data traits
-
-Electrum.jl uses a trait system to classify its types that are used to store non-structural crystal
-data. These are subtypes of `Electrum.CrystalDataTrait` and include `Electrum.ByRealSpace{D}`,
-`Electrum.ByReciprocalSpace{D}`, and `Electrum.ByAtom`, which correspond to data in D-dimensional
-real space, data in D-dimensional reciprocal space, and data associated with individual atoms,
-respectively.
-
-To recover the data space trait, `DataSpace()` may be called with either the object or object type.
-For custom types, this may be overloaded.
-
-The `RealBasis{D}` and `ReciprocalBasis{D}` types return `ByRealSpace{D}()` and
-`ByReciprocalSpace{D}()`, respectively. By default, types that have a defined `basis()` function
-(or, by extension, a field `basis::Electrum.LatticeBasis`) will derive the trait from the return
-type of `basis()`.
+The output of many quantum chemistry packages are datasets defined on a spatial grid in real or
+reciprocal space. Theoretical tools may want to perform mathematical operations on this data, but
+operating on bare arrays containing the dta requires tracking properties associated with each array,
+such as the basis vectors of the lattice
 
 ## `DataGrid`, `RealDataGrid`, and `ReciprocalDataGrid`
 
@@ -58,7 +32,7 @@ when indexing an `DataGrid`.
 The basis of an `DataGrid` can be recovered with `basis(::DataGrid)`, which will be of the type
 specified by the type parameter. 
 
-### Broadcasting and mathematical operations
+## Broadcasting and mathematical operations
 
 Broadcasting is defined for `DataGrid` with a custom `Base.Broadcast.BroadcastStyle` subtype:
 ```julia
@@ -83,6 +57,12 @@ ensure that the lattice basis vectors and shifts match.
 Similarly, the `*`, `/`, and `\` operators are defined for pairs of `DataGrid` and `Number`
 instances, and again, are faster than their broadcasted equivalents.
 
+### Fourier transforms
+
 The Fourier transform and its inverse are available through an overload of `FFTW.fft()` and
 `FFTW.ifft()`. The transforms are normalized with respect to the basis vectors of the space, so
 for `g::DataGrid`, `ifft(fft(g)) ≈ g` (to within floating point error).
+
+`fft` and `ifft` defined for `DataGrid` generally, but it is critical to note that in the vast
+majority of cases, you will want to call `fft` on `RealDataGrid` instances and `ifft` on
+`ReciprocalDataGrid` instances.
