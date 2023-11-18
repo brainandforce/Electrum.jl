@@ -9,6 +9,7 @@ Electrum.AbstractBasis
 
 ## Methods
 ```@docs
+Electrum.eachvertex
 Electrum.basis
 Electrum.lengths(::Electrum.LatticeBasis)
 Electrum.volume(::Electrum.LatticeBasis)

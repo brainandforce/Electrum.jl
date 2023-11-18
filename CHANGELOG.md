@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - `eachvertex` iterator for the vertices of the parallelepiped representation of a unit cell.
+
 ## [0.1.16]: 2023-11-16
 
 ### Added
