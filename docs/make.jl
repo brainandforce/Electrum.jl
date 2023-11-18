@@ -16,6 +16,7 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Types" => "types.md",
+        "Lattices" => "lattices.md",
         "File formats" => "filetypes.md",
         "API" => Any[
             "Lattices" => "api/lattices.md"

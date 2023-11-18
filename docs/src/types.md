@@ -5,42 +5,6 @@ computational work with periodic structures. Many of these types are generic eno
 of crystals in arbitrary dimension, which may be useful for theoretical work or for handling
 complicated real-world cases, such as incommensurately modulated crystals.
 
-# Lattices and basis vectors
-
-## Basis vectors
-
-The `RealBasis` and `ReciprocalBasis`can be used to represent the basis vectors of a crystal. The
-types use the following conventions:
-  * The units are assumed to be bohr for lengths or rad bohr⁻¹ for inverse.
-  * Conversion between the two involve a factor of 2π (multiplication for the `RealBasis` >  
-`ReciprocalBasis` conversion, and vice versa).
-
-They are implemented by using the `Electrum.LatticeBasis{S,D,T}` type, where `S` is a the tag type
-`ByRealSpace` or `ByReciprocalSpace`, `D` is the dimension, and `T` is the element type.
-
-### Why not use `SMatrix` for basis vectors?
-
-While the `SMatrix` type seems to make sense for a collection of basis vectors, it poses one major 
-problem: the calculation of type parameters.
-
-The `SMatrix{D1,D2,T,L}` type requires four type parameters - `D1` and `D2` are each of the matrix
-dimensions, and `T` is the element type of the matrix. However, one last parameter is needed: `L`, 
-the length of the `NTuple` that backs the `SMatrix`.
-
-Julia currently does not allow for the calculation of type parameters from other type parameters,
-which poses a serious problem in the declaration of structs. Technically, a type like
-`SMatrix{3,3,Float64}` is an abstract type, as the `L` parameter is undeclared, even though the 
-value of `L` can be inferred from `D1` and `D2`. By declaring a struct to have this type, there
-seems to be a significant performance drop.
-
-The `LatticeBasis` types wrap an `SVector{D,SVector{D,Float64}}`. This only requires a single 
-type parameter `D`, and allows for fully concrete struct declarations. Various methods are defined
-on this type to make it work like a normal matrix, such as matrix multiplication.
-
-The other issue is that there are contexts where real space basis vectors are easier to use and
-others where reciprocal basis vectors are easier to use. It's better to treat them as two
-interconvertible types for that reason.
-
 # Atoms
 
 ## `NamedAtom`
