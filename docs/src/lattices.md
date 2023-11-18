@@ -98,7 +98,7 @@ factors are bare ``SMatrix`` instances. While this is fine for the ``Q`` matrix,
 represents a basis, and we expect an `AbstractBasis` return value. The `triangularize` function
 returns the ``R`` factor of a QR decomposition as an `AbstractBasis`, discarding the ``Q`` factor.
 
-```@docs canonical=false
+```@docs; canonical=false
 Electrum.triangularize
 ```
 !!! note

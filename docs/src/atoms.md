@@ -80,7 +80,7 @@ diagonal factors to extend the lattice the correct number of times along specifi
 moving them into the cell with the help of the unimodular factors associated with the Smith normal
 form.
 
-```@docs canonical=false
+```@docs; canonical=false
 Electrum.supercell
 ```
 ## Crystals
