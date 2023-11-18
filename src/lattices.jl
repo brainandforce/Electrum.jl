@@ -147,7 +147,7 @@ recommend working with static matrix types like the provided `RealBasis` and `Re
 eachvertex(m::StaticMatrix{<:Any,D,T}) where {D,T} = eachvertex(m, fill(T.(0:1), SVector{D})...)
 # Needs to be done differently because the design above leads to type instability
 function eachvertex(m::AbstractMatrix)
-    return (m * [!iszero((i-1) & 2^(n-1)) for n in axes(b, 2)] for i in 1:2^size(b, 2))
+    return (m * [!iszero((i-1) & 2^(n-1)) for n in axes(m, 2)] for i in 1:2^size(m, 2))
 end
 
 #---Conversion semantics---------------------------------------------------------------------------#
