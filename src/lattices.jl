@@ -113,6 +113,43 @@ Base.getindex(b::LatticeBasis, i::Int...) = getindex(b.matrix, i...)
 # Iterate through the column vectors, not through individual elements
 # Base.iterate(b::LatticeBasis{S,D}, i = 1) where {S,D} = i in 1:D ? (b[i], i+1) : nothing
 
+"""
+    Electrum._gen_vertices(t::Tuple{Vararg{AbstractArray}})
+
+Returns a product iterator needed for implementations of `Electrum.eachvertex`.
+"""
+_gen_vertices(t::Tuple{Vararg{AbstractArray}}) = Iterators.product((vec(x) for x in t)...)
+
+"""
+    eachvertex([m::AbstractMatrix], r::AbstractArray...)
+
+Returns an iterator of `SVector{size(r),eltype(r)}` objects representing each vertex whose reduced
+coordinates lie in ranges `r`. If no matrix is given, the iterator generates all vectors whose
+coordinates are in corresponding arrays `r`. A supplied matrix will be left-multiplied with these
+vectors to generate Cartesian representation of those vectors.
+"""
+eachvertex(a::AbstractArray...) = (SVector(t) for t in _gen_vertices(a))
+eachvertex(m::AbstractMatrix, a::AbstractArray...) = (m * SVector(t) for t in _gen_vertices(a))
+
+"""
+    eachvertex(b::StaticMatrix)
+    eachvertex(b::AbstractMatrix)
+
+Returns an iterator of `AbstractVector` objects corresponding to each vertex of the parallelepiped
+spanned by the column vectors of `b`.
+
+In the case of `StaticMatrix` subtypes, this function returns `SVector` objects, allowing for
+efficient collection into an `Array{SVector{D},D}`, preserving the arrangement of the vertices in
+space. However, for other `AbstractMatrix` objects whose sizes are not known at compile time, the
+iterator can only be collected into a `Vector{<:Vector}` to preserve type stability. We generally
+recommend working with static matrix types like the provided `RealBasis` and `ReciprocalBasis`.
+"""
+eachvertex(m::StaticMatrix{<:Any,D,T}) where {D,T} = eachvertex(m, fill(T.(0:1), SVector{D})...)
+# Needs to be done differently because the design above leads to type instability
+function eachvertex(m::AbstractMatrix)
+    return (m * [!iszero((i-1) & 2^(n-1)) for n in axes(b, 2)] for i in 1:2^size(b, 2))
+end
+
 #---Conversion semantics---------------------------------------------------------------------------#
 
 # Convert between real and reciprocal space representations
