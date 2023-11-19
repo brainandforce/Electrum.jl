@@ -10,6 +10,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
   - `eachvertex` iterator for the vertices of the parallelepiped representation of a unit cell.
 
+### Changed
+  - The Types section of the documentation has been split up into separate sections for lattice
+basis vectors, atoms and crystal representations, and data grids.
+
 ## [0.1.16]: 2023-11-16
 
 ### Added
