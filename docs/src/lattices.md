@@ -1,7 +1,7 @@
 # Lattices
 
 The starting point for solid state structures is a periodic lattice. Electrum provides convenient
-types for working with lattices of arbitrary dimension
+types and functions for working with lattices of arbitrary dimension, not just three dimensions. 
 
 ## Real and reciprocal space traits
 
@@ -86,7 +86,7 @@ solid-state chemistry, including addition, subtraction, multiplication, left div
 division. 
 
 Importantly, it supports the QR decomposition provided by `LinearAlgebra.qr`. This decomposition is
-useful in that it generates a `Q`` factor, which is an orthogonal matrix (representing a Euclidean
+useful in that it generates a ``Q`` factor, which is an orthogonal matrix (representing a Euclidean
 point isometry - compositions of rotations and reflections) and an ``R`` factor, which is an upper
 triangular matrix. This operation is useful in converting lattices to a standard orientation: in the
 case of a QR decomposition, the $R$ factor places the first basis vector of the lattice along the
