@@ -47,9 +47,9 @@ Base.show(io::IO, s::Multiplicity) = print(io, typeof(s), "()")
 Returns `true` if a matrix is skew-symmetric (equivalently, antisymmetric).
 """
 function _is_skew_symmetric(m::AbstractMatrix)
-    size(m,1) == size(m,2) || return false
-    for a in axes(m,1)
-        for b in a:lastindex(m)
+    size(m, 1) == size(m, 2) || return false
+    for a in axes(m, 1)
+        for b in (a+1):lastindex(m, 1)
             m[a,b] == -m[b,a] || return false
         end
     end
