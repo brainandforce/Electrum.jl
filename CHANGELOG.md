@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
   - `eachvertex` iterator for the vertices of the parallelepiped representation of a unit cell.
+  - `SpinBivector` type representing spin direction in a dimension-agnostic way.
 
 ### Changed
   - The Types section of the documentation has been split up into separate sections for lattice

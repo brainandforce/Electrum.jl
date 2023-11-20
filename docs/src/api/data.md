@@ -37,6 +37,7 @@ Electrum.weight
 ## Spin states
 ```@docs
 Electrum.Multiplicity
+Electrum.SpinBivector
 ```
 
 ## Energies and occupancies
