@@ -93,8 +93,8 @@ Base.propertynames(::SpinBivector; private = false) = private ? (:data, :matrix)
 
 Base.getindex(b::SpinBivector, i...) = getindex(b.matrix)
 # Really only for resolving method ambiguities
-# Base.getindex(b::SpinBivector, i::Int) = getindex(b.matrix, i)
-# Base.getindex(b::SpinBivector, i::Int...) = getindex(b.matrix, i...)
+Base.getindex(b::SpinBivector, i::Int) = getindex(b.matrix, i)
+Base.getindex(b::SpinBivector, i::Int...) = getindex(b.matrix, i...)
 
 DataSpace(::Type{<:SpinBivector{D}}) where D = ByRealSpace{D}()
 # Required for StaticArray subtypes
