@@ -96,6 +96,7 @@ Base.getindex(b::SpinBivector, i...) = getindex(b.matrix)
 Base.getindex(b::SpinBivector, i::Int) = getindex(b.matrix, i)
 Base.getindex(b::SpinBivector, i::Int...) = getindex(b.matrix, i...)
 
+Base.:(==)(a::SpinBivector, b::SpinBivector) = (a.matrix == b.matrix)
 DataSpace(::Type{<:SpinBivector{D}}) where D = ByRealSpace{D}()
 # Required for StaticArray subtypes
 Tuple(b::SpinBivector) = Tuple(b.matrix)
