@@ -77,12 +77,12 @@ struct SpinBivector{D,T} <: StaticMatrix{D,D,T}
     data::SVector{D,SVector{D,T}}
     function SpinBivector(m::StaticMatrix{D,D,T}) where {D,T}
         @assert _is_skew_symmetric(m) "Input matrix is not skew-symmetric."
-        return new{D,T}(SVector(eachcol(m)))
+        return new{D,T}(SVector{D}(eachcol(m)))
     end
 end
 
 SpinBivector{D}(m::AbstractMatrix) where D = SpinBivector(SMatrix{D,D}(m))
-SpinBivector{D,T}(m::AbstractMatrix) where D = SpinBivector(SMatrix{D,D,T}(m))
+SpinBivector{D,T}(m::AbstractMatrix) where {D,T} = SpinBivector(SMatrix{D,D,T}(m))
 
 function Base.getproperty(b::SpinBivector, s::Symbol)
     s === :matrix && return hcat(getfield(b, :data)...)
@@ -96,7 +96,7 @@ Base.getindex(b::SpinBivector, i...) = getindex(b.matrix)
 # Base.getindex(b::SpinBivector, i::Int) = getindex(b.matrix, i)
 # Base.getindex(b::SpinBivector, i::Int...) = getindex(b.matrix, i...)
 
-DataSpace(::Type{<:SpinBivector{D}}) = ByRealSpace{D}()
+DataSpace(::Type{<:SpinBivector{D}}) where D = ByRealSpace{D}()
 # Required for StaticArray subtypes
 Tuple(b::SpinBivector) = Tuple(b.matrix)
 
