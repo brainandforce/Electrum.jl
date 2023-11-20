@@ -134,6 +134,7 @@ include("data/energies.jl")
 export EnergyOccupancy, EnergiesOccupancies
 export energy, occupancy, energies, occupancies, min_energy, max_energy, min_occupancy,
     max_occupancy, fermi
+# Spin data: multiplicity and direction
 include("data/spin.jl")
 export Multiplicity
 # Real and reciprocal space data grids
