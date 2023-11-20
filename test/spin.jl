@@ -21,3 +21,11 @@
     # Text representation
     @test eval(Meta.parse(repr(Multiplicity(3)))) === Multiplicity(3)
 end
+
+@testset "Spin bivectors" begin
+    z_matrix = @SMatrix [0 1 0; -1 0 0; 0 0 0]
+    s_z = SpinBivector(z_matrix)
+    @test_throws AssertionError SpinBivector{3}([1 2 3; 4 5 6; 7 8 9])
+    @test SpinBivector(SVector{3}(1, 0, 0), [0, 1, 0]) === s_z
+    @test SpinBivector([0, 1, 0], SVector{3}(1, 0, 0)) === -s_z
+end
