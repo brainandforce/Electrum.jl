@@ -130,7 +130,7 @@ but they are not resizable, and the backing array should not be resized.
 struct PlanewaveWavefunction{D,T} <: AbstractArray{T,D}
     basis::ReciprocalBasis{D,Float64}
     spins::Vector{SVector{D,Float64}}
-    kpoints::KPointMesh{D}
+    kpoints::KPointMesh{D,Float64}
     energies::Array{Float64,3}
     occupancies::Array{Float64,3}
     grange::NTuple{D,UnitRange{Int}}
@@ -138,7 +138,7 @@ struct PlanewaveWavefunction{D,T} <: AbstractArray{T,D}
     function PlanewaveWavefunction(
         basis::LatticeBasis,
         spins::AbstractVector{<:StaticVector{D,<:Real}},
-        kpoints::AbstractVector{KPoint{D}},
+        kpoints::AbstractVector{<:KPoint{D}},
         energies::AbstractArray{<:Real,3},      # Not specific to 3D, this is from kpt/band/spin
         occupancies::AbstractArray{<:Real,3},
         grange::NTuple{D,<:AbstractUnitRange{<:Integer}},
@@ -208,7 +208,7 @@ function PlanewaveWavefunction{D,T}(
     return PlanewaveWavefunction(
         basis,
         zeros(SVector{D,Float64}, nspin),
-        KPointMesh(zeros(KPoint{D}, nkpt)),
+        KPointMesh(zeros(KPoint{D,Float64}, nkpt)),
         zeros(Float64, nband, nkpt, nspin),
         zeros(Float64, nband, nkpt, nspin),
         grange,

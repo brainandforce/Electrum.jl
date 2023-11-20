@@ -28,9 +28,9 @@ For convenience, the aliases `RealDataGrid` and `ReciprocalDataGrid` are provide
 below:
 
     const RealDataGrid{D} = DataGrid{RealBasis{D,Float64},SVector{D,Float64},D}
-    const ReciprocalDataGrid{D} = DataGrid{ReciprocalBasis{D,Float64},KPoint{D},D}
+    const ReciprocalDataGrid{D} = DataGrid{ReciprocalBasis{D,Float64},KPoint{D,Float64},D}
 
-Note that `ReciprocalDataGrid` uses a `KPoint{D}` to represent the shift, as opposed to an 
+Note that `ReciprocalDataGrid` uses a `KPoint{D,Float64}` to represent the shift, as opposed to an 
 `SVector{D}`. This allows for the concurrent storage of a weight along with the shift, which may be
 relevant for wavefunctions which exploit the symmetry of the k-point mesh.
 """
@@ -53,7 +53,7 @@ Base.show(io::IO, g::DataGrid) = print(io, typeof(g), (g.data, g.basis, g.shift)
 
 const RealDataGrid{D,T} = DataGrid{D,RealBasis{D,Float64},SVector{D,Float64},T}
 @doc (@doc DataGrid) RealDataGrid
-const ReciprocalDataGrid{D,T} = DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},T}
+const ReciprocalDataGrid{D,T} = DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D,Float64},T}
 @doc (@doc DataGrid) ReciprocalDataGrid
 
 #---Constructors-----------------------------------------------------------------------------------#
@@ -63,11 +63,11 @@ const ReciprocalDataGrid{D,T} = DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},
 Generates a default zero shift vector whose type depends on the type of the basis vector.
 
 This function is needed because `RealDataGrid` uses `SVector{D,Float64}` as its shift vector, and
-`ReciprocalDataGrid` uses `KPoint{D}`. Depending on the basis vector type used in the constructor,
-the shift vector type must be automatically determined if not supplied.
+`ReciprocalDataGrid` uses `KPoint{D,Float64}`. Depending on the basis vector type used in the
+constructor, the shift vector type must be automatically determined if not supplied.
 """
 zero_shift(::Type{<:RealBasis{D}}) where D = zero(SVector{D,Float64})
-zero_shift(::Type{<:ReciprocalBasis{D}}) where D = zero(KPoint{D})
+zero_shift(::Type{<:ReciprocalBasis{D}}) where D = zero(KPoint{D,Float64})
 zero_shift(b::LatticeBasis) = zero_shift(typeof(b))
 
 function DataGrid{D,B,S}(
@@ -105,9 +105,9 @@ end
 function ReciprocalDataGrid(
     data::AbstractArray{T,D},
     basis::AbstractMatrix{<:Real},
-    shift::AbstractVector{<:Real} = zero(KPoint{D})
+    shift::AbstractVector{<:Real} = zero(KPoint{D,Float64})
 ) where {D,T}
-    return DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D},T}(data, basis, shift)
+    return DataGrid{D,ReciprocalBasis{D,Float64},KPoint{D,Float64},T}(data, basis, shift)
 end
 
 #---Initialize array with zeros--------------------------------------------------------------------#
