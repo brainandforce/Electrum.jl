@@ -131,5 +131,3 @@ By default, this function returns `length(KPointMesh(x))`, so defining `KPointMe
 type `T` containing a `KPointMesh` will automatically define `nkpt(x::T)`.
 """
 nkpt(x) = length(KPointMesh(x))
-
-#---Energy/occupancy pairs-------------------------------------------------------------------------#
