@@ -10,6 +10,9 @@
     # Length measurement
     @test length(KPoint(1, 2, 3, 4, 5)) == 5
     @test length(KPoint{2}) == 2
+    @test convert(Vector, KPoint(0.1, 0.2, 0.3)) == [0.1, 0.2, 0.3]
+    @test convert(Vector, KPoint(0.1, 0.2, 0.3)) isa Vector{<:Real}
+    @test convert(SVector, KPoint(0.1, 0.2, 0.3)) === SVector{3}(0.1, 0.2, 0.3)
 end
 
 @testset "k-point mesh" begin
