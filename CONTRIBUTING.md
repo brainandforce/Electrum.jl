@@ -29,8 +29,10 @@ All merging should be done through a rebase operation. This is simpler than usin
 as it maintains a linear commit history. However, you will have to ensure that you have fetched or
 pulled from the origin repo and rebased on the parent branch to avoid serious merge conflicts.
 
-If you use VS Code, we recommend the "Git Graph" extension so you can visualize what you're doing
-when you create a new branch, make commits, or push to a remote repo.
+If you use VS Code, we recommend the 
+[Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph) extension so you
+can visualize what you're doing when you create a new branch, make commits, or push to a remote
+repo.
 
 ## Continuous integration
 
@@ -67,29 +69,19 @@ The following conventions are maintained throughout Electrum.jl.
 When in doubt, follow the Julia style guide, located here:
 https://docs.julialang.org/en/v1/manual/style-guide/
 
-### Exceptions to the Julia style guide
-
-For `Electrum.ABINITHeader` structs, direct field access may be used to assign and retrieve values.
-
-Avoid using short-circuit `if` statements - write them out explicitly. There are many instances of
-short-circuited `if` statements throughout the code at this point, and you are welcome to restore
-them to full `if` statements.
-
 ### Line length
 
-Keep lines under 100 characters in all files. You can use string concatenation, among other tools,
-to split long strings if they come up. If a line is really long, consider whether you can simplify
-the line by reducing the amount of nesting, shortening variable names, or splitting operations into
-multiple lines. The general strategy that has been used is calling `string()`, which can stringify
-a variety of arguments and pass through literals.
+Keep lines under 100 characters in all files. If a line is really long, consider whether you can
+simplify the line by reducing the amount of nesting, shortening variable names, or splitting
+operations into multiple lines.
 
-We have found that some methods of splitting strings may not be compatible with Julia 1.6 - please
-make sure to test this before pushing.
+For strings, we've found the best way (compatible with Julia 1.6+) is to call `string()` on a list
+of strings to be concatentated.
 
 ### Naming
 
 Stick to PascalCase for the names of types and modules, and snake_case for the names of variables
-and functions.
+and functions, as with the majority of Julia code.
 
 Functions for reading VASP inputs and outputs are usually given names like `readWAVECAR()`,
 `writePOSCAR4()`,etc. with no spaces, and a version number afterwards for function writing. For
@@ -125,26 +117,40 @@ type definitions.
 This is the opposite of the format used for Julia's built-in `AbstractArray` but matches the
 convention used for `NTuple`.
 
-### `Tuple` and `NamedTuple`
+### Constructors of parametric types
 
-When constructing a `Tuple` or a `NamedTuple`, parenthesize the construction for clarity. While
-Julia can interpret statements like this correctly:
+When defining a parametric type with an inner constructor for validation, ensure that the inner
+constructor is a functor of a concrete type. For instance, for a struct `MyType{D,T}`, the 
+declaration should look as follows:
 ```julia
-return a, b, c
+struct MyType{D,T<:Number}
+    f1::T
+    f2::SVector{D,T}
+    function MyType{D,T}(f1, f2::AbstractVector) where {D,T}
+        # validation logic goes here
+        return new(f1, f2)
+    end
+end
 ```
-it's a bit clearer to write it as
+If some of the type parameters can be inferred from the data, create outer constructors that operate
+on the partially parameterized types, like such.
 ```julia
-return (a, b, c)
-```
-Consider using a `NamedTuple` to work with related but disparate data. These can be thought of as
-anonymous structs or immutable dictionaries that allow for indexing with a `Symbol`:
-```julia-repl
-julia> nt = (a=1, b=2)
-(a = 1, b = 2)
+function MyType{D}(f1, f2::AbstractVector) where D
+    T = promote_type(typeof(f1), eltype(f2))
+    return MyType{D,T}(f1, SVector{D}(f2))
+end
 
-julia> nt[:b]
-2
+function MyType(f1, f2::StaticVector)
+    T = promote_type(typeof(f1), eltype(f2))
+    return MyType{length(f2),T}(f1, f2)
+end
 ```
+### Type stability of constructors
+
+Note that in the second outer constructor, `f2` must be a `StaticVector`. The reason why other
+`AbstractVector` arguments are disallowed is because `length(f2)` can only be statically inferred
+from a `StaticVector`. In general, only define type-stable constructors.
+
 ### Use of static vs. dynamic arrays
 
 The `StaticArrays.jl` package provides support for static (fixed dimension) vectors, matrices, and
@@ -166,7 +172,28 @@ creation), as well as the mutable `MArray` type. In general, it's better to stic
 types (though dynamic vectors are always mutable). For functions that should take only static array
 arguments, use `::StaticArray{...}` in the type signature.
 
-### Use of `BasisVectors{D}` and other reimplemented multidimensional array types
+### `Tuple` and `NamedTuple`
+
+When constructing a `Tuple` or a `NamedTuple`, parenthesize the construction for clarity. While
+Julia can interpret statements like this correctly:
+```julia
+return a, b, c
+```
+it's a bit clearer to write it as
+```julia
+return (a, b, c)
+```
+Consider using a `NamedTuple` to work with related but disparate data. These can be thought of as
+anonymous structs or immutable dictionaries that allow for indexing with a `Symbol` as well as a
+numeric index:
+```julia-repl
+julia> nt = (a=1, b=2)
+(a = 1, b = 2)
+
+julia> nt[:b]
+2
+```
+### Implementation of square matrix types
 
 Julia currently does not allow field types to be computed. The problem with this is that `SMatrix`
 must have a fourth type parameter that corresponds to the total length of the `NTuple` that is used
@@ -180,9 +207,9 @@ on the heap, and this can reduce performance, especially in tight loops.
 If you need to use an `SMatrix{D1,D2,T,L}` in a struct, be sure that you can define `L` as well as
 `D1` and `D2`. Otherwise, it might be a better idea to store the data internally as an
 `SVector{D2,SVector{D1,T}}`, and define `convert()` for it to turn it into a matrix. If you're
-working with a mutable struct, this is not an issue: see `Electrum.Crystal` for an example of this.
-(`const` declarations in `mutable struct` cannot be used: they were introduced in Julia 1.8, and we
-target backwards compatibility with Julia 1.6 LTS.)
+working with a mutable struct, this is not an issue: see `Electrum.Crystal` for an example of this
+with the `transform` field. (`const` declarations in `mutable struct` cannot be used: they were
+introduced in Julia 1.8, and we target backwards compatibility with Julia 1.6 LTS.)
 
 ### Logging and printing
 
@@ -194,10 +221,11 @@ package by entering the following:
 julia> ENV["JULIA_DEBUG"] = Electrum
 Electrum
 ```
-
 Try to minimize the use of repeated `@info`, `@warn`, or `@error` statements in loops. Printing to
 the terminal can bottleneck functions. `@debug` statements will normally be skipped unless a logger
-explicitly compiles them or `$JULIA_DEBUG` is set to the module name.
+explicitly compiles them or `$JULIA_DEBUG` is set to the module name. Alternatively, a function for
+which explicit logging would be a useful feature can define a `quiet` keyword argument which can be
+set to `true` for flexibility. Examples of this include `readWAVECAR` and `read_abinit_wfk`.
 
 Avoid using `println()` if one of the logging macros better suits the purpose. If `println()` is
 used, consider whether it might be a better idea to print to `stderr` instead of `stdout`. Note
