@@ -115,6 +115,9 @@ include("lattices.jl")
 export RealBasis, ReciprocalBasis, AbstractBasis
 export eachvertex, basis, lengths, volume, angles_cos, angles_rad, angles_deg, gram, isdiag, qr,
     triangularize, maxHKLindex
+include("vectors.jl")
+export ShiftVector
+export weight
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
