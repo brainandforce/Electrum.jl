@@ -22,6 +22,8 @@ struct ShiftVector{S<:BySpace,D,T<:Real} <: StaticVector{D,T}
     end
 end
 
+const KPoint = ShiftVector{ByReciprocalSpace}
+
 function ShiftVector{S,D}(vector::AbstractVector, weight::Real = 1) where {S,D}
     return ShiftVector{S,D,promote_type(eltype(vector), weight)}(vector, weight)
 end
