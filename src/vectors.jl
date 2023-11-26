@@ -7,6 +7,9 @@ origin. This wraps a `SVector{D,T}` with an optional weight parameter of type `T
 when working with symmetrical structures or k-points in the irreducible Brillouin zone. If it is not
 explicitly set, it defaults to 1.
 
+If constructors do not explicitly reference an element type, the element type is automatically
+inferred by promoting the types of the arguments.
+
 # Type aliases
 
 `ShiftVector` is a general way of working with vectors which shift a lattice or data within it, and
@@ -17,23 +20,38 @@ for this reason we define an alias for representing k-points:
 struct ShiftVector{S<:BySpace,D,T<:Real} <: StaticVector{D,T}
     vector::SVector{D,T}
     weight::T
-    function ShiftVector{S,D,T}(vector::AbstractVector, weight::Real = oneunit(T)) where {S,D,T}
+    function ShiftVector{S,D,T}(vector::StaticVector, weight::Real = oneunit(T)) where {S,D,T}
         return new(vector, weight)
     end
 end
 
 const KPoint = ShiftVector{ByReciprocalSpace}
 
+# Needed to resolve method ambiguities
+ShiftVector{S,D,T}(::StaticArray, ::Real = 1) where {S,D,T} = error("Argument must be a vector.")
+ShiftVector{S,D}(::StaticArray, ::Real = 1) where {S,D} = error("Argument must be a vector.")
+ShiftVector{S}(::StaticArray, ::Real = 1) where S = error("Argument must be a vector.")
+
+function ShiftVector{S,D}(vector::StaticVector, weight::Real = 1) where {S,D}
+    T = promote_type(eltype(vector), typeof(weight))
+    return ShiftVector{S,D,T}(vector, weight)
+end
+
+function ShiftVector{S}(vector::StaticVector{D}, weight::Real = 1) where {S,D}
+    T = promote_type(eltype(vector), typeof(weight))
+    return ShiftVector{S,D,T}(vector, weight)
+end
+
+function ShiftVector{S,D,T}(vector::AbstractVector, weight::Real = 1) where {S,D,T}
+    return ShiftVector{S,D,T}(SVector{D}(vector), weight)
+end
+
 function ShiftVector{S,D}(vector::AbstractVector, weight::Real = 1) where {S,D}
-    return ShiftVector{S,D,promote_type(eltype(vector), weight)}(vector, weight)
+    T = promote_type(eltype(vector), typeof(weight))
+    return ShiftVector{S,D,T}(SVector{D}(vector), weight)
 end
 
-function ShiftVector{S}(vector::StaticVector, weight::Real = 1) where S
-    return ShiftVector{S,length(vector),promote_type(eltype(vector), weight)}(vector, weight)
-end
-
-ShiftVector{S}(::StaticArray, ::Integer = 1) where S = error("Argument must be a vector.")
-ShiftVector{S}(coord...; weight::Real = 1) where S = ShiftVector{S}(SVector(coord), weight)
+ShiftVector{S}(coord::Real...; weight::Real = 1) where S = ShiftVector{S}(SVector(coord), weight)
 
 Base.hash(s::ShiftVector, h::UInt) = hash(s.vector, hash(s.weight, h))
 
