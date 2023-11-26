@@ -1,4 +1,4 @@
-#---Traits----------------------------------------------------------------------------------------#
+#---Trait supertype--------------------------------------------------------------------------------#
 """
     CrystalDataTrait
 
@@ -6,6 +6,8 @@ Subtypes of this type are traits that may be used for dispatch.
 """
 abstract type CrystalDataTrait
 end
+
+#---Association of data with spatial coordinates---------------------------------------------------#
 
 """
     DataSpace{D} <: CrystalDataTrait
@@ -84,3 +86,31 @@ dimension(::Type{<:DataSpace{D}}) where D = D
 Infers the number of dimensions `Electrum.DataSpace(x)` from the result of `DataSpace(x)`.
 """
 dimension(x) = dimension(DataSpace(x))
+
+#---Coordinate type--------------------------------------------------------------------------------#
+"""
+    ByCoordinate{D} <: CrystalDataTrait
+
+Describes the coordinate system associated with data. This includes `ByCartesianCoordinate{D}` and
+`ByFractionalCoordinate{D}`.
+"""
+abstract type ByCoordinate{D} <: CrystalDataTrait
+end
+
+"""
+    ByCartesianCoordinate{D} <: ByCoordinate{D}
+
+Trait type for coordinates in `D` dimensions represented in terms of an implicit orthonormal basis
+in units of bohr or rad*bohr⁻¹.
+"""
+struct ByCartesianCoordinate{D} <: ByCoordinate{D}
+end
+
+"""
+    ByFractionalCoordinate{D} <: ByCoordinate{D}
+
+Trait type for coordinates in `D` dimensions whose values depend on a choice of basis, usually the
+basis vectors describing the lattice in which the coordinate is contained.
+"""
+struct ByFractionalCoordinate{D} <: ByCoordinate{D}
+end
