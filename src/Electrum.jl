@@ -116,7 +116,7 @@ export RealBasis, ReciprocalBasis, AbstractBasis
 export eachvertex, basis, dual, dualbasis, lengths, volume, angles_cos, angles_rad, angles_deg, 
     gram, isdiag, qr, triangularize, maxHKLindex
 include("vectors.jl")
-export ShiftVector
+export ShiftVector, KPoint
 export weight
 # Methods and structs for working with atomic positions
 include("atoms.jl")
@@ -130,8 +130,8 @@ export AbstractCrystal, Crystal, CrystalWithDatasets
 export data, generators, set_transform!
 # Weighed k-points and k-point meshes
 include("data/kpoints.jl")
-export KPoint, KPointMesh
-export weight, nkpt 
+export KPointMesh
+export nkpt
 # Energy/occupancy pairs
 include("data/energies.jl")
 export AbstractEnergyData, EnergyOccupancy, StateDensity, EnergiesOccupancies
