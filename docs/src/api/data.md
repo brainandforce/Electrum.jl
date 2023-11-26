@@ -28,6 +28,7 @@ Electrum.FFTBins
 
 ## k-points
 ```@docs
+Electrum.ShiftVector
 Electrum.KPoint
 Electrum.KPointMesh
 Electrum.nkpt
