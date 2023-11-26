@@ -10,6 +10,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
   - `StateDensity{T}` type which combines `EnergyOccupancy{T}` with a density of states value at the
 energy provided.
+  - `ByCoordinate{D}` traits: `ByCartesianCoordinate{D}` and `ByFractionalCoordinate{D}`.
+  - `ShiftVector{S,D,T} <: StaticVector{D,T}` type describing the shift of a lattice or data defined
+on it with respect to the origin, along with an optional weight parameter.
 
 ## [0.1.17]: 2023-11-29
 
@@ -25,6 +28,7 @@ include deprecations and bug fixes.
 ### Changed
   - The Types section of the documentation has been split up into separate sections for lattice
 basis vectors, atoms and crystal representations, and data grids.
+  - `KPoint{D}` is now `KPoint{D,T}`, which is an alias for `ShiftVector{ByReciprocalSpace,D,T}`.
 
 ### Fixed
   - The default definition of `Electrum.DataSpace(x)` is now `DataSpace(typeof(x))`, not
