@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+  - `StateDensity{T}` type which combines `EnergyOccupancy{T}` with a density of states value at the
+energy provided.
+
 ## [0.1.17]: 2023-11-29
 
 This is the final feature release in the 0.1 series. All future 0.1 series releases will only
