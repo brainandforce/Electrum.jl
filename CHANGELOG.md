@@ -9,6 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
   - `eachvertex` iterator for the vertices of the parallelepiped representation of a unit cell.
+  - `StateDensity{T}` type which combines `EnergyOccupancy{T}` with a density of states value at the
+energy provided.
 
 ### Changed
   - The Types section of the documentation has been split up into separate sections for lattice
