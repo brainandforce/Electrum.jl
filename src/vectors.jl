@@ -55,8 +55,8 @@ ShiftVector{S}(coord::Real...; weight::Real = 1) where S = ShiftVector{S}(SVecto
 
 Base.hash(s::ShiftVector, h::UInt) = hash(s.vector, hash(s.weight, h))
 
-function Base.:(==)(u::ShiftVector{S}, v::ShiftVector{S}) where S
-    return (u.vector == v.vector && u.weight == v.weight)
+function Base.:(==)(u::ShiftVector{S1}, v::ShiftVector{S2}) where {S1,S2}
+    return (S1 === S2 && u.vector == v.vector && u.weight == v.weight)
 end
 
 Base.IndexStyle(::Type{<:ShiftVector}) = IndexLinear()
