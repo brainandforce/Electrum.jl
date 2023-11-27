@@ -192,15 +192,7 @@ function Base.show(io::IO, ::MIME"text/plain", l::AbstractAtomList; kwargs...)
     end
 end
 
-#---Types from data/kpoints.jl========-------------------------------------------------------------#
-
-Base.summary(io::IO, k::KPoint) = print(io, typeof(k), " with weight ", k.weight)
-
-function Base.show(io::IO, k::KPoint)
-    print(io, KPoint, '(')
-    join(io, k.point, ", ")
-    print(io, ", weight = ", weight(k), ')')
-end
+#---Types from data/kpoints.jl---------------------------------------------------------------------#
 
 function Base.summary(io::IO, k::KPointMesh)
     print(io, length(k), "-element ", typeof(k), " (total weight ", sum(weight.(k)), ')')
