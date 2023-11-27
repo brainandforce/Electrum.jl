@@ -84,3 +84,12 @@ Base.truncate(s::ShiftVector) = (typeof(s))(rem.(s.vector, 1, RoundNearest), s.w
 
 DataSpace(::Type{<:ShiftVector{S,D}}) where {S,D} = S{D}()
 ByCoordinate(::Type{<:ShiftVector{S,D}}) where {S,D} = ByFractionalCoordinate{D}()
+
+Base.summary(io::IO, s::ShiftVector) = print(io, typeof(s), " with weight ", s.weight)
+Base.show(io::IO, s::ShiftVector) = print(io, typeof(s), '(', s.vector, ", ", s.weight, ')')
+
+function Base.show(io::IO, k::KPoint)
+    print(io, KPoint, '(')
+    join(io, k.vector, ", ")
+    print(io, ", weight = ", weight(k), ')')
+end
