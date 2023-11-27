@@ -41,12 +41,16 @@ Electrum.Multiplicity
 
 ## Energies and occupancies
 ```@docs
+Electrum.AbstractEnergyData
 Electrum.EnergyOccupancy
+Electrum.StateDensity
 Electrum.EnergiesOccupancies
 Electrum.energy
 Electrum.occupancy
+Electrum.density
 Electrum.energies
 Electrum.occupancies
+Electrum.densities
 Electrum.min_energy
 Electrum.max_energy
 Electrum.min_occupancy
