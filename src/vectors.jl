@@ -26,6 +26,7 @@ struct ShiftVector{S<:BySpace,D,T<:Real} <: StaticVector{D,T}
 end
 
 const KPoint = ShiftVector{ByReciprocalSpace}
+@doc (@doc ShiftVector) KPoint
 
 # Needed to resolve method ambiguities
 ShiftVector{S,D,T}(::StaticArray, ::Real = 1) where {S,D,T} = error("Argument must be a vector.")
