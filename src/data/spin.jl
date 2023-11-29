@@ -109,6 +109,22 @@ DataSpace(::Type{<:SpinBivector{D}}) where D = ByRealSpace{D}()
 # Required for StaticArray subtypes
 Tuple(b::SpinBivector) = Tuple(b.matrix)
 
+"""
+    Electrum._wedge_matrix(u::AbstractVector, v::AbstractVector) -> AbstractMatrix
+
+Returns a bivector, the wedge product of vectors `u` and `v`, represented as a skew-symmetric
+matrix. This function will throw a `DimensionMismatch` if `u` and `v` have different lengths.
+"""
+function _wedge_matrix(u::AbstractVector, v::AbstractVector)
+    length(u) === length(v) || DimensionMismatch("Vectors must be the same length.")
+    return u*v' - v*u'
+end
+
+# Try to produce a static matrix whenever possible
+_wedge_matrix(u::StaticVector{D}, v::StaticVector{D}) where D = u*v' - v*u'
+_wedge_matrix(u::StaticVector{D}, v::AbstractVector) where D = _wedge_matrix(u, SVector{D}(v))
+_wedge_matrix(u::AbstractVector, v::StaticVector{D}) where D = _wedge_matrix(SVector{D}(u), v)
+
 # Constructors for taking wedge products implicitly
 """
     SpinBivector(u::StaticVector{D}, v::StaticVector{D})
@@ -120,15 +136,10 @@ Constructs a spin bivector from the wedge products of vectors `u` and `v`, which
 The first constructor may be used if only one argument is a `StaticVector{D}` (the other will 
 automatically be converted to the correct size).
 """
-SpinBivector(u::StaticVector{D}, v::StaticVector{D}) where D = SpinBivector(u*v' - v*u')
-# Convert one argument to a StaticVector if needed
-SpinBivector(u::StaticVector{D}, v::AbstractVector) where D = SpinBivector(u, SVector{D}(v))
-SpinBivector(u::AbstractVector, v::StaticVector{D}) where D = SpinBivector(SVector{D}(u), v)
-
-function SpinBivector{D,T}(u::AbstractVector, v::AbstractVector) where {D,T}
-    return SpinBivector(SVector{D,T}(u), SVector{D,T}(v))
+function SpinBivector(u::AbstractVector, v::AbstractVector)
+    w = _wedge_matrix(u,v)
+    w isa StaticArray && return SpinBivector(w)
+    error("Vector lengths cannot be inferred from input types. Use SpinBivector{D} instead.")
 end
 
-function SpinBivector{D}(u::AbstractVector, v::AbstractVector) where D
-    return SpinBivector(SVector{D}(u), SVector{D}(v))
-end
+(T::Type{<:SpinBivector{D}})(u::AbstractVector, v::AbstractVector) where D = T(_wedge_matrix(u,v))
