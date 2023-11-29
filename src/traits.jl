@@ -114,3 +114,16 @@ basis vectors describing the lattice in which the coordinate is contained.
 """
 struct ByFractionalCoordinate{D} <: ByCoordinate{D}
 end
+
+"""
+    ByCoordinate(T::Type)
+    ByCoordinate(x) = ByCoordinate(typeof(x))
+
+Returns a trait instance corresponding to the coordinate system associated with type `T` or an
+instance of that type.
+
+`ByCoordinate(x)` when `x` is not a `Type` calls `ByCoordinate(typeof(x))`. To implement the trait
+for a custom type `T`, define `ByCoordinate(::Type{T}) where T`.
+"""
+ByCoordinate(x) = ByCoordinate(typeof(x))
+ByCoordinate(::Type) = error("No coordinate trait is defined for this type.")
