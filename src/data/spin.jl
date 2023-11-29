@@ -75,14 +75,22 @@ representation is used instead.
 """
 struct SpinBivector{D,T} <: StaticMatrix{D,D,T}
     data::SVector{D,SVector{D,T}}
-    function SpinBivector(m::StaticMatrix{D,D,T}) where {D,T}
+    function SpinBivector{D,T}(m::StaticMatrix) where {D,T}
         @assert _is_skew_symmetric(m) "Input matrix is not skew-symmetric."
-        return new{D,T}(SVector{D}(eachcol(m)))
+        return new(SVector{D,T}.(eachcol(m)))
     end
 end
 
-SpinBivector{D}(m::AbstractMatrix) where D = SpinBivector(SMatrix{D,D}(m))
-SpinBivector{D,T}(m::AbstractMatrix) where {D,T} = SpinBivector(SMatrix{D,D,T}(m))
+# Needed to resolve method ambiguities
+SpinBivector{D,T}(::StaticArray) where {D,T} = error("Input must be a skew-symmetric matrix.")
+SpinBivector{D}(::StaticArray) where D = error("Input must be a skew-symmetric matrix.")
+SpinBivector(::StaticArray) = error("Input must be a skew-symmetric matrix.")
+
+SpinBivector{D}(m::StaticMatrix) where D = SpinBivector{D,eltype(m)}(m)
+SpinBivector(m::StaticMatrix{D,D}) where D = SpinBivector{D,eltype(m)}(m)
+
+SpinBivector{D,T}(m::AbstractMatrix) where {D,T} = SpinBivector{D,T}(SMatrix{D,D}(m))
+SpinBivector{D}(m::AbstractMatrix) where D = SpinBivector{D,eltype(m)}(SMatrix{D,D}(m))
 
 function Base.getproperty(b::SpinBivector, s::Symbol)
     s === :matrix && return hcat(getfield(b, :data)...)
@@ -117,10 +125,10 @@ SpinBivector(u::StaticVector{D}, v::StaticVector{D}) where D = SpinBivector(u*v'
 SpinBivector(u::StaticVector{D}, v::AbstractVector) where D = SpinBivector(u, SVector{D}(v))
 SpinBivector(u::AbstractVector, v::StaticVector{D}) where D = SpinBivector(SVector{D}(u), v)
 
-function SpinBivector{D}(u::AbstractVector, v::AbstractVector) where D
-    return SpinBivector(SVector{D}(u), SVector{D}(v))
-end
-
 function SpinBivector{D,T}(u::AbstractVector, v::AbstractVector) where {D,T}
     return SpinBivector(SVector{D,T}(u), SVector{D,T}(v))
+end
+
+function SpinBivector{D}(u::AbstractVector, v::AbstractVector) where D
+    return SpinBivector(SVector{D}(u), SVector{D}(v))
 end
