@@ -6,7 +6,7 @@
     @test hash(KPoint(0, 0, 0, weight = 1)) != hash(KPoint(0, 0, 0, weight = 2))
     @test zero(ShiftVector{Electrum.ByRealSpace,3}) != zero(KPoint{3})
     @test zero(KPoint{3,Float32}) == zero(KPoint{3,Int})
-    # Constructors
+    # Constructors and zero k-point
     @test zero(KPoint{3}) === zero(KPoint{3,Bool})
     @test zero(KPoint{3}) === KPoint(false, false, false; weight = true)
     @test zero(KPoint{3,Int}) === KPoint(0, 0, 0, weight = 1)
@@ -14,7 +14,7 @@
     @test zero(KPoint{3,Float64}) === KPoint{3}(SVector{3}(0, 0, 0), 1.0)
     @test zero(KPoint{3,Float32}) === KPoint{3,Float32}(SVector{3}(0, 0, 0), 1.0)
     @test zero(KPoint{3,Float64}) === KPoint{3}([0, 0, 0], 1.0)
-    @test zero(KPoint{3,Float32}) === KPoint{3,Float64}([0, 0, 0], 1.0)
+    @test zero(KPoint{3,Float32}) === KPoint{3,Float32}([0, 0, 0], 1.0)
     @test_throws Exception KPoint(SMatrix{3,1}([0, 0, 0]))
     @test_throws Exception KPoint{3}(SMatrix{3,1}([0, 0, 0]))
     @test_throws Exception KPoint{3,Int}(SMatrix{3,1}([0, 0, 0]))
