@@ -32,21 +32,21 @@ ShiftVector{S,D,T}(::StaticArray, ::Real = 1) where {S,D,T} = error("Argument mu
 ShiftVector{S,D}(::StaticArray, ::Real = 1) where {S,D} = error("Argument must be a vector.")
 ShiftVector{S}(::StaticArray, ::Real = 1) where S = error("Argument must be a vector.")
 
-function ShiftVector{S,D}(vector::StaticVector, weight::Real = 1) where {S,D}
+function ShiftVector{S,D}(vector::StaticVector, weight::Real = true) where {S,D}
     T = promote_type(eltype(vector), typeof(weight))
     return ShiftVector{S,D,T}(vector, weight)
 end
 
-function ShiftVector{S}(vector::StaticVector{D}, weight::Real = 1) where {S,D}
+function ShiftVector{S}(vector::StaticVector{D}, weight::Real = true) where {S,D}
     T = promote_type(eltype(vector), typeof(weight))
     return ShiftVector{S,D,T}(vector, weight)
 end
 
-function ShiftVector{S,D,T}(vector::AbstractVector, weight::Real = 1) where {S,D,T}
+function ShiftVector{S,D,T}(vector::AbstractVector, weight::Real = true) where {S,D,T}
     return ShiftVector{S,D,T}(SVector{D}(vector), weight)
 end
 
-function ShiftVector{S,D}(vector::AbstractVector, weight::Real = 1) where {S,D}
+function ShiftVector{S,D}(vector::AbstractVector, weight::Real = true) where {S,D}
     T = promote_type(eltype(vector), typeof(weight))
     return ShiftVector{S,D,T}(SVector{D}(vector), weight)
 end
