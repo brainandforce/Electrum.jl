@@ -146,3 +146,6 @@ function SpinBivector(u::AbstractVector, v::AbstractVector)
 end
 
 (T::Type{<:SpinBivector{D}})(u::AbstractVector, v::AbstractVector) where D = T(_wedge_matrix(u,v))
+
+# TODO: mathematical operations should return reasonable types
+Base.:-(s::SpinBivector) = typeof(s)(-s.matrix)
