@@ -49,6 +49,26 @@ struct ByReciprocalSpace{D} <: BySpace{D}
 end
 
 """
+    Electrum.DataSpace(x) -> DataSpace
+
+Returns a trait that determines whether a data set associated with a crystal is defined in real
+space (`ByRealSpace{D}()`), reciprocal space (`ByReciprocalSpace{D}()`), or by atomic positions
+(`ByAtom{D}`), where `D` is the number of dimensions.
+
+By default, `DataSpace(x)` will infer the appropriate trait from the lattice basis vectors
+included in `x`, assumed to be in a field named `basis`. The fallback definition is:
+
+    DataSpace(x) = DataSpace(typeof(x)) # basis(x) falls back to x.basis
+    DataSpace(::Type{T}) where T = DataSpace(fieldtype(T, :basis))
+
+For types `T` which use a `DataSpace` trait, but do not contain a set of lattice basis vectors which
+are `Electrum.LatticeBasis` objects stored in the `basis` field, it will be necessary to define
+`DataSpace(::Type{T})` explicitly for that type.
+"""
+DataSpace(x) = DataSpace(typeof(x))
+DataSpace(T::Type) = DataSpace(fieldtype(T, :basis))
+
+"""
     Electrum.dimension(::DataSpace{D}) = D
     Electrum.dimension(::Type{<:DataSpace{D}}) = D
 

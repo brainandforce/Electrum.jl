@@ -175,26 +175,22 @@ For predictable results, use `convert(T, basis(x))` where `T` is the desired typ
 """
 basis(x) = x.basis::LatticeBasis
 
-#---Data space traits------------------------------------------------------------------------------#
+#---Real/reciprocal space traits-------------------------------------------------------------------#
+"""
+    Electrum.DataSpace(::Type{<:Electrum.LatticeBasis{S,D}}) = S{D}()
 
+Returns the `ByRealSpace{D}()` or `ByReciprocalSpace{D}()` trait objects depending on the type of
+lattice.
+
+Note that this function only works correctly when S === `ByRealSpace` or `ByReciprocalSpace`, and
+not if they are `ByRealSpace{D}` or `ByReciprocalSpace{D}`, or their singleton instances. Even
+though `Electrum.LatticeBasis{ByRealSpace{D},D,T}` is a valid type that has otherwise correct
+behavior, this function only works correctly when for `Electrum.LatticeBasis{ByRealSpace,D}` and
+`Electrum.LatticeBasis{ByReciprocalSpace,D}`, which are aliased by `RealBasis{D}` and
+`ReciprocalBasis{D}` respectively.
+``
+"""
 DataSpace(::Type{<:LatticeBasis{S,D}}) where {S,D} = S{D}()
-DataSpace(b::LatticeBasis) = DataSpace(typeof(b))
-
-"""
-    Electrum.DataSpace(x) -> DataSpace
-
-Returns a trait that determines whether a data set associated with a crystal is defined in real
-space (`ByRealSpace{D}()`), reciprocal space (`ByReciprocalSpace{D}()`), or by atomic positions
-(`ByAtom{D}`), where `D` is the number of dimensions.
-
-By default, `DataSpace(x)` will infer the appropriate trait from the lattice basis vectors
-included in `x`. The fallback definition is:
-
-    DataSpace(x) = DataSpace(typeof(basis(x))) # basis(x) falls back to x.basis
-    DataSpace(::Type{T}) where T = DataSpace(fieldtype(T, :basis))
-"""
-DataSpace(x) = DataSpace(typeof(basis(x)))
-DataSpace(::Type{T}) where T = DataSpace(fieldtype(T, :basis))
 
 #---Type promotion---------------------------------------------------------------------------------#
 
