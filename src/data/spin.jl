@@ -108,6 +108,8 @@ DataSpace(::Type{<:SpinBivector{D}}) where D = ByRealSpace{D}()
 # Required for StaticArray subtypes
 Tuple(b::SpinBivector) = Tuple(b.matrix)
 
+_vector_length_mismatch() = throw(DimensionMismatch("Vectors must be the same length."))
+
 """
     Electrum._wedge_matrix(u::AbstractVector, v::AbstractVector) -> AbstractMatrix
 
@@ -115,7 +117,7 @@ Returns a bivector, the wedge product of vectors `u` and `v`, represented as a s
 matrix. This function will throw a `DimensionMismatch` if `u` and `v` have different lengths.
 """
 function _wedge_matrix(u::AbstractVector, v::AbstractVector)
-    length(u) === length(v) || DimensionMismatch("Vectors must be the same length.")
+    length(u) === length(v) || _vector_length_mismatch()
     return u*v' - v*u'
 end
 
@@ -123,6 +125,8 @@ end
 _wedge_matrix(u::StaticVector{D}, v::StaticVector{D}) where D = u*v' - v*u'
 _wedge_matrix(u::StaticVector{D}, v::AbstractVector) where D = _wedge_matrix(u, SVector{D}(v))
 _wedge_matrix(u::AbstractVector, v::StaticVector{D}) where D = _wedge_matrix(SVector{D}(u), v)
+# Needed to resolve method ambiguities
+_wedge_matrix(::StaticVector, ::StaticVector) = _vector_length_mismatch()
 
 # Constructors for taking wedge products implicitly
 """
