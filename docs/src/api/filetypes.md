@@ -4,29 +4,29 @@
 
 ### Reading
 ```@docs
-Electrum.readXYZ
-Electrum.readCPcoeff
-Electrum.readCPgeo
-Electrum.readCPcell
+readXYZ
+readCPcoeff
+readCPgeo
+readCPcell
 ```
 
 ### Writing
 ```@docs
-Electrum.writeXYZ
-Electrum.writeTOML
+writeXYZ
+writeTOML
 ```
 
 ## XCrysDen XSF files
 
 ### Reading
 ```@docs
-Electrum.readXSF
-Electrum.readXSF3D
+readXSF
+readXSF3D
 ```
 
 ### Writing
 ```@docs
-Electrum.writeXSF
+writeXSF
 ```
 
 ## ABINIT files
@@ -34,9 +34,9 @@ Electrum.writeXSF
 ### Reading
 
 ```@docs
-Electrum.read_abinit_DEN
-Electrum.read_abinit_POT
-Electrum.read_abinit_WFK
+read_abinit_DEN
+read_abinit_POT
+read_abinit_WFK
 ```
 
 ## VASP files
@@ -44,19 +44,19 @@ Electrum.read_abinit_WFK
 ### Reading
 
 ```@docs
-Electrum.readCONTCAR
-Electrum.readDOSCAR
-Electrum.readPOSCAR
-Electrum.readPROCAR
-Electrum.readWAVECAR
-Electrum.get_fermi
+readCONTCAR
+readDOSCAR
+readPOSCAR
+readPROCAR
+readWAVECAR
+get_fermi
 ```
 
 ### Writing
 
 ```@docs
-Electrum.writeCONTCAR
-Electrum.writePOSCAR
+writeCONTCAR
+writePOSCAR
 ```
 
 ## LAMMPS
@@ -64,11 +64,11 @@ Electrum.writePOSCAR
 ### Reading
 
 ```@docs
-Electrum.read_lammps_data
+read_lammps_data
 ```
 
 ### Writing
 
 ```@docs
-Electrum.write_lammps_data
+write_lammps_data
 ```

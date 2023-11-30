@@ -2,14 +2,14 @@
 
 ## Constructors and types
 ```@docs
-Electrum.AbstractCrystal
-Electrum.Crystal
-Electrum.CrystalWithDatasets
+AbstractCrystal
+Crystal
+CrystalWithDatasets
 ```
 
 ## Methods
 ```@docs
-Electrum.generators
-Electrum.get_transform
-Electrum.set_transform!
+generators
+get_transform
+set_transform!
 ```
