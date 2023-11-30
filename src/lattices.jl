@@ -86,7 +86,7 @@ Base.show(io::IO, b::LatticeBasis) = print(io, typeof(b), '(', b.matrix, ')')
 
 Represents a the basis vectors of a lattice in real space, with lengths given in units of bohr.
 
-For more information about this type, see [`Electrum.LatticeBasis`](@ref).
+For more information about this type, see [`Electrum.LatticeBasis`](@ref Electrum.LatticeBasis).
 """
 const RealBasis = LatticeBasis{ByRealSpace}
 
@@ -96,7 +96,7 @@ const RealBasis = LatticeBasis{ByRealSpace}
 Represents a the basis vectors of a lattice in reciprocal space, with lengths given in units of 
 radians per bohr.
 
-For more information about this type, see [`Electrum.LatticeBasis`](@ref).
+For more information about this type, see [`Electrum.LatticeBasis`](@ref Electrum.LatticeBasis).
 """
 const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
 
@@ -105,6 +105,8 @@ const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
 
 Supertype that contains `RealBasis{D,T}` and `ReciprocalBasis{D,T}`. Code that can dispatch on
 either `RealBasis` or `ReciprocalBasis` can refer to this type.
+
+For more information about this type, see [`Electrum.LatticeBasis`](@ref Electrum.LatticeBasis).
 """
 const AbstractBasis = LatticeBasis{<:BySpace}
 
