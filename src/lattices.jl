@@ -81,12 +81,32 @@ LatticeBasis{S,D}(::StaticArray) where {S,D} = _nonsquare_matrix_error()
 
 Base.show(io::IO, b::LatticeBasis) = print(io, typeof(b), '(', b.matrix, ')')
 
+"""
+    RealBasis{D,T} (alias for Electrum.LatticeBasis{ByRealSpace,D,T})
+
+Represents a the basis vectors of a lattice in real space, with lengths given in units of bohr.
+
+For more information about this type, see [`Electrum.LatticeBasis`](@ref).
+"""
 const RealBasis = LatticeBasis{ByRealSpace}
-@doc (@doc LatticeBasis) RealBasis
+
+"""
+    ReciprocalBasis{D,T} (alias for Electrum.LatticeBasis{ByRealSpace,D,T})
+
+Represents a the basis vectors of a lattice in reciprocal space, with lengths given in units of 
+radians per bohr.
+
+For more information about this type, see [`Electrum.LatticeBasis`](@ref).
+"""
 const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
-@doc (@doc LatticeBasis) ReciprocalBasis
+
+"""
+    AbstractBasis{D,T} (alias for Electrum.LatticeBasis{BySpace,D,T})
+
+Supertype that contains `RealBasis{D,T}` and `ReciprocalBasis{D,T}`. Code that can dispatch on
+either `RealBasis` or `ReciprocalBasis` can refer to this type.
+"""
 const AbstractBasis = LatticeBasis{<:BySpace}
-@doc (@doc LatticeBasis) AbstractBasis
 
 LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
 LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
