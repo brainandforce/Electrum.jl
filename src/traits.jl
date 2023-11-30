@@ -49,6 +49,30 @@ struct ByReciprocalSpace{D} <: BySpace{D}
 end
 
 """
+    Electrum.inverse_space(::Type{<:BySpace}) -> Type{<:BySpace}
+    Electrum.inverse_space(::BySpace) -> BySpace
+
+Returns the space trait dual to the given space trait. Either a type or an instance may be given.
+
+# Examples
+```julia-repl
+julia> Electrum.inverse_space(Electrum.ByReciprocalSpace)
+Electrum.ByRealSpace
+
+julia> Electrum.inverse_space(Electrum.ByRealSpace{3})
+Electrum.ByReciprocalSpace{3}
+
+julia> Electrum.inverse_space(Electrum.ByRealSpace{3}())
+Electrum.ByReciprocalSpace{3}()
+```
+"""
+inverse_space(::Type{ByRealSpace}) = ByReciprocalSpace
+inverse_space(::Type{ByReciprocalSpace}) = ByRealSpace
+inverse_space(::Type{ByRealSpace{D}}) where D = ByReciprocalSpace{D}
+inverse_space(::Type{ByReciprocalSpace{D}}) where D = ByRealSpace{D}
+inverse_space(::T) where T<:BySpace = inverse_space(T)()
+
+"""
     Electrum.DataSpace(x) -> DataSpace
 
 Returns a trait that determines whether a data set associated with a crystal is defined in real
