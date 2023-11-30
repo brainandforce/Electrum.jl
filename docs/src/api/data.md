@@ -4,20 +4,20 @@
 
 ## Basic data grids
 ```@docs
-Electrum.DataGrid
-Electrum.RealDataGrid
-Electrum.ReciprocalDataGrid
-Electrum.fft
-Electrum.ifft
+DataGrid
+RealDataGrid
+ReciprocalDataGrid
+fft
+ifft
 AbstractFFTs.fftfreq(::DataGrid)
-Electrum.volume(::DataGrid)
-Electrum.voxelsize
-Electrum.integrate
-Electrum.partial_derivative
-Electrum.cell_gradient
-Electrum.gradient
+volume(::DataGrid)
+voxelsize
+integrate
+partial_derivative
+cell_gradient
+gradient
 Electrum.directional_derivative
-Electrum.remove_shift 
+remove_shift 
 ```
 
 ## FFT iterators
@@ -28,61 +28,61 @@ Electrum.FFTBins
 
 ## Spin states
 ```@docs
-Electrum.Multiplicity
-Electrum.SpinBivector
+Multiplicity
+SpinBivector
 ```
 
 ## Energies and occupancies
 ```@docs
-Electrum.AbstractEnergyData
-Electrum.EnergyOccupancy
-Electrum.StateDensity
-Electrum.EnergiesOccupancies
-Electrum.energy
-Electrum.occupancy
-Electrum.density
-Electrum.energies
-Electrum.occupancies
-Electrum.densities
-Electrum.min_energy
-Electrum.max_energy
-Electrum.min_occupancy
-Electrum.max_occupancy
-Electrum.fermi
+AbstractEnergyData
+EnergyOccupancy
+StateDensity
+EnergiesOccupancies
+energy
+occupancy
+density
+energies
+occupancies
+densities
+min_energy
+max_energy
+min_occupancy
+max_occupancy
+fermi
 ```
 
 ## Wavefunctions
 ```@docs
-Electrum.PlanewaveWavefunction
-Electrum.PlanewaveIndex
-Electrum.nspin
-Electrum.nband(::PlanewaveWavefunction)
-Electrum.nonzero_g_indices
-Electrum.nonzero_g_vectors
+PlanewaveWavefunction
+PlanewaveIndex
+nspin
+nband(::PlanewaveWavefunction)
+nonzero_g_indices
+nonzero_g_vectors
 ```
 
 ## Band structures
 ```@docs
-Electrum.BandAtKPoint
-Electrum.BandStructure
-Electrum.nband(::BandStructure)
-Electrum.nband(::BandAtKPoint)
-Electrum.FatBands
+BandAtKPoint
+BandStructure
+nband(::BandStructure)
+nband(::BandAtKPoint)
+FatBands
 ```
 
 ## Density of states
 ```@docs
-Electrum.AbstractDensityOfStates
-Electrum.DensityOfStates
-Electrum.ProjectedDensityOfStates
-Electrum.fermi(::AbstractDensityOfStates)
-Electrum.smear
-Electrum.energies(::AbstractDensityOfStates)
-Electrum.nelectrons
+AbstractDensityOfStates
+DensityOfStates
+ProjectedDensityOfStates
+fermi(::AbstractDensityOfStates)
+smear
+energies(::AbstractDensityOfStates)
+nelectrons
 ```
 
 ## Atomic data
 ```@docs
-Electrum.SphericalHarmonic
+SphericalHarmonic
 LinearAlgebra.dot(::SphericalHarmonic, ::SphericalHarmonic)
 ```

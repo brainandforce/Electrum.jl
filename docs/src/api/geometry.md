@@ -4,49 +4,50 @@
 
 ### Constructors and types
 ```@docs
-Electrum.RealBasis
-Electrum.ReciprocalBasis
-Electrum.AbstractBasis
+Electrum.LatticeBasis
+RealBasis
+ReciprocalBasis
+AbstractBasis
 ```
 
 ### Basis information from other data types
 ```@docs
-Electrum.basis
-Electrum.dualbasis
+basis
+dualbasis
 ```
 
 ### Mathematical operations
 ```@docs
 Base.inv(::Electrum.LatticeBasis)
-Electrum.dual
-Electrum.lengths(::Electrum.LatticeBasis)
-Electrum.volume(::Electrum.LatticeBasis)
-Electrum.angles_cos
-Electrum.angles_rad
-Electrum.angles_deg
-Electrum.gram
-Electrum.triangularize
+dual
+lengths(::Electrum.LatticeBasis)
+volume(::Electrum.LatticeBasis)
+angles_cos
+angles_rad
+angles_deg
+gram
+triangularize
 ```
 
 ### Iterators
 ```@docs
-Electrum.eachvertex
+eachvertex
 ```
 
 ### Miscellaneous
 ```@docs
-Electrum.maxHKLindex
+maxHKLindex
 ```
 
 ## Shift vectors
 ```@docs
-Electrum.ShiftVector
-Electrum.KPoint
-Electrum.weight
+ShiftVector
+KPoint
+weight
 ```
 
 ## k-point meshes
 ```@docs
-Electrum.KPointMesh
-Electrum.nkpt
+KPointMesh
+nkpt
 ```
