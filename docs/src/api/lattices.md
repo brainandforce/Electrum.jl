@@ -11,6 +11,9 @@ Electrum.AbstractBasis
 ```@docs
 Electrum.eachvertex
 Electrum.basis
+Base.inv(::Electrum.LatticeBasis)
+Electrum.dual
+Electrum.dualbasis
 Electrum.lengths(::Electrum.LatticeBasis)
 Electrum.volume(::Electrum.LatticeBasis)
 Electrum.angles_cos
