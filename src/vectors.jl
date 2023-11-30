@@ -25,8 +25,15 @@ struct ShiftVector{S<:BySpace,D,T<:Real} <: StaticVector{D,T}
     end
 end
 
+"""
+    KPoint{D,T} (alias for ShiftVector{ByReciprocalSpace,D,T})
+
+Represents a k-point, or an offset from the Γ point (origin) of reciprocal space, often used in band
+structures, wavefunctions, or other electronic data.
+
+For more information about this type, see [`ShiftVector`](@ref).
+"""
 const KPoint = ShiftVector{ByReciprocalSpace}
-@doc (@doc ShiftVector) KPoint
 
 # Needed to resolve method ambiguities
 ShiftVector{S,D,T}(::StaticArray, ::Real = 1) where {S,D,T} = error("Argument must be a vector.")
