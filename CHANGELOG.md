@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.17]: 2023-11-29
+
+This is the final feature release in the 0.1 series. All future 0.1 series releases will only
+include deprecations and bug fixes.
+
 ### Added
   - `eachvertex` iterator for the vertices of the parallelepiped representation of a unit cell.
   - `SpinBivector` type representing spin direction in a dimension-agnostic way.
@@ -200,6 +205,7 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.17]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.17
 [0.1.16]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.16
 [0.1.15]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.15
 [0.1.14]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.14
