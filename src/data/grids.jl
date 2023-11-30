@@ -302,7 +302,7 @@ fftvol(g::DataGrid{D,<:ReciprocalBasis}) where D = det(basis(g).matrix / 2π)
 
 Performs a fast Fourier transform on the data in a `DataGrid`.
 """
-FFTW.fft(g::DataGrid) = DataGrid(fft(g.data) * fftvol(g), inv(basis(g)))
+FFTW.fft(g::DataGrid) = DataGrid(fft(g.data) * fftvol(g), dualbasis(g))
 
 """
     ifft(g::RealDataGrid) -> ReciprocalDataGrid
@@ -312,7 +312,7 @@ Performs an inverse fast Fourier transform on the data in a `DataGrid`.
 
 The inverse FFT is normalized so that `ifft(fft(g)) ≈ g` (to within floating point error).
 """
-FFTW.ifft(g::DataGrid) = DataGrid(bfft(g.data) * fftvol(g), inv(basis(g)))
+FFTW.ifft(g::DataGrid) = DataGrid(bfft(g.data) * fftvol(g), dualbasis(g))
 
 function FFTW.fftfreq(g::DataGrid, ::ByRealSpace)
     return map(i -> SVector(2π .* Tuple(i) ./ size(g)), FFTBins(g))
