@@ -28,10 +28,17 @@
     @test Electrum.SUnitVector{3}(1)[:] === SVector{3,Bool}(1, 0, 0)
     @test Electrum.SUnitVector{3}(1)[1:2] == [1, 0]
     @test_throws MethodError Electrum.SUnitVector{3,Char}(1)
+    # Traits
     @test Electrum.DataSpace(RealBasis{3}) === Electrum.ByRealSpace{3}()
     @test Electrum.DataSpace(basis(wavecar)) === Electrum.ByReciprocalSpace{3}()
     @test Electrum.DataSpace(wavecar) === Electrum.ByReciprocalSpace{3}()
     @test Electrum.DataSpace(typeof(wavecar)) === Electrum.ByReciprocalSpace{3}()
+    @test Electrum.inverse_space(Electrum.ByRealSpace) === Electrum.ByReciprocalSpace
+    @test Electrum.inverse_space(Electrum.ByReciprocalSpace) === Electrum.ByRealSpace
+    @test Electrum.inverse_space(Electrum.ByRealSpace{3}) === Electrum.ByReciprocalSpace{3}
+    @test Electrum.inverse_space(Electrum.ByReciprocalSpace{3}) === Electrum.ByRealSpace{3}
+    @test Electrum.inverse_space(Electrum.ByRealSpace{3}()) === Electrum.ByReciprocalSpace{3}()
+    @test Electrum.inverse_space(Electrum.ByReciprocalSpace{3}()) === Electrum.ByRealSpace{3}()
     @test Electrum.dimension(wavecar) === 3
     @test Electrum.dimension(basis(wavecar)) === 3
     @test Electrum.dimension(typeof(wavecar)) === 3
