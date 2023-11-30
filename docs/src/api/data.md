@@ -16,7 +16,7 @@ integrate
 partial_derivative
 cell_gradient
 gradient
-Electrum.directional_derivative
+directional_derivative
 remove_shift 
 ```
 
