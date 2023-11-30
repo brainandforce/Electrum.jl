@@ -183,9 +183,7 @@ include("show.jl")
 include("precompile.jl")
 
 function __init__()
-    @require TOML="fa267f1f-6049-4f14-aa54-33bafae1ed76" begin
-        include("software/toml.jl")
-    end
+    @require TOML="fa267f1f-6049-4f14-aa54-33bafae1ed76" include("software/toml.jl")
 end
 
 end # end of module
