@@ -55,7 +55,7 @@ end
     @test_throws ErrorException SpinBivector{3}(@SVector [1, 2, 3])
     @test_throws ErrorException SpinBivector{3,Int}(@SVector [1, 2, 3])
     @test_throws ErrorException SpinBivector(@SArray [1; 2;; 3; 4;;; 5; 6;;; 7; 8;;;])
-    @test_throws DimensionMismatch SpinBivector(@SVector [1, 0], @SVector [0, 1, 0])
+    @test_throws DimensionMismatch SpinBivector(SVector{2}(1, 0), SVector{3}(0, 1, 0))
     @test_throws DimensionMismatch SpinBivector{3}([1, 0, 0], [0, 1])
     # Traits
     @test Electrum.DataSpace(SpinBivector{3}) === ByRealSpace{3}()
