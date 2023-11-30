@@ -215,6 +215,25 @@ Base.:(==)(a::LatticeBasis{S,D}, b::LatticeBasis{S,D}) where {S,D} = a.matrix ==
 Base.inv(b::RealBasis) = convert(ReciprocalBasis, b)
 Base.inv(b::ReciprocalBasis) = convert(RealBasis, b)
 
+"""
+    dual(b::RealBasis) -> ReciprocalBasis
+    dual(b::ReciprocalBasis) -> RealBasis
+
+Returns the basis of the dual lattice, which is the lattice in dual space whose product with the
+original lattice is equal to the identity matrix multiplied by 2π.
+"""
+dual(b::LatticeBasis{S}) where S = convert(LatticeBasis{inverse_space(S)}, b)
+
+"""
+    dualbasis(x)
+
+Returns the dual basis associated with a data structure `x`; equal to `dual(basis(x))`.
+
+This function should never be defined directly: instead, `basis(::T)` should be implemented for a
+custom type `T`.
+"""
+dualbasis(x) = dual(basis(x))
+
 #= Scalars
 Base.:*(s::Real, b::LatticeBasis) = typeof(b)(s .* b.vectors)
 Base.:*(b::LatticeBasis, s::Real) = s * b
