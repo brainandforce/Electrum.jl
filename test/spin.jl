@@ -43,12 +43,12 @@ end
     @test Electrum._wedge_matrix(sx, sy) == Electrum._wedge_matrix(x, y)
     # Properties
     @test :data in propertynames(s_z, private = true)
-    @test only(propertynames(s_z, private = true)) == :matrix
+    @test only(propertynames(s_z)) == :matrix
     # Indexing
-    @test s_z[1,2] == 1
-    @test s_z[2] == 1
     @test s_z[2,1] == -1
-    @test s_z[4] == -1
+    @test s_z[1,2] == 1
+    @test s_z[2] == -1
+    @test s_z[4] == 1
     # Bad constructor inputs
     @test_throws ErrorException SpinBivector(x, y)
     @test_throws ErrorException SpinBivector(@SVector [1, 2, 3])
@@ -58,6 +58,6 @@ end
     @test_throws DimensionMismatch SpinBivector(SVector{2}(1, 0), SVector{3}(0, 1, 0))
     @test_throws DimensionMismatch SpinBivector{3}([1, 0, 0], [0, 1])
     # Traits
-    @test Electrum.DataSpace(SpinBivector{3}) === ByRealSpace{3}()
-    @test Electrum.DataSpace(s_z) === ByRealSpace{3}()
+    @test Electrum.DataSpace(SpinBivector{3}) === Electrum.ByRealSpace{3}()
+    @test Electrum.DataSpace(s_z) === Electrum.ByRealSpace{3}()
 end
