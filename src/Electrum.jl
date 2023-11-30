@@ -127,7 +127,7 @@ export name, atomic_number, isdummy, displacement, occupancy, distance, deduplic
 # Methods and structs for working with crystal data
 include("crystals.jl")
 export AbstractCrystal, Crystal, CrystalWithDatasets
-export data, generators, set_transform!
+export data, generators, get_transform, set_transform!
 # Weighed k-points and k-point meshes
 include("data/kpoints.jl")
 export KPointMesh
