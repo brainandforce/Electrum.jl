@@ -26,15 +26,6 @@ Electrum.FFTLength
 Electrum.FFTBins
 ```
 
-## k-points
-```@docs
-Electrum.ShiftVector
-Electrum.KPoint
-Electrum.KPointMesh
-Electrum.nkpt
-Electrum.weight
-```
-
 ## Spin states
 ```@docs
 Electrum.Multiplicity

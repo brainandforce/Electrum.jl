@@ -20,7 +20,7 @@ makedocs(
         "Data grids" => "grids.md",
         "File formats" => "filetypes.md",
         "API" => Any[
-            "Lattices" => "api/lattices.md"
+            "Geometry" => "api/geometry.md"
             "Atoms" => "api/atoms.md"
             "Crystals" => "api/crystals.md"
             "Crystal data" => "api/data.md"
