@@ -8,7 +8,6 @@ abstract type CrystalDataTrait
 end
 
 #---Association of data with spatial coordinates---------------------------------------------------#
-
 """
     DataSpace{D} <: CrystalDataTrait
 

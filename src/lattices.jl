@@ -126,7 +126,6 @@ end
 Base.propertynames(::LatticeBasis; private = false) = private ? (:vectors, :matrix) : (:matrix)
 
 #---Custom indexing and iteration------------------------------------------------------------------#
-
 # Really only for resolving method ambiguities
 Base.getindex(b::LatticeBasis, i::Int) = getindex(b.matrix, i)
 Base.getindex(b::LatticeBasis, i::Int...) = getindex(b.matrix, i...)
@@ -171,7 +170,6 @@ function eachvertex(m::AbstractMatrix)
 end
 
 #---Conversion semantics---------------------------------------------------------------------------#
-
 # Convert between real and reciprocal space representations
 Base.convert(T::Type{<:ReciprocalBasis}, b::RealBasis) = T(2π * inv(transpose(b.matrix)))
 Base.convert(T::Type{<:RealBasis}, b::ReciprocalBasis) = T(transpose(2π * inv(b.matrix)))
@@ -368,7 +366,6 @@ this may lead to unexpected results.
 angles_deg(b::LatticeBasis) = acosd.(angles_cos(b))
 
 #---Advanced linear algebra (such as matrix decompositions)----------------------------------------#
-
 LinearAlgebra.isdiag(b::LatticeBasis) = isdiag(b.matrix)
 LinearAlgebra.qr(b::LatticeBasis) = qr(b.matrix)
 
@@ -414,7 +411,6 @@ function triangularize(b::LatticeBasis{S,D}, sc::AbstractMatrix{<:Integer}) wher
 end
 
 #---Maximum HKL index determination for wavefunction reading---------------------------------------#
-
 # TODO: Update and document this function a bit more.
 # It works, but that really isn't enough for me.
 # I think this was pulled directly from the WaveTrans source code
@@ -455,7 +451,6 @@ maxHKLindex(b::ReciprocalBasis, ecut::Real; c = 2) = maxHKLindex(b.matrix, ecut;
 maxHKLindex(b::RealBasis, ecut::Real; c = 2) = maxHKLindex(ReciprocalBasis(b).matrix, ecut; c)
 
 #---Exception for lattice mismatches---------------------------------------------------------------#
-
 """
     Electrum.LatticeMismatch([msg])
 

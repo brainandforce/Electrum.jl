@@ -1,4 +1,3 @@
-
 """
     readCPcoeff(file, Lmax::Val{L}=Val{6}()) -> SphericalComponents{L}
 
