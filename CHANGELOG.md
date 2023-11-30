@@ -10,6 +10,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
   - `eachvertex` iterator for the vertices of the parallelepiped representation of a unit cell.
   - `SpinBivector` type representing spin direction in a dimension-agnostic way.
+  - `dual(b::LatticeBasis)` returns the dual lattice associated with `b`.
+  - `dualbasis(x)` returns the dual lattice basis vectors associated with `x`.
 
 ### Changed
   - The Types section of the documentation has been split up into separate sections for lattice
@@ -18,6 +20,7 @@ basis vectors, atoms and crystal representations, and data grids.
 ### Fixed
   - The default definition of `Electrum.DataSpace(x)` is now `DataSpace(typeof(x))`, not
 `DataSpace(typeof(basis(x)))`.
+  - `inv(b::LatticeBasis)` returns the matrix inverse of `b`, not the dual lattice basis.
 
 ## [0.1.16]: 2023-11-16
 
