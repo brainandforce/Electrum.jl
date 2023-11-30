@@ -51,8 +51,10 @@ A `RealBasis` may be converted to a `ReciprocalBasis`, or vice versa, using eith
 `convert(T::Electrum.LatticeBasis, b)` or the constructor `(T::Type{<:Electrum.LatticeBasis})(b)`.
 This automatically multiplies or divides by 2π as needed.
 
-The inverse operation `inv` also performs this conversion. This convention may change in a future
-update, as the current definition may break other assumptions about matrix inversion.
+The [`dual`](@ref) function always returns the dual lattice, which, when left or right multiplied
+by the original lattice, returns the identity matrix scaled by 2π. The matrix inverse
+[`inv`](@ref Base.inv(::Electrum.LatticeBasis)) returns an `SMatrix{D,D,T}` which returns an
+identity matrix when left or right multiplied with the original lattice.
 
 # Interoperability
 
