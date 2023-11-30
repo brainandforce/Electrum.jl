@@ -10,6 +10,13 @@
     # Wrong dimensionality should throw an exception
     @test_throws DimensionMismatch RealBasis{3}([1 0; 0 1])
     @test_throws DimensionMismatch convert(ReciprocalBasis{2}, b)
+    # Matrix inverse of lattice is not the dual lattice
+    @test inv(b) === inv(b.matrix)
+    @test dual(b) === convert(ReciprocalBasis, b)
+    @test dual(b) === ReciprocalBasis(b)
+    @test dualbasis(xsf["this_is_3Dgrid#1"]) === dual(b)
+    @test inv(b) * b ≈ diagm(ones(SVector{3}))
+    @test dual(b) * b ≈ diagm(fill(2π, SVector{3}))
     # Gram matrix test
     @test gram(b) === (M = convert(SMatrix, b); M' * M)
     # Type promotion
