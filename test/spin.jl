@@ -23,14 +23,41 @@
 end
 
 @testset "Spin bivectors" begin
+    x = [1, 0, 0]
+    y = [0, 1, 0]
+    (sx, sy) = SVector{3}.((x, y))
     z_matrix = @SMatrix [0 1 0; -1 0 0; 0 0 0]
     s_z = SpinBivector(z_matrix)
-    @test s_z[1,2] == 1
-    @test s_z[2,1] == -1
+    @test Electrum._is_skew_symmetric(z_matrix)
     @test !Electrum._is_skew_symmetric([1 2 3; 4 5 6; 7 8 9])
     @test_throws AssertionError SpinBivector{3}([1 2 3; 4 5 6; 7 8 9])
-    @test SpinBivector(SVector{3}(1, 0, 0), [0, 1, 0]) === s_z
-    @test SpinBivector([0, 1, 0], SVector{3}(1, 0, 0)) === -s_z
+    @test SpinBivector(sx, y) === s_z
+    @test SpinBivector(y, sx) === -s_z
     @test SpinBivector{3}([0 1 0; -1 0 0; 0 0 0]) === s_z
     @test SpinBivector{3,Int}([0 1 0; -1 0 0; 0 0 0]) === s_z
+    # Constructor with wedge product
+    @test SpinBivector(sx, sy) === s_z
+    @test SpinBivector{3}(x, y) === s_z
+    @test SpinBivector{3,Float64}(x, y) == s_z
+    # Wedge product kernel for AbstractVector
+    @test Electrum._wedge_matrix(sx, sy) == Electrum._wedge_matrix(x, y)
+    # Properties
+    @test :data in propertynames(s_z, private = true)
+    @test only(propertynames(s_z, private = true)) == :matrix
+    # Indexing
+    @test s_z[1,2] == 1
+    @test s_z[2] == 1
+    @test s_z[2,1] == -1
+    @test s_z[4] == -1
+    # Bad constructor inputs
+    @test_throws ErrorException SpinBivector(x, y)
+    @test_throws ErrorException SpinBivector(@SVector [1, 2, 3])
+    @test_throws ErrorException SpinBivector{3}(@SVector [1, 2, 3])
+    @test_throws ErrorException SpinBivector{3,Int}(@SVector [1, 2, 3])
+    @test_throws ErrorException SpinBivector(@SArray [1 2; 3 4;; 5 6; 7 8])
+    @test_throws DimensionMismatch SpinBivector(@SVector [1, 0], @SVector [0, 1, 0])
+    @test_throws DimensionMismatch SpinBivector{3}([1, 0, 0], [0, 1])
+    # Traits
+    @test Electrum.DataSpace(SpinBivector{3}) === ByRealSpace{3}()
+    @test Electrum.DataSpace(s_z) === ByRealSpace{3}()
 end
