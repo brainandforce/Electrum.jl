@@ -1,3 +1,4 @@
+#---Data structures--------------------------------------------------------------------------------#
 """
     Electrum.ABINITPseudopotentialInfo
 
@@ -158,8 +159,26 @@ end
 Base.getindex(h::ABINITHeader, name::Symbol) = getfield(h, name)
 Base.setindex!(h::ABINITHeader, x, name::Symbol) = setfield!(h, name, x)
 
+#---Constructors for commonly used types-----------------------------------------------------------#
 RealBasis(h::ABINITHeader) = RealBasis(h.rprimd)
 ReciprocalBasis(h::ABINITHeader) = ReciprocalBasis(RealBasis(h))
+
+function Crystal(h::ABINITHeader)
+    atomlist = PeriodicAtomList(
+        RealBasis(h),
+        FractionalAtomPosition.(Int.(h.znucltypat[h.typat]), h.xred)
+    )
+    # Don't include space group data since all atomic positions are generated (use defaults)
+    return Crystal(atomlist)
+end
+
+function KPointMesh(h::ABINITHeader)
+    (grid, shift) = (h.kptrlatt, h.shiftk)
+    # abinit stores k-point weights normalized to 1 - convert this back to integers
+    rweights = rationalize.(h.wtk / minimum(h.wtk); tol = sqrt(eps(Float64)))
+    points = KPoint.(h.kpt, Int.(rweights .* maximum(x.den for x in rweights)))
+    return KPointMesh(points, grid, shift)
+end
 
 #=
 """
@@ -179,23 +198,6 @@ end
 symrel_to_sg(h::ABINITHeader) = symrel_to_sg(h.symrel)
 =#
 
-function Crystal(h::ABINITHeader)
-    atomlist = PeriodicAtomList(
-        RealBasis(h),
-        FractionalAtomPosition.(Int.(h.znucltypat[h.typat]), h.xred)
-    )
-    # Don't include space group data since all atomic positions are generated (use defaults)
-    return Crystal(atomlist)
-end
-
-function KPointMesh(h::ABINITHeader)
-    (grid, shift) = (h.kptrlatt, h.shiftk)
-    # abinit stores k-point weights normalized to 1 - convert this back to integers
-    rweights = rationalize.(h.wtk / minimum(h.wtk); tol = sqrt(eps(Float64)))
-    points = KPoint.(h.kpt, Int.(rweights .* maximum(x.den for x in rweights)))
-    return KPointMesh(points, grid, shift)
-end
-
 # This function gets indices for the rhoij entries in a PAW calculation
 function triang_index(n)
     row = floor(Int,(1 + sqrt(8*n - 7))/2)
@@ -203,6 +205,7 @@ function triang_index(n)
     return (row, col)
 end
 
+#---Read header information------------------------------------------------------------------------#
 """
     Electrum.get_abinit_version(io::IO)
         -> NamedTuple{(:codvsn, :headform, :fform), Tuple{VersionNumber, Int32, Int32}}
@@ -607,6 +610,7 @@ end
 
 read_abinit_header(filename) = open(read_abinit_header, filename)
 
+#---Read datagrid information----------------------------------------------------------------------#
 """
     Electrum.read_abinit_datagrids(T, io, nspden, ngfft) -> Vector{Matrix{T}}
 
@@ -649,6 +653,7 @@ function read_abinit_datagrids(
     return rho
 end
 
+#---Read whole files-------------------------------------------------------------------------------#
 """
     read_abinit_DEN(file)
         -> CrystalWithDatasets{3,String,RealDataGrid{3,Float64}}
@@ -812,6 +817,8 @@ function read_abinit_WFK(io::IO; quiet = false)
 end
 
 read_abinit_WFK(filename; quiet = false) = open(f -> read_abinit_WFK(f; quiet), filename)
+
+#---anaddb integrations (currently not part of the public API)-------------------------------------#
 
 function read_abinit_anaddb_out(io::IO)
     # number of atoms
