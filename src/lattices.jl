@@ -212,8 +212,16 @@ end
 
 Base.:(==)(a::LatticeBasis{S,D}, b::LatticeBasis{S,D}) where {S,D} = a.matrix == b.matrix
 
-Base.inv(b::RealBasis) = convert(ReciprocalBasis, b)
-Base.inv(b::ReciprocalBasis) = convert(RealBasis, b)
+"""
+    inv(b::LatticeBasis{D}) -> SMatrix{D,D}
+
+Returns the matrix which, when left or right multiplied by `b`, returns the identity matrix, up to
+rounding error. Because the result of this calculation is not the dual lattice associated with `b`,
+the return type is simply an `SMatrix{D,D}`.
+
+For the dual space lattice basis vectors, use [`dual(x)`](@ref) or [`dualbasis(x)`](@ref).
+"""
+Base.inv(b::LatticeBasis) = inv(b.matrix)
 
 """
     dual(b::RealBasis) -> ReciprocalBasis
