@@ -158,7 +158,7 @@ Base.convert(T::Type{<:RealBasis}, b::ReciprocalBasis) = T(transpose(2π * inv(b
 # Constructors can perform this conversion too
 (T::Type{<:LatticeBasis})(b::LatticeBasis) = convert(T, b)
 # Conversion to Tuple (needed for StaticArrays.jl)
-Tuple(b::LatticeBasis) = Tuple(b.matrix)
+Base.Tuple(b::LatticeBasis) = Tuple(b.matrix)
 
 #---Get basis vectors from other structures that contain them--------------------------------------#
 """

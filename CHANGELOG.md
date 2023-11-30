@@ -21,6 +21,7 @@ basis vectors, atoms and crystal representations, and data grids.
   - The default definition of `Electrum.DataSpace(x)` is now `DataSpace(typeof(x))`, not
 `DataSpace(typeof(basis(x)))`.
   - `inv(b::LatticeBasis)` returns the matrix inverse of `b`, not the dual lattice basis.
+  - `Tuple` constructors for `StaticMatrix` subtypes are properly prefixed.
 
 ## [0.1.16]: 2023-11-16
 
