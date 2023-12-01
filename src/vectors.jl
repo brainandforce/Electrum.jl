@@ -232,3 +232,88 @@ end
 (T::Type{<:CoordinateVector})(v::ShiftVector) = T(v.vector)
 Base.convert(::Type{T}, v::ShiftVector) where T<:CoordinateVector = T(v)
 Base.convert(::Type{T}, v::CoordinateVector) where T<:ShiftVector = T(v)
+
+#---Mapping array indices to grids-----------------------------------------------------------------#
+"""
+    LatticeDataMap{S,D,T}
+
+Describes how the data of a `D`-dimensional array maps to regularly spaced positions in a
+`D`-dimensional periodic lattice.
+
+This data structure does not reference the size of any array, allowing it to be reused as-is if a
+grid with different dimensions is
+
+# Examples
+
+The most straightforward manner to do this for an array `a` is to map each `CartesianIndex` `i` to a
+fractional coordinate by associating the first index (`firstindex(CartesianIndices(a))`) with the
+origin, then spacing out the grid points evenly along the the directions given by each lattice basis
+vector. This can be accomplished by simply calling the constructor with a basis:
+```julia-repl
+b = RealBasis{3}([1 0 0; 0 2 0; 0 0 3]);
+
+julia> LatticeDataMap(b)
+
+```
+In some cases (particularly in reciprocal space), you may want to use a `ShiftVector` (specifically
+a `KPoint`) to offset the array data:
+```julia-repl
+julia> LatticeDataMap(dual(b), KPoint(1/4, 1/4, 1/4))
+
+```
+
+However, the most complex case involves altering the mapping of points with a transform matrix.
+"""
+struct LatticeDataMap{S<:BySpace,D,T}
+    basis::LatticeBasis{S,D,T}
+    shift::ShiftVector{S,D,T}
+    _transform::SVector{D,SVector{D,Rational{Int}}}
+    function LatticeDataMap{S,D,T}(
+        basis::LatticeBasis,
+        shift::ShiftVector = zero(ShiftVector{S,D,T}),
+        transform::AbstractMatrix = LinearAlgebra.I
+    ) where {S,D,T}
+        _transform = SVector{D,T}.(eachcol(SMatrix{D,D}(transform)))
+        return new(basis, shift, _transform)
+    end
+end
+
+# Constructors with varying numbers of type parameters and arguments
+function LatticeDataMap{S,D}(
+    basis::LatticeBasis,
+    shift::ShiftVector = zero(ShiftVector{S,D}),
+    transform::AbstractMatrix = LinearAlgebra.I
+) where {S,D}
+    T = promote_type(eltype(basis), eltype(shift))
+    return LatticeDataMap{S,D,T}(basis, shift, transform)
+end
+
+function LatticeDataMap{S}(
+    basis::LatticeBasis{<:BySpace,D},
+    shift::ShiftVector{<:BySpace,D} = zero(ShiftVector{S,D}),
+    transform::AbstractMatrix = LinearAlgebra.I
+) where {S,D}
+    return LatticeDataMap{S,D}(basis, shift, transform)
+end
+
+function LatticeDataMap(
+    basis::LatticeBasis{S1,D},
+    shift::ShiftVector{S2,D} = zero(ShiftVector{S1,D}),
+    transform::AbstractMatrix = LinearAlgebra.I
+) where {S1,S2,D}
+    S1 === S2 || error("Cannot determine whether real or reciprocal space was intended.")
+    return LatticeDataMap{S1,D}(basis, shift, transform)
+end
+
+"""
+    LatticeData{S,D,M<:LatticeDataMap{C,D},T,A<:AbstractArray{T,D}} <: AbstractArray{T,D}
+
+Maps an array of type `A` onto regularly spaced points of a lattice with a mapping of type `M`.
+"""
+struct LatticeData{S,D,M<:LatticeDataMap{S,D},T,A<:AbstractArray{T,D}} <: AbstractArray{T,D}
+    data::A
+    map::M
+end
+
+Base.size(l::LatticeData) = size(l.data)
+Base.axes(l::LatticeData) = map(x -> x .- firstindex(l.data), axes(l.data))
