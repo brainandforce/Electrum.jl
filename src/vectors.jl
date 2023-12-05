@@ -241,7 +241,7 @@ Describes how the data of a `D`-dimensional array maps to regularly spaced posit
 `D`-dimensional periodic lattice.
 
 This data structure does not reference the size of any array, allowing it to be reused as-is if a
-grid with different dimensions is
+grid with different dimensions is specified along with this map.
 
 # Examples
 
@@ -250,19 +250,27 @@ fractional coordinate by associating the first index (`firstindex(CartesianIndic
 origin, then spacing out the grid points evenly along the the directions given by each lattice basis
 vector. This can be accomplished by simply calling the constructor with a basis:
 ```julia-repl
-b = RealBasis{3}([1 0 0; 0 2 0; 0 0 3]);
+b = RealBasis{3}([1 0 0; 0 2 0; 0 0 3]); # face-centered orthorhombic
 
 julia> LatticeDataMap(b)
 
 ```
 In some cases (particularly in reciprocal space), you may want to use a `ShiftVector` (specifically
-a `KPoint`) to offset the array data:
+a `KPoint`, which aliases `ShiftVector{ByReciprocalSpace}`) to offset the array data:
 ```julia-repl
 julia> LatticeDataMap(dual(b), KPoint(1/4, 1/4, 1/4))
 
 ```
+However, the most complex case involves altering the mapping of points with a transform matrix. This
+may be convenient for conventional cells whose data is provided with respect to a primitive cell. In
+this case, a rational matrix transform can be used. The transform `T` defined below converts the
+lattice basis vectors of a face-centered conventional cell to its primitive cell.
+```julia-repl
+julia> T = 1//2 * [0 1 1; 1 0 1; 1 1 0]; # gets primitive cell of face-centered cell
 
-However, the most complex case involves altering the mapping of points with a transform matrix.
+julia> LatticeDataMap(b, zero(ShiftVector{ByRealSpace,3}), T)
+
+```
 """
 struct LatticeDataMap{S<:BySpace,D,T}
     basis::LatticeBasis{S,D,T}
@@ -305,10 +313,16 @@ function LatticeDataMap(
     return LatticeDataMap{S1,D}(basis, shift, transform)
 end
 
+#---Data defined on regularly spaced grids on lattices---------------------------------------------#
 """
     LatticeData{S,D,M<:LatticeDataMap{C,D},T,A<:AbstractArray{T,D}} <: AbstractArray{T,D}
 
 Maps an array of type `A` onto regularly spaced points of a lattice with a mapping of type `M`.
+
+# Indexing
+
+Arrays wrapped by this data structure become zero-based arrays with periodic Cartesian indexing. For
+this reason, all indexing operations are guaranteed to be inbounds.
 """
 struct LatticeData{S,D,M<:LatticeDataMap{S,D},T,A<:AbstractArray{T,D}} <: AbstractArray{T,D}
     data::A
@@ -316,4 +330,74 @@ struct LatticeData{S,D,M<:LatticeDataMap{S,D},T,A<:AbstractArray{T,D}} <: Abstra
 end
 
 Base.size(l::LatticeData) = size(l.data)
-Base.axes(l::LatticeData) = map(x -> x .- firstindex(l.data), axes(l.data))
+Base.axes(l::LatticeData) = map(x -> x .- first.(axes(l.data)), axes(l.data))
+
+# Index style matches that of backing array
+Base.IndexStyle(::Type{<:LatticeData{<:Any,<:Any,<:Any,<:Any,A}}) where A = IndexStyle(A)
+
+"""
+    Electrum._to_array_index(l::LatticeData, dim::Integer, i)
+
+Converts an index `i` into a valid index of the backing array of `l` along dimension `dim`. To
+convert an arbitrary integer index to a valid index of the backing array, it uses the formula
+
+    mod(i, size(l, dim)) + first(axes(l.data, dim))
+
+For `CartesianIndex` arguments, `dims` refers to the first dimension indexed by `i`, and the
+boundary conditions for the tail indices are automatically calculated.
+
+This formula is extended to `AbstractArray` arguments, and colon arguments are unchanged.
+"""
+function _to_array_index(l::LatticeData, dim::Integer, i::Integer)
+    return Int(mod(i, size(l, dim)) + first(axes(l.data, dim)))
+end
+
+function _to_array_index(l::LatticeData, dim::Integer, i::CartesianIndex)
+    dimrange = (dim - 1) .+ 1:length(i)
+    return CartesianIndex(mod.(Tuple(i), size(l)[dimrange]) .+ first.(axes(l.data))[dimrange])
+end
+
+function _to_array_index(l::LatticeData, dim::Integer, i::AbstractArray{<:Integer})
+    return Int.(mod.(i, size(l, dim)) .+ first(axes(l.data, dim)))
+end
+
+function _to_array_index(l::LatticeData, dim::Integer, i::CartesianIndices)
+    dimrange = (dim - 1) .+ 1:length(i.indices)
+    return CartesianIndices(mod.(i.indices, size(l)[dimrange] .+ first.(axes(l.data)[dimrange])))
+end
+
+_to_array_index(::LatticeData, ::Integer, ::Colon) = Colon()
+
+"""
+    Electrum._meta_indices(I::Tuple)
+
+Returns a `NTuple{length(I),Int}` corresponding to the dimensions indexed by `I`. This is used to
+correct for the presence of any `CartesianIndex` or `CartesianIndices` arguments which may index
+multiple array dimensions.
+"""
+function _meta_indices(I::Tuple)
+    v = Tuple(eachindex(I))
+    extra_length = 0
+    for (n, x) in enumerate(I)
+        v = Base.setindex(v, v[n] + extra_length, n)
+        if x isa CartesianIndex
+            extra_length += length(x) - 1
+        elseif x isa AbstractArray{CartesianIndex{D},D} where D
+            extra_length += ndims(x) - 1
+        end
+    end
+    return v
+end
+
+"""
+    Electrum._to_array_indices(l::LatticeData, I::Tuple)
+
+Converts a set of indices from a `getindex` or `setindex!` call to valid indices of the backing
+array of `l`.
+"""
+function _to_array_indices(l::LatticeData, I::Tuple)
+    return map((x, dim) -> _to_array_index(l, dim, x), I, _meta_indices(I))
+end
+
+Base.getindex(l::LatticeData, i...) = @inbounds getindex(l.data, _to_array_indices(l, i)...)
+Base.setindex!(l::LatticeData, x, i...) = @inbounds setindex!(l.data, x, _to_array_indices(l, i)...)
