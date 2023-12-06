@@ -31,7 +31,7 @@ const ReciprocalFractionalCoordinate = CoordinateVector{ByReciprocalSpace,ByFrac
 
 #---Shift vectors----------------------------------------------------------------------------------#
 """
-    ShiftVector{S<:BySpace,D,T} <: StaticVector{D,T}
+    ShiftVector{S,D,T<:Real} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
 
 A vector in fractional coordinates representing a shift of a lattice or lattice dataset from the
 origin. This wraps a `SVector{D,T}` with an optional weight parameter of type `T` that may be useful
@@ -48,7 +48,7 @@ for this reason we define an alias for representing k-points:
 
     const KPoint = ShiftVector{ByReciprocalSpace}
 """
-struct ShiftVector{S<:BySpace,D,T<:Real} <: StaticVector{D,T}
+struct ShiftVector{S,D,T<:Real} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
     vector::SVector{D,T}
     weight::T
     function ShiftVector{S,D,T}(vector::StaticVector, weight::Real = oneunit(T)) where {S,D,T}
@@ -92,12 +92,14 @@ end
 
 ShiftVector{S}(coord::Real...; weight::Real = 1) where S = ShiftVector{S}(SVector(coord), weight)
 
+# Hashing and equality
 Base.hash(s::ShiftVector, h::UInt) = hash(s.vector, hash(s.weight, h))
 
 function Base.:(==)(u::ShiftVector{S1}, v::ShiftVector{S2}) where {S1,S2}
     return (S1 === S2 && u.vector == v.vector && u.weight == v.weight)
 end
 
+# Indexing
 Base.getindex(s::ShiftVector, i::Int) = s.vector[i]
 
 Base.Tuple(s::ShiftVector) = Tuple(s.vector)
