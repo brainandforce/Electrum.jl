@@ -118,7 +118,9 @@ export RealBasis, ReciprocalBasis, AbstractBasis
 export eachvertex, basis, dual, dualbasis, lengths, volume, angles_cos, angles_rad, angles_deg, 
     gram, isdiag, qr, triangularize, maxHKLindex
 include("vectors.jl")
-export ShiftVector, KPoint
+export AbstractCoordinateVector, CoordinateVector, RealCartesianCoordinate, 
+    RealFractionalCoordinate, ReciprocalCartesianCoordinate, ReciprocalFractionalCoordinate, 
+    ShiftVector, KPoint
 export weight
 # Methods and structs for working with atomic positions
 include("atoms.jl")
