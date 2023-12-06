@@ -16,8 +16,7 @@
     @test zero(KPoint{3,Float64}) === KPoint{3}([0, 0, 0], 1.0)
     @test zero(KPoint{3,Float32}) === KPoint{3,Float32}([0, 0, 0], 1.0)
     @test_throws Exception KPoint(SMatrix{3,1}([0, 0, 0]))
-    @test_throws Exception KPoint{3}(SMatrix{3,1}([0, 0, 0]))
-    @test_throws Exception KPoint{3,Int}(SMatrix{3,1}([0, 0, 0]))
+    @test_throws InexactError KPoint{3,Int8}(420, 69, 1337)
     # Traits
     @test BySpace(zero(KPoint{3})) === ByReciprocalSpace()
     @test ByCoordinate(zero(KPoint{3})) === ByFractionalCoordinate()
