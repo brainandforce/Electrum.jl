@@ -67,7 +67,6 @@ function Base.:(==)(u::ShiftVector{S1}, v::ShiftVector{S2}) where {S1,S2}
     return (S1 === S2 && u.vector == v.vector && u.weight == v.weight)
 end
 
-Base.IndexStyle(::Type{<:ShiftVector}) = IndexLinear()
 Base.getindex(s::ShiftVector, i::Int) = s.vector[i]
 
 Base.Tuple(s::ShiftVector) = Tuple(s.vector)
