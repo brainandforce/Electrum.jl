@@ -108,8 +108,9 @@ for this reason we define an alias for representing k-points:
 struct ShiftVector{S,D,T} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
     vector::SVector{D,T}
     weight::T
-    function ShiftVector{S,D,T}(vector::StaticVector, weight::Real = oneunit(T)) where {S,D,T}
-        return new(vector, weight)
+    function ShiftVector{S}(v::StaticVector{D}, wt::Real = true) where {S,D}
+        T = promote_type(eltype(v), typeof(wt))
+        return new{S,D,T}(v, wt)
     end
 end
 
@@ -123,31 +124,23 @@ For more information about this type, see [`ShiftVector`](@ref).
 """
 const KPoint = ShiftVector{ByReciprocalSpace}
 
-# Needed to resolve method ambiguities
-ShiftVector{S,D,T}(::StaticArray, ::Real = 1) where {S,D,T} = error("Argument must be a vector.")
-ShiftVector{S,D}(::StaticArray, ::Real = 1) where {S,D} = error("Argument must be a vector.")
-ShiftVector{S}(::StaticArray, ::Real = 1) where S = error("Argument must be a vector.")
+ShiftVector{S}(::StaticArray, wt::Real = true) where S = array_not_flattened()
+ShiftVector{S}(t::Tuple, wt::Real = true) where S = ShiftVector{S}(SVector(t), wt)
+ShiftVector{S}(x::Real...; weight::Real = true) where S = ShiftVector{S}(SVector(x), weight)
 
-function ShiftVector{S,D}(vector::StaticVector, weight::Real = true) where {S,D}
-    T = promote_type(eltype(vector), typeof(weight))
-    return ShiftVector{S,D,T}(vector, weight)
+ShiftVector{S,D}(t::Tuple, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(t), wt)
+ShiftVector{S,D}(v::StaticArray, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(v), wt)
+ShiftVector{S,D}(v::AbstractArray, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(v), wt)
+
+ShiftVector{S,D,T}(t::Tuple, wt::Real = true) where {S,D,T} = ShiftVector{S}(SVector{D,T}(t), T(wt))
+
+function ShiftVector{S,D,T}(v::StaticArray, wt::Real = true) where {S,D,T}
+    return ShiftVector{S}(SVector{D,T}(v), T(wt))
 end
 
-function ShiftVector{S}(vector::StaticVector{D}, weight::Real = true) where {S,D}
-    T = promote_type(eltype(vector), typeof(weight))
-    return ShiftVector{S,D,T}(vector, weight)
+function ShiftVector{S,D,T}(v::AbstractArray, wt::Real = true) where {S,D,T}
+    return ShiftVector{S}(SVector{D,T}(v), T(wt))
 end
-
-function ShiftVector{S,D,T}(vector::AbstractVector, weight::Real = true) where {S,D,T}
-    return ShiftVector{S,D,T}(SVector{D}(vector), weight)
-end
-
-function ShiftVector{S,D}(vector::AbstractVector, weight::Real = true) where {S,D}
-    T = promote_type(eltype(vector), typeof(weight))
-    return ShiftVector{S,D,T}(SVector{D}(vector), weight)
-end
-
-ShiftVector{S}(coord::Real...; weight::Real = 1) where S = ShiftVector{S}(SVector(coord), weight)
 
 # Hashing and equality
 Base.hash(s::ShiftVector, h::UInt) = hash(s.vector, hash(s.weight, h))
