@@ -22,12 +22,34 @@ Represents a spatial coordinate with in space given by trait `S` (`Electrum.ByRe
 """
 struct CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
     vector::SVector{D,T}
+    CoordinateVector{S,C,D,T}(v::StaticVector) where {S,C,D,T} = new(v)
 end
 
 const RealCartesianCoordinate = CoordinateVector{ByRealSpace,ByCartesianCoordinate}
 const RealFractionalCoordinate = CoordinateVector{ByRealSpace,ByFractionalCoordinate}
 const ReciprocalCartesianCoordinate = CoordinateVector{ByReciprocalSpace,ByCartesianCoordinate}
 const ReciprocalFractionalCoordinate = CoordinateVector{ByReciprocalSpace,ByFractionalCoordinate}
+
+CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = CoordinateVector{S,C,D,T}(SVector{D,T}(t))
+
+CoordinateVector{S,C,D}(v::AbstractVector) where {S,C,D} = CoordinateVector{S,C,D,eltype(v)}(v)
+CoordinateVector{S,C,D}(v::StaticVector) where {S,C,D} = CoordinateVector{S,C,D,eltype(v)}(v)
+CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C,D}(SVector{D}(t))
+
+CoordinateVector{S,C}(v::StaticVector) where {S,C} = CoordinateVector{S,C,length(v),eltype(v)}(v)
+CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C}(SVector(t...))
+CoordinateVector{S,C}(x...) where {S,C} = CoordinateVector{S,C}(SVector(x))
+
+# Indexing
+Base.getindex(c::CoordinateVector, i::Int) = c.vector[i]
+
+Base.Tuple(c::CoordinateVector) = Tuple(c.vector)
+
+function Base.show(io::IO, c::CoordinateVector{S,C}) where {S,C}
+    print(io, CoordinateVector{S,C}, '(')
+    join(io, c, ", ")
+    print(io, ')')
+end
 
 #---Shift vectors----------------------------------------------------------------------------------#
 """
