@@ -1,11 +1,11 @@
 #---Coordinate vectors-----------------------------------------------------------------------------#
 """
-    AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T} <: StaticVector{D,T}
+    AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
 
 Supertype for all data representing coordinates in a space given by the trait `S` and coordinate
-system given by the trait `C`.
+system given by the trait `C`. The coordinates must be subtypes of `Real`.
 """
-abstract type AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T} <: StaticVector{D,T}
+abstract type AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
 end
 
 BySpace(::Type{<:AbstractCoordinateVector{S}}) where S = S()
@@ -18,7 +18,8 @@ ByCoordinate(::Type{<:AbstractCoordinateVector{<:BySpace,C}}) where C = C()
 
 Represents a spatial coordinate with in space given by trait `S` (`Electrum.ByRealSpace` or 
 `Electrum.ByReciprocalSpace`) and coordinate system given by trait `C` 
-(`Electrum.ByCartesianCoordinate` or `Electrum.ByFractionalCoordinate`.)
+(`Electrum.ByCartesianCoordinate` or `Electrum.ByFractionalCoordinate`.) The coordinates must be
+subtypes of `Real`.
 """
 struct CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
     vector::SVector{D,T}
@@ -38,7 +39,7 @@ CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C,D}(SVecto
 
 CoordinateVector{S,C}(v::StaticVector) where {S,C} = CoordinateVector{S,C,length(v),eltype(v)}(v)
 CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C}(SVector(t...))
-CoordinateVector{S,C}(x...) where {S,C} = CoordinateVector{S,C}(SVector(x))
+CoordinateVector{S,C}(x::Real...) where {S,C} = CoordinateVector{S,C}(SVector(x))
 
 # Indexing
 Base.getindex(c::CoordinateVector, i::Int) = c.vector[i]
@@ -53,7 +54,7 @@ end
 
 #---Shift vectors----------------------------------------------------------------------------------#
 """
-    ShiftVector{S,D,T<:Real} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
+    ShiftVector{S,D,T} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
 
 A vector in fractional coordinates representing a shift of a lattice or lattice dataset from the
 origin. This wraps a `SVector{D,T}` with an optional weight parameter of type `T` that may be useful
@@ -70,7 +71,7 @@ for this reason we define an alias for representing k-points:
 
     const KPoint = ShiftVector{ByReciprocalSpace}
 """
-struct ShiftVector{S,D,T<:Real} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
+struct ShiftVector{S,D,T} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
     vector::SVector{D,T}
     weight::T
     function ShiftVector{S,D,T}(vector::StaticVector, weight::Real = oneunit(T)) where {S,D,T}
