@@ -11,12 +11,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `StateDensity{T}` type which combines `EnergyOccupancy{T}` with a density of states value at the
 energy provided.
   - `ByCoordinate` traits: `ByCartesianCoordinate` and `ByFractionalCoordinate`.
-  - `ShiftVector{S,D,T} <: StaticVector{D,T}` type describing the shift of a lattice or data defined
-on it with respect to the origin, along with an optional weight parameter.
+  - `ShiftVector{S,D,T} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}`, representing a
+potentially weighted vector which shifts a data grid.
   - `require_same_space`, `require_dual_space`, and `require_same_coordinate` functions for checking
 whether `BySpace` and `ByCoordinate` traits are compatible in an operation.
+  - `AbstractCoordinateVector{S<:Electrum.BySpace,C<:Electrum.ByCoordinate,D,T}` type for coordinate
+vectors in real or reciprocal space with either fractional or Cartesian coordinates.
+  - `CoordinateVector{S,C,D,T}` and aliases:
+      + `RealCartesianCoordinate`
+      + `RealFractionalCoordinate`
+      + `ReciprocalCartesianCoordinate`
+      + `ReciprocalFractionalCoordinate`
 
 ### Changed
+  - [BREAKING] `KPoint{D}` is now `KPoint{D,T}`, equivalent to `ShiftVector{ByReciprocalSpace,D,T}`.
   - `BySpace` traits are now part of the public API.
   - `BySpace{D}` and its subtypes have lost their dimension type parameter.
 
