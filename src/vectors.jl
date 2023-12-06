@@ -63,9 +63,9 @@ see [`CoordinateVector`](@ref).
 """
 const ReciprocalFractionalCoordinate = CoordinateVector{ByReciprocalSpace,ByFractionalCoordinate}
 
-CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
 CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C}(SVector(t))
 CoordinateVector{S,C}(x::Real...) where {S,C} = CoordinateVector{S,C}(SVector(x))
+CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
 
 CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C}(SVector(t))
 CoordinateVector{S,C,D}(v::StaticArray) where {S,C,D} = CoordinateVector{S,C}(SVector{D}(v))
@@ -124,9 +124,9 @@ For more information about this type, see [`ShiftVector`](@ref).
 """
 const KPoint = ShiftVector{ByReciprocalSpace}
 
-ShiftVector{S}(::StaticArray, wt::Real = true) where S = array_not_flattened()
 ShiftVector{S}(t::Tuple, wt::Real = true) where S = ShiftVector{S}(SVector(t), wt)
 ShiftVector{S}(x::Real...; weight::Real = true) where S = ShiftVector{S}(SVector(x), weight)
+ShiftVector{S}(::StaticArray, wt::Real = true) where S = array_not_flattened()
 
 ShiftVector{S,D}(t::Tuple, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(t), wt)
 ShiftVector{S,D}(v::StaticArray, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(v), wt)
