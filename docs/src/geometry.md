@@ -1,9 +1,32 @@
-# Lattices
+# Geometry
 
 The starting point for solid state structures is a periodic lattice. Electrum provides convenient
 types and functions for working with lattices of arbitrary dimension, not just three dimensions. 
 
-## Real and reciprocal space traits
+## Traits
+
+Julia parametric types can be used to encode information about data types that are wrapped by a
+new composite type: for instance, Julia's `Array{T,D}` type includes information about the types of
+the elements in the type parameter `T`. However, type parameters can be used as tags that provide
+additional information about data types without relying on inheritance from another abstract type.
+One example of this is `Ptr{T}`: although a pointer is underlyingly a `UInt`, the type parameter
+encodes the type of data pointed at.
+
+Electrum uses several traits to encode information about numerical data, particularly vectors. If a
+user is given an instance of `SVector{3,Float64}`, the data type itself does not encode important
+information, like whether the data corresponds to a real or reciprocal space coordinate, or whether
+the coordinates are fractional coordinate or Cartesian coordinates. Electrum's data types use these
+traits in their declarations to convey this extra information.
+
+### Conventions
+
+Trait types are declared as singleton structs (no fields). If more information needs to be encoded,
+use a type parameter. The names of traits generally tend to start with `By`.
+
+If creating a new data type that uses one of the traits mentioned below, use the type itself as a
+parameter, not the singleton instance.
+
+### Real and reciprocal space
 
 The `BySpace` supertype contains two types, `ByRealSpace` and `ByReciprocalSpace`. These types are 
 used to denote whether data is associated with real space (e.g. electron density) or reciprocal 
@@ -11,7 +34,73 @@ space (e.g. the Fourier transform of the electron density). When working with la
 important to distinguish the two types of lattice: this is the primary reason why bare
 `SMatrix{D,D,T}` instances are not used in this package.
 
-## `Electrum.LatticeBasis` and methods
+The units associated with data bearing the `Electrum.ByRealSpace` trait are bohr or powers of bohr,
+whereas those associated with `Electrum.ByReciprocalSpace` are rad bohr⁻¹ or powers thereof.
+
+```@docs; canonical=false
+Electrum.BySpace
+Electrum.ByRealSpace
+Electrum.ByReciprocalSpace
+```
+
+### Coordinate system
+
+The `Electrum.ByCoordinate{D}` supertype contains `Electrum.ByCartesianCoordinate{D}` and
+`Electrum.ByFractionalCoordinate{D}`, corresponding to Cartesian or fractional coordinates in `D`
+dimensions.
+
+```@docs; canonical=false
+Electrum.ByCoordinate
+Electrum.ByCartesianCoordiate
+Electrum.ByFractionalCoordinate
+```
+
+## Coordinate vectors
+
+The `AbstractCoordinateVector{S<:Electrum.BySpace,C<:Electrum.ByCoordinate,D,T}` type encodes a
+coordinate vector with information about the space referred to by the coordinate and the coordinate
+system used.
+
+### `CoordinateVector`
+
+The `CoordinateVector{S,C,D,T}` type is the primary data type for working with spatial coordinates.
+The `RealCartesianCoordinate`, `RealFractionalCoordinate`, `ReciprocalCartesianCoordinate`, and
+`ReciprocalFractionalCoordinate` aliases correspond to the four possible combinations of `S` and `C`
+type parameters, and are preferred for interactive use.
+
+This type behaves almost identically to `SVector{D,T}`, but forbids nonsenical operations between
+data types: for instance, adding a `RealCartesianCoordinate` to a `ReciprocalCartesianCoordinate`.
+
+```@docs; canonical=false
+CoordinateVector
+RealCartesianCoordinate
+RealFractionalCoordinate
+ReciprocalCartesianCoordinate
+ReciprocalFractionalCoordinate
+```
+
+### `ShiftVector`
+
+A `ShiftVector` is almost identical to a `CoordinateVector`, but there are two major differences:
+  - `ShiftVector{S,D,T} <: AbstractCoordinateVector{S,Electrum.ByFractionalCoordinate,D,T}`: the
+    type only represents fractional coordinates.
+  - Along with fractional coordinates, instances contain a weight parameter that defaults to 1.
+
+The primary use for `ShiftVector` is to provide information about how data associated with a lattice
+is shifted with respect to the origin. In particular, it forms the implementation of `KPoint{D,T}`,
+which is simply an alias for `ShiftVector{ByReciprocalSpace,D,T}`. In many cases, lists of k-points
+are symmetry-reduced, and the weight parameter is used to account for coordinates not present in the
+list due to symmetry reduction.
+
+To retain the 
+
+```@docs; canonical=false
+ShiftVector
+KPoint
+weight
+```
+
+## Lattices
 
 The `Electrum.LatticeBasis{S<:BySpace,D,T}` data type is a wrapper for an
 `SMatrix{D,D,T,D^2}` which represents the real or reciprocal space basis vectors of a lattice.

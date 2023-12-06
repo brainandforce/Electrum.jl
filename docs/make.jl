@@ -15,7 +15,7 @@ makedocs(
     warnonly = is_ci_env,
     pages = [
         "Home" => "index.md",
-        "Lattices" => "lattices.md",
+        "Geometry" => "geometry.md",
         "Atoms and crystals" => "atoms.md",
         "Data grids" => "grids.md",
         "File formats" => "filetypes.md",
