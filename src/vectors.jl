@@ -26,9 +26,38 @@ struct CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
     CoordinateVector{S,C,D,T}(v::StaticVector) where {S,C,D,T} = new(v)
 end
 
+"""
+    RealCartesianCoordinate{D,T}
+    (alias for CoordinateVector{Electrum.ByRealSpace,Electrum.ByCartesianCoordinate,D,T})
+
+Represents a real space Cartesian coordinate. For more information, see [`CoordinateVector`](@ref).
+"""
 const RealCartesianCoordinate = CoordinateVector{ByRealSpace,ByCartesianCoordinate}
+
+"""
+    RealFractionalCoordinate{D,T}
+    (alias for CoordinateVector{Electrum.ByRealSpace,Electrum.ByFractionalCoordinate,D,T})
+
+Represents a real space fractional coordinate. For more information, see [`CoordinateVector`](@ref).
+"""
 const RealFractionalCoordinate = CoordinateVector{ByRealSpace,ByFractionalCoordinate}
+
+"""
+    ReciprocalCartesianCoordinate{D,T}
+    (alias for CoordinateVector{Electrum.ByReciprocalSpace,Electrum.ByCartesianCoordinate,D,T})
+
+Represents a reciprocal space Cartesian coordinate. For more information, see
+[`CoordinateVector`](@ref).
+"""
 const ReciprocalCartesianCoordinate = CoordinateVector{ByReciprocalSpace,ByCartesianCoordinate}
+
+"""
+    ReciprocalFractionalCoordinate{D,T}
+    (alias for CoordinateVector{Electrum.ByReciprocalSpace,Electrum.ByFractionalCoordinate,D,T})
+
+Represents a reciprocal space fractional coordinate. For more information,
+see [`CoordinateVector`](@ref).
+"""
 const ReciprocalFractionalCoordinate = CoordinateVector{ByReciprocalSpace,ByFractionalCoordinate}
 
 CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = CoordinateVector{S,C,D,T}(SVector{D,T}(t))
