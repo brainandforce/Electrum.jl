@@ -1,3 +1,34 @@
+#---Coordinate vectors-----------------------------------------------------------------------------#
+"""
+    AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T} <: StaticVector{D,T}
+
+Supertype for all data representing coordinates in a space given by the trait `S` and coordinate
+system given by the trait `C`.
+"""
+abstract type AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T} <: StaticVector{D,T}
+end
+
+BySpace(::Type{<:AbstractCoordinateVector{S}}) where S = S()
+ByCoordinate(::Type{<:AbstractCoordinateVector{<:BySpace,C}}) where C = C()
+
+(::Type{<:AbstractCoordinateVector})(::StaticArray) = error("Argument must be a vector.")
+
+"""
+    CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
+
+Represents a spatial coordinate with in space given by trait `S` (`Electrum.ByRealSpace` or 
+`Electrum.ByReciprocalSpace`) and coordinate system given by trait `C` 
+(`Electrum.ByCartesianCoordinate` or `Electrum.ByFractionalCoordinate`.)
+"""
+struct CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
+    vector::SVector{D,T}
+end
+
+const RealCartesianCoordinate = CoordinateVector{ByRealSpace,ByCartesianCoordinate}
+const RealFractionalCoordinate = CoordinateVector{ByRealSpace,ByFractionalCoordinate}
+const ReciprocalCartesianCoordinate = CoordinateVector{ByReciprocalSpace,ByCartesianCoordinate}
+const ReciprocalFractionalCoordinate = CoordinateVector{ByReciprocalSpace,ByFractionalCoordinate}
+
 #---Shift vectors----------------------------------------------------------------------------------#
 """
     ShiftVector{S<:BySpace,D,T} <: StaticVector{D,T}
