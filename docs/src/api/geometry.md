@@ -39,8 +39,14 @@ eachvertex
 maxHKLindex
 ```
 
-## Shift vectors
+## Coordinate vectors
 ```@docs
+AbstractCoordinateVector
+CoordinateVector
+RealCartesianCoordinate
+RealFractionalCoordinate
+ReciprocalCartesianCoordinate
+ReciprocalFractionalCoordinate
 ShiftVector
 KPoint
 weight
