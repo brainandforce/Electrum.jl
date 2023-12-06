@@ -11,7 +11,10 @@ end
 BySpace(::Type{<:AbstractCoordinateVector{S}}) where S = S()
 ByCoordinate(::Type{<:AbstractCoordinateVector{<:BySpace,C}}) where C = C()
 
-(::Type{<:AbstractCoordinateVector})(::StaticArray) = error("Argument must be a vector.")
+array_not_flattened() = error(
+    "Multidimensional array arguments are not automatically flattened to vectors with this " *
+    "constructor. To do this, explicitly include the dimension type parameter."
+)
 
 """
     CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
@@ -23,7 +26,7 @@ subtypes of `Real`.
 """
 struct CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
     vector::SVector{D,T}
-    CoordinateVector{S,C,D,T}(v::StaticVector) where {S,C,D,T} = new(v)
+    CoordinateVector{S,C}(v::StaticVector{D,T}) where {S,C,D,T} = new{S,C,D,T}(v)
 end
 
 """
@@ -60,15 +63,17 @@ see [`CoordinateVector`](@ref).
 """
 const ReciprocalFractionalCoordinate = CoordinateVector{ByReciprocalSpace,ByFractionalCoordinate}
 
-CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = CoordinateVector{S,C,D,T}(SVector{D,T}(t))
-
-CoordinateVector{S,C,D}(v::AbstractVector) where {S,C,D} = CoordinateVector{S,C,D,eltype(v)}(v)
-CoordinateVector{S,C,D}(v::StaticVector) where {S,C,D} = CoordinateVector{S,C,D,eltype(v)}(v)
-CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C,D}(SVector{D}(t))
-
-CoordinateVector{S,C}(v::StaticVector) where {S,C} = CoordinateVector{S,C,length(v),eltype(v)}(v)
-CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C}(SVector(t...))
+CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
+CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C}(SVector(t))
 CoordinateVector{S,C}(x::Real...) where {S,C} = CoordinateVector{S,C}(SVector(x))
+
+CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C}(SVector(t))
+CoordinateVector{S,C,D}(v::StaticArray) where {S,C,D} = CoordinateVector{S,C}(SVector{D}(v))
+CoordinateVector{S,C,D}(v::AbstractArray) where {S,C,D} = CoordinateVector{S,C}(SVector{D}(v))
+
+CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = CoordinateVector{S,C}(SVector{D,T}(t))
+CoordinateVector{S,C,D,T}(v::StaticArray) where {S,C,D,T} = CoordinateVector{S,C}(SVector{D,T}(v))
+CoordinateVector{S,C,D,T}(v::AbstractArray) where {S,C,D,T} = CoordinateVector{S,C}(SVector{D,T}(v))
 
 # Indexing
 Base.getindex(c::CoordinateVector, i::Int) = c.vector[i]
