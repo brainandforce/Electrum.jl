@@ -86,6 +86,37 @@ function Base.show(io::IO, c::CoordinateVector{S,C}) where {S,C}
     print(io, ')')
 end
 
+# Math operations
+function Base.:+(c1::CoordinateVector, c2::CoordinateVector)
+    require_same_space(c1, c2)
+    require_same_coordinate(c1, c2)
+    return promote_type(typeof(c1), typeof(c2))(c1.vector + c2.vector)
+end
+
+Base.:-(c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(-c.vector)
+Base.:-(c1::CoordinateVector, c2::CoordinateVector) = +(c1, -c2)
+
+Base.:*(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s * c.vector)
+Base.:*(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector * s)
+
+# Dot product as multiplication
+function Base.:*(c1::CoordinateVector, c2::CoordinateVector)
+    require_dual_space(c1, c2)
+    require_same_coordinate(c1, c2)
+    return dot(c1.vector, c2.vector)
+end
+
+Base.:/(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector / s)
+Base.:(//)(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector // s)
+
+# Defined separately because s / c.vector is not a `StaticArray`
+function Base.:/(s::Real, c::CoordinateVector{S,C,D}) where {S,C,D}
+    return CoordinateVector{inverse_space(S),C,D}(s / c.vector)
+end
+
+Base.:\(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s \ c.vector)
+# Base.:\(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector \ s)
+
 #---Shift vectors----------------------------------------------------------------------------------#
 """
     ShiftVector{S,D,T} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
