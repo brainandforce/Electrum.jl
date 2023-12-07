@@ -1,3 +1,41 @@
+@testset "Coordinates" begin
+    c1 = RealCartesianCoordinate(1, 2, 3)
+    # Constructors
+    @test RealCartesianCoordinate(true, UInt8(2), 3) === c1
+    @test RealCartesianCoordinate((true, UInt8(2), 3)) === c1
+    @test RealCartesianCoordinate(MVector(1, 2, 3)) === c1
+    @test_throws Exception RealCartesianCoordinate(SMatrix{1,3}(1, 2, 3))
+    @test RealCartesianCoordinate{3}((1, 2, 3)) === c1
+    @test RealCartesianCoordinate{3}([1, 2, 3]) === c1
+    @test RealCartesianCoordinate{3}(MVector(1, 2, 3)) === c1
+    @test RealCartesianCoordinate{3}(SMatrix{1,3}(1, 2, 3)) === c1
+    @test RealCartesianCoordinate{3,Int}((1, 2, 3)) === c1
+    @test RealCartesianCoordinate{3,Int}([1, 2, 3]) === c1
+    @test RealCartesianCoordinate{3,Int}(MVector(1, 2, 3)) === c1
+    @test RealCartesianCoordinate{3,Int}(SMatrix{1,3}(1, 2, 3)) === c1
+    # Conversion
+    @test convert(SVector, c1) === SVector(1, 2, 3)
+    @test convert(SVector{3}, c1) === SVector(1, 2, 3)
+    @test convert(SVector{3,Float32}, c1) === SVector{3,Float32}(1, 2, 3)
+    @test convert(MVector, c1) == MVector(1, 2, 3)
+    @test convert(RealCartesianCoordinate{3,Float32}, c1) === 
+        RealCartesianCoordinate{3,Float32}(1, 2, 3)
+    @test_throws Exception convert(RealFractionalCoordinate{3}, c1)
+    @test_throws Exception convert(ReciprocalCartesianCoordinate{3}, c1)
+    # Zero vectors
+    @test zero(RealFractionalCoordinate{3,Int}) === RealFractionalCoordinate(0, 0, 0)
+    @test zero(RealFractionalCoordinate{3}) == RealFractionalCoordinate(0, 0, 0)
+    # Math operations should maintain the correct type
+    @test c1 + RealCartesianCoordinate(4, 5, 6) === RealCartesianCoordinate(5, 7, 9)
+    @test c1 + SVector(4, 5, 6) === SVector(5, 7, 9)
+    @test_throws Exception c1 + RealFractionalCoordinate(4, 5, 6)
+    @test_throws Exception c1 + ReciprocalCartesianCoordinate(4, 5, 6)
+    @test c1 * 2 === RealCartesianCoordinate(2, 4, 6)
+    @test 2 * c1 === RealCartesianCoordinate(2, 4, 6)
+    @test c1 / 2 === RealCartesianCoordinate(1/2, 1, 3/2)
+    @test c1 // 2 === RealCartesianCoordinate(1//2, 1, 3//2)
+end
+
 @testset "Shift vectors" begin
     # Equality and hashing
     @test KPoint(0, 0, 0, weight = 1) == KPoint(0, 0, 0, weight = 1)
