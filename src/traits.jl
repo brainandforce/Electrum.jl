@@ -112,10 +112,10 @@ function require_same_space(
     traits::Tuple{Vararg{BySpace}};
     msg = "Inputs must describe the same space (real or reciprocal)."
 )
-    traits isa NTuple || error(msg)
+    return traits isa NTuple ? nothing : error(msg)
 end
 
-require_same_space(args...; msg) = require_same_coordinate(BySpace.(args); msg)
+require_same_space(args...; msg...) = require_same_space(BySpace.(args); msg...)
 
 """
     Electrum.require_same_space(a, b; msg)
@@ -124,7 +124,7 @@ Checks that the `BySpace` trait of `a` is the inverse of the `BySpace` trait of 
 error with optional message `msg` if this is not the case.
 """
 function require_dual_space(a, b; msg = "One input must describe the inverse space of the other.")
-    BySpace(a) === inv(BySpace(b)) || error(msg)
+    return BySpace(a) === inv(BySpace(b)) ? nothing : error(msg)
 end
 
 #---Coordinate type--------------------------------------------------------------------------------#
@@ -178,7 +178,7 @@ function require_same_coordinate(
     traits::Tuple{Vararg{ByCoordinate}};
     msg = "Inputs must share a common coordinate system."
 )
-    traits isa NTuple || error(msg)
+    return traits isa NTuple ? nothing : error(msg)
 end
 
-require_same_coordinate(args...; msg) = require_same_coordinate(ByCoordinate.(args); msg)
+require_same_coordinate(args...; msg...) = require_same_coordinate(ByCoordinate.(args); msg...)
