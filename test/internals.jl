@@ -12,8 +12,8 @@
     # Arguments not convertible to integers should fail
     @test_throws InexactError convert_to_transform(1.5, 2)
     # Data space traits
-    @test Electrum.BySpace(xsf["this_is_3Dgrid#1"]) === Electrum.ByRealSpace()
-    @test Electrum.BySpace(v80_wfk["wavefunction"]) === Electrum.ByReciprocalSpace()
+    @test BySpace(xsf["this_is_3Dgrid#1"]) === ByRealSpace()
+    @test BySpace(v80_wfk["wavefunction"]) === ByReciprocalSpace()
     # Offset axes
     @test Base.has_offset_axes(xsf["this_is_3Dgrid#1"])
     @test Base.has_offset_axes(v80_wfk["wavefunction"])
@@ -29,12 +29,12 @@
     @test Electrum.SUnitVector{3}(1)[1:2] == [1, 0]
     @test_throws MethodError Electrum.SUnitVector{3,Char}(1)
     # Traits
-    @test Electrum.BySpace(RealBasis{3}) === Electrum.ByRealSpace()
-    @test Electrum.BySpace(basis(wavecar)) === Electrum.ByReciprocalSpace()
-    @test Electrum.BySpace(wavecar) === Electrum.ByReciprocalSpace()
-    @test Electrum.BySpace(typeof(wavecar)) === Electrum.ByReciprocalSpace()
-    @test inv(Electrum.ByRealSpace) === Electrum.ByReciprocalSpace
-    @test inv(Electrum.ByReciprocalSpace) === Electrum.ByRealSpace
-    @test inv(Electrum.ByRealSpace()) === Electrum.ByReciprocalSpace()
-    @test inv(Electrum.ByReciprocalSpace()) === Electrum.ByRealSpace()
+    @test BySpace(RealBasis{3}) === ByRealSpace()
+    @test BySpace(basis(wavecar)) === ByReciprocalSpace()
+    @test BySpace(wavecar) === ByReciprocalSpace()
+    @test BySpace(typeof(wavecar)) === ByReciprocalSpace()
+    @test inv(ByRealSpace) === ByReciprocalSpace
+    @test inv(ByReciprocalSpace) === ByRealSpace
+    @test inv(ByRealSpace()) === ByReciprocalSpace()
+    @test inv(ByReciprocalSpace()) === ByRealSpace()
 end
