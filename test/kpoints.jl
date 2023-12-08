@@ -19,7 +19,7 @@
     @test_throws Exception KPoint{3}(SMatrix{3,1}([0, 0, 0]))
     @test_throws Exception KPoint{3,Int}(SMatrix{3,1}([0, 0, 0]))
     # Traits
-    @test Electrum.DataSpace(zero(KPoint{3})) === Electrum.ByReciprocalSpace()
+    @test Electrum.BySpace(zero(KPoint{3})) === Electrum.ByReciprocalSpace()
     @test Electrum.ByCoordinate(zero(KPoint{3})) === Electrum.ByFractionalCoordinate()
     # Truncation
     # TODO: see note for trunc() in src/vectors.jl

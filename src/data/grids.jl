@@ -48,6 +48,7 @@ struct DataGrid{D,B<:LatticeBasis,S<:AbstractVector{<:Real},T} <: AbstractArray{
 end
 
 Base.has_offset_axes(g::DataGrid) = true
+BySpace(::Type{T}) where T<:DataGrid = BySpace(fieldtype(T, :basis))
 
 Base.show(io::IO, g::DataGrid) = print(io, typeof(g), (g.data, g.basis, g.shift))
 
@@ -335,7 +336,7 @@ For reciprocal space data, the frequencies are binned with the assumption that t
 are given in angular wavenumbers, and they represent real space coordinates. The Nyquist frequency
 convention is *not* used, so all elements will have positive indices.
 """
-FFTW.fftfreq(g::DataGrid) = fftfreq(g, DataSpace(g))
+FFTW.fftfreq(g::DataGrid) = fftfreq(g, BySpace(g))
 
 #---Operations specific to `RealDataGrid`----------------------------------------------------------#
 """

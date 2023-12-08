@@ -58,6 +58,6 @@ end
     @test_throws DimensionMismatch SpinBivector(SVector{2}(1, 0), SVector{3}(0, 1, 0))
     @test_throws DimensionMismatch SpinBivector{3}([1, 0, 0], [0, 1])
     # Traits
-    @test Electrum.DataSpace(SpinBivector{3}) === Electrum.ByRealSpace()
-    @test Electrum.DataSpace(s_z) === Electrum.ByRealSpace()
+    @test Electrum.BySpace(SpinBivector{3}) === Electrum.ByRealSpace()
+    @test Electrum.BySpace(s_z) === Electrum.ByRealSpace()
 end
