@@ -28,13 +28,27 @@
     @test Electrum.SUnitVector{3}(1)[:] === SVector{3,Bool}(1, 0, 0)
     @test Electrum.SUnitVector{3}(1)[1:2] == [1, 0]
     @test_throws MethodError Electrum.SUnitVector{3,Char}(1)
-    # Traits
+    # BySpace traits
     @test BySpace(RealBasis{3}) === ByRealSpace()
     @test BySpace(basis(wavecar)) === ByReciprocalSpace()
     @test BySpace(wavecar) === ByReciprocalSpace()
     @test BySpace(typeof(wavecar)) === ByReciprocalSpace()
+    @test_throws Exception BySpace(420)
+    @test_throws Exception BySpace(Int)
     @test inv(ByRealSpace) === ByReciprocalSpace
     @test inv(ByReciprocalSpace) === ByRealSpace
     @test inv(ByRealSpace()) === ByReciprocalSpace()
     @test inv(ByReciprocalSpace()) === ByRealSpace()
+    # ByCoordinate traits
+    @test ByCoordinate(KPoint(0, 0, 0)) === ByFractionalCoordinate()
+    @test ByCoordinate(KPoint{3,Int}) === ByFractionalCoordinate()
+    @test_throws Exception ByCoordinate(420)
+    @test_throws Exception ByCoordinate(Int)
+    # Requirements for compatible traits
+    (k1, k2, s) = (KPoint(0, 0, 0), KPoint(1/2, 1/2, 1/2), zero(ShiftVector{ByRealSpace,3}))
+    @test isnothing(Electrum.require_same_space(k1, k2))
+    @test isnothing(Electrum.require_dual_space(k1, s))
+    @test isnothing(Electrum.require_same_coordinate(k1, k2))
+    @test_throws Exception Electrum.require_same_space(k1, s)
+    @test_throws Exception Electrum.require_dual_space(k1, k2)
 end
