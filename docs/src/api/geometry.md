@@ -41,7 +41,6 @@ maxHKLindex
 
 ## Coordinate vectors
 ```@docs
-AbstractCoordinateVector
 CoordinateVector
 RealCartesianCoordinate
 RealFractionalCoordinate

@@ -1,33 +1,17 @@
 #---Coordinate vectors-----------------------------------------------------------------------------#
 """
-    AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
+    CoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
 
-Supertype for all data representing coordinates in a space given by the trait `S` and coordinate
-system given by the trait `C`. The coordinates must be subtypes of `Real`.
+Represents a spatial coordinate with space given by trait `S` and coordinate trait `C`. Coordinate
+values must be subtypes of `Real`.
 """
-abstract type AbstractCoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
-end
-
-BySpace(::Type{<:AbstractCoordinateVector{S}}) where S = S()
-ByCoordinate(::Type{<:AbstractCoordinateVector{<:BySpace,C}}) where C = C()
-
-array_not_flattened() = error(
-    "Multidimensional array arguments are not automatically flattened to vectors with this " *
-    "constructor. To do this, explicitly include the dimension type parameter."
-)
-
-"""
-    CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
-
-Represents a spatial coordinate with in space given by trait `S` (`Electrum.ByRealSpace` or 
-`Electrum.ByReciprocalSpace`) and coordinate system given by trait `C` 
-(`Electrum.ByCartesianCoordinate` or `Electrum.ByFractionalCoordinate`.) The coordinates must be
-subtypes of `Real`.
-"""
-struct CoordinateVector{S,C,D,T} <: AbstractCoordinateVector{S,C,D,T}
+struct CoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
     vector::SVector{D,T}
     CoordinateVector{S,C}(v::StaticVector{D,T}) where {S,C,D,T} = new{S,C,D,T}(v)
 end
+
+BySpace(::Type{<:CoordinateVector{S}}) where S = S()
+ByCoordinate(::Type{<:CoordinateVector{<:BySpace,C}}) where C = C()
 
 """
     RealCartesianCoordinate{D,T}
@@ -63,9 +47,14 @@ see [`CoordinateVector`](@ref).
 """
 const ReciprocalFractionalCoordinate = CoordinateVector{ByReciprocalSpace,ByFractionalCoordinate}
 
+array_not_flattened() = error(
+    "Multidimensional array arguments are not automatically flattened to vectors with this " *
+    "constructor. To do this, explicitly include the dimension type parameter."
+)
+
+CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
 CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C}(SVector(t))
 CoordinateVector{S,C}(x::Real...) where {S,C} = CoordinateVector{S,C}(SVector(x))
-CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
 
 CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C}(SVector(t))
 CoordinateVector{S,C,D}(v::StaticArray) where {S,C,D} = CoordinateVector{S,C}(SVector{D}(v))
@@ -119,12 +108,12 @@ Base.:\(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s
 
 #---Shift vectors----------------------------------------------------------------------------------#
 """
-    ShiftVector{S,D,T} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
+    ShiftVector{S<:BySpace,D,T} <: StaticVector{D,T}
 
 A vector in fractional coordinates representing a shift of a lattice or lattice dataset from the
-origin. This wraps a `SVector{D,T}` with an optional weight parameter of type `T` that may be useful
-when working with symmetrical structures or k-points in the irreducible Brillouin zone. If it is not
-explicitly set, it defaults to 1.
+origin. This wraps a `CoordinateVector{S,ByFractionalCoordinate,D,T}` with an optional weight
+parameter that may be useful when working with symmetrical structures or k-points in the
+irreducible Brillouin zone. If it is not explicitly set, it defaults to 1.
 
 If constructors do not explicitly reference an element type, the element type is automatically
 inferred by promoting the types of the arguments.
@@ -136,14 +125,16 @@ for this reason we define an alias for representing k-points:
 
     const KPoint = ShiftVector{ByReciprocalSpace}
 """
-struct ShiftVector{S,D,T} <: AbstractCoordinateVector{S,ByFractionalCoordinate,D,T}
-    vector::SVector{D,T}
+struct ShiftVector{S<:BySpace,D,T} <: StaticVector{D,T}
+    vector::CoordinateVector{S,ByFractionalCoordinate,D,T}
     weight::T
-    function ShiftVector{S}(v::StaticVector{D}, wt::Real = true) where {S,D}
-        T = promote_type(eltype(v), typeof(wt))
-        return new{S,D,T}(v, wt)
+    function ShiftVector(v::CoordinateVector{S,ByFractionalCoordinate}, wt::Real = true) where S
+        return new{S, length(v), promote_type(eltype(v), typeof(wt))}(v, wt)
     end
 end
+
+BySpace(::Type{<:ShiftVector{S}}) where S = S()
+ByCoordinate(::Type{<:ShiftVector}) = ByFractionalCoordinate()
 
 """
     KPoint{D,T} (alias for ShiftVector{ByReciprocalSpace,D,T})
@@ -155,9 +146,13 @@ For more information about this type, see [`ShiftVector`](@ref).
 """
 const KPoint = ShiftVector{ByReciprocalSpace}
 
+function ShiftVector{S}(v::StaticVector, wt::Real = true) where S 
+    return ShiftVector(CoordinateVector{S,ByFractionalCoordinate}(v), wt)
+end
+
+ShiftVector{S}(::StaticArray, wt::Real = true) where S = array_not_flattened()
 ShiftVector{S}(t::Tuple, wt::Real = true) where S = ShiftVector{S}(SVector(t), wt)
 ShiftVector{S}(x::Real...; weight::Real = true) where S = ShiftVector{S}(SVector(x), weight)
-ShiftVector{S}(::StaticArray, wt::Real = true) where S = array_not_flattened()
 
 ShiftVector{S,D}(t::Tuple, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(t), wt)
 ShiftVector{S,D}(v::StaticArray, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(v), wt)
@@ -202,9 +197,6 @@ weight(s::ShiftVector) = s.weight
 Moves a `ShiftVector` so that its values lie within the range [-1/2, 1/2]. The weight is preserved.
 """
 Base.truncate(s::ShiftVector) = (typeof(s))(rem.(s.vector, 1, RoundNearest), s.weight)
-
-BySpace(::Type{<:ShiftVector{S,D}}) where {S,D} = S()
-ByCoordinate(::Type{<:ShiftVector{S,D}}) where {S,D} = ByFractionalCoordinate()
 
 Base.summary(io::IO, s::ShiftVector) = print(io, typeof(s), " with weight ", s.weight)
 Base.show(io::IO, s::ShiftVector) = print(io, typeof(s), '(', s.vector, ", ", s.weight, ')')
