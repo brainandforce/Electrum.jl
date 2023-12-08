@@ -118,7 +118,7 @@ end
 require_same_space(args...; msg...) = require_same_space(BySpace.(args); msg...)
 
 """
-    Electrum.require_same_space(a, b; msg)
+    Electrum.require_dual_space(a, b; msg)
 
 Checks that the `BySpace` trait of `a` is the inverse of the `BySpace` trait of `b`,  throwing an
 error with optional message `msg` if this is not the case.
@@ -169,7 +169,7 @@ ByCoordinate(x) = ByCoordinate(typeof(x))
 ByCoordinate(::Type) = error("No coordinate trait is defined for this type.")
 
 """
-    Electrum.require_same_space(args...; msg)
+    Electrum.require_same_coordinate(args...; msg)
 
 Checks that the `ByCoordinate` traits of all arguments are identical, throwing an error with 
 optional message `msg` if this is not the case.
