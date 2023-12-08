@@ -10,9 +10,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
   - `StateDensity{T}` type which combines `EnergyOccupancy{T}` with a density of states value at the
 energy provided.
-  - `ByCoordinate{D}` traits: `ByCartesianCoordinate{D}` and `ByFractionalCoordinate{D}`.
+  - `ByCoordinate` traits: `ByCartesianCoordinate` and `ByFractionalCoordinate`.
   - `ShiftVector{S,D,T} <: StaticVector{D,T}` type describing the shift of a lattice or data defined
 on it with respect to the origin, along with an optional weight parameter.
+
+### Changed
+  - `BySpace` traits are now part of the public API.
+  - `BySpace(x)` replaces `Electrum.DataSpace(x)`.
+  - `BySpace{D}` and its subtypes have lost their dimension type parameter.
 
 ## [0.1.18]: 2024-02-06
 
