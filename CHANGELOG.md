@@ -18,8 +18,10 @@ whether `BySpace` and `ByCoordinate` traits are compatible in an operation.
 
 ### Changed
   - `BySpace` traits are now part of the public API.
-  - `BySpace(x)` replaces `Electrum.DataSpace(x)`.
   - `BySpace{D}` and its subtypes have lost their dimension type parameter.
+
+### Removed
+  - `Electrum.DataSpace(x)` has been replaced with `BySpace(x)`.
 
 ## [0.1.17]: 2023-11-29
 
