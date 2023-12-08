@@ -9,44 +9,44 @@ end
 
 #---Association of data with spatial coordinates---------------------------------------------------#
 """
-    DataSpace{D} <: CrystalDataTrait
+    DataSpace <: CrystalDataTrait
 
 Describes the space in which a dataset is defined, which can be real space, reciprocal space, or
 data associated with individual atoms in a structure.
 """
-abstract type DataSpace{D} <: CrystalDataTrait
+abstract type DataSpace <: CrystalDataTrait
 end
 
 """
-    ByAtom{D}
+    ByAtom
 
 Trait for data associated with atomic positions in a crystal.
 """
-struct ByAtom{D} <: DataSpace{D}
+struct ByAtom <: DataSpace
 end
 
 """
-    BySpace{D}
+    BySpace
 
-Supertype for the `ByRealSpace{D}` and `ByReciprocalSpace{D}` traits.
+Supertype for the `ByRealSpace` and `ByReciprocalSpace` traits.
 """
-abstract type BySpace{D} <: DataSpace{D}
+abstract type BySpace <: DataSpace
 end
 
 """
-    ByRealSpace{D}
+    ByRealSpace
 
-Trait for real space data in `D` dimensions.
+Trait for real space data.
 """
-struct ByRealSpace{D} <: BySpace{D}
+struct ByRealSpace <: BySpace
 end
 
 """
-    ByReciprocalSpace{D}
+    ByReciprocalSpace
 
-Trait for reciprocal space data in `D` dimensions.
+Trait for reciprocal space data.
 """
-struct ByReciprocalSpace{D} <: BySpace{D}
+struct ByReciprocalSpace <: BySpace
 end
 
 """
@@ -60,25 +60,19 @@ Returns the space trait dual to the given space trait. Either a type or an insta
 julia> Electrum.inverse_space(Electrum.ByReciprocalSpace)
 Electrum.ByRealSpace
 
-julia> Electrum.inverse_space(Electrum.ByRealSpace{3})
-Electrum.ByReciprocalSpace{3}
-
-julia> Electrum.inverse_space(Electrum.ByRealSpace{3}())
-Electrum.ByReciprocalSpace{3}()
+julia> Electrum.inverse_space(Electrum.ByRealSpace())
+Electrum.ByReciprocalSpace()
 ```
 """
 inverse_space(::Type{ByRealSpace}) = ByReciprocalSpace
 inverse_space(::Type{ByReciprocalSpace}) = ByRealSpace
-inverse_space(::Type{ByRealSpace{D}}) where D = ByReciprocalSpace{D}
-inverse_space(::Type{ByReciprocalSpace{D}}) where D = ByRealSpace{D}
 inverse_space(::T) where T<:BySpace = inverse_space(T)()
 
 """
     Electrum.DataSpace(x) -> DataSpace
 
 Returns a trait that determines whether a data set associated with a crystal is defined in real
-space (`ByRealSpace{D}()`), reciprocal space (`ByReciprocalSpace{D}()`), or by atomic positions
-(`ByAtom{D}`), where `D` is the number of dimensions.
+space (`ByRealSpace`), reciprocal space (`ByReciprocalSpace`), or by atomic positions (`ByAtom`).
 
 By default, `DataSpace(x)` will infer the appropriate trait from the lattice basis vectors
 included in `x`, assumed to be in a field named `basis`. The fallback definition is:
@@ -93,49 +87,32 @@ are `Electrum.LatticeBasis` objects stored in the `basis` field, it will be nece
 DataSpace(x) = DataSpace(typeof(x))
 DataSpace(T::Type) = DataSpace(fieldtype(T, :basis))
 
-"""
-    Electrum.dimension(::DataSpace{D}) = D
-    Electrum.dimension(::Type{<:DataSpace{D}}) = D
-
-Returns the number of dimensions (or other object representing the dimensionality) associated with a
-`DataSpace` trait.
-"""
-dimension(::DataSpace{D}) where D = D
-dimension(::Type{<:DataSpace{D}}) where D = D
-
-"""
-    Electrum.dimension(x)
-
-Infers the number of dimensions `Electrum.DataSpace(x)` from the result of `DataSpace(x)`.
-"""
-dimension(x) = dimension(DataSpace(x))
-
 #---Coordinate type--------------------------------------------------------------------------------#
 """
-    ByCoordinate{D} <: CrystalDataTrait
+    ByCoordinate <: CrystalDataTrait
 
-Describes the coordinate system associated with data. This includes `ByCartesianCoordinate{D}` and
-`ByFractionalCoordinate{D}`.
+Describes the coordinate system associated with data. This includes `ByCartesianCoordinate` and
+`ByFractionalCoordinate`.
 """
-abstract type ByCoordinate{D} <: CrystalDataTrait
+abstract type ByCoordinate <: CrystalDataTrait
 end
 
 """
-    ByCartesianCoordinate{D} <: ByCoordinate{D}
+    ByCartesianCoordinate <: ByCoordinate
 
-Trait type for coordinates in `D` dimensions represented in terms of an implicit orthonormal basis
-in units of bohr or rad*bohr⁻¹.
+Trait type for coordinates represented in terms of an implicit orthonormal basis with units of bohr
+or rad*bohr⁻¹.
 """
-struct ByCartesianCoordinate{D} <: ByCoordinate{D}
+struct ByCartesianCoordinate <: ByCoordinate
 end
 
 """
-    ByFractionalCoordinate{D} <: ByCoordinate{D}
+    ByFractionalCoordinate <: ByCoordinate
 
 Trait type for coordinates in `D` dimensions whose values depend on a choice of basis, usually the
 basis vectors describing the lattice in which the coordinate is contained.
 """
-struct ByFractionalCoordinate{D} <: ByCoordinate{D}
+struct ByFractionalCoordinate <: ByCoordinate
 end
 
 """
