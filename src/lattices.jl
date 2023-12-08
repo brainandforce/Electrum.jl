@@ -84,7 +84,7 @@ LatticeBasis{S,D}(::StaticArray) where {S,D} = _nonsquare_matrix_error()
 Base.show(io::IO, b::LatticeBasis) = print(io, typeof(b), '(', b.matrix, ')')
 
 """
-    RealBasis{D,T} (alias for Electrum.LatticeBasis{ByRealSpace,D,T})
+    RealBasis{D,T} (alias for Electrum.LatticeBasis{Electrum.ByRealSpace,D,T})
 
 Represents a the basis vectors of a lattice in real space, with lengths given in units of bohr.
 
@@ -93,7 +93,7 @@ For more information about this type, see [`Electrum.LatticeBasis`](@ref Electru
 const RealBasis = LatticeBasis{ByRealSpace}
 
 """
-    ReciprocalBasis{D,T} (alias for Electrum.LatticeBasis{ByRealSpace,D,T})
+    ReciprocalBasis{D,T} (alias for Electrum.LatticeBasis{Electrum.ByReciprocalSpace,D,T})
 
 Represents a the basis vectors of a lattice in reciprocal space, with lengths given in units of 
 radians per bohr.
@@ -103,7 +103,7 @@ For more information about this type, see [`Electrum.LatticeBasis`](@ref Electru
 const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
 
 """
-    AbstractBasis{D,T} (alias for Electrum.LatticeBasis{BySpace,D,T})
+    AbstractBasis{D,T} (alias for Electrum.LatticeBasis{<:BySpace,D,T})
 
 Supertype that contains `RealBasis{D,T}` and `ReciprocalBasis{D,T}`. Code that can dispatch on
 either `RealBasis` or `ReciprocalBasis` can refer to this type.
@@ -199,20 +199,11 @@ basis(x) = x.basis::LatticeBasis
 
 #---Real/reciprocal space traits-------------------------------------------------------------------#
 """
-    Electrum.DataSpace(::Type{<:Electrum.LatticeBasis{S,D}}) = S{D}()
+    Electrum.DataSpace(::Type{<:Electrum.LatticeBasis{S}}) = S()
 
-Returns the `ByRealSpace{D}()` or `ByReciprocalSpace{D}()` trait objects depending on the type of
-lattice.
-
-Note that this function only works correctly when S === `ByRealSpace` or `ByReciprocalSpace`, and
-not if they are `ByRealSpace{D}` or `ByReciprocalSpace{D}`, or their singleton instances. Even
-though `Electrum.LatticeBasis{ByRealSpace{D},D,T}` is a valid type that has otherwise correct
-behavior, this function only works correctly when for `Electrum.LatticeBasis{ByRealSpace,D}` and
-`Electrum.LatticeBasis{ByReciprocalSpace,D}`, which are aliased by `RealBasis{D}` and
-`ReciprocalBasis{D}` respectively.
-``
+Returns the `ByRealSpace()` or `ByReciprocalSpace()` trait objects depending on the type of lattice.
 """
-DataSpace(::Type{<:LatticeBasis{S,D}}) where {S,D} = S{D}()
+DataSpace(::Type{<:LatticeBasis{S}}) where S = S()
 
 #---Type promotion---------------------------------------------------------------------------------#
 
