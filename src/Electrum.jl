@@ -110,6 +110,8 @@ include("math.jl")
 export FFTBins, FFTLength
 # Dispatch traits for data
 include("traits.jl")
+export BySpace, ByRealSpace, ByReciprocalSpace, ByCoordinate, ByCartesianCoordinate, 
+    ByFractionalCoordinate
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
 export RealBasis, ReciprocalBasis, AbstractBasis
