@@ -77,6 +77,8 @@ struct LatticeBasis{S<:BySpace,D,T<:Real} <: StaticMatrix{D,D,T}
     end
 end
 
+BySpace(::Type{<:LatticeBasis{S}}) where S = S()
+
 # Needed to resolve ambiguity with StaticArrays generic constructor
 LatticeBasis{S,D,T}(::StaticArray) where {S,D,T} = _nonsquare_matrix_error()
 LatticeBasis{S,D}(::StaticArray) where {S,D} = _nonsquare_matrix_error()
@@ -196,14 +198,6 @@ may store a reciprocal space lattice, allowing for properties of the data contai
 For predictable results, use `convert(T, basis(x))` where `T` is the desired type.
 """
 basis(x) = x.basis::LatticeBasis
-
-#---Real/reciprocal space traits-------------------------------------------------------------------#
-"""
-    Electrum.DataSpace(::Type{<:Electrum.LatticeBasis{S}}) = S()
-
-Returns the `ByRealSpace()` or `ByReciprocalSpace()` trait objects depending on the type of lattice.
-"""
-DataSpace(::Type{<:LatticeBasis{S}}) where S = S()
 
 #---Type promotion---------------------------------------------------------------------------------#
 

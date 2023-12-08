@@ -154,6 +154,7 @@ struct PlanewaveWavefunction{D,T} <: AbstractArray{T,D}
 end
 
 Base.has_offset_axes(::PlanewaveWavefunction) = true
+BySpace(::Type{<:PlanewaveWavefunction}) = ByReciprocalSpace()
 
 """
     PlanewaveWavefunction{D,T}(

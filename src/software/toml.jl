@@ -7,8 +7,8 @@ function toml_convert end
 
 function toml_convert(b::AbstractBasis)
     return Dict{String,Any}(
-        "realspace" => !(DataSpace(b) isa ByReciprocalSpace),
-        "dimension" => size(b,1),
+        "realspace" => !(BySpace(b) === ByReciprocalSpace()),
+        "dimension" => size(b, 1),
         "vectors" => b.vectors
     )
 end

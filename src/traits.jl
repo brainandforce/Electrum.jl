@@ -87,6 +87,19 @@ are `Electrum.LatticeBasis` objects stored in the `basis` field, it will be nece
 DataSpace(x) = DataSpace(typeof(x))
 DataSpace(T::Type) = DataSpace(fieldtype(T, :basis))
 
+"""
+    BySpace(T::Type) -> BySpace
+    BySpace(x) -> BySpace
+
+Returns a trait object that describes whether data is associated with real space
+([`ByRealSpace`](@ref)) or reciprocal space ([`ByReciprocalSpace`](@ref)).
+
+New types `T` should implement the `BySpace` trait by implementing `BySpace(::Type{T})`, as the
+method for type instances is defined automatically.
+"""
+BySpace(::Type) = error("No BySpace trait is associated with this type.")
+BySpace(x) = BySpace(typeof(x))
+
 #---Coordinate type--------------------------------------------------------------------------------#
 """
     ByCoordinate <: CrystalDataTrait
