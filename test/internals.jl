@@ -12,8 +12,8 @@
     # Arguments not convertible to integers should fail
     @test_throws InexactError convert_to_transform(1.5, 2)
     # Data space traits
-    @test Electrum.DataSpace(xsf["this_is_3Dgrid#1"]) === Electrum.ByRealSpace{3}()
-    @test Electrum.DataSpace(v80_wfk["wavefunction"]) === Electrum.ByReciprocalSpace{3}()
+    @test Electrum.DataSpace(xsf["this_is_3Dgrid#1"]) === Electrum.ByRealSpace()
+    @test Electrum.DataSpace(v80_wfk["wavefunction"]) === Electrum.ByReciprocalSpace()
     # Offset axes
     @test Base.has_offset_axes(xsf["this_is_3Dgrid#1"])
     @test Base.has_offset_axes(v80_wfk["wavefunction"])
@@ -29,17 +29,12 @@
     @test Electrum.SUnitVector{3}(1)[1:2] == [1, 0]
     @test_throws MethodError Electrum.SUnitVector{3,Char}(1)
     # Traits
-    @test Electrum.DataSpace(RealBasis{3}) === Electrum.ByRealSpace{3}()
-    @test Electrum.DataSpace(basis(wavecar)) === Electrum.ByReciprocalSpace{3}()
-    @test Electrum.DataSpace(wavecar) === Electrum.ByReciprocalSpace{3}()
-    @test Electrum.DataSpace(typeof(wavecar)) === Electrum.ByReciprocalSpace{3}()
+    @test Electrum.DataSpace(RealBasis{3}) === Electrum.ByRealSpace()
+    @test Electrum.DataSpace(basis(wavecar)) === Electrum.ByReciprocalSpace()
+    @test Electrum.DataSpace(wavecar) === Electrum.ByReciprocalSpace()
+    @test Electrum.DataSpace(typeof(wavecar)) === Electrum.ByReciprocalSpace()
     @test Electrum.inverse_space(Electrum.ByRealSpace) === Electrum.ByReciprocalSpace
     @test Electrum.inverse_space(Electrum.ByReciprocalSpace) === Electrum.ByRealSpace
-    @test Electrum.inverse_space(Electrum.ByRealSpace{3}) === Electrum.ByReciprocalSpace{3}
-    @test Electrum.inverse_space(Electrum.ByReciprocalSpace{3}) === Electrum.ByRealSpace{3}
-    @test Electrum.inverse_space(Electrum.ByRealSpace{3}()) === Electrum.ByReciprocalSpace{3}()
-    @test Electrum.inverse_space(Electrum.ByReciprocalSpace{3}()) === Electrum.ByRealSpace{3}()
-    @test Electrum.dimension(wavecar) === 3
-    @test Electrum.dimension(basis(wavecar)) === 3
-    @test Electrum.dimension(typeof(wavecar)) === 3
+    @test Electrum.inverse_space(Electrum.ByRealSpace()) === Electrum.ByReciprocalSpace()
+    @test Electrum.inverse_space(Electrum.ByReciprocalSpace()) === Electrum.ByRealSpace()
 end
