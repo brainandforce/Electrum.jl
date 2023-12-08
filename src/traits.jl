@@ -68,6 +68,7 @@ Base.inv(::Type{ByRealSpace}) = ByReciprocalSpace
 Base.inv(::Type{ByReciprocalSpace}) = ByRealSpace
 Base.inv(::T) where T<:BySpace = inv(T)()
 
+#= TODO: resurrect this function at some point
 """
     Electrum.DataSpace(x) -> Electrum.DataSpace
 
@@ -86,6 +87,7 @@ are `Electrum.LatticeBasis` objects stored in the `basis` field, it will be nece
 """
 DataSpace(x) = DataSpace(typeof(x))
 DataSpace(T::Type) = DataSpace(fieldtype(T, :basis))
+=#
 
 """
     BySpace(T::Type) -> BySpace
