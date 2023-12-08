@@ -50,23 +50,23 @@ struct ByReciprocalSpace <: BySpace
 end
 
 """
-    Electrum.inverse_space(::Type{<:BySpace}) -> Type{<:BySpace}
-    Electrum.inverse_space(::BySpace) -> BySpace
+    inv(::Type{<:BySpace}) -> Type{<:BySpace}
+    inv(::BySpace) -> BySpace
 
 Returns the space trait dual to the given space trait. Either a type or an instance may be given.
 
 # Examples
 ```julia-repl
-julia> Electrum.inverse_space(Electrum.ByReciprocalSpace)
+julia> inv(Electrum.ByReciprocalSpace)
 Electrum.ByRealSpace
 
-julia> Electrum.inverse_space(Electrum.ByRealSpace())
+julia> inv(Electrum.ByRealSpace())
 Electrum.ByReciprocalSpace()
 ```
 """
-inverse_space(::Type{ByRealSpace}) = ByReciprocalSpace
-inverse_space(::Type{ByReciprocalSpace}) = ByRealSpace
-inverse_space(::T) where T<:BySpace = inverse_space(T)()
+Base.inv(::Type{ByRealSpace}) = ByReciprocalSpace
+Base.inv(::Type{ByReciprocalSpace}) = ByRealSpace
+Base.inv(::T) where T<:BySpace = inv(T)()
 
 """
     Electrum.DataSpace(x) -> DataSpace

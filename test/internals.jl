@@ -33,8 +33,8 @@
     @test Electrum.BySpace(basis(wavecar)) === Electrum.ByReciprocalSpace()
     @test Electrum.BySpace(wavecar) === Electrum.ByReciprocalSpace()
     @test Electrum.BySpace(typeof(wavecar)) === Electrum.ByReciprocalSpace()
-    @test Electrum.inverse_space(Electrum.ByRealSpace) === Electrum.ByReciprocalSpace
-    @test Electrum.inverse_space(Electrum.ByReciprocalSpace) === Electrum.ByRealSpace
-    @test Electrum.inverse_space(Electrum.ByRealSpace()) === Electrum.ByReciprocalSpace()
-    @test Electrum.inverse_space(Electrum.ByReciprocalSpace()) === Electrum.ByRealSpace()
+    @test inv(Electrum.ByRealSpace) === Electrum.ByReciprocalSpace
+    @test inv(Electrum.ByReciprocalSpace) === Electrum.ByRealSpace
+    @test inv(Electrum.ByRealSpace()) === Electrum.ByReciprocalSpace()
+    @test inv(Electrum.ByReciprocalSpace()) === Electrum.ByRealSpace()
 end
