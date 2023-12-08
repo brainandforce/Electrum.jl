@@ -6,8 +6,8 @@ Represents a spatial coordinate with space given by trait `S` and coordinate tra
 values must be subtypes of `Real`.
 """
 struct CoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
-    vector::SVector{D,T}
-    CoordinateVector{S,C}(v::StaticVector{D,T}) where {S,C,D,T} = new{S,C,D,T}(v)
+    vector::NTuple{D,T}
+    CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = new(t)
 end
 
 BySpace(::Type{<:CoordinateVector{S}}) where S = S()
@@ -52,23 +52,26 @@ array_not_flattened() = error(
     "constructor. To do this, explicitly include the dimension type parameter."
 )
 
+CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C,D,promote_typeof(t...)}(t)
+CoordinateVector{S,C}(t::NTuple{D}) where {S,C,D} = CoordinateVector{S,C,D,promote_typeof(t...)}(t)
+
+(V::Type{<:CoordinateVector{S,C}})(x::Real...) where {S,C} = V(x)
+
+(V::Type{<:CoordinateVector{S,C,D}})(s::StaticArray) where {S,C,D} = V(Tuple(s))
+(V::Type{<:CoordinateVector{S,C,D}})(a::AbstractArray) where {S,C,D} = V(NTuple{D}(a))
+
+CoordinateVector{S,C}(s::StaticVector) where {S,C} = CoordinateVector{S,C}(Tuple(s))
 CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
-CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C}(SVector(t))
-CoordinateVector{S,C}(x::Real...) where {S,C} = CoordinateVector{S,C}(SVector(x))
 
-CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C}(SVector(t))
-CoordinateVector{S,C,D}(v::StaticArray) where {S,C,D} = CoordinateVector{S,C}(SVector{D}(v))
-CoordinateVector{S,C,D}(v::AbstractArray) where {S,C,D} = CoordinateVector{S,C}(SVector{D}(v))
+#= TODO:
+  - restrict construction/conversion from other CoordinateVectors with mismatched traits
+  - implement similar_type()
+=#
 
-CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = CoordinateVector{S,C}(SVector{D,T}(t))
-CoordinateVector{S,C,D,T}(v::StaticArray) where {S,C,D,T} = CoordinateVector{S,C}(SVector{D,T}(v))
-CoordinateVector{S,C,D,T}(v::AbstractArray) where {S,C,D,T} = CoordinateVector{S,C}(SVector{D,T}(v))
-
-# Indexing
 Base.getindex(c::CoordinateVector, i::Int) = c.vector[i]
+Base.Tuple(c::CoordinateVector) = c.vector
 
-Base.Tuple(c::CoordinateVector) = Tuple(c.vector)
-
+# Pretty printing
 function Base.show(io::IO, c::CoordinateVector{S,C}) where {S,C}
     print(io, CoordinateVector{S,C}, '(')
     join(io, c, ", ")
@@ -128,7 +131,8 @@ for this reason we define an alias for representing k-points:
 struct ShiftVector{S<:BySpace,D,T} <: StaticVector{D,T}
     vector::CoordinateVector{S,ByFractionalCoordinate,D,T}
     weight::T
-    function ShiftVector(v::CoordinateVector{S,ByFractionalCoordinate}, wt::Real = true) where S
+    function ShiftVector(v::CoordinateVector{S,C}, wt::Real = true) where {S,C}
+        C === ByFractionalCoordinate || error("Only fractional coordinates are allowed.")
         return new{S, length(v), promote_type(eltype(v), typeof(wt))}(v, wt)
     end
 end
@@ -206,3 +210,5 @@ function Base.show(io::IO, k::KPoint)
     join(io, k.vector, ", ")
     print(io, ", weight = ", weight(k), ')')
 end
+
+#---Shared conversion semantics--------------------------------------------------------------------#
