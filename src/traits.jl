@@ -100,6 +100,31 @@ method for type instances is defined automatically.
 BySpace(::Type) = error("No BySpace trait is associated with this type.")
 BySpace(x) = BySpace(typeof(x))
 
+"""
+    Electrum.require_same_space(args...; msg)
+
+Checks that the `BySpace` traits of all arguments are identical, throwing an error with optional
+message `msg` if this is not the case.
+"""
+function require_same_space(
+    traits::Tuple{Vararg{BySpace}};
+    msg = "Inputs must describe the same space (real or reciprocal)."
+)
+    traits isa NTuple || error(msg)
+end
+
+require_same_space(args...; msg) = require_same_coordinate(BySpace.(args); msg)
+
+"""
+    Electrum.require_same_space(a, b; msg)
+
+Checks that the `BySpace` trait of `a` is the inverse of the `BySpace` trait of `b`,  throwing an
+error with optional message `msg` if this is not the case.
+"""
+function require_dual_space(a, b; msg = "One input must describe the inverse space of the other.")
+    BySpace(a) === inv(BySpace(b)) || error(msg)
+end
+
 #---Coordinate type--------------------------------------------------------------------------------#
 """
     ByCoordinate <: Electrum.CrystalDataTrait
@@ -140,3 +165,18 @@ for a custom type `T`, define `ByCoordinate(::Type{T}) where T`.
 """
 ByCoordinate(x) = ByCoordinate(typeof(x))
 ByCoordinate(::Type) = error("No coordinate trait is defined for this type.")
+
+"""
+    Electrum.require_same_space(args...; msg)
+
+Checks that the `ByCoordinate` traits of all arguments are identical, throwing an error with 
+optional message `msg` if this is not the case.
+"""
+function require_same_coordinate(
+    traits::Tuple{Vararg{ByCoordinate}};
+    msg = "Inputs must share a common coordinate system."
+)
+    traits isa NTuple || error(msg)
+end
+
+require_same_coordinate(args...; msg) = require_same_coordinate(ByCoordinate.(args); msg)
