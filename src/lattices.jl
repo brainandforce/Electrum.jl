@@ -16,12 +16,12 @@ end
 _nonsquare_matrix_error() = throw(DimensionMismatch("Input must be a square matrix."))
 
 """
-    Electrum.LatticeBasis{S<:Electrum.BySpace,D,T} <: StaticMatrix{D,D,T}
+    Electrum.LatticeBasis{S<:BySpace,D,T} <: StaticMatrix{D,D,T}
 
 Represents the basis vectors of a `D`-dimensional lattice in real or reciprocal space, depending on
-`S`. The units of `LatticeBasis{Electrum.ByRealSpace}` are bohr, and those of
-`LatticeBasis{Electrum.ByReciprocalSpace}` are rad*bohr⁻¹, corresponding to the convention that the
-dot product of a real space basis vector with a reciprocal space basis vector is 2π.
+`S`. The units of `LatticeBasis{ByRealSpace}` are bohr, and those of
+`LatticeBasis{ByReciprocalSpace}` are rad*bohr⁻¹, corresponding to the convention that the dot
+product of a real space basis vector with a reciprocal space basis vector is 2π.
 
 # Type aliases
 
@@ -86,7 +86,7 @@ LatticeBasis{S,D}(::StaticArray) where {S,D} = _nonsquare_matrix_error()
 Base.show(io::IO, b::LatticeBasis) = print(io, typeof(b), '(', b.matrix, ')')
 
 """
-    RealBasis{D,T} (alias for Electrum.LatticeBasis{Electrum.ByRealSpace,D,T})
+    RealBasis{D,T} (alias for Electrum.LatticeBasis{ByRealSpace,D,T})
 
 Represents a the basis vectors of a lattice in real space, with lengths given in units of bohr.
 
@@ -95,7 +95,7 @@ For more information about this type, see [`Electrum.LatticeBasis`](@ref Electru
 const RealBasis = LatticeBasis{ByRealSpace}
 
 """
-    ReciprocalBasis{D,T} (alias for Electrum.LatticeBasis{Electrum.ByReciprocalSpace,D,T})
+    ReciprocalBasis{D,T} (alias for Electrum.LatticeBasis{ByReciprocalSpace,D,T})
 
 Represents a the basis vectors of a lattice in reciprocal space, with lengths given in units of 
 radians per bohr.
