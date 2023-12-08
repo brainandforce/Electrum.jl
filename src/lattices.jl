@@ -237,7 +237,7 @@ Base.inv(b::LatticeBasis) = inv(b.matrix)
 Returns the basis of the dual lattice, which is the lattice in dual space whose product with the
 original lattice is equal to the identity matrix multiplied by 2π.
 """
-dual(b::LatticeBasis{S}) where S = convert(LatticeBasis{inverse_space(S)}, b)
+dual(b::LatticeBasis{S}) where S = convert(LatticeBasis{inv(S)}, b)
 
 """
     dualbasis(x)
