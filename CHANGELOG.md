@@ -13,6 +13,8 @@ energy provided.
   - `ByCoordinate` traits: `ByCartesianCoordinate` and `ByFractionalCoordinate`.
   - `ShiftVector{S,D,T} <: StaticVector{D,T}` type describing the shift of a lattice or data defined
 on it with respect to the origin, along with an optional weight parameter.
+  - `require_same_space`, `require_dual_space`, and `require_same_coordinate` functions for checking
+whether `BySpace` and `ByCoordinate` traits are compatible in an operation.
 
 ### Changed
   - `BySpace` traits are now part of the public API.
