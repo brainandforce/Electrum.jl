@@ -57,9 +57,8 @@ Electrum.ByFractionalCoordinate
 
 ## Coordinate vectors
 
-The `AbstractCoordinateVector{S<:Electrum.BySpace,C<:Electrum.ByCoordinate,D,T}` type encodes a
-coordinate vector with information about the space referred to by the coordinate and the coordinate
-system used.
+The traits above can be incorporated into new coordinate types that wrap a `SVector{D,T<:Real}`, and
+retain information about what type of information is being stored by the coordinate.
 
 ### `CoordinateVector`
 
@@ -81,10 +80,8 @@ ReciprocalFractionalCoordinate
 
 ### `ShiftVector`
 
-A `ShiftVector` is almost identical to a `CoordinateVector`, but there are two major differences:
-  - `ShiftVector{S,D,T} <: AbstractCoordinateVector{S,Electrum.ByFractionalCoordinate,D,T}`: the
-    type only represents fractional coordinates.
-  - Along with fractional coordinates, instances contain a weight parameter that defaults to 1.
+A `ShiftVector` is almost identical to a `CoordinateVector`, and wraps one as a field, but includes
+a weight parameter that defaults to 1.
 
 The primary use for `ShiftVector` is to provide information about how data associated with a lattice
 is shifted with respect to the origin. In particular, it forms the implementation of `KPoint{D,T}`,
