@@ -1,4 +1,8 @@
 @testset "Internals" begin
+    # Type promotion
+    @test Electrum.promote_typeof((1, Float16(2), Float32(3))...) === Float32
+    # This actually works with both types and instances mixed together...
+    @test Electrum.promote_eltype(Array{Float64}, zeros(SVector{3,Int})) === Float64
     # Linear independence
     @test Electrum.is_linearly_independent([1, 1], [2, 2]) === false
     # Conversion of scalars/vectors to transformation matrices
