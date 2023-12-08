@@ -5,16 +5,15 @@ types and functions for working with lattices of arbitrary dimension, not just t
 
 ## Real and reciprocal space traits
 
-The `Electrum.BySpace{D}` supertype contains two types, `Electrum.ByRealSpace{D}` and
-`Electrum.ByReciprocalSpace{D}`, where `D` is the number of dimensions associated with the dataset.
-These types are used to denote whether data is associated with real space (e.g. electron density) or 
-reciprocal space (e.g. the Fourier transform of the electron density). When working with lattices,
-it is important to distinguish the two types of lattice: this is the primary reason why bare
+The `BySpace` supertype contains two types, `ByRealSpace` and `ByReciprocalSpace`. These types are 
+used to denote whether data is associated with real space (e.g. electron density) or reciprocal 
+space (e.g. the Fourier transform of the electron density). When working with lattices, it is 
+important to distinguish the two types of lattice: this is the primary reason why bare
 `SMatrix{D,D,T}` instances are not used in this package.
 
 ## `Electrum.LatticeBasis` and methods
 
-The `Electrum.LatticeBasis{S<:Electrum.BySpace,D,T}` data type is a wrapper for an
+The `Electrum.LatticeBasis{S<:BySpace,D,T}` data type is a wrapper for an
 `SMatrix{D,D,T,D^2}` which represents the real or reciprocal space basis vectors of a lattice.
 
 Electrum does not export `Electrum.LatticeBasis`, but instead provide the following aliases. This
@@ -24,11 +23,6 @@ const RealBasis = Electrum.LatticeBasis{ByRealSpace}
 const ReciprocalBasis = Electrum.LatticeBasis{ByReciprocalSpace}
 const AbstractBasis = Electrum.LatticeBasis{<:BySpace}
 ```
-!!! warning
-    Note that `RealBasis{D} === Electrum.LatticeBasis{ByRealSpace,D}`, and not
-    `Electrum.LatticeBasis{ByRealSpace{D},D}`. While the latter is a valid type and can be used to
-    store data, the result of `Electrum.DataSpace(::Electrum.LatticeBasis{ByRealSpace{D},D})` is
-    an error!
 
 The units of `RealBasis` are bohr, and those of `ReciprocalBasis` are radians over bohr,
 corresponding with the convention that the dot product of a real basis vector with a corresponding
@@ -43,7 +37,7 @@ In the case of a `StaticMatrix`, the size and element type are already known, so
 can simply be called as `RealBasis` or `ReciprocalBasis`:
 ```
 julia> RealBasis(SMatrix{3,3}(1, 0, 0, 0, 2, 0, 0, 0, 3))
-Electrum.LatticeBasis{Electrum.ByRealSpace, 3, Int64}:
+Electrum.LatticeBasis{ByRealSpace, 3, Int64}:
     a: [  1.000000   0.000000   0.000000 ]   (1.000000 bohr)
     b: [  0.000000   2.000000   0.000000 ]   (2.000000 bohr)
     c: [  0.000000   0.000000   3.000000 ]   (3.000000 bohr)
@@ -53,7 +47,7 @@ should be supplied to avoid an exception being thrown. This is to avoid type ins
 from determining the size at runtime:
 ```
 julia> RealBasis{3}([1 0 0; 0 2 0; 0 0 3])
-Electrum.LatticeBasis{Electrum.ByRealSpace, 3, Int64}:
+Electrum.LatticeBasis{ByRealSpace, 3, Int64}:
     a: [  1.000000   0.000000   0.000000 ]   (1.000000 bohr)
     b: [  0.000000   2.000000   0.000000 ]   (2.000000 bohr)
     c: [  0.000000   0.000000   3.000000 ]   (3.000000 bohr)
@@ -62,15 +56,15 @@ In either case, you can supply the element type (though it must be proceeded by 
 cases) to convert the input elements to the desired type (here, it's `Float32`):
 ```
 julia> RealBasis{3,Float32}(SMatrix{3,3}(1, 0, 0, 0, 2, 0, 0, 0, 3))
-Electrum.LatticeBasis{Electrum.ByRealSpace, 3, Float32}:
+Electrum.LatticeBasis{ByRealSpace, 3, Float32}:
     a: [  1.000000   0.000000   0.000000 ]   (1.000000 bohr)
     b: [  0.000000   2.000000   0.000000 ]   (2.000000 bohr)
     c: [  0.000000   0.000000   3.000000 ]   (3.000000 bohr)
 ```
 ### Conversion
 
-A `RealBasis` can be converted to a `ReciprocalBasis` via `Base.convert` or their constructors,
-and vice versa:
+A `RealBasis` can be converted to a `ReciprocalBasis` via `convert` or their constructors, and vice
+versa:
 ```julia
 b = ReciprocalBasis(a)
 c = convert(RealBasis, b)

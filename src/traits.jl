@@ -1,6 +1,6 @@
 #---Trait supertype--------------------------------------------------------------------------------#
 """
-    CrystalDataTrait
+    Electrum.CrystalDataTrait
 
 Subtypes of this type are traits that may be used for dispatch.
 """
@@ -9,7 +9,7 @@ end
 
 #---Association of data with spatial coordinates---------------------------------------------------#
 """
-    DataSpace <: CrystalDataTrait
+    Electrum.DataSpace <: Electrum.CrystalDataTrait
 
 Describes the space in which a dataset is defined, which can be real space, reciprocal space, or
 data associated with individual atoms in a structure.
@@ -18,15 +18,15 @@ abstract type DataSpace <: CrystalDataTrait
 end
 
 """
-    ByAtom
+    Electrum.ByAtom <: Electrum.DataSpace
 
-Trait for data associated with atomic positions in a crystal.
+Trait for data associated with atoms in a crystal.
 """
 struct ByAtom <: DataSpace
 end
 
 """
-    BySpace
+    BySpace <: Electrum.DataSpace
 
 Supertype for the `ByRealSpace` and `ByReciprocalSpace` traits.
 """
@@ -34,7 +34,7 @@ abstract type BySpace <: DataSpace
 end
 
 """
-    ByRealSpace
+    ByRealSpace <: BySpace
 
 Trait for real space data.
 """
@@ -42,7 +42,7 @@ struct ByRealSpace <: BySpace
 end
 
 """
-    ByReciprocalSpace
+    ByReciprocalSpace <: BySpace
 
 Trait for reciprocal space data.
 """
@@ -57,11 +57,11 @@ Returns the space trait dual to the given space trait. Either a type or an insta
 
 # Examples
 ```julia-repl
-julia> inv(Electrum.ByReciprocalSpace)
-Electrum.ByRealSpace
+julia> inv(ByReciprocalSpace)
+ByRealSpace
 
-julia> inv(Electrum.ByRealSpace())
-Electrum.ByReciprocalSpace()
+julia> inv(ByRealSpace())
+ByReciprocalSpace()
 ```
 """
 Base.inv(::Type{ByRealSpace}) = ByReciprocalSpace
@@ -69,7 +69,7 @@ Base.inv(::Type{ByReciprocalSpace}) = ByRealSpace
 Base.inv(::T) where T<:BySpace = inv(T)()
 
 """
-    Electrum.DataSpace(x) -> DataSpace
+    Electrum.DataSpace(x) -> Electrum.DataSpace
 
 Returns a trait that determines whether a data set associated with a crystal is defined in real
 space (`ByRealSpace`), reciprocal space (`ByReciprocalSpace`), or by atomic positions (`ByAtom`).
@@ -102,7 +102,7 @@ BySpace(x) = BySpace(typeof(x))
 
 #---Coordinate type--------------------------------------------------------------------------------#
 """
-    ByCoordinate <: CrystalDataTrait
+    ByCoordinate <: Electrum.CrystalDataTrait
 
 Describes the coordinate system associated with data. This includes `ByCartesianCoordinate` and
 `ByFractionalCoordinate`.
