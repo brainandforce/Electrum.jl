@@ -72,7 +72,7 @@ end
     @test convert(Vector, KPoint(0.1, 0.2, 0.3)) == [0.1, 0.2, 0.3]
     @test convert(Vector, KPoint(0.1, 0.2, 0.3)) isa Vector{<:Real}
     @test convert(SVector, KPoint(0.1, 0.2, 0.3)) === SVector{3}(0.1, 0.2, 0.3)
-    @test convert(KPoint, ReciprocalFractionalCoordinate(1, 2, 3)) = KPoint(1, 2, 3)
+    @test convert(KPoint, ReciprocalFractionalCoordinate(1, 2, 3)) === KPoint(1, 2, 3)
     @test convert(KPoint{3,Float64}, ReciprocalFractionalCoordinate(1, 2, 3)) === 
         KPoint(1.0, 2.0, 3.0)
     @test_throws Exception convert(KPoint, ReciprocalCartesianCoordinate(1, 2, 3))
