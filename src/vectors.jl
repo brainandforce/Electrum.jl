@@ -217,7 +217,6 @@ Moves a `ShiftVector` so that its values lie within the range [-1/2, 1/2]. The w
 Base.truncate(s::ShiftVector) = (typeof(s))(rem.(s.vector, 1, RoundNearest), s.weight)
 
 Base.summary(io::IO, s::ShiftVector) = print(io, typeof(s), " with weight ", s.weight)
-Base.show(io::IO, s::ShiftVector) = print(io, typeof(s), '(', s.vector, ", ", s.weight, ')')
 
 function Base.show(io::IO, s::ShiftVector)
     print(io, typeof(s), '(')
