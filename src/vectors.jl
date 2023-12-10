@@ -61,7 +61,7 @@ array_not_flattened() = error(
 )
 
 CoordinateVector{S,C,D}(t::Tuple) where {S,C,D} = CoordinateVector{S,C,D,promote_typeof(t...)}(t)
-CoordinateVector{S,C}(t::NTuple{D}) where {S,C,D} = CoordinateVector{S,C,D,promote_typeof(t...)}(t)
+CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C,length(t)}(t)
 
 (V::Type{<:CoordinateVector{S,C}})(x::Real...) where {S,C} = V(x)
 
