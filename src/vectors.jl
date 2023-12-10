@@ -71,17 +71,16 @@ CoordinateVector{S,C}(t::Tuple) where {S,C} = CoordinateVector{S,C,length(t)}(t)
 CoordinateVector{S,C}(s::StaticVector) where {S,C} = CoordinateVector{S,C}(Tuple(s))
 CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
 
-# TODO: restrict construction/conversion from other CoordinateVectors with mismatched traits
 function (V::Type{<:CoordinateVector{S,C,D}})(v::CoordinateVector) where {S,C,D}
     BySpace(v) isa S || error("Cannot convert between real and reciprocal space coordinates.")
     ByCoordinate(v) isa C || error(
-        "Use operations with lattice basis vectors to perform this conversion.\n  - " *
+        "Use matrix operations with lattice basis vectors to perform this conversion:\n" *
         if C <: ByCartesianCoordinate
             "Multiply fractional coordinates by the basis to obtain Cartesian coordinates."
         elseif C <: ByFractionalCoordinate
             "Right divide Cartesian coordinates by the basis to obtain fractional coordinates."
         else
-            "(No information was provided for this type of transformation)"
+            "(No help is available for this type of transformation)"
         end
     )
     return V(Tuple(v))
@@ -90,6 +89,8 @@ end
 CoordinateVector{S,C}(v::CoordinateVector) where {S,C} = CoordinateVector{S,C,length(v)}(v)
 CoordinateVector{S}(v::CoordinateVector) where {S} = CoordinateVector{S,typeof(ByCoordinate(v))}(v)
 CoordinateVector(v::CoordinateVector) = v
+
+Base.convert(::Type{T}, v::CoordinateVector) where  T<:CoordinateVector = T(v)
 
 # Pretty printing
 function Base.show(io::IO, c::CoordinateVector{S,C}) where {S,C}
@@ -232,3 +233,7 @@ function Base.show(io::IO, k::KPoint)
 end
 
 #---Shared conversion semantics--------------------------------------------------------------------#
+
+(T::Type{<:CoordinateVector})(v::ShiftVector) = T(v.vector)
+Base.convert(::Type{T}, v::ShiftVector) where T<:CoordinateVector = T(v)
+Base.convert(::Type{T}, v::CoordinateVector) where T<:ShiftVector = T(v)
