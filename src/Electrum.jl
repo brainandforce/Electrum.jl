@@ -113,7 +113,7 @@ Calls `promote_type()` on the types of the arguments, equivalent to `promote_typ
 This function is implemented in Julia Base, but it is not part of the public API; a stable
 implementation is provided here.
 """
-promote_typeof(x...) = @inline promote_type(typeof.(x)...)
+promote_typeof(x...) = promote_type(typeof.(x)...)
 
 """
     Electrum.promote_eltype(args...)
@@ -124,7 +124,7 @@ Calls `promote_type()` on the element types of the arguments, equivalent to
 This function is implemented in Julia Base, but it is not part of the public API; a stable
 implementation is provided here.
 """
-promote_eltype(x...) = @inline promote_type(eltype.(x)...)
+promote_eltype(x...) = promote_type(eltype.(x)...)
 
 # Methods used in array operations that go beyond what's available in LinearAlgebra
 include("math.jl")
