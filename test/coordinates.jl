@@ -31,10 +31,15 @@
     @test c1 + [4, 5, 6] === RealCartesianCoordinate(5, 7, 9)
     @test_throws Exception c1 + RealFractionalCoordinate(4, 5, 6)
     @test_throws Exception c1 + ReciprocalCartesianCoordinate(4, 5, 6)
-    @test c1 * 2 === RealCartesianCoordinate(2, 4, 6)
-    @test 2 * c1 === RealCartesianCoordinate(2, 4, 6)
-    @test c1 / 2 === RealCartesianCoordinate(1/2, 1, 3/2)
-    @test c1 // 2 === RealCartesianCoordinate(1//2, 1, 3//2)
+    # Arbitrary multiplication operations do not retain information about space/coordinate system.
+    @test c1 * 2 === SVector(2, 4, 6)
+    @test 2 * c1 === SVector(2, 4, 6)
+    @test c1 / 2 === SVector(1/2, 2/2, 3/2)
+    @test 2 / c1 === SVector(2/1, 2/2, 2/3)
+    @test 2 \ c1 === SVector(1/2, 2/2, 3/2)
+    @test c1 \ 2 === SVector(2/1, 2/2, 2/3)
+    @test c1 // 2 === SVector(1//2, 2//2, 3//2)
+    @test c1 // 2 === SVector(2//1, 2//2, 2//3)
 end
 
 @testset "Shift vectors" begin

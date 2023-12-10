@@ -109,8 +109,15 @@ end
 Base.:-(c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(.-c.data)
 Base.:-(c1::CoordinateVector, c2::CoordinateVector) = +(c1, -c2)
 
-Base.:*(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s .* c.data)
-Base.:*(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.data .* s)
+# Multiplicative operations do not guarantee the coordinate system or space are known.
+Base.:*(s::Real, c::CoordinateVector) = SVector(s .* c.data)
+Base.:*(c::CoordinateVector, s::Real) = SVector(c.data .* s)
+Base.:/(c::CoordinateVector, s::Real) = SVector(c.data ./ s)
+Base.:/(s::Real, c::CoordinateVector) = SVector(s ./ c.data)
+Base.:(//)(c::CoordinateVector, s::Real) = SVector(c.data .// s)
+Base.:(//)(c::CoordinateVector, s::Real) = SVector(s .// c.data)
+Base.:\(s::Real, c::CoordinateVector) = SVector(s .\ c.data)
+Base.:\(c::CoordinateVector, s::Real) = SVector(c.vector .\ s)
 
 # Dot product as multiplication
 function Base.:*(c1::CoordinateVector, c2::CoordinateVector)
@@ -118,17 +125,6 @@ function Base.:*(c1::CoordinateVector, c2::CoordinateVector)
     require_same_coordinate(c1, c2)
     return dot(SVector(c1.data), SVector(c2.data))
 end
-
-Base.:/(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.data ./ s)
-Base.:(//)(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.data .// s)
-
-# Defined separately because s / c.vector is not a `StaticArray`
-function Base.:/(s::Real, c::CoordinateVector{S,C,D}) where {S,C,D}
-    return CoordinateVector{inv(S),C,D}(s ./ c.data)
-end
-
-Base.:\(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s .\ c.data)
-# Base.:\(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector \ s)
 
 #---Shift vectors----------------------------------------------------------------------------------#
 """
