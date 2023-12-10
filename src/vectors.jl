@@ -114,10 +114,8 @@ Base.:*(s::Real, c::CoordinateVector) = SVector(s .* c.data)
 Base.:*(c::CoordinateVector, s::Real) = SVector(c.data .* s)
 Base.:/(c::CoordinateVector, s::Real) = SVector(c.data ./ s)
 Base.:/(s::Real, c::CoordinateVector) = SVector(s ./ c.data)
-Base.:(//)(c::CoordinateVector, s::Real) = SVector(c.data .// s)
-Base.:(//)(c::CoordinateVector, s::Real) = SVector(s .// c.data)
 Base.:\(s::Real, c::CoordinateVector) = SVector(s .\ c.data)
-Base.:\(c::CoordinateVector, s::Real) = SVector(c.vector .\ s)
+Base.:\(c::CoordinateVector, s::Real) = SVector(c.data .\ s)
 
 # Dot product as multiplication
 function Base.:*(c1::CoordinateVector, c2::CoordinateVector)
