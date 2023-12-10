@@ -107,8 +107,6 @@ function Base.:+(c1::CoordinateVector, c2::CoordinateVector)
 end
 
 Base.:-(c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(.-c.data)
-Base.:-(c1::CoordinateVector, c2::CoordinateVector) = +(c1, -c2)
-
 # Multiplicative operations do not guarantee the coordinate system or space are known.
 Base.:*(s::Real, c::CoordinateVector) = SVector(s .* c.data)
 Base.:*(c::CoordinateVector, s::Real) = SVector(c.data .* s)
