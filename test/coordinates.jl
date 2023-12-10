@@ -13,6 +13,8 @@
     @test RealCartesianCoordinate{3,Int}([1, 2, 3]) === c1
     @test RealCartesianCoordinate{3,Int}(MVector(1, 2, 3)) === c1
     @test RealCartesianCoordinate{3,Int}(SMatrix{1,3}(1, 2, 3)) === c1
+    @test CoordinateVector{ByRealSpace}(c1) === c1
+    @test CoordinateVector(c1) === c1
     # Conversion
     @test convert(SVector, c1) === SVector(1, 2, 3)
     @test convert(SVector{3}, c1) === SVector(1, 2, 3)
@@ -26,7 +28,9 @@
     @test zero(RealFractionalCoordinate{3,Int}) === RealFractionalCoordinate(0, 0, 0)
     @test zero(RealFractionalCoordinate{3}) == RealFractionalCoordinate(0, 0, 0)
     # Math operations should maintain the correct type
+    @test -c1 === RealCartesianCoordinate(-1, -2, -3)
     @test c1 + RealCartesianCoordinate(4, 5, 6) === RealCartesianCoordinate(5, 7, 9)
+    @test RealCartesianCoordinate(5, 7, 9) - RealCartesianCoordinate(4, 5, 6) === c1
     @test c1 + SVector(4, 5, 6) === RealCartesianCoordinate(5, 7, 9)
     @test c1 + [4, 5, 6] === RealCartesianCoordinate(5, 7, 9)
     @test_throws Exception c1 + RealFractionalCoordinate(4, 5, 6)
@@ -76,6 +80,8 @@ end
     @test convert(Vector, KPoint(0.1, 0.2, 0.3)) == [0.1, 0.2, 0.3]
     @test convert(Vector, KPoint(0.1, 0.2, 0.3)) isa Vector{<:Real}
     @test convert(SVector, KPoint(0.1, 0.2, 0.3)) === SVector{3}(0.1, 0.2, 0.3)
+    @test convert(ReciprocalFractionalCoordinate, KPoint(0.1, 0.2, 0.3)) ===
+        ReciprocalFractionalCoordinate(0.1, 0.2, 0.3)
     @test convert(KPoint, ReciprocalFractionalCoordinate(1, 2, 3)) === KPoint(1, 2, 3)
     @test convert(KPoint{3,Float64}, ReciprocalFractionalCoordinate(1, 2, 3)) === 
         KPoint(1.0, 2.0, 3.0)
