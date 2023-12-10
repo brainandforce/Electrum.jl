@@ -51,7 +51,7 @@ dimensions.
 
 ```@docs; canonical=false
 Electrum.ByCoordinate
-Electrum.ByCartesianCoordiate
+Electrum.ByCartesianCoordinate
 Electrum.ByFractionalCoordinate
 ```
 
