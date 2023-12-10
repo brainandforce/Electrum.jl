@@ -72,6 +72,24 @@ CoordinateVector{S,C}(s::StaticVector) where {S,C} = CoordinateVector{S,C}(Tuple
 CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
 
 # TODO: restrict construction/conversion from other CoordinateVectors with mismatched traits
+function (V::Type{<:CoordinateVector{S,C,D}})(v::CoordinateVector) where {S,C,D}
+    BySpace(v) isa S || error("Cannot convert between real and reciprocal space coordinates.")
+    ByCoordinate(v) isa C || error(
+        "Use operations with lattice basis vectors to perform this conversion.\n  - " *
+        if C <: ByCartesianCoordinate
+            "Multiply fractional coordinates by the basis to obtain Cartesian coordinates."
+        elseif C <: ByFractionalCoordinate
+            "Right divide Cartesian coordinates by the basis to obtain fractional coordinates."
+        else
+            "(No information was provided for this type of transformation)"
+        end
+    )
+    return V(Tuple(v))
+end
+
+CoordinateVector{S,C}(v::CoordinateVector) where {S,C} = CoordinateVector{S,C,length(v)}(v)
+CoordinateVector{S}(v::CoordinateVector) where {S} = CoordinateVector{S,typeof(ByCoordinate(v))}(v)
+CoordinateVector(v::CoordinateVector) = v
 
 # Pretty printing
 function Base.show(io::IO, c::CoordinateVector{S,C}) where {S,C}
