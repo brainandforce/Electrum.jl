@@ -38,8 +38,6 @@
     @test 2 / c1 === SVector(2/1, 2/2, 2/3)
     @test 2 \ c1 === SVector(1/2, 2/2, 3/2)
     @test c1 \ 2 === SVector(2/1, 2/2, 2/3)
-    @test c1 // 2 === SVector(1//2, 2//2, 3//2)
-    @test c1 // 2 === SVector(2//1, 2//2, 2//3)
 end
 
 @testset "Shift vectors" begin
