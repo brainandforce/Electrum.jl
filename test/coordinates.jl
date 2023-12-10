@@ -20,8 +20,9 @@
     @test convert(SVector{3}, c1) === SVector(1, 2, 3)
     @test convert(SVector{3,Float32}, c1) === SVector{3,Float32}(1, 2, 3)
     @test convert(MVector, c1) == MVector(1, 2, 3)
-    @test convert(RealCartesianCoordinate{3,Float32}, c1) === 
-        RealCartesianCoordinate{3,Float32}(1, 2, 3)
+    c1_f32 = RealCartesianCoordinate{3,Float32}(1, 2, 3)
+    @test convert(RealCartesianCoordinate{3,Float32}, c1) === c1_f32
+    @test convert.(Float32, c1) === c1_f32
     @test_throws Exception convert(RealFractionalCoordinate{3}, c1)
     @test_throws Exception convert(ReciprocalCartesianCoordinate{3}, c1)
     # Zero vectors
@@ -42,6 +43,10 @@
     @test 2 / c1 === SVector(2/1, 2/2, 2/3)
     @test 2 \ c1 === SVector(1/2, 2/2, 3/2)
     @test c1 \ 2 === SVector(2/1, 2/2, 2/3)
+    @test dot(c1, c1) === dot(SVector(c1), SVector(c1)) === 14
+    # Show methods should produce valid Julia code
+    @test eval(Meta.parse(repr(c1))) == c1
+    @test eval(Meta.parse(repr(RealFractionalCoordinate(1.0, 2.0, 3.0)))) == convert.(Float64, c1)
 end
 
 @testset "Shift vectors" begin
@@ -87,6 +92,8 @@ end
         KPoint(1.0, 2.0, 3.0)
     @test_throws Exception convert(KPoint, ReciprocalCartesianCoordinate(1, 2, 3))
     @test_throws Exception convert(KPoint, RealFractionalCoordinate(1, 2, 3))
+    # Show methods should produce valid Julia code
+    @test eval(Meta.parse(repr(KPoint(0.1, 0.2, 0.3)))) === KPoint(0.1, 0.2, 0.3)
 end
 
 @testset "k-point mesh" begin
