@@ -6,12 +6,12 @@ Represents a spatial coordinate with space given by trait `S` and coordinate tra
 values must be subtypes of `Real`.
 """
 struct CoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,T}
-    vector::NTuple{D,T}
+    data::NTuple{D,T}
     CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = new(t)
 end
 
-Base.getindex(c::CoordinateVector, i::Int) = c.vector[i]
-Base.Tuple(c::CoordinateVector) = c.vector
+Base.getindex(c::CoordinateVector, i::Int) = c.data[i]
+Base.Tuple(c::CoordinateVector) = c.data
 
 BySpace(::Type{<:CoordinateVector{S}}) where S = S()
 ByCoordinate(::Type{<:CoordinateVector{<:BySpace,C}}) where C = C()
@@ -102,31 +102,31 @@ end
 function Base.:+(c1::CoordinateVector, c2::CoordinateVector)
     require_same_space(c1, c2)
     require_same_coordinate(c1, c2)
-    return promote_type(typeof(c1), typeof(c2))(c1.vector + c2.vector)
+    return promote_type(typeof(c1), typeof(c2))(c1.data .+ c2.data)
 end
 
-Base.:-(c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(-c.vector)
+Base.:-(c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(.-c.data)
 Base.:-(c1::CoordinateVector, c2::CoordinateVector) = +(c1, -c2)
 
-Base.:*(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s * c.vector)
-Base.:*(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector * s)
+Base.:*(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s .* c.data)
+Base.:*(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.data .* s)
 
 # Dot product as multiplication
 function Base.:*(c1::CoordinateVector, c2::CoordinateVector)
     require_dual_space(c1, c2)
     require_same_coordinate(c1, c2)
-    return dot(c1.vector, c2.vector)
+    return dot(SVector(c1.data), SVector(c2.data))
 end
 
-Base.:/(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector / s)
-Base.:(//)(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector // s)
+Base.:/(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.data ./ s)
+Base.:(//)(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.data .// s)
 
 # Defined separately because s / c.vector is not a `StaticArray`
 function Base.:/(s::Real, c::CoordinateVector{S,C,D}) where {S,C,D}
-    return CoordinateVector{inverse_space(S),C,D}(s / c.vector)
+    return CoordinateVector{inv(S),C,D}(s ./ c.data)
 end
 
-Base.:\(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s \ c.vector)
+Base.:\(s::Real, c::CoordinateVector{S,C}) where {S,C} = CoordinateVector{S,C}(s .\ c.data)
 # Base.:\(c::CoordinateVector{S,C}, s::Real) where {S,C} = CoordinateVector{S,C}(c.vector \ s)
 
 #---Shift vectors----------------------------------------------------------------------------------#
