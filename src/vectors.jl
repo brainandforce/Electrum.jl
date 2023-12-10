@@ -94,7 +94,7 @@ Base.convert(::Type{T}, v::CoordinateVector) where  T<:CoordinateVector = T(v)
 
 # Pretty printing
 function Base.show(io::IO, c::CoordinateVector{S,C}) where {S,C}
-    print(io, CoordinateVector{S,C}, '(')
+    print(io, typeof(c), '(')
     join(io, c, ", ")
     print(io, ')')
 end
@@ -218,10 +218,10 @@ Base.truncate(s::ShiftVector) = (typeof(s))(rem.(s.vector, 1, RoundNearest), s.w
 Base.summary(io::IO, s::ShiftVector) = print(io, typeof(s), " with weight ", s.weight)
 Base.show(io::IO, s::ShiftVector) = print(io, typeof(s), '(', s.vector, ", ", s.weight, ')')
 
-function Base.show(io::IO, k::KPoint)
-    print(io, KPoint, '(')
-    join(io, k.vector, ", ")
-    print(io, ", weight = ", weight(k), ')')
+function Base.show(io::IO, s::ShiftVector)
+    print(io, typeof(s), '(')
+    join(io, s.vector, ", ")
+    print(io, ", weight = ", weight(s), ')')
 end
 
 #---Shared conversion semantics--------------------------------------------------------------------#
