@@ -10,8 +10,16 @@ struct CoordinateVector{S<:BySpace,C<:ByCoordinate,D,T<:Real} <: StaticVector{D,
     CoordinateVector{S,C,D,T}(t::Tuple) where {S,C,D,T} = new(t)
 end
 
+Base.getindex(c::CoordinateVector, i::Int) = c.vector[i]
+Base.Tuple(c::CoordinateVector) = c.vector
+
 BySpace(::Type{<:CoordinateVector{S}}) where S = S()
 ByCoordinate(::Type{<:CoordinateVector{<:BySpace,C}}) where C = C()
+
+function StaticArrays.similar_type(::Type{V}, ::Type{T}, ::Size{S}) where {V<:CoordinateVector,T,S}
+    isone(length(S)) || error("Similar types to a CoordinateVector must be one-dimensional.")
+    return CoordinateVector{typeof(BySpace(V)), typeof(ByCoordinate(V)), only(S), T}
+end
 
 """
     RealCartesianCoordinate{D,T}
@@ -63,13 +71,7 @@ CoordinateVector{S,C}(t::NTuple{D}) where {S,C,D} = CoordinateVector{S,C,D,promo
 CoordinateVector{S,C}(s::StaticVector) where {S,C} = CoordinateVector{S,C}(Tuple(s))
 CoordinateVector{S,C}(::StaticArray) where {S,C} = array_not_flattened()
 
-#= TODO:
-  - restrict construction/conversion from other CoordinateVectors with mismatched traits
-  - implement similar_type()
-=#
-
-Base.getindex(c::CoordinateVector, i::Int) = c.vector[i]
-Base.Tuple(c::CoordinateVector) = c.vector
+# TODO: restrict construction/conversion from other CoordinateVectors with mismatched traits
 
 # Pretty printing
 function Base.show(io::IO, c::CoordinateVector{S,C}) where {S,C}
