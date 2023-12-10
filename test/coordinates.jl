@@ -27,7 +27,8 @@
     @test zero(RealFractionalCoordinate{3}) == RealFractionalCoordinate(0, 0, 0)
     # Math operations should maintain the correct type
     @test c1 + RealCartesianCoordinate(4, 5, 6) === RealCartesianCoordinate(5, 7, 9)
-    @test c1 + SVector(4, 5, 6) === SVector(5, 7, 9)
+    @test c1 + SVector(4, 5, 6) === RealCartesianCoordinate(5, 7, 9)
+    @test c1 + [4, 5, 6] === RealCartesianCoordinate(5, 7, 9)
     @test_throws Exception c1 + RealFractionalCoordinate(4, 5, 6)
     @test_throws Exception c1 + ReciprocalCartesianCoordinate(4, 5, 6)
     @test c1 * 2 === RealCartesianCoordinate(2, 4, 6)
