@@ -169,7 +169,8 @@ end
 
 ShiftVector{S}(::StaticArray, wt::Real = true) where S = array_not_flattened()
 ShiftVector{S}(t::Tuple, wt::Real = true) where S = ShiftVector{S}(SVector(t), wt)
-ShiftVector{S}(x::Real...; weight::Real = true) where S = ShiftVector{S}(SVector(x), weight)
+
+(T::Type{<:ShiftVector{<:BySpace}})(x::Real...; weight::Real = true) = T(SVector(x), weight)
 
 ShiftVector{S,D}(t::Tuple, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(t), wt)
 ShiftVector{S,D}(v::StaticArray, wt::Real = true) where {S,D} = ShiftVector{S}(SVector{D}(v), wt)
