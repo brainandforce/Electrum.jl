@@ -4,10 +4,9 @@
 
 ### Constructors and types
 ```@docs
-Electrum.LatticeBasis
+LatticeBasis
 RealBasis
 ReciprocalBasis
-AbstractBasis
 ```
 
 ### Basis information from other data types

@@ -135,7 +135,7 @@ export BySpace, ByRealSpace, ByReciprocalSpace, ByCoordinate, ByCartesianCoordin
     ByFractionalCoordinate
 # Methods and structs for working with crystal lattices
 include("lattices.jl")
-export RealBasis, ReciprocalBasis, AbstractBasis
+export LatticeBasis, RealBasis, ReciprocalBasis
 export eachvertex, basis, dual, dualbasis, lengths, volume, angles_cos, angles_rad, angles_deg, 
     gram, isdiag, qr, triangularize, maxHKLindex
 include("vectors.jl")

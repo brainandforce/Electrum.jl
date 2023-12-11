@@ -16,7 +16,7 @@ end
 _nonsquare_matrix_error() = throw(DimensionMismatch("Input must be a square matrix."))
 
 """
-    Electrum.LatticeBasis{S<:BySpace,D,T} <: StaticMatrix{D,D,T}
+    LatticeBasis{S<:BySpace,D,T} <: StaticMatrix{D,D,T}
 
 Represents the basis vectors of a `D`-dimensional lattice in real or reciprocal space, depending on
 `S`. The units of `LatticeBasis{ByRealSpace}` are bohr, and those of
@@ -29,7 +29,6 @@ For convenience, the type aliases `RealBasis` and `ReciprocalBasis` are defined 
 
     const RealBasis = LatticeBasis{ByRealSpace}
     const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
-    const AbstractBasis = LatticeBasis{<:BySpace}
 
 These type aliases are exported, and in most circumstances code should refer to these types for the
 sake of readability, not `Electrum.LatticeBasis`, which is unexported.
@@ -103,16 +102,6 @@ radians per bohr.
 For more information about this type, see [`Electrum.LatticeBasis`](@ref Electrum.LatticeBasis).
 """
 const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
-
-"""
-    AbstractBasis{D,T} (alias for Electrum.LatticeBasis{<:BySpace,D,T})
-
-Supertype that contains `RealBasis{D,T}` and `ReciprocalBasis{D,T}`. Code that can dispatch on
-either `RealBasis` or `ReciprocalBasis` can refer to this type.
-
-For more information about this type, see [`Electrum.LatticeBasis`](@ref Electrum.LatticeBasis).
-"""
-const AbstractBasis = LatticeBasis{<:BySpace}
 
 LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
 LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))

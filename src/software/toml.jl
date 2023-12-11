@@ -5,7 +5,7 @@ Converts an Electrum data type to a dictionary, which `TOML.print()` supports fo
 """
 function toml_convert end
 
-function toml_convert(b::AbstractBasis)
+function toml_convert(b::LatticeBasis)
     return Dict{String,Any}(
         "realspace" => !(BySpace(b) === ByReciprocalSpace()),
         "dimension" => size(b, 1),
@@ -27,7 +27,7 @@ function toml_convert(p::FractionalAtomPosition)
     return data
 end
 
-function toml_convert(p::FractionalAtomPosition, b::AbstractBasis)
+function toml_convert(p::FractionalAtomPosition, b::LatticeBasis)
     data = toml_convert(p)
     data["cartesian"] = RealBasis(b) * displacement(p)
     return data

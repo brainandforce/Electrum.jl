@@ -29,6 +29,7 @@ vectors in real or reciprocal space with either fractional or Cartesian coordina
   - `BySpace{D}` and its subtypes have lost their dimension type parameter.
 
 ### Removed
+  - [BREAKING] `AbstractBasis` type alias for `LatticeBasis{<:BySpace}` (which did not work anyway)
   - `Electrum.DataSpace(x)` has been replaced with `BySpace(x)`.
 
 ## [0.1.18]: 2024-02-06

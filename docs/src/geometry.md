@@ -99,16 +99,9 @@ weight
 
 ## Lattices
 
-The `Electrum.LatticeBasis{S<:BySpace,D,T}` data type is a wrapper for an
-`SMatrix{D,D,T,D^2}` which represents the real or reciprocal space basis vectors of a lattice.
-
-Electrum does not export `Electrum.LatticeBasis`, but instead provide the following aliases. This
-allows developers to alter the implementation of `Electrum.LatticeBasis` without breaking the API:
-```julia
-const RealBasis = Electrum.LatticeBasis{ByRealSpace}
-const ReciprocalBasis = Electrum.LatticeBasis{ByReciprocalSpace}
-const AbstractBasis = Electrum.LatticeBasis{<:BySpace}
-```
+`LatticeBasis{S<:BySpace,D,T} <: StaticMatrix{D,D,T}` represents the real or reciprocal space basis
+vectors of a lattice as a matrix. For convenience, we define `RealBasis` as an alias for
+`LatticeBasis{ByRealSpace}`, and `ReciprocalBasis` for `LatticeBasis{ByReciprocalSpace}`.
 
 The units of `RealBasis` are bohr, and those of `ReciprocalBasis` are radians over bohr,
 corresponding with the convention that the dot product of a real basis vector with a corresponding
@@ -172,11 +165,11 @@ triangular matrix. This operation is useful in converting lattices to a standard
 case of a QR decomposition, the $R$ factor places the first basis vector of the lattice along the
 first basis vector of space. In 3D, this means that ``\vec{a}`` is collinear with ``\vec{x}``.
 
-Calling `LinearAlgebra.qr(::AbstractBasis{D,T})` returns a
+Calling `LinearAlgebra.qr(::LatticeBasis)` returns a
 `StaticArrays.QR{SMatrix{D,D,T,D^2}, SMatrix{D,D,T,D^2}, SVector{D,Int}}`, so the ``Q`` and ``R``
 factors are bare ``SMatrix`` instances. While this is fine for the ``Q`` matrix, the ``R`` matrix
-represents a basis, and we expect an `AbstractBasis` return value. The `triangularize` function
-returns the ``R`` factor of a QR decomposition as an `AbstractBasis`, discarding the ``Q`` factor.
+represents a basis, and we expect an `LatticeBasis` return value. The `triangularize` function
+returns the ``R`` factor of a QR decomposition as an `LatticeBasis`, discarding the ``Q`` factor.
 
 ```@docs; canonical=false
 Electrum.triangularize
@@ -209,8 +202,8 @@ Some types (such as `Electrum.DataGrid`) store a set of basis vectors as part of
 these functions automatically.
 
 !!! warning
-    `basis(x)` returns an `AbstractBasis`, but there is no guarantee whether the return type is
-    `RealBasis` or `ReciprocalBasis`. Use `convert(::Type{<:AbstractBasis}, basis(x))` to ensure
+    `basis(x)` returns an `LatticeBasis`, but there is no guarantee whether the return type is
+    `RealBasis` or `ReciprocalBasis`. Use `convert(::Type{<:LatticeBasis}, basis(x))` to ensure
     that the return type is what you expect.
 
 The type of basis vectors stored also allows for inference of the data space trait, as the default
