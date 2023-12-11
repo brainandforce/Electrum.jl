@@ -17,8 +17,11 @@ BySpace(::Type{<:CoordinateVector{S}}) where S = S()
 ByCoordinate(::Type{<:CoordinateVector{<:BySpace,C}}) where C = C()
 
 function StaticArrays.similar_type(::Type{V}, ::Type{T}, ::Size{S}) where {V<:CoordinateVector,T,S}
-    isone(length(S)) || error("Similar types to a CoordinateVector must be one-dimensional.")
-    return CoordinateVector{typeof(BySpace(V)), typeof(ByCoordinate(V)), only(S), T}
+    if isone(length(S)) 
+        return CoordinateVector{typeof(BySpace(V)), typeof(ByCoordinate(V)), only(S), T}
+    else
+        return SArray{Tuple{S...},T}
+    end
 end
 
 """
