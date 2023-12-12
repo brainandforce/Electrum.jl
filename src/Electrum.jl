@@ -134,12 +134,12 @@ include("traits.jl")
 export BySpace, ByRealSpace, ByReciprocalSpace, ByCoordinate, ByCartesianCoordinate, 
     ByFractionalCoordinate
 # Coordinate vectors
-include("vectors.jl")
+include("geometry/vectors.jl")
 export CoordinateVector, RealCartesianCoordinate, RealFractionalCoordinate, 
     ReciprocalCartesianCoordinate, ReciprocalFractionalCoordinate, ShiftVector, KPoint
 export weight
 # Methods and structs for working with crystal lattices
-include("lattices.jl")
+include("geometry/lattices.jl")
 export LatticeBasis, RealBasis, ReciprocalBasis
 export eachvertex, basis, dual, dualbasis, lengths, volume, angles_cos, angles_rad, angles_deg, 
     gram, isdiag, qr, triangularize, maxHKLindex
