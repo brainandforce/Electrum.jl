@@ -143,6 +143,9 @@ include("geometry/lattices.jl")
 export LatticeBasis, RealBasis, ReciprocalBasis
 export eachvertex, basis, dual, dualbasis, lengths, volume, angles_cos, angles_rad, angles_deg, 
     gram, isdiag, qr, triangularize, maxHKLindex
+# Map array elements to unit cell geometry
+include("geometry/arraymaps.jl")
+export LatticeDataMap
 # Methods and structs for working with atomic positions
 include("atoms.jl")
 export NamedAtom, AbstractAtomPosition, FractionalAtomPosition, CartesianAtomPosition,
