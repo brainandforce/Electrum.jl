@@ -173,6 +173,8 @@ include("data/grids.jl")
 export DataGrid, RealDataGrid, ReciprocalDataGrid
 export shift, fft, ifft, fftfreq, voxelsize, integrate, partial_derivative, cell_gradient, gradient,
     directional_derivative, remove_shift
+# New data grid implementation
+include("data/newgrids.jl")
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction
