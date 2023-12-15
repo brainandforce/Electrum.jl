@@ -175,6 +175,7 @@ export shift, fft, ifft, fftfreq, voxelsize, integrate, partial_derivative, cell
     directional_derivative, remove_shift
 # New data grid implementation
 include("data/newgrids.jl")
+export LatticeDataMap
 # Planewave wavefunctions
 include("data/wavefunctions.jl")
 export PlanewaveIndex, PlanewaveWavefunction
