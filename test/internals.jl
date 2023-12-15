@@ -56,3 +56,26 @@
     @test_throws Exception Electrum.require_same_space(k1, s)
     @test_throws Exception Electrum.require_dual_space(k1, k2)
 end
+
+@testset "ZeroTo" begin
+    z = Electrum.ZeroTo(5)
+    zz = Electrum.ZeroTo(UInt8(5))
+    @test eltype(z) == Int
+    @test eltype(zz) == UInt8
+    @test z == 0:5
+    @test zz == UInt8(0):UInt8(5)
+    @test all(z .=== 0:5)
+    @test first(z) === 0
+    @test first(zz) === zero(UInt8)
+    @test last(z) === 5
+    @test last(zz) === UInt8(5)
+    # Indexing
+    @test z[1] === zero(eltype(z))
+    @test z[end] === 5
+    @test size(z) == tuple(6)
+    @test length(z) == 6
+    @test eachindex(z) === Base.OneTo(6)
+    @test axes(z) === tuple(Base.OneTo(6))
+    @test_throws BoundsError z[0]
+    @test_throws BoundsError z[7]
+end
