@@ -90,6 +90,8 @@ The value of 2m_e/ħ^2 as used in VASP (eV^-1 * angstrom^-2, but not exactly).
 const CVASP = 0.262465831
 # the correct value is actually 0.26246842360751754
 
+#---Convenience methods----------------------------------------------------------------------------#
+
 # Functionality here has been superseded by allequal() in Julia 1.8.0
 """
     Electrum._allsame(itr)
@@ -105,6 +107,14 @@ Computes the dot product of a vector with itself.
 """
 _selfdot(v) = dot(v,v)
 
+"""
+    Electrum.hash_fields(x, h::UInt)
+
+Hashes all fields of a data structure recursively.
+"""
+hash_fields(x, h::UInt) = (for n in fieldnames(typeof(x)); h = hash(getfield(x, n), h); end; h)
+
+#---Type promotion---------------------------------------------------------------------------------#
 """
     Electrum.promote_typeof(args...)
 
@@ -125,6 +135,8 @@ This function is implemented in Julia Base, but it is not part of the public API
 implementation is provided here.
 """
 promote_eltype(x...) = promote_type(eltype.(x)...)
+
+#---Included files---------------------------------------------------------------------------------#
 
 # Methods used in array operations that go beyond what's available in LinearAlgebra
 include("math.jl")
