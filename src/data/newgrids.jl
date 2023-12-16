@@ -90,11 +90,17 @@ Base.to_indices(l::LatticeData, I::Tuple) = map((x,i) -> mod.(x,i), to_indices(l
 Base.getindex(l::LatticeData, i...) = @inbounds getindex(l.data, to_indices(l, i)...)
 Base.setindex!(l::LatticeData, x, i...) = @inbounds setindex!(l.data, x, to_indices(l, i)...)
 
+#---Equality and hashing---------------------------------------------------------------------------#
+
+Base.:(==)(a::LatticeData, b::LatticeData) = (a.data == b.data && a.map == b.map)
+Base.hash(l::LatticeData, h::UInt) = hash(l.data, hash(l.map, h))
+
 #---Broadcasting-----------------------------------------------------------------------------------#
 """
     Electrum.is_broadcast_compatible(l::LatticeData...)
 
-Checks that two lattices are compatible for a broadcasted operation by 
+Checks that two lattices are compatible for a broadcasted operation by checking the equality of
+their `LatticeDataMap` components.
 """
 is_broadcast_compatible(a::LatticeData, b::LatticeData) = LatticeDataMap(a) == LatticeDataMap(b)
 is_broadcast_compatible(l::LatticeData...) = reduce(is_broadcast_compatible, l)
