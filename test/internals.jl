@@ -58,10 +58,17 @@
 end
 
 @testset "ZeroTo" begin
+    # Constructors
     z = Electrum.ZeroTo(5)
     zz = Electrum.ZeroTo(UInt8(5))
+    @test Electrum.ZeroTo{UInt8}(5) === zz
+    @test_throws ArgumentError Electrum.ZeroTo{UInt8}(-4)
+    # Equality
+    @test z == zz
+    # Element types
     @test eltype(z) == Int
     @test eltype(zz) == UInt8
+    # Equivalence to UnitRange types
     @test z == 0:5
     @test zz == UInt8(0):UInt8(5)
     @test all(z .=== 0:5)

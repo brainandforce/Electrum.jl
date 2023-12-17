@@ -7,10 +7,10 @@ for use with arrays that index from zero.
 struct ZeroTo{T<:Integer} <: AbstractUnitRange{T}
     stop::T
     function ZeroTo{T}(stop::Integer) where T
-        if stop < 0 && !(T <: Signed)
-            throw(ArgumentError("Final value must be positive for element type $T."))
+        if stop < 0
+            T <: Signed || throw(ArgumentError("Final value must be positive for element type $T."))
         end
-        return new(max(zero(T) - oneunit(T), stop))
+        return new(max(-1, stop))
     end
 end
 
