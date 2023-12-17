@@ -85,10 +85,20 @@ Base.axes(l::LatticeData) = ZeroTo.(size(l) .- 1)
 # Index style matches that of the wrapped array
 Base.IndexStyle(::Type{T}) where T<:LatticeData = IndexStyle(fieldtype(T, :data))
 
-Base.to_indices(l::LatticeData, I::Tuple) = map((x,i) -> mod.(x,i), to_indices(l.data, I), size(l))
+"""
+    Electrum._to_indices(l::LatticeData, I::Tuple)
 
-Base.getindex(l::LatticeData, i...) = @inbounds getindex(l.data, to_indices(l, i)...)
-Base.setindex!(l::LatticeData, x, i...) = @inbounds setindex!(l.data, x, to_indices(l, i)...)
+Converts the indices supplies to a `getindex` or `setindex!` call to a `LatticeData` object to a
+valid set of indices for the underlying array.
+
+This function is not implemented as an override of `Base.to_indices` to avoid method ambiguities
+associated with the multiple methods defined in `Base`.
+"""
+_to_indices(l::LatticeData, I::Tuple) = map((x,i) -> mod.(x,i), to_indices(l.data, I), size(l))
+
+# Periodic indexing guarantees all array accesses are inbounds
+Base.getindex(l::LatticeData, i...) = @inbounds getindex(l.data, _to_indices(l, i)...)
+Base.setindex!(l::LatticeData, x, i...) = @inbounds setindex!(l.data, x, _to_indices(l, i)...)
 
 #---Equality and hashing---------------------------------------------------------------------------#
 
