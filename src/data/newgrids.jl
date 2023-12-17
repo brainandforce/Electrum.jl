@@ -112,7 +112,10 @@ Base.hash(l::LatticeData, h::UInt) = hash(l.data, hash(l.map, h))
 Checks that two lattices are compatible for a broadcasted operation by checking the equality of
 their `LatticeDataMap` components.
 """
-is_broadcast_compatible(a::LatticeData, b::LatticeData) = LatticeDataMap(a) == LatticeDataMap(b)
+function is_broadcast_compatible(a::LatticeData, b::LatticeData)
+    return LatticeDataMap(a) == LatticeDataMap(b) && (size(a) == size(b))
+end
+
 is_broadcast_compatible(l::LatticeData...) = reduce(is_broadcast_compatible, l)
 
 #---Mathematical operations------------------------------------------------------------------------#
