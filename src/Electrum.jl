@@ -5,6 +5,7 @@ using StaticArrays
 using FFTW
 using Printf
 using InlineStrings
+using LengthFreeStaticMatrices
 using ComputedFieldTypes
 using NormalForms
 using Requires
