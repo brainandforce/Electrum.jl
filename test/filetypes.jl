@@ -19,6 +19,16 @@
     @test iszero(h - g)
 end
 
+@testset "XYZ" begin
+    xyz_path = joinpath(tmpdir, "test.xyz")
+    writeXYZ(xyz_path, poscar)
+    xyz = readXYZ(xyz_path)
+    list = AtomList(poscar)
+    @test all(NamedAtom(xyz[n]) == NamedAtom(list[n]) for n in 1:4)
+    # atol is set to match number of printed digits
+    @test all(isapprox(displacement(xyz[n]), displacement(list[n]), atol=0.000001) for n in 1:4)
+end
+
 @testset "abinit outputs" begin
     den = v80_den["density_total"]
     wfk = v80_wfk["wavefunction"]
