@@ -7,6 +7,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.18]: 2024-02-06
+
+### Changed
+  - Ambiguity tests exclude `Base.Sort.defalg` on all versions due to a potential false positive.
+  - `writeXYZ()` methods are simplified and better documented.
+
+### Fixed
+  - `writeXYZ()` no longer references removed functions from prerelease versions.
+
 ## [0.1.17]: 2023-11-29
 
 This is the final feature release in the 0.1 series. All future 0.1 series releases will only
