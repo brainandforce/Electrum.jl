@@ -30,11 +30,11 @@ end
 readXYZ(filename) = open(readXYZ, filename)
 
 """
-    writeXYZ(io::IO, data::AbstractVector{<:AbstractAtomPosition})
-    writeXYZ(io::IO, data::AbstractAtomList)
-    writeXYZ(io::IO, data::AbstractCrystal)
+    writeXYZ(io::IO, data)
+    writeXYZ(filename, data)
 
-Write an XYZ file based on a set of atomic coordinates.
+Write an XYZ file based on a set of atomic coordinate data. This data may be provided in any type
+that subtypes `AbstractVector{<:AbstractAtomPosition}`, or types convertible to `AtomList`.
 """
 function writeXYZ(io::IO, data::AbstractVector{<:AbstractAtomPosition})
     # Write the number of atoms
@@ -43,13 +43,13 @@ function writeXYZ(io::IO, data::AbstractVector{<:AbstractAtomPosition})
     println(io, "File written by Electrum.jl")
     # Write lines for all atoms
     for atom in data
-        println(io, atomname(atom), join([lpad(@sprintf("%f", n), 11) for n in coord(atom)]))
+        println(io, name(atom), join([lpad(@sprintf("%f", n), 11) for n in displacement(atom)]))
     end
     return nothing
 end
 
-writeXYZ(io::IO, data::AbstractAtomList) = writeXYZ(io, coord(cartesian(data)))
-writeXYZ(io::IO, data::AbstractCrystal) = writeXYZ(io, atoms(data))
+writeXYZ(io::IO, data::AtomList) = writeXYZ(io, data.atoms)
+writeXYZ(io::IO, data) = writeXYZ(io, AtomList(data))
 
 function writeXYZ(filename, data) 
     open(filename; write=true) do io
