@@ -407,7 +407,7 @@ function get_fermi(io::IO)
     readuntil(io, "E-fermi :")
     ln = split(readline(io))
     fermi = parse.(Float64, ln[1]) .* EV2HARTREE
-    alphabeta = parse.(Float64, strip(ln[5],':')) .* EV2HARTREE
+    alphabeta = parse.(Float64, strip(ln[end],':')) .* EV2HARTREE
     return (fermi = fermi, alphabeta = alphabeta)
 end
 
