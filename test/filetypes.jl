@@ -79,7 +79,7 @@ end
     writeTOML(toml_path, xtal)
     toml = TOML.parsefile(joinpath(tmpdir, "test.toml"))
     @test toml["transform"] == collect(eachcol(xtal.transform))
-    @test toml["basis"]["vectors"] == collect(eachcol(basis(xtal)))
+    @test toml["basis"]["matrix"] == collect(eachcol(basis(xtal)))
     @test toml["basis"]["dimension"] == 3
     @test toml["basis"]["realspace"]
     @test length(toml["atoms"]) == 2

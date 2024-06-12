@@ -9,11 +9,11 @@ A `KPointMesh` can be indexed as if it were an ordinary `Vector{KPoint{D,T}}`.
 """
 struct KPointMesh{D,T} <: AbstractVector{KPoint{D,T}}
     points::Vector{KPoint{D,T}}
-    grid::SMatrix{D,D,Int}
+    grid::LSMatrix{D,D,Int}
     shift::SVector{D,T}
     function KPointMesh(
         points::AbstractArray{KPoint{D,T}}, 
-        grid::StaticMatrix{D,D} = zeros(SMatrix{D,D,Int}),
+        grid::StaticMatrix{D,D} = zeros(LSMatrix{D,D,Int}),
         shift::StaticVector{D} = zeros(SVector{D,T})
     ) where {D,T}
         return new{D,promote_type(T, eltype(shift))}(points, grid, shift)
@@ -22,7 +22,7 @@ end
 
 function KPointMesh(
     points::AbstractArray,
-    grid::StaticMatrix{D,D} = zeros(SMatrix{D,D,Int}),
+    grid::StaticMatrix{D,D} = zeros(LSMatrix{D,D,Int}),
     shift::StaticVector{D} = zeros(SVector{D,Bool})
 ) where D
     return KPointMesh(KPoint{D}.(points), grid, shift)
@@ -30,10 +30,10 @@ end
 
 function KPointMesh{D}(
     points::AbstractArray,
-    grid::AbstractMatrix = zeros(SMatrix{D,D,Int}),
+    grid::AbstractMatrix = zeros(LSMatrix{D,D,Int}),
     shift::AbstractVector = zeros(SVector{D,Bool})
 ) where D
-    return KPointMesh(KPoint{D}.(points), SMatrix{D,D,Int}(grid), SVector{D,T}(shift))
+    return KPointMesh(KPoint{D}.(points), LSMatrix{D,D,Int}(grid), SVector{D,T}(shift))
 end
 
 function KPointMesh{D,T}(
@@ -41,7 +41,7 @@ function KPointMesh{D,T}(
     grid::AbstractMatrix = zeros(SMatrix{D,D,Int}),
     shift::AbstractVector = zeros(SVector{D,T})
 ) where {D,T}
-    return KPointMesh(KPoint{D,T}.(points), SMatrix{D,D,Int}(grid), SVector{D,T}(shift))
+    return KPointMesh(KPoint{D,T}.(points), LSMatrix{D,D,Int}(grid), SVector{D,T}(shift))
 end
 
 function Base.:(==)(k1::KPointMesh, k2::KPointMesh)

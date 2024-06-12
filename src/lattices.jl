@@ -69,10 +69,10 @@ In order to avoid the presence of an extraneous type parameter, the backing `vec
 completion.
 """
 struct LatticeBasis{S<:BySpace,D,T<:Real} <: StaticMatrix{D,D,T}
-    vectors::SVector{D,SVector{D,T}}
+    matrix::LSMatrix{D,D,T}
     function LatticeBasis{S,D,T}(M::StaticMatrix) where {S,D,T}
         lattice_sanity_check(M)
-        return new(SVector{D}(eachcol(M)))
+        return new(M)
     end
 end
 
@@ -103,22 +103,13 @@ For more information about this type, see [`Electrum.LatticeBasis`](@ref Electru
 """
 const ReciprocalBasis = LatticeBasis{ByReciprocalSpace}
 
-LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(t))
-LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
+LatticeBasis{S,D,T}(t::Tuple) where {S,D,T} = LatticeBasis{S,D,T}(LSMatrix{D,D}(t))
+LatticeBasis{S,D,T}(M::AbstractMatrix) where {S,D,T} = LatticeBasis{S,D,T}(LSMatrix{D,D}(M))
 
-LatticeBasis{S,D}(M::AbstractMatrix{T}) where {S,D,T} = LatticeBasis{S,D,T}(SMatrix{D,D}(M))
+LatticeBasis{S,D}(M::AbstractMatrix{T}) where {S,D,T} = LatticeBasis{S,D,T}(LSMatrix{D,D}(M))
 LatticeBasis{S,D}(M::StaticMatrix{D,D,T}) where {S,D,T} = LatticeBasis{S,D,T}(M)
 
 LatticeBasis{S}(M::StaticMatrix{D,D,T}) where {S,D,T} = LatticeBasis{S,D,T}(M)
-
-#---Matrix property--------------------------------------------------------------------------------#
-
-function Base.getproperty(b::LatticeBasis, s::Symbol)
-    s === :matrix && return hcat(getfield(b, :vectors)...)
-    return getfield(b, s)
-end
-
-Base.propertynames(::LatticeBasis; private = false) = private ? (:vectors, :matrix) : (:matrix)
 
 #---Custom indexing and iteration------------------------------------------------------------------#
 # Really only for resolving method ambiguities
@@ -206,7 +197,7 @@ end
 
 #---Mathematical operations------------------------------------------------------------------------#
 
-Base.:(==)(a::LatticeBasis{S,D}, b::LatticeBasis{S,D}) where {S,D} = a.matrix == b.matrix
+Base.:(==)(a::LatticeBasis{S,D}, b::LatticeBasis{S,D}) where {S,D} = (a.matrix == b.matrix)
 
 """
     inv(b::LatticeBasis{D}) -> SMatrix{D,D}

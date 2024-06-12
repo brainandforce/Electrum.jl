@@ -32,7 +32,7 @@ mutable struct Crystal{D} <: AbstractCrystal{D}
     sgorig::SVector{D,Float64}
     # Transform to generate the conventional or primitive lattice
     # It might be easier to write this as a transpose
-    transform::SMatrix{D,D,Int}
+    transform::LSMatrix{D,D,Int}
     function Crystal(
         # Always required, even if generating an empty list of atoms
         # (because the included basis is necessary)
@@ -135,7 +135,7 @@ atomcounts(xtal::AbstractCrystal; kwargs...) = atomcounts(PeriodicAtomList(xtal)
 natomtypes(xtal::AbstractCrystal; kwargs...) = natomtypes(PeriodicAtomList(xtal); kwargs...)
 
 """
-    get_transform(xtal::AbstractCrystal{D}) -> SMatrix{D,D,Int}
+    get_transform(xtal::AbstractCrystal{D}) -> LengthFreeStaticMatrices.LSMatrix{D,D,Int}
 
 Returns the transformation matrix associated with an `AbstractCrystal`.
 """
@@ -145,7 +145,8 @@ get_transform(xtal::AbstractCrystal) = xtal.transform
     set_transform!(xtal::AbstractCrystal, M) -> AbstractCrystal
 
 Sets the transform supplied with an `AbstractCrystal`. The transform can be an integer matrix,
-vector, scalar, or `UniformScaling`, which is converted to an `SMatrix{D,D,Int}` when stored.
+vector representing the diagonal of a diagonal matrix, scalar, or `UniformScaling`, which is
+converted to a `LengthFreeStaticMatrices.LSMatrix{D,D,Int}` when stored.
 
 The function returns the modified input for convenience.
 """
