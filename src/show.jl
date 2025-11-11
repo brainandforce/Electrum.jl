@@ -187,7 +187,7 @@ function Base.show(io::IO, ::MIME"text/plain", l::AbstractAtomList; kwargs...)
     end
     # Print basis vectors
     if l isa PeriodicAtomList
-        println("\n  defined in terms of basis vectors:")
+        println(io, "\n  defined in terms of basis vectors:")
         printbasis(io, l, pad=2)
     end
 end
@@ -293,7 +293,7 @@ end
 function Base.show(io::IO, ::MIME"text/plain", x::CrystalWithDatasets)
     println(io, typeof(x), " containing:\n")
     show(io, MIME("text/plain"), x.xtal)
-    print("\n\nand a ")
+    print(io, "\n\nand a ")
     show(io, MIME("text/plain"), x.data)
 end
 

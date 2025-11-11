@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
   - Warnings about unqualified names for `Tuple` and `CartesianIndex` in Julia 1.12
+  - Missing `io` arguments in print methods
 
 ## [0.1.18]: 2024-02-06
 
@@ -219,6 +220,8 @@ provided `oneunit(T)` is defined.
 Initial release of Electrum.jl
 
 [Unreleased]: https://github.com/brainandforce/Electrum.jl
+[0.1.19]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.19
+[0.1.18]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.18
 [0.1.17]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.17
 [0.1.16]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.16
 [0.1.15]: https://github.com/brainandforce/Electrum.jl/releases/tag/v0.1.15
