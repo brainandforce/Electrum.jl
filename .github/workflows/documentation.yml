@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - release
     tags: '*'
   pull_request:
 
@@ -13,8 +14,8 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
         with:
           version: '1' # Latest version, but we may want to switch to an LTS
       - name: Install dependencies
