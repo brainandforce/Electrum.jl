@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.19]: 2025-11-11
+
+### Fixed
+  - Warnings about unqualified names for `Tuple` and `CartesianIndex` in Julia 1.12
+
 ## [0.1.18]: 2024-02-06
 
 ### Changed

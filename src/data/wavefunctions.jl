@@ -35,8 +35,8 @@ end
 
 Base.show(io::IO, i::PlanewaveIndex) = print(io, PlanewaveIndex, (i.spin, i.kpoint, i.band, i.g))
 
-Tuple(i::PlanewaveIndex) = (i.spin, i.kpoint, i.band, Tuple(i.g)...)
-CartesianIndex(i::PlanewaveIndex) = CartesianIndex(Tuple(i))
+Base.Tuple(i::PlanewaveIndex) = (i.spin, i.kpoint, i.band, Tuple(i.g)...)
+Base.CartesianIndex(i::PlanewaveIndex) = CartesianIndex(Tuple(i))
 
 Base.convert(T::Type{<:Tuple}, i::PlanewaveIndex) = Tuple(i)::T
 Base.convert(T::Type{<:CartesianIndex}, i::PlanewaveIndex) = CartesianIndex(i)::T
